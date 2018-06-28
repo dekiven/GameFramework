@@ -7,140 +7,144 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-public class BuilderConfig
+namespace GameFramework
 {
-    //public static string STR_ASB_EXT = ".asb";
-    public static HashSet<string> SET_SKIP_EXTS = new HashSet<string>() { ".meta", };
-    const string configPath = "Assets/GameFramework/Editor/conifg.cfg";
-
-    IDictionary<string, string> mConfDic = new Dictionary<string, string>();
-
-    public BuilderConfig()
+    public class BuilderConfig
     {
-        LoadConfig();
-    }
+        //public static string STR_ASB_EXT = ".asb";
+        public static HashSet<string> SET_SKIP_EXTS = new HashSet<string>() { ".meta", };
+        const string configPath = "Assets/GameFramework/Editor/conifg.cfg";
 
-    public string LoadPath
-    {
-        get
+        IDictionary<string, string> mConfDic = new Dictionary<string, string>();
+
+        public BuilderConfig()
         {
-            string v = GetConf("LoadPath");
-            if(string.IsNullOrEmpty(v))
+            LoadConfig();
+        }
+
+        public string LoadPath
+        {
+            get
             {
-                return Y3Tools.GetResPath();
-            }
-            return v;
-        }
-
-        set
-        {
-            setConfig("LoadPath", value);
-            saveConfig();
-        }
-    }
-
-    public string ExportPath
-    {
-        get
-        {
-            string v = GetConf("ExportPath");
-            if (string.IsNullOrEmpty(v))
-            {
-                return Application.dataPath.Replace("Assets", "") + "AssetBundles";
-            }
-            return v;
-        }
-
-        set
-        {
-            setConfig("ExportPath", value);
-            saveConfig();
-        }
-    }
-
-    public BuildAssetBundleOptions options
-    {
-        get
-        {
-            BuildAssetBundleOptions bbo = BuildAssetBundleOptions.None;
-            string v = GetConf("BuildAssetBundleOptions");
-            if (!string.IsNullOrEmpty(v))
-            {
-                bbo = (BuildAssetBundleOptions)Enum.Parse(typeof(BuildAssetBundleOptions), v);
-            }
-            return bbo;
-        }
-
-        set
-        {
-            setConfig("BuildAssetBundleOptions", value.ToString());
-            saveConfig();
-        }
-    }
-
-    public BuildTarget target
-    {
-        get
-        {
-            BuildTarget t = BuildTarget.StandaloneWindows;
-            string v = GetConf("BuildTarget");
-            if (!string.IsNullOrEmpty(v))
-            {
-                //return Application.dataPath.Replace("Assets", "") + "Bundles";
-                t = (BuildTarget)Enum.Parse(typeof(BuildTarget), v);
-            }
-            return t;
-        }
-
-        set
-        {
-            setConfig("BuildTarget", value.ToString());
-            saveConfig();
-        }
-    }
-
-    public void LoadConfig()
-    {
-        //TODO:dekiven
-        if (!File.Exists(configPath))
-        {
-            File.Create(configPath).Close();
-        }
-        if (File.Exists(configPath))
-        {
-            var lines = File.ReadAllLines(configPath);
-            var regex = new Regex("\"(.*)\":\"(.*)\"");
-            foreach (var l in lines)
-            {
-                var m = regex.Match(l.Trim());
-                if (null != m)
+                string v = GetConf("LoadPath");
+                if (string.IsNullOrEmpty(v))
                 {
-                    setConfig(m.Groups[1].ToString(), m.Groups[2].ToString());
+                    return Tools.GetResPath();
+                }
+                return v;
+            }
+
+            set
+            {
+                setConfig("LoadPath", value);
+                saveConfig();
+            }
+        }
+
+        public string ExportPath
+        {
+            get
+            {
+                string v = GetConf("ExportPath");
+                if (string.IsNullOrEmpty(v))
+                {
+                    return Application.dataPath.Replace("Assets", "") + "AssetBundles";
+                }
+                return v;
+            }
+
+            set
+            {
+                setConfig("ExportPath", value);
+                saveConfig();
+            }
+        }
+
+        public BuildAssetBundleOptions options
+        {
+            get
+            {
+                BuildAssetBundleOptions bbo = BuildAssetBundleOptions.None;
+                string v = GetConf("BuildAssetBundleOptions");
+                if (!string.IsNullOrEmpty(v))
+                {
+                    bbo = (BuildAssetBundleOptions)Enum.Parse(typeof(BuildAssetBundleOptions), v);
+                }
+                return bbo;
+            }
+
+            set
+            {
+                setConfig("BuildAssetBundleOptions", value.ToString());
+                saveConfig();
+            }
+        }
+
+        public BuildTarget target
+        {
+            get
+            {
+                BuildTarget t = BuildTarget.StandaloneWindows;
+                string v = GetConf("BuildTarget");
+                if (!string.IsNullOrEmpty(v))
+                {
+                    //return Application.dataPath.Replace("Assets", "") + "Bundles";
+                    t = (BuildTarget)Enum.Parse(typeof(BuildTarget), v);
+                }
+                return t;
+            }
+
+            set
+            {
+                setConfig("BuildTarget", value.ToString());
+                saveConfig();
+            }
+        }
+
+        public void LoadConfig()
+        {
+            //TODO:dekiven
+            if (!File.Exists(configPath))
+            {
+                File.Create(configPath).Close();
+            }
+            if (File.Exists(configPath))
+            {
+                var lines = File.ReadAllLines(configPath);
+                var regex = new Regex("\"(.*)\":\"(.*)\"");
+                foreach (var l in lines)
+                {
+                    var m = regex.Match(l.Trim());
+                    if (null != m)
+                    {
+                        setConfig(m.Groups[1].ToString(), m.Groups[2].ToString());
+                    }
                 }
             }
         }
-    }
 
-    private void saveConfig()
-    {
-        List<string> lines = new List<string>();
-        foreach (var item in mConfDic)
+        private void saveConfig()
         {
-            lines.Add(string.Format("\"{0}\":\"{1}\"", item.Key, item.Value));
+            List<string> lines = new List<string>();
+            foreach (var item in mConfDic)
+            {
+                lines.Add(string.Format("\"{0}\":\"{1}\"", item.Key, item.Value));
+            }
+
+            File.WriteAllLines(configPath, lines.ToArray());
         }
 
-        File.WriteAllLines(configPath, lines.ToArray());
+        private void setConfig(string key, string value)
+        {
+            mConfDic[key] = value;
+        }
+
+        public string GetConf(string key)
+        {
+            string value = string.Empty;
+            mConfDic.TryGetValue(key, out value);
+            return value;
+        }
     }
 
-    private void setConfig(string key, string value)
-    {
-        mConfDic[key] = value;
-    }
-
-    public string GetConf(string key)
-    {
-        string value = string.Empty;
-        mConfDic.TryGetValue(key, out value);
-        return value;
-    }
 }
