@@ -2,5 +2,6 @@ Library/
 Temp/
 UnityPackageManager/
 .vs/
+Generate
 *.csproj
 *.sln

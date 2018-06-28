@@ -6,6 +6,7 @@ ignoreList = [
     'Temp/',
     'UnityPackageManager/',
     '.vs/',
+    'Generate',
     '*.csproj',
     '*.sln',
 ]
