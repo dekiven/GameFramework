@@ -150,10 +150,11 @@ namespace GameFramework
         private List<string> targetList = new List<string>()
     {
         BuildTarget.StandaloneWindows.ToString(),
+        BuildTarget.StandaloneOSX.ToString(),
         BuildTarget.Android.ToString(),
         BuildTarget.iOS.ToString(),
-        //表示打包所有平台（IOS和Android）
-        BuildTarget.NoTarget.ToString(),
+        //表示打包所有平台（IOS和Android), 有bug暂时分开打包
+        //BuildTarget.NoTarget.ToString(),
     };
 
 

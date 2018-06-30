@@ -61,6 +61,24 @@ namespace GameFramework
         }
 
         /// <summary>
+        /// 调用已经require或者doFile的lua全局函数（无参数）
+        /// </summary>
+        /// <param name="funcName">Func name.</param>
+        public void CallGlobalFunc(string funcName)
+        {
+            LuaFunction func = lua.GetFunction(funcName);
+            if(null != func)
+            {
+                func.Call();
+                func.Dispose();
+            }
+            else
+            {
+                LogFile.Warn("global lua func \"{0}\" do not found!");
+            }
+        }
+
+        /// <summary>
         /// 初始化加载第三方库
         /// </summary>
         void OpenLibs()
@@ -99,7 +117,7 @@ namespace GameFramework
             if (loader.beZip)
             {
                 loader.AddBundle("lua.unity3d");
-                loader.AddBundle("lua_math.unity3d");
+                //loader.AddBundle("lua_math.unity3d");
                 loader.AddBundle("lua_system.unity3d");
                 loader.AddBundle("lua_system_reflection.unity3d");
                 loader.AddBundle("lua_unityengine.unity3d");
@@ -124,11 +142,11 @@ namespace GameFramework
             //游戏逻辑
             if (loader.beZip)
             {
-                loader.AddBundle("lua_framework.unity3d");
-                loader.AddBundle("lua_messageparser.unity3d");
-                loader.AddBundle("lua_netparser.unity3d");
-                //test
-                loader.AddBundle("lua_test.unity3d");
+                //loader.AddBundle("lua_framework.unity3d");
+                //loader.AddBundle("lua_messageparser.unity3d");
+                //loader.AddBundle("lua_netparser.unity3d");
+                ////test
+                //loader.AddBundle("lua_test.unity3d");
                 //loader.AddBundle("lua_framework.unity3d");
             }
 

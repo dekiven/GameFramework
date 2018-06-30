@@ -337,6 +337,7 @@ namespace GameFramework
 
         /// <summary>
         /// 从Assetbundle或者原始资源中加载一个资源，编辑器和正式游戏均使用本函数加载资源
+        /// 注意：lua回调是gameobjectlist，c#是gameobject
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="abName"></param>
@@ -423,6 +424,12 @@ namespace GameFramework
         //    }
 
         //-----------------------方便lua使用的函数 begin--------------------------
+        /// <summary>
+        /// 加载资源，注意：lua回调是gameobjectlist，c#是gameobject
+        /// </summary>
+        /// <param name="abName">asb名字（三层的相对文件夹路径)</param>
+        /// <param name="name">要load的文件名，全名</param>
+        /// <param name="luaFunc">lua回调</param>
         public void LoadGameObj(string abName, string name, LuaFunction luaFunc)
         {
             LoadRes<GameObject>(abName, name, null, luaFunc);
@@ -472,7 +479,8 @@ namespace GameFramework
                         }
                         else
                         {
-                            list.Add(null);
+                            LuaByteBuffer buffer = new LuaByteBuffer();
+                            list.Add(buffer);
                         }
                     }
                 }

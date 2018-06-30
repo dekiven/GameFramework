@@ -172,7 +172,15 @@ public static class CustomSettings
         _GT(typeof(TimerManager)),
         _GT(typeof(ThreadManager)),
         _GT(typeof(NetworkManager)),
-        _GT(typeof(ResourceManager)),		  
+        _GT(typeof(ResourceManager)),
+
+        //=================================自定义导出 begin---------------------------------
+        _GT(typeof(GameFramework.GameResManager)),
+        _GT(typeof(GameFramework.GameLuaManager)),
+        _GT(typeof(GameFramework.GameManager)),
+        //_GT(typeof()),
+        //_GT(typeof()),
+        //---------------------------------自定义导出   end=================================
     };
 
     public static List<Type> dynamicList = new List<Type>()

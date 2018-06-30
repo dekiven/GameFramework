@@ -637,6 +637,7 @@ namespace LuaInterface
 
         public void DoFile(string fileName)
         {
+            Debug.Log(fileName);
             byte[] buffer = LoadFileBuffer(fileName);
             fileName = LuaChunkName(fileName);
             LuaLoadBuffer(buffer, fileName);

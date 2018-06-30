@@ -42,37 +42,37 @@ namespace GameFramework
 
         public static void Log(string msg)
         {
-            //Debug.Log(msg);
+            Debug.Log(msg);
             writeLine((int)LogLevel.L_Log, msg);
         }
 
         public static void Log(string format, params object[] args)
         {
-            //Debug.LogFormat(format, args);
+            Debug.LogFormat(format, args);
             writeLine((int)LogLevel.L_Log, format, args);
         }
 
         public static void Warn(string msg)
         {
-            //Debug.LogWarning(msg);
+            Debug.LogWarning(msg);
             writeLine((int)LogLevel.L_Warning, msg);
         }
 
         public static void Warn(string format, params object[] args)
         {
-            //Debug.LogWarningFormat(format, args);
+            Debug.LogWarningFormat(format, args);
             writeLine((int)LogLevel.L_Warning, format, args);
         }
 
         public static void Error(string msg)
         {
-            //Debug.LogError(msg);
+            Debug.LogError(msg);
             writeLine((int)LogLevel.L_Error, msg);
         }
 
         public static void Error(string format, params object[] args)
         {
-            //Debug.LogErrorFormat(format, args);
+            Debug.LogErrorFormat(format, args);
             writeLine((int)LogLevel.L_Error, format, args);
         }
 

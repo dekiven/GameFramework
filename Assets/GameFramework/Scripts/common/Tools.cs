@@ -98,7 +98,13 @@ namespace GameFramework
             return path.ToLower() + GameConfig.STR_ASB_EXT;
         }
 
-        public static string GetUrlPath(string path, string subPath = "")
+        /// <summary>
+        /// 返回从persistentDataPath读取文件的url
+        /// </summary>
+        /// <returns>The URL path pars.</returns>
+        /// <param name="path">Path.</param>
+        /// <param name="subPath">Sub path.</param>
+        public static string GetUrlPathWritebble(string path, string subPath = "")
         {
             if (!string.IsNullOrEmpty(subPath))
             {
@@ -120,6 +126,26 @@ namespace GameFramework
         }
 
         /// <summary>
+        /// 返回从streamingAssetsPath读取文件的url
+        /// </summary>
+        /// <returns>The URL path stream.</returns>
+        /// <param name="path">Path.</param>
+        /// <param name="subPath">Sub path.</param>
+        public static string GetUrlPathStream(string path, string subPath = "")
+        {
+            if (!string.IsNullOrEmpty(subPath))
+            {
+                path = PathCombine(path, subPath);
+            }
+
+            string pre = "file://";
+#if UNITY_ANDROID
+            pre = "";
+#endif
+            return pre + path;
+        }
+
+        /// <summary>
         /// 获取运行时的assetbundle所在根目录
         /// </summary>
         /// <returns></returns>
@@ -134,7 +160,7 @@ namespace GameFramework
         /// <returns></returns>
         public static string GetAsbUrl(string name)
         {
-            return GetUrlPath(GetAsbPath(), name);
+            return GetUrlPathWritebble(GetAsbPath(), name);
         }
         /// <summary>
         /// 获取原始资源的根目录，在Assets/BundleRes,一般情况下只有编辑器会使用本函数
@@ -160,7 +186,7 @@ namespace GameFramework
         /// <returns></returns>
         public static string GetResUrl(string name)
         {
-            return GetUrlPath(GetResPath(), name);
+            return GetUrlPathWritebble(GetResPath(), name);
         }
 
         //test
@@ -172,7 +198,7 @@ namespace GameFramework
 
         public static string GetLuaAsbPath(string bundleName)
         {
-            return PathCombine(GetAsbPath(), "lua/" + bundleName).ToLower();
+            return PathCombine(GetAsbPath(), "lua/" + bundleName.ToLower());
         }
 
         /// <summary>

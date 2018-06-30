@@ -91,11 +91,11 @@ namespace GameFramework
             List<AssetBundleBuild> bundles = GenLuaBuild(config);
             BuildAbsByConfig(bundles, config);
 
-            //删除生成的Lua文件夹
-            if (Directory.Exists(sTempLuaDir))
-            {
-                Directory.Delete(sTempLuaDir, true);
-            }
+            ////删除生成的Lua文件夹
+            //if (Directory.Exists(sTempLuaDir))
+            //{
+            //    Directory.Delete(sTempLuaDir, true);
+            //}
         }
 
         /// <summary>
@@ -110,11 +110,11 @@ namespace GameFramework
             //根据选择平台打包
             BuildAbsByConfig(bundles, config);
 
-            //删除生成的Lua文件夹
-            if (Directory.Exists(sTempLuaDir))
-            {
-                Directory.Delete(sTempLuaDir, true);
-            }
+            ////删除生成的Lua文件夹
+            //if (Directory.Exists(sTempLuaDir))
+            //{
+            //    Directory.Delete(sTempLuaDir, true);
+            //}
         }
 
         /// <summary>
@@ -193,10 +193,13 @@ namespace GameFramework
                 AssetBundleBuild bundle = GenBuildByDir(luaDir, sTempLuaDir, "*.bytes", false);
                 bundle.assetBundleName = "lua/lua_" + bundle.assetBundleName.Replace('/', '_').ToLower();
                 bundles.Add(bundle);
+                Debug.LogWarning("lua Add luaDir:" + luaDir);
             }
             AssetBundleBuild lua = GenBuildByDir(sTempLuaDir, sTempLuaDir, "*.bytes", false);
             lua.assetBundleName = "lua/lua" + GameConfig.STR_ASB_EXT;
             bundles.Add(lua);
+            Debug.LogWarning("lua Add luaDir: lua/lua");
+
             return bundles;
         }
 

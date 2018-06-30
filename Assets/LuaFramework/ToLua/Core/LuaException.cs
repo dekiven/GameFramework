@@ -71,7 +71,8 @@ namespace LuaInterface
                 StringBuilder sb = new StringBuilder();
                 ExtractFormattedStackTrace(self, sb);
                 _stack = sb.ToString();
-            }                        
+            }
+            GameFramework.LogFile.Error("\nstack:\n\t{0}\nmsg:\n\t{1}",_stack, msg);
         }
 
         public static Exception GetLastError()

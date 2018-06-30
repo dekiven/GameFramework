@@ -32,6 +32,10 @@ namespace GameFramework
                     base.AddSearchBundle(bundleName.ToLower(), bundle);
                 }
             }
+            else
+            {
+                LogFile.Error("{0} do not exists", url);
+            }
         }
 
         /// <summary>

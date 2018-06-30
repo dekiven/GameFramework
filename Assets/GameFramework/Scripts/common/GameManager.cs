@@ -7,16 +7,32 @@ namespace GameFramework
     {
         GameLuaManager mLuaMgr;
         GameResManager mResMgr;
-
+        GameResUpdater mResUp;
         //Game
 
         void Start()
         {
             mResMgr = GameResManager.Instance;
             mLuaMgr = GameLuaManager.Instance;
+            mResUp = GameResUpdater.Instance;
             LogFile.Init(Tools.GetWriteableDataPath("game.log"));
 
-            mLuaMgr.InitStart();
+            //启动lua虚拟机之前先将lua等资源拷贝到writeblePath
+            mResUp.CheckLocalCopy(delegate (float percent, string msg) {
+                if (Equals(-1f, percent) || Equals(1f, percent))
+                {
+                    LogFile.Log("callback of copy file:{0},{1}", percent, msg);
+                    if (Equals(1f, percent))
+                    {
+                        LogFile.Log("TestLoadRes");
+                        mLuaMgr.InitStart();
+                        mLuaMgr.CallGlobalFunc("TestLoadRes");
+                    }
+                }
+            });
+
+
+
         }
 
         protected override bool clearComp()
