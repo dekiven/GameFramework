@@ -10,6 +10,8 @@ function TestClass:ctor( ... )
         print(tostring(UnityEngine.GameObject.Instantiate))
         local cube = UnityEngine.GameObject.Instantiate(obj[0])
         -- cube.transform
+
+        GameFramework.LogFile.Log('更新游戏资源版本')
     end)
 
 end

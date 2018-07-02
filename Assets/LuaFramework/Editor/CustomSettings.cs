@@ -175,6 +175,8 @@ public static class CustomSettings
         _GT(typeof(ResourceManager)),
 
         //=================================自定义导出 begin---------------------------------
+        _GT(typeof(GameFramework.Tools)),
+        _GT(typeof(GameFramework.LogFile)),
         _GT(typeof(GameFramework.GameResManager)),
         _GT(typeof(GameFramework.GameLuaManager)),
         _GT(typeof(GameFramework.GameManager)),

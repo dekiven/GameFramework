@@ -12,7 +12,7 @@ namespace GameFramework
     public class BuilderConfig
     {
         //public static string STR_ASB_EXT = ".asb";
-        public static HashSet<string> SET_SKIP_EXTS = new HashSet<string>() { ".meta", };
+        public static HashSet<string> SET_SKIP_EXTS = new HashSet<string>() { ".meta", ".DS_Store"};
         const string configPath = "Assets/GameFramework/Editor/conifg.cfg";
 
         IDictionary<string, string> mConfDic = new Dictionary<string, string>();

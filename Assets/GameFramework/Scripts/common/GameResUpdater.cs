@@ -128,10 +128,46 @@ namespace GameFramework
             return newFiles;
         }
 
+        public string[] getVersionNums(string v = "")
+        {
+            if(string.IsNullOrEmpty(v))
+            {
+                v = version;
+            }
+            string[] arr = v.Split('.');
+            return arr;
+        }
+
         public int CompareVer(ResConf other)
         {
             LogFile.Log("版本对比：{0} ： {1}", version, other.version);
-            return string.Compare(version, other.version);
+            string[] selfVn = getVersionNums(version);
+            string[] otherVn = getVersionNums(other.version);
+            int sc = selfVn.Length;
+            int oc = otherVn.Length;
+            //以两个版本号短的部分来比较(多的部分是包体资源的版本号有.base后缀)
+            int rst = 0;
+            for (int i = 0; i < (sc < oc ? sc : oc); ++i)
+            {
+                if(int.Parse(selfVn[i]) != int.Parse(otherVn[i]))
+                {
+                    rst = int.Parse(selfVn[i]) > int.Parse(otherVn[i]) ? 1 : -1;
+                    break;
+                }
+            }
+            //这种情况只出现在本地刚解压好包体内的资源，这个时候资源配置版本会多一个.base后缀
+            //如果前面的版本号相同则默认服务器的版本号大
+            if(0 == rst && 1 == Math.Abs(sc - oc))
+            {
+                if(sc > oc && Equals(selfVn[sc - 1], "base"))
+                {
+                    rst = -1;
+                }else if(sc < oc && Equals(otherVn[oc - 1], "base")) 
+                {
+                    rst = 1;
+                }
+            }
+            return rst;
         }
 
         public void SaveToFile(string path)
@@ -216,7 +252,7 @@ namespace GameFramework
             {
                 if(!string.IsNullOrEmpty(url))
                 {
-                    string confUrl = url + filePath;
+                    string confUrl = Tools.PathCombine(url, filePath);
                     WWW www = new WWW(confUrl);
                     LogFile.Log("检查服务器资源配置文件:" + confUrl);
                     yield return www;
@@ -233,19 +269,27 @@ namespace GameFramework
                             streamConf.server = true;
                             if (null != curConf)
                             {
-                                if(streamConf.CompareVer(curConf) != 0 || (-1 == streamConf.CompareVer(curConf) & !curConf.version.EndsWith("_base")))
+                                //if(streamConf.CompareVer(curConf) != 0 || (-1 == streamConf.CompareVer(curConf) & !curConf.version.EndsWith("_base", StringComparison.Ordinal)))
+                                int compare = streamConf.CompareVer(curConf);
+                                if(compare != 1)
                                 {
                                     //如果服务器版本跟本地版本一样  不下载资源
                                     //如果服务器版本比本地的版本小(正常情况下不会出现),且不是以_base结尾(包体自带的资源配置是版本号加_base) 不下载资源
-                                    float percent = 1f;
-                                    string msg = "没有资源需要更新。";
+                                    float _percent = 1f;
+                                    string _msg = "没有资源需要更新。";
+                                    if (compare == -1)
+                                    {
+                                        _percent = -1f;
+                                        _msg = "服务器版本号小于当前版本号，请更新服务器资源！";
+                                        LogFile.Error(_msg);
+                                    }
                                     if(null != callback)
                                     {
-                                        callback(percent, msg);
+                                        callback(_percent, _msg);
                                     }
                                     if(null != luaCallback)
                                     {
-                                        luaCallback.Call<float, string>(percent, msg);
+                                        luaCallback.Call<float, string>(_percent, _msg);
                                         luaCallback.Dispose();
                                     }
                                 }
@@ -267,7 +311,20 @@ namespace GameFramework
                     }
                 }
             }
+            //如果所有服务器都检查了，但是都没有获取版本信息，返回更新失败
+            float percent = -1f;
+            string msg = "更新服务资源失败，没有读取到服务器资源配置文件";
+            if (null != callback)
+            {
+                callback(percent, msg);
+            }
+            if (null != luaCallback)
+            {
+                luaCallback.Call<float, string>(percent, msg);
+                luaCallback.Dispose();
+            }
             yield return null;
+            Application.Quit();
         }
 
         /// <summary>

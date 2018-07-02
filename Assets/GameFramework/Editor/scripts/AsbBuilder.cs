@@ -46,7 +46,7 @@ namespace GameFramework
                 {
                     string f = files[i];
                     string ext = Path.GetExtension(f);
-                    if (!BuilderConfig.SET_SKIP_EXTS.Contains(ext))
+                    if (!BuilderConfig.SET_SKIP_EXTS.Contains(ext) && f != ".DS_Store")
                     {
                         list.Add(Tools.RelativeTo(files[i], Directory.GetParent(Application.dataPath).FullName));
                     }
