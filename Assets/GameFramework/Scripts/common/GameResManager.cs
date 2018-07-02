@@ -25,7 +25,7 @@ namespace GameFramework
         Dictionary<string, AssetBundleInfo> m_LoadedAssetBundles = new Dictionary<string, AssetBundleInfo>();
         Dictionary<string, List<LoadAssetRequest>> m_LoadRequests = new Dictionary<string, List<LoadAssetRequest>>();
 
-        public void Initialize(string manifestName, Action initOK)
+        public void Initialize(Action initOK, string manifestName = GameConfig.STR_ASB_MANIFIST)
         {
             if (GameConfig.Instance.useAsb)
             {
@@ -316,7 +316,7 @@ namespace GameFramework
                 T t = AssetDatabase.LoadAssetAtPath<T>(name);
                 if (t == null)
                 {
-                    Debug.LogError(name);
+                    LogFile.Error("加载本地零散资源{0}失败，类型：{1}",name, typeof(T));
                 }
                 list.Add(t);
                 yield return null;

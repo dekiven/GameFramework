@@ -29,17 +29,24 @@ namespace GameFramework
                 size = -1;
             }
         }
+
+        public new string ToString()
+        {
+            return string.Format("{0}|{1}|{2}", path, crc, size);
+        }
     }
 
 
     public class ResConf{
         public string version;
+        public bool server;
         public Dictionary<string, ResInfo> files;
 
         public ResConf(string text)
         {
             //LogFile.Log("res text:" + text);
             files = new Dictionary<string, ResInfo>();
+            server = false;
             if(!string.IsNullOrEmpty(text))
             {
                 foreach (var item in text.Split('\n'))
@@ -126,6 +133,26 @@ namespace GameFramework
             LogFile.Log("版本对比：{0} ： {1}", version, other.version);
             return string.Compare(version, other.version);
         }
+
+        public void SaveToFile(string path)
+        {
+            string c = "version|" + version+"\n";
+            foreach (var item in files)
+            {
+                c = c + item.Value.ToString() + "\n";
+            }
+            Tools.CheckDirExists(Directory.GetParent(path).ToString(), true);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            Tools.CheckDirExists(Directory.GetParent(path).ToString(), true);
+            FileStream fsDes = File.Create(path);
+            byte[] bytes = System.Text.Encoding.Default.GetBytes(c);
+            fsDes.Write(bytes, 0, bytes.Length);
+            fsDes.Flush();
+            fsDes.Close();
+        }
     }
 
     //资源更新器只在使用asb的情况下使用，editor模式使用原始资源（位于Assets/BundleRes文件夹）
@@ -144,13 +171,22 @@ namespace GameFramework
         /// </summary>
         ResConf persConf;
 
+        /// <summary>
+        /// The s URL.
+        /// </summary>
+        string sUrl = "";
+        /// <summary>
+        /// The p URL.
+        /// </summary>
+        string pUrl = "";
+
         //Android、ios需要将StreamingAssets文件夹下的资源拷贝到可读写文件夹下
         public void CheckLocalCopy(Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
             if (GameConfig.Instance.useAsb){
                 Debug.LogWarning("CopyFolder");
-                StartCoroutine(CheckLocalRes(delegate (ResInfo[] resList) {
-                    StartCoroutine(CopyStreamFiles(resList, callback, luaCallback));
+                StartCoroutine(CheckLocalResVer(delegate (ResInfo[] resList) {
+                    StartCoroutine(CopyWWWFiles(resList, "", callback, luaCallback));
                 }));
             }else
             {
@@ -168,13 +204,69 @@ namespace GameFramework
             }
         }
 
-        public void UpdateRes(string url)
+        /// <summary>
+        /// 从给出的服务器列表更新资源
+        /// </summary>
+        /// <returns>The server res.</returns>
+        /// <param name="urls">Urls.</param>
+        public IEnumerator UpdateServerRes(string[] urls, Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
-            
-        }
-
-        private IEnumerator onUpdateRes(string url)
-        {
+            string filePath = GetConfigPath();
+            foreach (var url in urls)
+            {
+                if(!string.IsNullOrEmpty(url))
+                {
+                    string confUrl = url + filePath;
+                    WWW www = new WWW(confUrl);
+                    LogFile.Log("检查服务器资源配置文件:" + confUrl);
+                    yield return www;
+                    if (!string.IsNullOrEmpty(www.error))
+                    {
+                        //LogFile.Log("检查配置文件{0}出错，错误信息：{1}", confUrl, www.error);
+                        LogFile.Warn("检查配置文件{0}出错，错误信息：{1}", confUrl, www.error);
+                    }else
+                    {
+                        ResConf serConf = new ResConf(www.text);
+                        if(!string.IsNullOrEmpty(serConf.version))
+                        {
+                            streamConf = serConf;
+                            streamConf.server = true;
+                            if (null != curConf)
+                            {
+                                if(streamConf.CompareVer(curConf) != 0 || (-1 == streamConf.CompareVer(curConf) & !curConf.version.EndsWith("_base")))
+                                {
+                                    //如果服务器版本跟本地版本一样  不下载资源
+                                    //如果服务器版本比本地的版本小(正常情况下不会出现),且不是以_base结尾(包体自带的资源配置是版本号加_base) 不下载资源
+                                    float percent = 1f;
+                                    string msg = "没有资源需要更新。";
+                                    if(null != callback)
+                                    {
+                                        callback(percent, msg);
+                                    }
+                                    if(null != luaCallback)
+                                    {
+                                        luaCallback.Call<float, string>(percent, msg);
+                                        luaCallback.Dispose();
+                                    }
+                                }
+                                else
+                                {
+                                    StartCoroutine(CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback));
+                                }
+                                yield break;
+                            }
+                            else
+                            {
+                                LogFile.Warn("curConf == null:{0}, curConf.version:{1}, serConf.version:{2}", curConf == null, curConf.version, serConf.version);
+                            }
+                        }
+                        else
+                        {
+                            LogFile.Warn("{0}没有版本信息，检查是否有误。", confUrl);
+                        }
+                    }
+                }
+            }
             yield return null;
         }
 
@@ -183,11 +275,11 @@ namespace GameFramework
         /// </summary>
         /// <returns>The local res.</returns>
         /// <param name="callback">Callback.</param>
-        IEnumerator CheckLocalRes(Action<ResInfo[]> callback)
+        IEnumerator CheckLocalResVer(Action<ResInfo[]> callback)
         {
-            string filePath = GameConfig.STR_ASB_MANIFIST + "/resConf.bytes";
-            string sUrl = Tools.GetUrlPathStream(Tools.PathCombine(Application.streamingAssetsPath, filePath));
-            string pUrl = Tools.GetUrlPathWritebble(Tools.PathCombine(Tools.GetWriteableDataPath(), filePath));
+            string filePath = GetConfigPath();
+            sUrl = Tools.GetUrlPathStream(Tools.PathCombine(Application.streamingAssetsPath, filePath));
+            pUrl = Tools.GetUrlPathWritebble(Tools.PathCombine(Tools.GetWriteableDataPath(), filePath));
             LogFile.Log("surl:{0}, pUrl:{1}", sUrl, pUrl);
             WWW wwwS = new WWW(sUrl);
             ResConf sConf = null;
@@ -203,11 +295,13 @@ namespace GameFramework
             }
             else{
                 sConf = new ResConf(wwwS.text);
+                streamConf = sConf;
                 WWW wwwP = new WWW(pUrl);
                 ResConf pConf = null;
                 yield return wwwP;
                 if (!string.IsNullOrEmpty(wwwS.error))
                 {
+                    curConf = new ResConf("");
                     LogFile.Warn("可读写文件夹没有配置文件", filePath, wwwS.error);
                     if (null != callback)
                     {
@@ -219,11 +313,18 @@ namespace GameFramework
                 else
                 {
                     pConf = new ResConf(wwwP.text);
+                    curConf = pConf;
+                    persConf = pConf;
                 }
                 callback(sConf.GetUpdateFiles(pConf).ToArray());
 
             }
             yield return null;
+        }
+
+        public string GetConfigPath()
+        {
+            return Tools.PathCombine(GameConfig.STR_ASB_MANIFIST, "resConf.bytes");
         }
 
         /// <summary>
@@ -235,17 +336,17 @@ namespace GameFramework
         /// <param name="res">Callback.</param>
         /// <param name="callback">Callback.</param>
         /// <param name="luaCallback">Lua callback.</param>
-        public IEnumerator CopyStreamFiles(ResInfo[] res ,Action<float, string> callback = null, LuaFunction luaCallback = null)
+        public IEnumerator CopyWWWFiles(ResInfo[] res, string fromServer = "", Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
             float percent = -1f;
             string msg = "";
-            string streamPath = Application.streamingAssetsPath;
-            string persPath = Application.persistentDataPath;
+            //string streamPath = Application.streamingAssetsPath;
+            //string persPath = Application.persistentDataPath;
             //如果源文件夹不存在，则创建
             if (0 == res.Length)
             {
                 percent = 1;
-                msg = string.Format("无需拷贝资源", streamPath);
+                msg = "无需拷贝包体资源";
                 //Debug.LogWarningFormat();
                 if (null != callback)
                 {
@@ -274,19 +375,28 @@ namespace GameFramework
 
             foreach (var f in files)
             {
-                StartCoroutine(copyStreamToWriteable(f, delegate(string name, int size)
+                StartCoroutine(copyWwwToWriteable(f, fromServer, delegate(string name, int size)
                 {
                     if (size > 0 )
                     {
                         copySize += size;
                         msg = name;
                         percent = (float)copySize / totalSize;
-
+                        curConf.files[name] = streamConf.files[name];
                     }
                     else
                     {
                         msg = name;
                         percent = -1;
+                    }
+                    if(Equals(percent, 1f))
+                    {
+                        curConf.version = streamConf.version;
+                        curConf.SaveToFile(Tools.GetWriteableDataPath(GetConfigPath()));
+                    }else if( Equals(percent, -1f))
+                    {
+                        curConf.SaveToFile(Tools.GetWriteableDataPath(GetConfigPath()));
+                        LogFile.Warn("部分文件拷贝失败，记录以经拷贝的文件");
                     }
                     if (null != callback)
                     {
@@ -315,10 +425,18 @@ namespace GameFramework
         /// io方法都会说文件不存在
         /// </summary>
         /// <param name="oriFile"></param>
-        IEnumerator copyStreamToWriteable(string oriFile, Action<string, int> callback)
+        IEnumerator copyWwwToWriteable(string oriFile, string fromServer = "", Action<string, int> callback=null)
         {
             string rPath = GameConfig.STR_ASB_MANIFIST + "/" + oriFile;
-            string src = Tools.GetUrlPathStream(Tools.PathCombine(Application.streamingAssetsPath, rPath));
+            string src;
+            if(string.IsNullOrEmpty(fromServer))
+            {
+                src = Tools.GetUrlPathStream(Tools.PathCombine(Application.streamingAssetsPath, rPath));
+            }
+            else
+            {
+                src = fromServer + oriFile;
+            }
             string des = Tools.GetWriteableDataPath(rPath);//Application.persistentDataPath + "/" + rPath;
             //LogFile.Log("des:" + des);
             //LogFile.Log("src:" + src);
@@ -350,6 +468,87 @@ namespace GameFramework
                 }
             }
             www.Dispose();
+        }
+
+        //检查服务器资源更新
+        public void CheckServerRes(Action<float, string> callback = null, LuaFunction luaCallback=null)
+        {
+            if(!GameConfig.Instance.useAsb)
+            {
+                float percent = 1;
+                string msg = "不使用Assetbundle不通过服务器更新资源";
+                if(null != callback)
+                {
+                    callback(percent, msg);
+                }
+                if(null != luaCallback)
+                {
+                    luaCallback.Call<float, string>(percent, msg);
+                    luaCallback.Dispose();
+                }
+                return;
+            }
+            GameResManager resMgr = GameResManager.Instance;
+            resMgr.LoadRes<TextAsset>("conf/common/res", "updateServer.bytes", delegate (UnityEngine.Object obj)
+            {
+                TextAsset text = obj as TextAsset;
+                if (null != text)
+                {
+                    //TODO:测试，直接使用资源配置的读取类,以后修改
+                    ResConf servers = new ResConf(text.text);
+                    ResInfo[] arr = new ResInfo[servers.files.Values.Count];
+                    servers.files.Values.CopyTo(arr, 0);
+                    List<ResInfo> list = new List<ResInfo>(arr);
+                    list.Sort(delegate (ResInfo a, ResInfo b)
+                    {
+                        return a.size < b.size ? -1 : 1;
+                    });
+                    List<string> urls = new List<string>();
+                    foreach (var item in list)
+                    {
+                        urls.Add(item.path);
+                    }
+
+                    StartCoroutine(UpdateServerRes(urls.ToArray(), delegate(float percent, string msg) {
+                        //TODO:更新界面
+                        if(null != callback)
+                        {
+                            callback(percent, msg);
+                        }
+                        if(null != luaCallback)
+                        {
+                            luaCallback.Call<float, string>(percent, msg);
+                        }
+                    }));
+                }
+            });
+        }
+
+        public void CheckUpdate(Action<float, string> callback = null, LuaFunction luaCallback = null)
+        {
+            CheckLocalCopy(delegate (float percent, string msg)
+            {
+                if (Equals(-1f, percent) || Equals(1f, percent))
+                {
+                    LogFile.Log("callback of copy file:{0},{1}", percent, msg);
+                    if (Equals(1f, percent))
+                    {
+                        GameResManager.Instance.Initialize(delegate {
+                            CheckServerRes(callback, luaCallback);
+                        });
+                    }
+                    else
+                    {
+                        LogFile.Error("包体资源拷贝失败，关闭程序");
+                        //TODO:包体资源拷贝失败，进行相应操作
+                        //Application.Quit();
+                    }
+                }
+                else
+                {
+                    //TODO:更新界面
+                }
+            });
         }
     }
 }
