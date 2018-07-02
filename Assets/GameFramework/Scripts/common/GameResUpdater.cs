@@ -140,7 +140,16 @@ namespace GameFramework
 
         public int CompareVer(ResConf other)
         {
-            LogFile.Log("版本对比：{0} ： {1}", version, other.version);
+            LogFile.Log("版本对比：[{0}] ： [{1}]", version, other.version);
+            if (null == other || string.IsNullOrEmpty(other.version))
+            {
+                LogFile.Log("跟空版本号对比，默认本版本号大");
+                return 1;
+            }
+            if(Equals(version, other.version))
+            {
+                return 0;
+            }
             string[] selfVn = getVersionNums(version);
             string[] otherVn = getVersionNums(other.version);
             int sc = selfVn.Length;
@@ -279,9 +288,9 @@ namespace GameFramework
                                     string _msg = "没有资源需要更新。";
                                     if (compare == -1)
                                     {
-                                        _percent = -1f;
-                                        _msg = "服务器版本号小于当前版本号，请更新服务器资源！";
-                                        LogFile.Error(_msg);
+                                        //_percent = -1f;
+                                        _msg = "服务器版本号小于当前版本号，请更新服务器资源！(某些平台可能会出现这种情况，是正常的)";
+                                        LogFile.Warn(_msg);
                                     }
                                     if(null != callback)
                                     {
@@ -373,7 +382,18 @@ namespace GameFramework
                     curConf = pConf;
                     persConf = pConf;
                 }
-                callback(sConf.GetUpdateFiles(pConf).ToArray());
+                if (null != callback)
+                {
+                    //只有当包体内的版本号大于可读写文件夹的版本号才复制资源
+                    if (sConf.CompareVer(pConf) > 0)
+                    {
+                        callback(sConf.GetUpdateFiles(pConf).ToArray());
+                    }
+                    else
+                    {
+                        callback(new ResInfo[] { });
+                    }
+                }
 
             }
             yield return null;
@@ -432,7 +452,7 @@ namespace GameFramework
 
             foreach (var f in files)
             {
-                StartCoroutine(copyWwwToWriteable(f, fromServer, delegate(string name, int size)
+                StartCoroutine(writeWwwToWriteable(f, fromServer, delegate(string name, int size)
                 {
                     if (size > 0 )
                     {
@@ -482,7 +502,7 @@ namespace GameFramework
         /// io方法都会说文件不存在
         /// </summary>
         /// <param name="oriFile"></param>
-        IEnumerator copyWwwToWriteable(string oriFile, string fromServer = "", Action<string, int> callback=null)
+        IEnumerator writeWwwToWriteable(string oriFile, string fromServer = "", Action<string, int> callback=null)
         {
             string rPath = GameConfig.STR_ASB_MANIFIST + "/" + oriFile;
             string src;
@@ -492,7 +512,8 @@ namespace GameFramework
             }
             else
             {
-                src = fromServer + oriFile;
+                src = Tools.GetUrlPathStream(Tools.PathCombine(fromServer, rPath));
+                //src = fromServer + oriFile;
             }
             string des = Tools.GetWriteableDataPath(rPath);//Application.persistentDataPath + "/" + rPath;
             //LogFile.Log("des:" + des);

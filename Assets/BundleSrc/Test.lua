@@ -6,9 +6,9 @@ function TestClass:ctor( ... )
     print('gm:'..tostring(gm))
 
     gm:LoadGameObj('res/test/test', 'Cube.prefab', function ( obj )
-        print(tostring(obj[0]))
+        -- print(tostring(obj[0]))
         print(tostring(UnityEngine.GameObject.Instantiate))
-        local cube = UnityEngine.GameObject.Instantiate(obj[0])
+        local cube = u3d.Instantiate(obj[0])
         -- cube.transform
 
         GameFramework.LogFile.Log('更新游戏资源版本')
