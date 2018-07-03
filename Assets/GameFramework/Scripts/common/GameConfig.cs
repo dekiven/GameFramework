@@ -60,7 +60,7 @@ namespace GameFramework
         //业务逻辑 begin--------------------------------------------------------------
         
         //配置是否在Assetbundle情况下使用luajit编译lua代码再打包
-        public bool encodeLua = false;
+        public bool encodeLua = true;
 #if UNITY_EDITOR
         //配置是否使用Assetbundle
         public bool useAsb = false;

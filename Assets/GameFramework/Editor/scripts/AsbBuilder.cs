@@ -180,7 +180,7 @@ namespace GameFramework
                         string dest = sTempLuaDir + str + ".bytes";
                         string _dir = Path.GetDirectoryName(dest);
                         Directory.CreateDirectory(_dir);
-                        Packager.EncodeLuaFile(files[j], dest);
+                        EncodeLuaFile(files[j], dest, config);
                     }
                 }
                 else
@@ -193,12 +193,12 @@ namespace GameFramework
                 AssetBundleBuild bundle = GenBuildByDir(luaDir, sTempLuaDir, "*.bytes", false);
                 bundle.assetBundleName = "lua/lua_" + bundle.assetBundleName.Replace('/', '_').ToLower();
                 bundles.Add(bundle);
-                Debug.LogWarning("lua Add luaDir:" + luaDir);
+                //Debug.LogWarning("lua Add luaDir:" + luaDir);
             }
             AssetBundleBuild lua = GenBuildByDir(sTempLuaDir, sTempLuaDir, "*.bytes", false);
             lua.assetBundleName = "lua/lua" + GameConfig.STR_ASB_EXT;
             bundles.Add(lua);
-            Debug.LogWarning("lua Add luaDir: lua/lua");
+            //Debug.LogWarning("lua Add luaDir: lua/lua");
 
             return bundles;
         }
@@ -216,6 +216,55 @@ namespace GameFramework
                 BuildAsb(config.ExportPath, bundles.ToArray(), config.options, config.target);
             }
         }
+
+        public static void EncodeLuaFile(string srcFile, string outFile, BuilderConfig config)
+        {
+            if (!srcFile.ToLower().EndsWith(".lua"))
+            {
+                File.Copy(srcFile, outFile, true);
+                return;
+            }
+            bool isWin = true;
+            string luaexe = string.Empty;
+            string args = string.Empty;
+            string exedir = string.Empty;
+            string currDir = Directory.GetCurrentDirectory();
+            string platStr = "/";
+            if(BuildTarget.Android == config.target )
+            {
+                platStr = "_32/";
+                //Debug.LogError(platStr);
+            }
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                isWin = true;
+                luaexe = "luajit.exe";
+                args = "-b -g " + srcFile + " " + outFile;
+                exedir = Application.dataPath.Replace("Assets", "") + "LuaEncoder/luajit" + platStr;
+            }
+            else if (Application.platform == RuntimePlatform.OSXEditor)
+            {
+                isWin = false;
+                luaexe = "./luajit";
+                args = "-b -g " + srcFile + " " + outFile;
+                exedir = Application.dataPath.Replace("Assets", "") + "LuaEncoder/luajit_mac" + platStr;
+            }
+            Directory.SetCurrentDirectory(exedir);
+            Debug.LogError(exedir);
+            System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo();
+            info.FileName = luaexe;
+            info.Arguments = args;
+            info.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            info.UseShellExecute = isWin;
+            info.ErrorDialog = true;
+            Util.Log(info.FileName + " " + info.Arguments);
+
+            System.Diagnostics.Process pro = System.Diagnostics.Process.Start(info);
+            pro.WaitForExit();
+            Directory.SetCurrentDirectory(currDir);
+        }
     }
+
+
 
 }

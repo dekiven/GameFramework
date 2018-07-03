@@ -6,11 +6,12 @@ using GameFramework;
 
 public class GameMain : MonoBehaviour {
 
-    GameManager mGameManager;
+    //GameManager mGameManager;
 
 	// Use this for initialization
 	void Start () {
-        mGameManager = GameManager.Instance;
+        //加载GameManager单例组件
+        var gm = GameManager.Instance;
 	}
 	
 	// Update is called once per frame
