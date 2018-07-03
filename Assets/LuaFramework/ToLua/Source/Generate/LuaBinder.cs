@@ -102,6 +102,8 @@ public static class LuaBinder
 		LuaFramework_ResourceManagerWrap.Register(L);
 		L.EndModule();
 		L.BeginModule("GameFramework");
+		GameFramework_ToolsWrap.Register(L);
+		GameFramework_LogFileWrap.Register(L);
 		GameFramework_GameResManagerWrap.Register(L);
 		GameFramework_GameLuaManagerWrap.Register(L);
 		GameFramework_GameManagerWrap.Register(L);

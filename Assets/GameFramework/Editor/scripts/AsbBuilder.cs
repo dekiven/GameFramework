@@ -250,7 +250,6 @@ namespace GameFramework
                 exedir = Application.dataPath.Replace("Assets", "") + "LuaEncoder/luajit_mac" + platStr;
             }
             Directory.SetCurrentDirectory(exedir);
-            Debug.LogError(exedir);
             System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo();
             info.FileName = luaexe;
             info.Arguments = args;
