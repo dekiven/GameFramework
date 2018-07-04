@@ -11,7 +11,7 @@ function TestClass:ctor( ... )
         local cube = u3d.Instantiate(obj[0])
         -- cube.transform
 
-        GameFramework.LogFile.Log('更新游戏资源版本')
+        GameFramework.LogFile.Log('Lua logFile')
     end)
 
 end

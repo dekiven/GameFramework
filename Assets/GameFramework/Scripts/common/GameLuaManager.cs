@@ -11,6 +11,13 @@ namespace GameFramework
         private GameLuaLoader loader;
         private LuaLooper loop = null;
 
+        protected override bool clearComp()
+        {
+            base.clearComp();
+            Close();
+            return true;
+        }
+
         // Use this for initialization
         void Awake()
         {
