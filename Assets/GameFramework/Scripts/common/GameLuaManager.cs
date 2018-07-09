@@ -11,9 +11,9 @@ namespace GameFramework
         private GameLuaLoader loader;
         private LuaLooper loop = null;
 
-        protected override bool clearComp()
+        public override bool Dispose()
         {
-            base.clearComp();
+            base.Dispose();
             Close();
             return true;
         }

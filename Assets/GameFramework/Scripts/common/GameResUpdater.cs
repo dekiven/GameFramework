@@ -304,7 +304,8 @@ namespace GameFramework
                                 }
                                 else
                                 {
-                                    StartCoroutine(CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback));
+                                    //StartCoroutine(CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback));
+                                    yield return CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback);
                                 }
                                 yield break;
                             }
@@ -332,6 +333,7 @@ namespace GameFramework
                 luaCallback.Call<float, string>(percent, msg);
                 luaCallback.Dispose();
             }
+            LogFile.Error("不能连接资源服务器，关闭程序");
             yield return null;
             Application.Quit();
         }
@@ -452,7 +454,8 @@ namespace GameFramework
 
             foreach (var f in files)
             {
-                StartCoroutine(writeWwwToWriteable(f, fromServer, delegate(string name, int size)
+                //StartCoroutine(writeWwwToWriteable(f, fromServer, delegate (string name, int size)
+                yield return writeWwwToWriteable(f, fromServer, delegate(string name, int size)
                 {
                     if (size > 0 )
                     {
@@ -484,7 +487,7 @@ namespace GameFramework
                         luaCallback.Call<float, string>(percent, msg);
                         luaCallback.Dispose();
                     }
-                }));
+                });
                 count++;
                 if (count % steep == 0 || count == fileCount)
                 {

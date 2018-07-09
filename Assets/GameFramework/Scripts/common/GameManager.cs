@@ -53,7 +53,7 @@ namespace GameFramework
             });
         }
 
-        protected override bool clearComp()
+        public override bool Dispose()
         {
             base.DestroyComp();
             

@@ -60,7 +60,7 @@ namespace GameFramework
 
         void OnDestroy()
         {
-            if (clearComp()) 
+            if (Dispose()) 
             {
                 sInstance = null;
             }
@@ -74,7 +74,7 @@ namespace GameFramework
         /// <summary>
         /// 单例组件被销毁时调用，子类可派生
         /// </summary>
-        protected virtual bool clearComp()
+        public virtual bool Dispose()
         {
             Debug.Log("clearComp:" + typeof(T));
             return true;
