@@ -279,7 +279,7 @@ namespace GameFramework
                     }
                 }
             }
-            //Debug.LogError("GetRealAssetPath Error:>>" + abName);
+            LogFile.Error("GetRealAssetPath Error:>>" + abName);
             return string.Empty;
         }
 
@@ -511,15 +511,5 @@ namespace GameFramework
             public Action<UObj[]> sharpFunc;
         }
         //===============================辅助类 end ======================================
-
-        //public LuaByteBuffer buffer { get; set; }
-
-        /// <summary>
-        /// 游戏退出检测，GameResManager一定会初始化，且不会被Distroy，所以通过他来监听游戏退出
-        /// </summary>
-        void OnApplicationQuit()
-        {
-            LogFile.CloseLog();
-        }
     }
 }

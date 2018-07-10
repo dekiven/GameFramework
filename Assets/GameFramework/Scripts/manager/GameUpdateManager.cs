@@ -7,8 +7,6 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    //TODO:待事件管理器完善后实现
-
     public struct ResInfo{
         public string path;
         public string crc;
@@ -201,7 +199,7 @@ namespace GameFramework
     }
 
     //资源更新器只在使用asb的情况下使用，editor模式使用原始资源（位于Assets/BundleRes文件夹）
-    public class GameResUpdater : SingletonComp<GameResUpdater>
+    public class GameUpdateManager : SingletonComp<GameUpdateManager>
     {
         /// <summary>
         /// 当前的资源配置，资源拷贝后就跟persConf一样
@@ -225,6 +223,8 @@ namespace GameFramework
         /// </summary>
         string pUrl = "";
 
+        public UIHandler ViewComps;
+
         //Android、ios需要将StreamingAssets文件夹下的资源拷贝到可读写文件夹下
         public void CheckLocalCopy(Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
@@ -235,15 +235,15 @@ namespace GameFramework
                 }));
             }else
             {
-                float percent = 1f;
+                float rate = 1f;
                 string msg = "不使用Assetbundle不用拷贝资源";
                 if (null != callback)
                 {
-                    callback(percent, msg);
+                    callback(rate, msg);
                 }
                 if (null != luaCallback)
                 {
-                    luaCallback.Call<float, string>(percent, msg);
+                    luaCallback.Call<float, string>(rate, msg);
                     luaCallback.Dispose();
                 }
             }
@@ -284,27 +284,29 @@ namespace GameFramework
                                 {
                                     //如果服务器版本跟本地版本一样  不下载资源
                                     //如果服务器版本比本地的版本小(正常情况下不会出现),且不是以_base结尾(包体自带的资源配置是版本号加_base) 不下载资源
-                                    float _percent = 1f;
+                                    float _rate = 1f;
                                     string _msg = "没有资源需要更新。";
                                     if (compare == -1)
                                     {
-                                        //_percent = -1f;
                                         _msg = "服务器版本号小于当前版本号，请更新服务器资源！(某些平台可能会出现这种情况，是正常的)";
                                         LogFile.Warn(_msg);
                                     }
+                                    updateMsgInfo(_msg);
                                     if(null != callback)
                                     {
-                                        callback(_percent, _msg);
+                                        callback(_rate, _msg);
                                     }
                                     if(null != luaCallback)
                                     {
-                                        luaCallback.Call<float, string>(_percent, _msg);
+                                        luaCallback.Call<float, string>(_rate, _msg);
                                         luaCallback.Dispose();
                                     }
                                 }
                                 else
                                 {
                                     //StartCoroutine(CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback));
+                                    updateMsgInfo("下载中...");
+                                    updateSlider(0f);
                                     yield return CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback);
                                 }
                                 yield break;
@@ -322,15 +324,15 @@ namespace GameFramework
                 }
             }
             //如果所有服务器都检查了，但是都没有获取版本信息，返回更新失败
-            float percent = -1f;
+            float rate = -1f;
             string msg = "更新服务资源失败，没有读取到服务器资源配置文件";
             if (null != callback)
             {
-                callback(percent, msg);
+                callback(rate, msg);
             }
             if (null != luaCallback)
             {
-                luaCallback.Call<float, string>(percent, msg);
+                luaCallback.Call<float, string>(rate, msg);
                 luaCallback.Dispose();
             }
             LogFile.Error("不能连接资源服务器，关闭程序");
@@ -383,6 +385,7 @@ namespace GameFramework
                     pConf = new ResConf(wwwP.text);
                     curConf = pConf;
                     persConf = pConf;
+                    updateVersionInfo();
                 }
                 if (null != callback)
                 {
@@ -417,23 +420,23 @@ namespace GameFramework
         /// <param name="luaCallback">Lua callback.</param>
         public IEnumerator CopyWWWFiles(ResInfo[] res, string fromServer = "", Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
-            float percent = -1f;
+            float rate = -1f;
             string msg = "";
             //string streamPath = Application.streamingAssetsPath;
             //string persPath = Application.persistentDataPath;
             //如果源文件夹不存在，则创建
             if (0 == res.Length)
             {
-                percent = 1;
+                rate = 1;
                 msg = "无需拷贝包体资源";
                 //Debug.LogWarningFormat();
                 if (null != callback)
                 {
-                    callback(percent, msg);
+                    callback(rate, msg);
                 }
                 if (null != luaCallback)
                 {
-                    luaCallback.Call<float, string>(percent, msg);
+                    luaCallback.Call<float, string>(rate, msg);
                     luaCallback.Dispose();
                 }
                 yield break;
@@ -461,30 +464,34 @@ namespace GameFramework
                     {
                         copySize += size;
                         msg = name;
-                        percent = (float)copySize / totalSize;
+                        rate = (float)copySize / totalSize;
                         curConf.files[name] = streamConf.files[name];
                     }
                     else
                     {
                         msg = name;
-                        percent = -1;
+                        rate = -1;
                     }
-                    if(Equals(percent, 1f))
+                    if(Equals(rate, 1f))
                     {
                         curConf.version = streamConf.version;
                         curConf.SaveToFile(Tools.GetWriteableDataPath(GetConfigPath()));
-                    }else if( Equals(percent, -1f))
+
+                        updateVersionInfo();
+                    }else if( Equals(rate, -1f))
                     {
                         curConf.SaveToFile(Tools.GetWriteableDataPath(GetConfigPath()));
                         LogFile.Warn("部分文件拷贝失败，记录以经拷贝的文件");
+
+                        updateVersionInfo();
                     }
                     if (null != callback)
                     {
-                        callback(percent, msg);
+                        callback(rate, msg);
                     }
                     if (null != luaCallback)
                     {
-                        luaCallback.Call<float, string>(percent, msg);
+                        luaCallback.Call<float, string>(rate, msg);
                         luaCallback.Dispose();
                     }
                 });
@@ -554,17 +561,18 @@ namespace GameFramework
         //检查服务器资源更新
         public void CheckServerRes(Action<float, string> callback = null, LuaFunction luaCallback=null)
         {
+            updateMsgInfo("检查服务器资源...");
             if(!GameConfig.Instance.useAsb)
             {
-                float percent = 1;
+                float rate = 1;
                 string msg = "不使用Assetbundle不通过服务器更新资源";
                 if(null != callback)
                 {
-                    callback(percent, msg);
+                    callback(rate, msg);
                 }
                 if(null != luaCallback)
                 {
-                    luaCallback.Call<float, string>(percent, msg);
+                    luaCallback.Call<float, string>(rate, msg);
                     luaCallback.Dispose();
                 }
                 return;
@@ -590,16 +598,17 @@ namespace GameFramework
                         urls.Add(item.path);
                     }
 
-                    StartCoroutine(UpdateServerRes(urls.ToArray(), delegate(float percent, string msg) {
+                    StartCoroutine(UpdateServerRes(urls.ToArray(), delegate(float rate, string msg) {
                         //TODO:更新界面
                         if(null != callback)
                         {
-                            callback(percent, msg);
+                            callback(rate, msg);
                         }
                         if(null != luaCallback)
                         {
-                            luaCallback.Call<float, string>(percent, msg);
+                            luaCallback.Call<float, string>(rate, msg);
                         }
+                        updateSlider(rate);
                     }));
                 }
             });
@@ -607,13 +616,19 @@ namespace GameFramework
 
         public void CheckUpdate(Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
-            CheckLocalCopy(delegate (float percent, string msg)
+
+            ViewComps = FindObjectOfType(typeof(UIHandler)) as UIHandler;
+            updateVersionInfo();
+            updateMsgInfo("解压游戏资源...");
+
+            CheckLocalCopy(delegate (float rate, string msg)
             {
-                if (Equals(-1f, percent) || Equals(1f, percent))
+                if (Equals(-1f, rate) || Equals(1f, rate))
                 {
-                    LogFile.Log("callback of copy file:{0},{1}", percent, msg);
-                    if (Equals(1f, percent))
+                    LogFile.Log("callback of copy file:{0},{1}", rate, msg);
+                    if (Equals(1f, rate))
                     {
+                        updateSlider(rate);
                         GameResManager.Instance.Initialize(delegate {
                             CheckServerRes(callback, luaCallback);
                         });
@@ -628,8 +643,33 @@ namespace GameFramework
                 else
                 {
                     //TODO:更新界面
+                    updateSlider(rate);
                 }
             });
+        }
+
+        private void updateVersionInfo()
+        {
+            if (null != ViewComps)
+            {
+                ViewComps.SetTextString("TextVersion", string.Format("app:{0}  res:{1}", Application.version, null == curConf ? "?" : curConf.version));
+            }
+        }
+
+        private void updateMsgInfo(string msg)
+        {
+            if (null != ViewComps)
+            {
+                ViewComps.SetTextString("TextInfo", msg);
+            }
+        }
+
+        private void updateSlider(float value)
+        {
+            if (null != ViewComps)
+            {
+                ViewComps.SetSliderValue("Slider", value);
+            }
         }
     }
 }

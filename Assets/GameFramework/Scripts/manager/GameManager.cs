@@ -6,20 +6,32 @@ namespace GameFramework
 {
     public class GameManager : SingletonComp<GameManager>
     {
+        GameUIManager mUiMgr;
         GameLuaManager mLuaMgr;
         GameResManager mResMgr;
-        GameResUpdater mResUp;
+        GameUpdateManager mUpMgr;
         //Game
 
-        void Start()
+        void Awake()
         {
             mResMgr = GameResManager.Instance;
             mLuaMgr = GameLuaManager.Instance;
-            mResUp = GameResUpdater.Instance;
-            LogFile.Init(Tools.GetWriteableDataPath("game.log"));
+            mUpMgr = GameUpdateManager.Instance;
+            mUiMgr = GameUIManager.Instance;
+            LogFile.Init(Tools.GetWriteableDataPath("game_log.log"));
+        }
 
+        void Start()
+        {
             // 检查新包资源是否拷贝，检查服务器资源更新，完成后启动lua虚拟机和其他游戏逻辑
             checkRes();
+        }
+
+
+        private void Update()
+        {
+            //处理事件管理器在主线程的消息,暂时没有处理其他线程的事件分发
+            EventManager.progressMainEvents();
         }
 
         /// <summary>
@@ -28,7 +40,7 @@ namespace GameFramework
         private void checkRes()
         {
             //启动lua虚拟机之前先将lua等资源拷贝到writeblePath
-            mResUp.CheckUpdate(delegate (float percent, string msg)
+            mUpMgr.CheckUpdate(delegate (float percent, string msg)
             {
                 if (Equals(-1f, percent) || Equals(1f, percent))
                 {
@@ -55,10 +67,11 @@ namespace GameFramework
 
         public override bool Dispose()
         {
-            base.DestroyComp();
-            
+            mUiMgr.DestroyComp();
+            mUpMgr.DestroyComp();
             mLuaMgr.DestroyComp();
             mResMgr.DestroyComp();
+
             LogFile.CloseLog();
 
             return true;

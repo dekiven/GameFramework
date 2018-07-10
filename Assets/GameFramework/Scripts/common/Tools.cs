@@ -235,6 +235,44 @@ namespace GameFramework
             }
 
         }
+
+        /// <summary>
+        /// 获取Transform的名字，如果传入了root则返回相对于root的名字
+        /// </summary>
+        /// <returns>The transform name.</returns>
+        /// <param name="transform">Transform.</param>
+        /// <param name="root">Root.</param>
+        public static string GetTransformName(Transform transform, Transform root)
+        {
+            if(null != transform)
+            {
+                if (null == root)
+                {
+                    return transform.name;
+                }
+                else
+                {
+                    string name = transform.name;
+                    Transform parent = transform.parent;
+                    while(null != parent)
+                    {
+                        if (parent.Equals(root))
+                        {
+                            break;
+                        }
+                        name = string.Format("{0}/{1}", parent.name, name);
+                        parent = parent.parent;
+                    }
+                    return name;
+                }
+            }
+            return string.Empty;
+        }
+
+        public static string GetTransformName(Transform transform)
+        {
+            return GetTransformName(transform, null);
+        }
     }
 }
 
