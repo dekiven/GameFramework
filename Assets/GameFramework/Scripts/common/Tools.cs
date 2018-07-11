@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace GameFramework
@@ -91,11 +92,27 @@ namespace GameFramework
             return fullPath;
         }
 
+        /// <summary>
+        /// 获取Assetbundle文件的路径
+        /// </summary>
+        /// <returns>The asb name.</returns>
+        /// <param name="path">三层的文件夹路径（相对于BundleRes),如：conf/common/res,文件夹中不能有空格 </param>
         public static string GetAsbName(string path)
         {
-            path = FormatPathStr(path).TrimEnd('/');
-            //return path.Replace("/", ".").ToLower() + GameConfig.STR_ASB_EXT;
-            return path.ToLower() + GameConfig.STR_ASB_EXT;
+            path = FormatPathStr(path).Trim('/');
+            //如果以asb后缀结尾，认为是正确的路径，直接返回
+            if (path.EndsWith(GameConfig.STR_ASB_EXT))
+            {
+                return path;
+            }
+            Regex regex = new Regex("([\\w_]+/[\\w_]+/)([\\w]+)");
+            MatchCollection macths = regex.Matches(path);
+            if(macths.Count == 1)
+            {
+                var groups = macths[0].Groups;
+                path = string.Format("{0}{1}{2}", groups[1].Value, groups[2].Value.ToLower(), GameConfig.STR_ASB_EXT);
+            }
+            return path;
         }
 
         /// <summary>

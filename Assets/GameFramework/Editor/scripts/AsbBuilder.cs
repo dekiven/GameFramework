@@ -191,7 +191,7 @@ namespace GameFramework
             foreach (var luaDir in Directory.GetDirectories(sTempLuaDir, "*", SearchOption.AllDirectories))
             {
                 AssetBundleBuild bundle = GenBuildByDir(luaDir, sTempLuaDir, "*.bytes", false);
-                bundle.assetBundleName = "lua/lua_" + bundle.assetBundleName.Replace('/', '_').ToLower();
+                bundle.assetBundleName = "lua/lua_" + bundle.assetBundleName.Replace('/', '_').ToLower()+ GameConfig.STR_ASB_EXT;
                 bundles.Add(bundle);
                 //Debug.LogWarning("lua Add luaDir:" + luaDir);
             }

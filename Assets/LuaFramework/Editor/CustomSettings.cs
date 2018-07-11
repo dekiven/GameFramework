@@ -181,7 +181,7 @@ public static class CustomSettings
         //_GT(typeof(GameFramework.GameResManager)),
         //_GT(typeof(GameFramework.GameLuaManager)),
         //_GT(typeof(GameFramework.GameManager)),
-        _GT(typeof(GameFramework.ManagerFuncs)),
+        _GT(typeof(GameFramework.LuaExportFuncs)),
         //---------------------------------自定义导出   end=================================
     };
 

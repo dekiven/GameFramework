@@ -1440,3 +1440,4 @@ function string.formatnumberthousands(num)
     return formatted
 end
 
+

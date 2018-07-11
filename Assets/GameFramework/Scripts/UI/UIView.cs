@@ -1,5 +1,6 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using LuaInterface;
 using UnityEngine;
 
 namespace GameFramework
@@ -9,6 +10,19 @@ namespace GameFramework
     /// </summary>
     public class UIView : UIBase
     {
+        private Action<ViewStatus> mStatusChangeCall;
+        private LuaFunction mStatusChangeLua;
+
+        public void SetStatusListener(Action<ViewStatus> callback)
+        {
+            mStatusChangeCall = callback;
+        }
+
+        public void SetStatusListenerLua(LuaFunction callback)
+        {
+            mStatusChangeLua = callback;
+        }
+
         //默认使用大小等于屏幕的Panel作为View的Root
         protected override void init()
         {
@@ -20,6 +34,7 @@ namespace GameFramework
                 LogFile.Warn(trans.anchoredPosition.ToString());
                 trans.offsetMax = Vector2.zero;
             }
+            onStatusChange(ViewStatus.OnInit);
         }
 
         public Vector2 CalcScreenPosFromWorld(Vector3 wPos, RectTransform rect)
@@ -43,5 +58,59 @@ namespace GameFramework
             pos.y = Mathf.Clamp(pos.y, rect.height * pivot.y, Screen.height - rect.height * (1 - pivot.y));
             return pos;
         }
+
+        void Dispose()
+        {
+            if (null != mStatusChangeCall)
+            {
+                mStatusChangeCall = null;
+            }
+            if (null != mStatusChangeLua)
+            {
+                mStatusChangeLua.Dispose();
+            }
+        }
+
+        #region 状态改变
+        private void onStatusChange(ViewStatus status)
+        {
+            if(null != mStatusChangeCall)
+            {
+                mStatusChangeCall(status);
+            }
+            if(null != mStatusChangeLua)
+            {
+                mStatusChangeLua.Call<int>((int)status);
+            }
+        }
+
+        private void OnEnable()
+        {
+            onStatusChange(ViewStatus.OnEnable);
+        }
+
+        private void OnDisable()
+        {
+            onStatusChange(ViewStatus.OnDisable);
+        }
+
+        private void OnDestroy()
+        {
+            onStatusChange(ViewStatus.OnDestroy);
+            Dispose();
+        }
+
+        #endregion
+    }
+
+    public enum ViewStatus
+    {
+        /// <summary>
+        /// 当View Start时调用
+        /// </summary>
+        OnInit = 0,
+        OnEnable,
+        OnDisable,
+        OnDestroy,
     }
 }

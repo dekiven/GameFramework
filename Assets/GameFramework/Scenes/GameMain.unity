@@ -521,7 +521,7 @@ Prefab:
     - target: {fileID: 224091739609744370, guid: 7c648a8175db94451804a3d59ad022cb,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114307911909790390, guid: 7c648a8175db94451804a3d59ad022cb,
         type: 2}
@@ -558,3 +558,14 @@ MonoBehaviour:
   - {fileID: 1272549617}
   - {fileID: 1491555295}
   RootTransform: {fileID: 0}
+--- !u!114 &1883316626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1883316623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bad3f9ffd9bbb42f58788427843d7ee8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

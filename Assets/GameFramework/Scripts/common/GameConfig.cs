@@ -11,6 +11,10 @@ namespace GameFramework
         //静态常量 begin------------------------------------------------------------
         public const string STR_RES_FOLDER = "BundleRes";
         public const string STR_LUA_FOLDER = "BundleSrc";
+        /// <summary>
+        /// assetbundle文件后缀名，请确保为全小写，
+        /// 在获取assetbundle的文件名必须为小写，后缀大写可能造成不能读取资源
+        /// </summary>
         public const string STR_ASB_EXT = ".unity3d";
         public const string STR_ASB_MANIFIST =
 #if UNITY_EDITOR

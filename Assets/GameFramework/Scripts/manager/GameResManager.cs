@@ -19,7 +19,7 @@ namespace GameFramework
     public class GameResManager : SingletonComp<GameResManager>
     {
         //逻辑 begin ------------------------------------------------------------
-        string[] mAllManifest = null;
+        List<string> mAllManifest = null;
         AssetBundleManifest m_AssetBundleManifest = null;
         Dictionary<string, string[]> m_Dependencies = new Dictionary<string, string[]>();
         Dictionary<string, AssetBundleInfo> m_LoadedAssetBundles = new Dictionary<string, AssetBundleInfo>();
@@ -29,12 +29,13 @@ namespace GameFramework
         {
             if (GameConfig.Instance.useAsb)
             {
+                //这里由于manifest所在的bundle没有后缀名，所以直接走LoadAsset
                 LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate (UObj[] objs)
                 {
                     if (objs.Length > 0)
                     {
                         m_AssetBundleManifest = objs[0] as AssetBundleManifest;
-                        mAllManifest = m_AssetBundleManifest.GetAllAssetBundles();
+                        mAllManifest = new List<string>(m_AssetBundleManifest.GetAllAssetBundles());
                     }
                     if (initOK != null) initOK();
                 });
@@ -45,20 +46,114 @@ namespace GameFramework
             }
         }
 
-        public void Close()
+        /// <summary>
+        /// 从Assetbundle或者原始资源中加载一个资源，编辑器和正式游戏均使用本函数加载资源
+        /// 注意：lua回调是gameobjectlist，c#是gameobject
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="asbName"></param>
+        /// <param name="name"></param>
+        /// <param name="action"></param>
+        public void LoadRes<T>(string asbName, string name, Action<UObj> action = null, LuaFunction luaFunc = null) where T : UObj
         {
-            Destroy(gameObject);
+            //#if UNITY_EDITOR
+            if (!GameConfig.Instance.useAsb)
+            {
+                loadRes<T>(
+                    asbName
+                    , new string[] { name, }
+                    , delegate (UObj[] objs)
+                    {
+                        if (null != action && objs.Length == 1)
+                        {
+                            action(objs[0]);
+                        }
+                    }
+                    , luaFunc
+                );
+
+            }
+            else
+            {
+                asbName = Tools.GetAsbName(asbName);
+                LoadAsset<T>(
+                    asbName
+                    , new string[] { name, }
+                    , delegate (UObj[] objs)
+                    {
+                        if (null != action && objs.Length == 1)
+                        {
+                            action(objs[0]);
+                        }
+                    }
+                    , luaFunc
+                );
+            }
         }
 
+        /// <summary>
+        /// 从Assetbundle或者原始资源中加载多个资源，编辑器和正式游戏均使用本函数加载资源
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="asbName"></param>
+        /// <param name="names">文件名需带后缀</param>
+        /// <param name="action"></param>
+        public void LoadRes<T>(string asbName, string[] names, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
+        {
+            if (!GameConfig.Instance.useAsb)
+            {
+                loadRes<T>(asbName, names, action, luaFunc);
+            }
+            else
+            {
+                asbName = Tools.GetAsbName(asbName);
+                LoadAsset<T>(asbName, names, action, luaFunc);
+            }
+        }
+
+        /// <summary>
+        /// 加载Assetbundle,在加载场景等直接从内存读取资源的地方会用到
+        /// </summary>
+        /// <param name="asbName">Asb name.</param>
+        /// <param name="callbcak">Callbcak.</param>
+        /// <param name="luaFunc">Lua func.</param>
+        public void LoadAsb(string asbName, Action callbcak=null, LuaFunction luaFunc=null)
+        {
+            LoadRes<GameObject>(asbName, string.Empty
+            , (UObj obj) => 
+            {
+                if(null != callbcak)
+                {
+                    callbcak();
+                }
+            }, luaFunc);
+        }
+        //public void LoadScene(string asbName, string scenenName, )
+
+        /// <summary>
+        /// 此函数交给外部卸载专用，自己调整是否需要彻底清除AB
+        /// </summary>
+        /// <param name="abName"></param>
+        /// <param name="isThorough"></param>
+        public void UnloadAssetBundle(string abName, bool isThorough = false)
+        {
+            abName = Tools.GetAsbName(abName);
+            Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);
+            UnloadAssetBundleInternal(abName, isThorough);
+            UnloadDependencies(abName, isThorough);
+            Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory after unloading " + abName);
+        }
+
+        #region 私有方法
         //public void LoadAsset<T>(string abName, string[] assetNames, Action<UObj[]> action = null) where T : UObj
         void LoadAsset<T>(string abName, string[] assetNames, Action<UObj[]> action = null, LuaFunction func = null) where T : UObj
         {
             string path = abName;
             // manifest Assetbundle文件没有后缀，文件名跟release的Assetbundle根目录同名
-            bool isManifest = true;
+            bool isManifest = string.Equals(GameConfig.STR_ASB_MANIFIST, path);
             if (path.EndsWith(GameConfig.STR_ASB_EXT))
             {
-                isManifest = false;
+                //isManifest = false;
                 path = path.Substring(0, path.Length - GameConfig.STR_ASB_EXT.Length);
             }
             if (!isManifest)
@@ -203,20 +298,6 @@ namespace GameFramework
             return bundle;
         }
 
-        /// <summary>
-        /// 此函数交给外部卸载专用，自己调整是否需要彻底清除AB
-        /// </summary>
-        /// <param name="abName"></param>
-        /// <param name="isThorough"></param>
-        public void UnloadAssetBundle(string abName, bool isThorough = false)
-        {
-            abName = GetRealAssetPath(abName);
-            Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);
-            UnloadAssetBundleInternal(abName, isThorough);
-            UnloadDependencies(abName, isThorough);
-            Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory after unloading " + abName);
-        }
-
         void UnloadDependencies(string abName, bool isThorough)
         {
             string[] dependencies = null;
@@ -246,41 +327,6 @@ namespace GameFramework
                 m_LoadedAssetBundles.Remove(abName);
                 Debug.Log(abName + " has been unloaded successfully");
             }
-        }
-
-
-        string GetRealAssetPath(string abName)
-        {
-            //TODO:实现
-
-            if (abName.Equals(""))
-            {
-                return abName;
-            }
-            abName = abName.ToLower();
-            if (!abName.EndsWith(GameConfig.STR_ASB_EXT))
-            {
-                abName += GameConfig.STR_ASB_EXT;
-            }
-            if (abName.Contains("/"))
-            {
-                return abName;
-            }
-            //string[] paths = m_AssetBundleManifest.GetAllAssetBundles();  产生GC，需要缓存结果
-            if (null != mAllManifest)
-            {
-                for (int i = 0; i < mAllManifest.Length; i++)
-                {
-                    int index = mAllManifest[i].LastIndexOf('/');
-                    string path = mAllManifest[i].Remove(0, index + 1);    //字符串操作函数都会产生GC
-                    if (path.Equals(abName))
-                    {
-                        return mAllManifest[i];
-                    }
-                }
-            }
-            LogFile.Error("GetRealAssetPath Error:>>" + abName);
-            return string.Empty;
         }
 
         /// <summary>
@@ -316,7 +362,7 @@ namespace GameFramework
                 T t = AssetDatabase.LoadAssetAtPath<T>(name);
                 if (t == null)
                 {
-                    LogFile.Error("加载本地零散资源{0}失败，类型：{1}",name, typeof(T));
+                    LogFile.Error("加载本地零散资源{0}失败，类型：{1}", name, typeof(T));
                 }
                 list.Add(t);
                 yield return null;
@@ -335,95 +381,10 @@ namespace GameFramework
             yield return null;
         }
 
-        /// <summary>
-        /// 从Assetbundle或者原始资源中加载一个资源，编辑器和正式游戏均使用本函数加载资源
-        /// 注意：lua回调是gameobjectlist，c#是gameobject
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="abName"></param>
-        /// <param name="name"></param>
-        /// <param name="action"></param>
-        public void LoadRes<T>(string abName, string name, Action<UObj> action = null, LuaFunction luaFunc = null) where T : UObj
-        {
-            //#if UNITY_EDITOR
-            if (!GameConfig.Instance.useAsb)
-            {
-                loadRes<T>(
-                    abName
-                    , new string[] { name, }
-                    , delegate (UObj[] objs)
-                    {
-                        if (null != action && objs.Length == 1)
-                        {
-                            action(objs[0]);
-                        }
-                    }
-                    , luaFunc
-                );
-                return;
-            }
-            //#endif
-            {
-                abName = Tools.GetAsbName(abName);
-                LoadAsset<T>(
-                    abName
-                    , new string[] { name, }
-                    , delegate (UObj[] objs)
-                    {
-                        if (null != action && objs.Length == 1)
-                        {
-                            action(objs[0]);
-                        }
-                    }
-                    , luaFunc
-                );
-            }
-        }
+        #endregion
 
-        /// <summary>
-        /// 从Assetbundle或者原始资源中加载多个资源，编辑器和正式游戏均使用本函数加载资源
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="abName"></param>
-        /// <param name="names">文件名需带后缀</param>
-        /// <param name="action"></param>
-        public void LoadRes<T>(string abName, string[] names, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
-        {
-            //#if UNITY_EDITOR
-            if (!GameConfig.Instance.useAsb)
-            {
-                loadRes<T>(abName, names, action, luaFunc);
-                return;
-            }
-            //#endif
-            {
-                abName = Tools.GetAsbName(abName);
-                LoadAsset<T>(abName, names, action, luaFunc);
-            }
-        }
-
-        //    /// <summary>
-        //    /// 同步载入资源
-        //    /// </summary>
-
-        //    //TODO:dekiven
-        //    public UObj[] LoadResSync<T>(string abName, string[] names) where T : UObj
-        //    {
-        //        List<UObj> list = new List<UObj>();
-        //#if UNITY_EDITOR
-        //        if (!GameConfig.Instance.useAsb)
-        //        {
-        //            T t = AssetDatabase.LoadAssetAtPath<T>(name);
-        //            list.Add(t);
-        //        }else
-        //#endif
-        //        {
-        //            AssetBundle ab = AssetBundle.LoadFromFile(abName);
-        //        }
-        //        return list.ToArray();
-        //    }
-
-        //-----------------------方便lua使用的函数 begin--------------------------
+        #region -----------------------方便lua使用的函数 begin--------------------------
+        //
         /// <summary>
         /// 加载资源，注意：lua回调是gameobjectlist，c#是gameobject
         /// </summary>
@@ -488,9 +449,9 @@ namespace GameFramework
                 luaFunc.Dispose();
             });
         }
-        //==============================方便lua使用的函数 end=========================
+        #endregion==============================方便lua使用的函数 end=========================
 
-        //------------------------------辅助类 begin ------------------------------------
+        #region------------------------------辅助类 begin ------------------------------------
         public class AssetBundleInfo
         {
             public AssetBundle m_AssetBundle;
@@ -510,6 +471,6 @@ namespace GameFramework
             public LuaFunction luaFunc;
             public Action<UObj[]> sharpFunc;
         }
-        //===============================辅助类 end ======================================
+        #endregion===============================辅助类 end ======================================
     }
 }

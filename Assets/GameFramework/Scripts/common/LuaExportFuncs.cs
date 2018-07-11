@@ -8,7 +8,7 @@ namespace GameFramework
     /// <summary>
     /// 此类用来将单例组件的方法导出到lua，避免生成多余代码,减少lua注册的函数
     /// </summary>
-    public class ManagerFuncs
+    public class LuaExportFuncs
     {
         #region GameResManager
         public static void LoadGameObj(string abName, string name, LuaFunction luaFunc)
@@ -39,6 +39,11 @@ namespace GameFramework
         public static void LoadTextAssetBytes(string abName, string[] names, LuaFunction luaFunc)
         {
             GameResManager.Instance.LoadTextAssetBytes(abName, names, luaFunc);
+        }
+
+        public static void LoadAsb(string abName, LuaFunction luaFunc)
+        {
+            GameResManager.Instance.LoadAsb(abName, null, luaFunc);
         }
         #endregion
         public static void TestDelegate(System.Action<float> action)

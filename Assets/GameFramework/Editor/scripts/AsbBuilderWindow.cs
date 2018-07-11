@@ -10,7 +10,7 @@ namespace GameFramework
     {
         private static AsbBuilderWindow _instance;
 
-        [MenuItem("tools/Show AssetBundle Builder")]
+        [MenuItem("GameFrameWork/Show AssetBundle Builder")]
         public static void Open()
         {
             _instance = (AsbBuilderWindow)EditorWindow.GetWindow(typeof(AsbBuilderWindow));

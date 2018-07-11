@@ -199,6 +199,9 @@ namespace GameFramework
     }
 
     //资源更新器只在使用asb的情况下使用，editor模式使用原始资源（位于Assets/BundleRes文件夹）
+    /// <summary>
+    /// 配合ResUpdateView使用
+    /// </summary>
     public class GameUpdateManager : SingletonComp<GameUpdateManager>
     {
         /// <summary>
@@ -223,7 +226,10 @@ namespace GameFramework
         /// </summary>
         string pUrl = "";
 
-        public UIHandler ViewComps;
+        /// <summary>
+        /// ResUpdateView的UIHandler,可以快速访问和改变UI属性
+        /// </summary>
+        public UIHandler UIHandler;
 
         //Android、ios需要将StreamingAssets文件夹下的资源拷贝到可读写文件夹下
         public void CheckLocalCopy(Action<float, string> callback = null, LuaFunction luaCallback = null)
@@ -264,6 +270,7 @@ namespace GameFramework
                     string confUrl = Tools.PathCombine(url, filePath);
                     WWW www = new WWW(confUrl);
                     LogFile.Log("检查服务器资源配置文件:" + confUrl);
+                    updateMsgInfo("检查服务器资源配置文件");
                     yield return www;
                     if (!string.IsNullOrEmpty(www.error))
                     {
@@ -575,6 +582,7 @@ namespace GameFramework
                     luaCallback.Call<float, string>(rate, msg);
                     luaCallback.Dispose();
                 }
+                updateMsgInfo(msg);
                 return;
             }
             GameResManager resMgr = GameResManager.Instance;
@@ -616,8 +624,6 @@ namespace GameFramework
 
         public void CheckUpdate(Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
-
-            ViewComps = FindObjectOfType(typeof(UIHandler)) as UIHandler;
             updateVersionInfo();
             updateMsgInfo("解压游戏资源...");
 
@@ -625,6 +631,7 @@ namespace GameFramework
             {
                 if (Equals(-1f, rate) || Equals(1f, rate))
                 {
+                    updateMsgInfo(msg);
                     LogFile.Log("callback of copy file:{0},{1}", rate, msg);
                     if (Equals(1f, rate))
                     {
@@ -642,7 +649,6 @@ namespace GameFramework
                 }
                 else
                 {
-                    //TODO:更新界面
                     updateSlider(rate);
                 }
             });
@@ -650,25 +656,25 @@ namespace GameFramework
 
         private void updateVersionInfo()
         {
-            if (null != ViewComps)
+            if (null != UIHandler)
             {
-                ViewComps.SetTextString("TextVersion", string.Format("app:{0}  res:{1}", Application.version, null == curConf ? "?" : curConf.version));
+                UIHandler.SetTextString("TextVersion", string.Format("app:{0}  res:{1}", Application.version, null == curConf ? "?" : curConf.version));
             }
         }
 
         private void updateMsgInfo(string msg)
         {
-            if (null != ViewComps)
+            if (null != UIHandler)
             {
-                ViewComps.SetTextString("TextInfo", msg);
+                UIHandler.SetTextString("TextInfo", msg);
             }
         }
 
         private void updateSlider(float value)
         {
-            if (null != ViewComps)
+            if (null != UIHandler)
             {
-                ViewComps.SetSliderValue("Slider", value);
+                UIHandler.SetSliderValue("Slider", value);
             }
         }
     }

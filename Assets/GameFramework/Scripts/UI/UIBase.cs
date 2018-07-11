@@ -7,8 +7,8 @@ namespace GameFramework
     public class UIBase : MonoBehaviour
     {
         //public GameObject UIPrefab;
-        private bool mIsBillboard;
-        public bool IsBillboard { get { return mIsBillboard; } set { mIsBillboard = value; } }
+        public bool IsBillboard;
+        //public bool IsSingle;
         protected RenderMode mRenderMode = RenderMode.ScreenSpaceOverlay;
 
         public RenderMode GetUIMode()
