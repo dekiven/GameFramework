@@ -25,7 +25,9 @@ namespace GameFramework
 
         void Start()
         {
+            //开始监听游戏异常并输出到日志文件
             registExceptionHandler();
+            //检测资源更新
             checkResUpdate();
         }
 
@@ -118,11 +120,13 @@ namespace GameFramework
         {
             if(LogType.Exception == type)
             {
-                LogFile.Error("C# Excptions:\n\tmsg:{0}\n\tstack:{1}", condition, stackTrace);
+                LogFile.Error("Excptions:\n\tmsg:----->\n{0}\n\tstack:----->\n{1}", condition, stackTrace);
             }
         }
 
-        //TODO:异常处理
+        /// <summary>
+        /// 监听游戏异常并输出到日志文件
+        /// </summary>
         void registExceptionHandler()
         {
             //Application.RegisterLogCallback(HandleLogCallback;);

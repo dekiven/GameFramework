@@ -83,7 +83,7 @@ namespace GameFramework
                     , new string[] { resName, }
                     , delegate (UObj[] objs)
                     {
-                    LogFile.Log("LoadRes -> loadAsset 回调，asbName:{0}, obj.length:{1}", asbName, objs.Length);
+                    //LogFile.Log("LoadRes -> loadAsset 回调，asbName:{0}, obj.length:{1}", asbName, objs.Length);
                         if (null != action && objs.Length == 1)
                         {
                             action(objs[0]);
@@ -152,7 +152,6 @@ namespace GameFramework
                 return;
             }
 #endif
-            LogFile.Log("开始在C#加载Assetbundle中的scene");
             LoadRes<UObj>(asbName, string.Empty
             , delegate (UObj obj)
             {
@@ -160,7 +159,7 @@ namespace GameFramework
                 AssetBundleInfo info = GetLoadedAssetBundle(Tools.GetAsbName(asbName));
                 bool rst = false;
 
-                LogFile.Log("obj is null:{0}", rst);
+                //LogFile.Log("obj is null:{0}", rst);
                 if(null != info)
                 {
                     //int idx = sceneName.LastIndexOf('/');
@@ -172,17 +171,23 @@ namespace GameFramework
                     for (int i = 0; i < scenes.Length; ++i)
                     {
                         string s = scenes[i];
-                        LogFile.Log("Scenename {0}: {1}, inputName:{2}", i, s, scenePath);
+                        //LogFile.Log("Scenename {0}: {1}, inputName:{2}", i, s, scenePath);
                         if (s.Equals(scenePath))
                         {
                             SceneManager.LoadScene(s);
                             rst = true;
-                            LogFile.Log("找到名字相同的scene，break");
+                            //LogFile.Log("找到名字相同的scene，break");
                             break;
                         }
                     }
-
-                    //LogFile.Log("loadScene name:{0}", sceneName);
+                    if(!rst)
+                    {
+                        LogFile.Error("LoadScene加载Assetbundl:{0},查找{1}失败！！", asbName, scenePath);
+                    }
+                }
+                else
+                {
+                    LogFile.Error("LoadScene找不到Assetbundle：{0}", asbName);
                 }
                 if (null != callbcak)
                 {
@@ -301,7 +306,7 @@ namespace GameFramework
                 }
                 if (list[i].sharpFunc != null)
                 {
-                    LogFile.Log("call c# func of {0}, result.Count:{1}", abName, result.Count);
+                    //LogFile.Log("call c# func of {0}, result.Count:{1}", abName, result.Count);
                     list[i].sharpFunc(result.ToArray());
                     list[i].sharpFunc = null;
                 }

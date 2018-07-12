@@ -53,7 +53,6 @@ namespace GameFramework
 
         public static void LoadScene(string asbName, string name)
         {
-            LogFile.Log("cs LoadScene 11111");
             GameResManager.Instance.LoadScene(asbName, name, delegate (bool rst) {
                 LogFile.Log("cs LoadScene rst:{0}",rst);
             });
