@@ -109,7 +109,7 @@ namespace GameFramework
             //仅在不使用assetsbundle的时候才需要配置lua searchpath
             if (!GameConfig.Instance.useAsb)
             {
-                string rootPath = LuaFramework.AppConst.FrameworkRoot;
+                string rootPath = Tools.PathCombine(Application.dataPath, "ToLua");
                 lua.AddSearchPath(rootPath + "/Lua");
                 lua.AddSearchPath(rootPath + "/ToLua/Lua");
                 lua.AddSearchPath(Tools.GetLuaSrcPath());

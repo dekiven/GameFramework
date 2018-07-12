@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using LuaInterface;
+using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-using UnityEngine;
 using UObj = UnityEngine.Object;
-
-using LuaInterface;
-
 //载入方式参考LuaFramework_UGUI->ResourceManager.cs
 //github: https://github.com/jarjin/LuaFramework_UGUI
 
@@ -52,16 +51,16 @@ namespace GameFramework
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="asbName"></param>
-        /// <param name="name"></param>
+        /// <param name="resName"></param>
         /// <param name="action"></param>
-        public void LoadRes<T>(string asbName, string name, Action<UObj> action = null, LuaFunction luaFunc = null) where T : UObj
+        public void LoadRes<T>(string asbName, string resName, Action<UObj> action = null, LuaFunction luaFunc = null) where T : UObj
         {
             //#if UNITY_EDITOR
             if (!GameConfig.Instance.useAsb)
             {
                 loadRes<T>(
                     asbName
-                    , new string[] { name, }
+                    , new string[] { resName, }
                     , delegate (UObj[] objs)
                     {
                         if (null != action && objs.Length == 1)
@@ -78,7 +77,7 @@ namespace GameFramework
                 asbName = Tools.GetAsbName(asbName);
                 LoadAsset<T>(
                     asbName
-                    , new string[] { name, }
+                    , new string[] { resName, }
                     , delegate (UObj[] objs)
                     {
                         if (null != action && objs.Length == 1)
@@ -112,23 +111,62 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 加载Assetbundle,在加载场景等直接从内存读取资源的地方会用到
+        /// 将scene加载到内存中
         /// </summary>
-        /// <param name="asbName">Asb name.</param>
-        /// <param name="callbcak">Callbcak.</param>
-        /// <param name="luaFunc">Lua func.</param>
-        public void LoadAsb(string asbName, Action callbcak=null, LuaFunction luaFunc=null)
+        /// <param name="asbName"></param>
+        /// <param name="sceneName"></param>
+        /// <param name="callbcak"></param>
+        /// <param name="luaFunc"></param>
+        public void LoadScene(string asbName, string sceneName, Action<bool> callbcak = null, LuaFunction luaFunc = null)
         {
-            LoadRes<GameObject>(asbName, string.Empty
-            , (UObj obj) => 
+#if UNITY_EDITOR
+            if (!GameConfig.Instance.useAsb)
             {
-                if(null != callbcak)
+                string scenePath = Tools.RelativeTo(Tools.GetResPath(Tools.PathCombine(asbName, sceneName)), Application.dataPath, true);
+                Debug.LogWarning(scenePath);
+                int index =  SceneUtility.GetBuildIndexByScenePath(scenePath+".unity");
+                Debug.LogWarning(index);
+
+
+                bool rst = index >= 0;
+                if(rst)
                 {
-                    callbcak();
+                    SceneManager.LoadScene(index);
                 }
-            }, luaFunc);
+                if (null != callbcak)
+                {
+                    callbcak(rst);
+                }
+                if (null != luaFunc)
+                {
+                    luaFunc.Call<bool>(rst);
+                    luaFunc.Dispose();
+                }
+                return;
+            }
+#endif
+            LogFile.Log("开始在C#加载Assetbundle中的scene");
+            LoadRes<AssetBundleManifest>(asbName, string.Empty
+            , delegate (UObj obj)
+            {
+                bool rst = null != obj;
+                LogFile.Log("obj is null:{0}", rst);
+                //if(rst)
+                {
+                    SceneManager.LoadScene(sceneName);
+                }
+                if (null != callbcak)
+                {
+                    callbcak(rst);
+                }
+                if (null != luaFunc)
+                {
+                    luaFunc.Call<bool>(obj);
+                    luaFunc.Dispose();
+                }
+            });
+
         }
-        //public void LoadScene(string asbName, string scenenName, )
 
         /// <summary>
         /// 此函数交给外部卸载专用，自己调整是否需要彻底清除AB
@@ -341,7 +379,10 @@ namespace GameFramework
             List<string> names = new List<string>();
             foreach (var name in assetNames)
             {
-                names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, name));
+                if (!string.IsNullOrEmpty(name))
+                {
+                    names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, name));
+                }
             }
             StartCoroutine(onLoadRes<T>(names.ToArray(), action, luaFunc));
         }
@@ -365,7 +406,7 @@ namespace GameFramework
                     LogFile.Error("加载本地零散资源{0}失败，类型：{1}", name, typeof(T));
                 }
                 list.Add(t);
-                yield return null;
+                //yield return null;
             }
 #endif
             if (null != action)

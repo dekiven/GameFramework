@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using LuaInterface;
 using UnityEngine;
+//using UnityEngine.SceneManagement;
 
-namespace GameFramework 
+using UObj = UnityEngine.Object;
+
+namespace GameFramework
 {
     /// <summary>
     /// 此类用来将单例组件的方法导出到lua，避免生成多余代码,减少lua注册的函数
@@ -40,15 +43,22 @@ namespace GameFramework
         {
             GameResManager.Instance.LoadTextAssetBytes(abName, names, luaFunc);
         }
-
-        public static void LoadAsb(string abName, LuaFunction luaFunc)
-        {
-            GameResManager.Instance.LoadAsb(abName, null, luaFunc);
-        }
         #endregion
+
+        #region Test
         public static void TestDelegate(System.Action<float> action)
         {
             action(100);
         }
+
+        public static void LoadScene(string asbName, string name)
+        {
+            LogFile.Log("cs LoadScene 11111");
+            GameResManager.Instance.LoadScene(asbName, name, delegate (bool rst) {
+                LogFile.Log("cs LoadScene rst:{o}",rst);
+            });
+
+        }
+#endregion
     }
 }

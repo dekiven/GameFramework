@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -28,6 +29,15 @@ namespace GameFramework
             {
                 return PathCombine(root, subPath);
             }
+        }
+
+        /// <summary>
+        /// 获取GameFramework的路径，仅在编辑器使用
+        /// </summary>
+        /// <returns>The framework path.</returns>
+        public static string GetFrameworkPath()
+        {
+            return PathCombine(Application.dataPath, "GameFramework");
         }
 
         public static string GetReadOnlyPath(string suPath = "")
@@ -75,10 +85,14 @@ namespace GameFramework
             return exists;
         }
 
-        public static string RelativeTo(string fullPath, string relative2)
+        public static string RelativeTo(string fullPath, string relative2, bool startWith=false)
         {
             fullPath = FormatPathStr(fullPath);
             relative2 = FormatPathStr(relative2);
+            if (startWith)
+            {
+                relative2 = FormatPathStr(Directory.GetParent(relative2).FullName);
+            }
             if (!relative2.EndsWith("/"))
             {
                 relative2 = relative2 + '/';

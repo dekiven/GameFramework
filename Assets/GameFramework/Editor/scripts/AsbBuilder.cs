@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-using LuaFramework;
 
 namespace GameFramework
 {
-    public class AsbBuilder
+    public static class AsbBuilder
     {
         public static string sTempLuaDir = Tools.PathCombine(Application.dataPath, "Lua");
 
@@ -149,7 +148,7 @@ namespace GameFramework
         public static List<AssetBundleBuild> GenLuaBuild(BuilderConfig config)
         {
             List<AssetBundleBuild> bundles = new List<AssetBundleBuild>();
-            //TODO:获取所有lua文件的bundle信息，所有lua文件需以.bytes为后缀名，否则不能打进assetbundle
+            //获取所有lua文件的bundle信息，所有lua文件需以.bytes为后缀名，否则不能打进assetbundle
             // 清空临时lua文件夹，正常情况下是不会有该文件夹的
             if (Directory.Exists(sTempLuaDir))
             {
@@ -158,9 +157,9 @@ namespace GameFramework
             Directory.CreateDirectory(sTempLuaDir);
             //拷贝（编译）lua文件到临时目录
             string[] srcDirs = {
-            CustomSettings.luaDir
-            , CustomSettings.FrameworkPath + "/ToLua/Lua"
-            , Tools.PathCombine(Application.dataPath, GameConfig.STR_LUA_FOLDER)
+            CustomSettings.lfuLuaDir
+            , CustomSettings.baseLuaDir
+            , Tools.GetLuaSrcPath()
         };
             foreach (var dir in srcDirs)
             {
@@ -256,7 +255,7 @@ namespace GameFramework
             info.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             info.UseShellExecute = isWin;
             info.ErrorDialog = true;
-            Util.Log(info.FileName + " " + info.Arguments);
+            LogFile.Log(info.FileName + " " + info.Arguments);
 
             System.Diagnostics.Process pro = System.Diagnostics.Process.Start(info);
             pro.WaitForExit();

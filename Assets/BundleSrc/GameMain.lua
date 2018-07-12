@@ -1,7 +1,7 @@
-require("common/functions")
-require("common/u3dFuncs")
+require("common.functions")
+require("common.u3dFuncs")
 
-GameFramework.LogFile.Log(class)
+-- GameFramework.LogFile.Log(class)
 
 --主入口函数。从这里开始lua逻辑
 function GameMain()					
@@ -28,5 +28,5 @@ end
 
 function TestLoadRes()
     local test = require("Test").new()
-    print('lua:TestLoadRes')
+    GameFramework.LogFile.Log('lua:TestLoadRes')
 end

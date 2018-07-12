@@ -1,7 +1,4 @@
 -- 说明：TestClass
-require("common/functions")
-
-
 local TestClass = class("TestClass")
 
 function TestClass:ctor( ... )
@@ -18,9 +15,8 @@ function TestClass:ctor( ... )
     --         print('delegate :'..num)
     --     end)
     -- end)
-    gm.LoadAsb('res/Scenes/stage01', function ()
-        UnityEngine.SceneManagement.SceneManager.LoadSceneAsync('stage01')
-    end)
+    GameFramework.LogFile.Log('gm.LoadScene')
+    gm.LoadScene('res/Scenes/stage01', 'test/stage01')
 
 end
 
