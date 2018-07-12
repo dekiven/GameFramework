@@ -48,6 +48,7 @@ namespace GameFramework
 
         public static void Log(string format, params object[] args)
         {
+            //return;
             Debug.LogFormat(format, args);
             writeLine((int)LogLevel.L_Log, format, args);
         }

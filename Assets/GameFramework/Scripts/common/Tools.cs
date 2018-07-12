@@ -127,6 +127,7 @@ namespace GameFramework
                 path = string.Format("{0}{1}{2}", groups[1].Value, groups[2].Value.ToLower(), GameConfig.STR_ASB_EXT);
             }
             return path;
+            //return path.ToLower() + GameConfig.STR_ASB_EXT;
         }
 
         /// <summary>
@@ -232,6 +233,17 @@ namespace GameFramework
             return PathCombine(GetAsbPath(), "lua/" + bundleName.ToLower());
         }
 
+
+        /// <summary>
+        /// 获取在BundleRes下资源的以Assets/开头的路径，常用于获取AssetBundle资源名
+        /// </summary>
+        /// <returns>The res in assets name.</returns>
+        /// <param name="asbPath">Asb path.</param>
+        /// <param name="resPath">Res path.</param>
+        public static string GetResInAssetsName(string asbPath, string resPath)
+        {
+            return PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, asbPath, resPath);
+        }
         /// <summary>
         /// 根据传入的路径获取正式加载资源时的asbPath和filePath
         /// 在地图编辑器会用到

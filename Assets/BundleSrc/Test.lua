@@ -16,7 +16,8 @@ function TestClass:ctor( ... )
     --     end)
     -- end)
     GameFramework.LogFile.Log('gm.LoadScene')
-    gm.LoadScene('res/Scenes/stage01', 'test/stage01')
+    gm.LoadScene('res/Scenes/stage01', 'test/Stage01.unity')
+    GameFramework.LogFile.Log('gm.LoadScene 2')
 
 end
 

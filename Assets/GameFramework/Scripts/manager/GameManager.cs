@@ -25,6 +25,7 @@ namespace GameFramework
 
         void Start()
         {
+            registExceptionHandler();
             checkResUpdate();
         }
 
@@ -110,6 +111,22 @@ namespace GameFramework
         void OnApplicationPause(bool pause)
         {
             Debug.Log("OnApplicationPause");
+        }
+
+
+        void handleLogCallback(string condition, string stackTrace, LogType type)
+        {
+            if(LogType.Exception == type)
+            {
+                LogFile.Error("C# Excptions:\n\tmsg:{0}\n\tstack:{1}", condition, stackTrace);
+            }
+        }
+
+        //TODO:异常处理
+        void registExceptionHandler()
+        {
+            //Application.RegisterLogCallback(HandleLogCallback;);
+            Application.logMessageReceived += handleLogCallback;
         }
     }
 }

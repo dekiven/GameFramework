@@ -66,6 +66,9 @@ namespace GameFramework
                         if (null != action && objs.Length == 1)
                         {
                             action(objs[0]);
+                        }else if (null != action && objs.Length == 0 && string.IsNullOrEmpty(resName))
+                        {
+                            action(null);
                         }
                     }
                     , luaFunc
@@ -80,9 +83,13 @@ namespace GameFramework
                     , new string[] { resName, }
                     , delegate (UObj[] objs)
                     {
+                    LogFile.Log("LoadRes -> loadAsset 回调，asbName:{0}, obj.length:{1}", asbName, objs.Length);
                         if (null != action && objs.Length == 1)
                         {
                             action(objs[0]);
+                        }else if(null != action && objs.Length == 0 && string.IsNullOrEmpty(resName))
+                        {
+                            action(null);
                         }
                     }
                     , luaFunc
@@ -119,14 +126,14 @@ namespace GameFramework
         /// <param name="luaFunc"></param>
         public void LoadScene(string asbName, string sceneName, Action<bool> callbcak = null, LuaFunction luaFunc = null)
         {
+            string scenePath = Tools.GetResInAssetsName(asbName, sceneName);
 #if UNITY_EDITOR
             if (!GameConfig.Instance.useAsb)
             {
-                string scenePath = Tools.RelativeTo(Tools.GetResPath(Tools.PathCombine(asbName, sceneName)), Application.dataPath, true);
+                //Tools.RelativeTo(Tools.GetResPath(Tools.PathCombine(asbName, sceneName)), Application.dataPath, true);
                 Debug.LogWarning(scenePath);
-                int index =  SceneUtility.GetBuildIndexByScenePath(scenePath+".unity");
+                int index =  SceneUtility.GetBuildIndexByScenePath(scenePath);
                 Debug.LogWarning(index);
-
 
                 bool rst = index >= 0;
                 if(rst)
@@ -146,14 +153,36 @@ namespace GameFramework
             }
 #endif
             LogFile.Log("开始在C#加载Assetbundle中的scene");
-            LoadRes<AssetBundleManifest>(asbName, string.Empty
+            LoadRes<UObj>(asbName, string.Empty
             , delegate (UObj obj)
             {
-                bool rst = null != obj;
+                //TODO:根据是否获取到asb判断
+                AssetBundleInfo info = GetLoadedAssetBundle(Tools.GetAsbName(asbName));
+                bool rst = false;
+
                 LogFile.Log("obj is null:{0}", rst);
-                //if(rst)
+                if(null != info)
                 {
-                    SceneManager.LoadScene(sceneName);
+                    //int idx = sceneName.LastIndexOf('/');
+                    //if(idx > 0)
+                    //{
+                    //    sceneName = sceneName.Substring(idx + 1);
+                    //}
+                    string[] scenes = info.m_AssetBundle.GetAllScenePaths();
+                    for (int i = 0; i < scenes.Length; ++i)
+                    {
+                        string s = scenes[i];
+                        LogFile.Log("Scenename {0}: {1}, inputName:{2}", i, s, scenePath);
+                        if (s.Equals(scenePath))
+                        {
+                            SceneManager.LoadScene(s);
+                            rst = true;
+                            LogFile.Log("找到名字相同的scene，break");
+                            break;
+                        }
+                    }
+
+                    //LogFile.Log("loadScene name:{0}", sceneName);
                 }
                 if (null != callbcak)
                 {
@@ -199,7 +228,11 @@ namespace GameFramework
                 List<string> names = new List<string>();
                 foreach (var item in assetNames)
                 {
-                    names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, item));
+                    if(!string.IsNullOrEmpty(item))
+                    {
+                        //names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, item));
+                        names.Add(Tools.GetResInAssetsName(path, item));
+                    }
                 }
                 assetNames = names.ToArray();
             }
@@ -254,15 +287,21 @@ namespace GameFramework
                 for (int j = 0; j < assetNames.Length; j++)
                 {
                     string assetPath = assetNames[j];
-                    AssetBundleRequest request = ab.LoadAssetAsync(assetPath, list[i].assetType);
-                    yield return request;
-                    result.Add(request.asset);
-
+                    if(!string.IsNullOrEmpty(assetPath))
+                    {
+                        AssetBundleRequest request = ab.LoadAssetAsync(assetPath, list[i].assetType);
+                        yield return request;
+                        result.Add(request.asset);
+                    }else
+                    {
+                        result.Add(null);
+                    }
                     ////TODO:UnloadAsset
                     //Resources.UnloadAsset(request.asset);
                 }
                 if (list[i].sharpFunc != null)
                 {
+                    LogFile.Log("call c# func of {0}, result.Count:{1}", abName, result.Count);
                     list[i].sharpFunc(result.ToArray());
                     list[i].sharpFunc = null;
                 }
@@ -379,10 +418,10 @@ namespace GameFramework
             List<string> names = new List<string>();
             foreach (var name in assetNames)
             {
-                if (!string.IsNullOrEmpty(name))
-                {
-                    names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, name));
-                }
+                //if (!string.IsNullOrEmpty(name))
+                //{
+                names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, name));
+                //}
             }
             StartCoroutine(onLoadRes<T>(names.ToArray(), action, luaFunc));
         }
