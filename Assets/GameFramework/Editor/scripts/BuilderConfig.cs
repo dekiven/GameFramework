@@ -12,7 +12,7 @@ namespace GameFramework
     public class BuilderConfig
     {
         //public static string STR_ASB_EXT = ".asb";
-        public static HashSet<string> SET_SKIP_EXTS = new HashSet<string>() { ".meta", ".DS_Store"};
+        public static HashSet<string> SET_SKIP_EXTS = new HashSet<string>() { ".meta", ".DS_Store", ".cs"};
         const string configPath = "Assets/GameFramework/Editor/conifg.cfg";
 
         IDictionary<string, string> mConfDic = new Dictionary<string, string>();
@@ -144,6 +144,21 @@ namespace GameFramework
             string value = string.Empty;
             mConfDic.TryGetValue(key, out value);
             return value;
+        }
+
+        /// <summary>
+        /// 判断是否是可以打包到assetbundle的资源
+        /// </summary>
+        /// <returns><c>true</c>, if res file was ised, <c>false</c> otherwise.</returns>
+        /// <param name="fileName">File name.</param>
+        public static bool IsResFile(string fileName)
+        {
+            string ext = Path.GetExtension(fileName);
+            if (!BuilderConfig.SET_SKIP_EXTS.Contains(ext) && fileName != ".DS_Store")
+            {
+                return true;
+            }
+            return false;
         }
     }
 

@@ -9,6 +9,24 @@ namespace GameFramework
     public static class AsbBuilder
     {
         public static string sTempLuaDir = Tools.PathCombine(Application.dataPath, "Lua");
+        public static string sResDir = Tools.GetResPath();
+
+        public static void BuildAsb(string path, BuildAssetBundleOptions opt = BuildAssetBundleOptions.None, BuildTarget target = BuildTarget.StandaloneWindows)
+        {
+            string absFolder = GetAsbFolderByTarget(target);
+            if (!path.EndsWith("/" + absFolder))
+            {
+                path = Tools.PathCombine(path, absFolder);
+            }
+            if (string.IsNullOrEmpty(path))
+            {
+                Debug.LogWarningFormat("[{0}] dose not exists!", path);
+                return;
+            }
+            Tools.CheckDirExists(path, true);
+            BuildPipeline.BuildAssetBundles(path, BuildAssetBundleOptions.None, target);
+            AssetDatabase.Refresh();
+        }
 
         public static void BuildAsb(string path, AssetBundleBuild[] builds, BuildAssetBundleOptions opt = BuildAssetBundleOptions.None, BuildTarget target = BuildTarget.StandaloneWindows)
         {
@@ -26,6 +44,7 @@ namespace GameFramework
             BuildPipeline.BuildAssetBundles(path, builds, BuildAssetBundleOptions.None, target);
             AssetDatabase.Refresh();
         }
+
 
         public static AssetBundleBuild GenBundleBuild(string assetName, string[] files)
         {
@@ -65,6 +84,8 @@ namespace GameFramework
                     return "ios";
                 case BuildTarget.StandaloneWindows:
                     return "pc";
+                case BuildTarget.StandaloneOSX :
+                    return "mac";
             }
             return "pc";
         }
@@ -75,9 +96,8 @@ namespace GameFramework
         /// <param name="t"></param>
         public static void BuildAllRes(BuilderConfig config)
         {
-            //获取所有资源打包信息
-            List<AssetBundleBuild> bundles = GenResBuild(config);
-            BuildAbsByConfig(bundles, config);
+            GenResBuild(config);
+            BuildAbsByConfig(config);
         }
 
         /// <summary>
@@ -87,13 +107,13 @@ namespace GameFramework
         public static void BuildAllLua(BuilderConfig config)
         {
             //根据选择平台打包所有lua文件
-            List<AssetBundleBuild> bundles = GenLuaBuild(config);
-            BuildAbsByConfig(bundles, config);
+            GenLuaBuild(config);
+            BuildAbsByConfig(config);
 
             ////删除生成的Lua文件夹
             //if (Directory.Exists(sTempLuaDir))
             //{
-            //    Directory.Delete(sTempLuaDir, true);
+            //  Directory.Delete(sTempLuaDir, true);
             //}
         }
 
@@ -103,16 +123,17 @@ namespace GameFramework
         /// <param name="config"></param>
         public static void BuildAll(BuilderConfig config)
         {
-            //获取所有资源打包信息
-            List<AssetBundleBuild> bundles = GenResBuild(config);
-            bundles.AddRange(GenLuaBuild(config));
+            // 配置lua打包信息
+            GenLuaBuild(config);
+            //配置所有资源打包信息
+            GenResBuild(config);
             //根据选择平台打包
-            BuildAbsByConfig(bundles, config);
+            BuildAbsByConfig(config);
 
             ////删除生成的Lua文件夹
             //if (Directory.Exists(sTempLuaDir))
             //{
-            //    Directory.Delete(sTempLuaDir, true);
+            //  Directory.Delete(sTempLuaDir, true);
             //}
         }
 
@@ -121,23 +142,11 @@ namespace GameFramework
         /// </summary>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static List<AssetBundleBuild> GenResBuild(BuilderConfig config)
+        public static void GenResBuild(BuilderConfig config)
         {
-            List<AssetBundleBuild> bundles = new List<AssetBundleBuild>();
+            // List<AssetBundleBuild> bundles = new List<AssetBundleBuild>();
             string path = config.LoadPath;
-            foreach (var d in Directory.GetDirectories(path))
-            {
-                foreach (var d2 in Directory.GetDirectories(d))
-                {
-                    foreach (var d3 in Directory.GetDirectories(d2))
-                    {
-                        string relativeDir = Tools.RelativeTo(d3, Application.dataPath);
-                        Debug.LogWarning(relativeDir);
-                        bundles.Add(GenBuildByDir(d3, Tools.GetResPath(), "*.*"));
-                    }
-                }
-            }
-            return bundles;
+            GenResBuildByDir(path, "*.*");
         }
 
         /// <summary>
@@ -145,9 +154,8 @@ namespace GameFramework
         /// </summary>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static List<AssetBundleBuild> GenLuaBuild(BuilderConfig config)
+        public static void GenLuaBuild(BuilderConfig config)
         {
-            List<AssetBundleBuild> bundles = new List<AssetBundleBuild>();
             //获取所有lua文件的bundle信息，所有lua文件需以.bytes为后缀名，否则不能打进assetbundle
             // 清空临时lua文件夹，正常情况下是不会有该文件夹的
             if (Directory.Exists(sTempLuaDir))
@@ -157,10 +165,10 @@ namespace GameFramework
             Directory.CreateDirectory(sTempLuaDir);
             //拷贝（编译）lua文件到临时目录
             string[] srcDirs = {
-            CustomSettings.lfuLuaDir
-            , CustomSettings.baseLuaDir
-            , Tools.GetLuaSrcPath()
-        };
+                CustomSettings.lfuLuaDir
+                , CustomSettings.baseLuaDir
+                , Tools.GetLuaSrcPath()
+            };
             foreach (var dir in srcDirs)
             {
                 if (GameConfig.Instance.encodeLua)
@@ -187,32 +195,27 @@ namespace GameFramework
                     ToLuaMenu.CopyLuaBytesFiles(dir, sTempLuaDir);
                 }
             }
+            //通过GenLuaBuildByDir配置AssetBundle name
             foreach (var luaDir in Directory.GetDirectories(sTempLuaDir, "*", SearchOption.AllDirectories))
             {
-                AssetBundleBuild bundle = GenBuildByDir(luaDir, sTempLuaDir, "*.bytes", false);
-                bundle.assetBundleName = "lua/lua_" + bundle.assetBundleName.Replace('/', '_').ToLower()+ GameConfig.STR_ASB_EXT;
-                bundles.Add(bundle);
+                GenLuaBuildByDir(luaDir, "*.bytes");
                 //Debug.LogWarning("lua Add luaDir:" + luaDir);
             }
-            AssetBundleBuild lua = GenBuildByDir(sTempLuaDir, sTempLuaDir, "*.bytes", false);
-            lua.assetBundleName = "lua/lua" + GameConfig.STR_ASB_EXT;
-            bundles.Add(lua);
+            GenLuaBuildByDir(sTempLuaDir, "*.bytes");
             //Debug.LogWarning("lua Add luaDir: lua/lua");
-
-            return bundles;
         }
 
-        public static void BuildAbsByConfig(List<AssetBundleBuild> bundles, BuilderConfig config)
+        public static void BuildAbsByConfig(BuilderConfig config)
         {
             if (BuildTarget.NoTarget == config.target)
             {
-                BuildAsb(config.ExportPath, bundles.ToArray(), config.options, BuildTarget.Android);
-                BuildAsb(config.ExportPath, bundles.ToArray(), config.options, BuildTarget.iOS);
-                BuildAsb(config.ExportPath, bundles.ToArray(), config.options, BuildTarget.StandaloneWindows);
+                BuildAsb(config.ExportPath, config.options, BuildTarget.Android);
+                BuildAsb(config.ExportPath, config.options, BuildTarget.iOS);
+                BuildAsb(config.ExportPath, config.options, BuildTarget.StandaloneWindows);
             }
             else
             {
-                BuildAsb(config.ExportPath, bundles.ToArray(), config.options, config.target);
+                BuildAsb(config.ExportPath, config.options, config.target);
             }
         }
 
@@ -260,6 +263,73 @@ namespace GameFramework
             System.Diagnostics.Process pro = System.Diagnostics.Process.Start(info);
             pro.WaitForExit();
             Directory.SetCurrentDirectory(currDir);
+        }
+
+
+        public static void GenLuaBuildByDir(string dir, string pattern)
+        {
+
+            if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
+            {
+                string relative2 = sTempLuaDir;
+                string[] files = Directory.GetFiles(dir, pattern, SearchOption.TopDirectoryOnly);
+                string asbName = "lua/" + Tools.GetAsbName(Tools.RelativeTo(dir, relative2, true)).Replace("/", "_");
+
+                for (int i = 0; i < files.Length; i++)
+                {
+                    string f = files[i];
+                    if (BuilderConfig.IsResFile(f))
+                    {
+                        AsbNameSetting.SetBundleName(Tools.RelativeTo(files[i], Application.dataPath, true), asbName, true);
+                    }
+                }
+            }
+        }
+
+        public static void GenResBuildByDir(string dir, string pattern)
+        {
+            string relative2 = sResDir;
+            if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
+            {
+                //查看该文件夹下是否有文件，有文件将该文件夹作为一个bundle
+                string[] files = Directory.GetFiles(dir, pattern, SearchOption.TopDirectoryOnly);
+                int count = 0;
+                foreach (var f in files)
+                {
+                    if (BuilderConfig.IsResFile(f))
+                    {
+                        count = 1;
+                        break;
+                    }
+                }
+                if (count > 0)
+                {
+                    files = Directory.GetFiles(dir, pattern, SearchOption.AllDirectories);
+                    string asbName = Tools.GetAsbName(Tools.RelativeTo(dir, relative2));
+                    // List<string> list = new List<string>();
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        string f = files[i];
+                        if (BuilderConfig.IsResFile(f))
+                        {
+                            string resPath = Tools.RelativeTo(f, Application.dataPath, true);
+                            AsbNameSetting.SetBundleName(resPath, asbName, true);
+                        }
+                    }
+                }
+                else
+                {
+                    //如果文件夹下没有文件，遍历其子文件夹
+                    string[] dirs = Directory.GetDirectories(dir);
+                    if (dirs.Length > 0)
+                    {
+                        foreach (var d in dirs)
+                        {
+                            GenResBuildByDir(d, pattern);
+                        }
+                    }
+                }
+            }
         }
     }
 

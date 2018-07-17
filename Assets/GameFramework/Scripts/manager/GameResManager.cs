@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using LuaInterface;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -18,14 +19,17 @@ namespace GameFramework
     public class GameResManager : SingletonComp<GameResManager>
     {
         //逻辑 begin ------------------------------------------------------------
-        List<string> mAllManifest = null;
+        List<string> mAllBundles = null;
         AssetBundleManifest m_AssetBundleManifest = null;
         Dictionary<string, string[]> m_Dependencies = new Dictionary<string, string[]>();
         Dictionary<string, AssetBundleInfo> m_LoadedAssetBundles = new Dictionary<string, AssetBundleInfo>();
         Dictionary<string, List<LoadAssetRequest>> m_LoadRequests = new Dictionary<string, List<LoadAssetRequest>>();
 
+        string mResPath = "";
+
         public void Initialize(Action initOK, string manifestName = GameConfig.STR_ASB_MANIFIST)
         {
+            mResPath = Tools.GetResPath();
             if (GameConfig.Instance.useAsb)
             {
                 //这里由于manifest所在的bundle没有后缀名，所以直接走LoadAsset
@@ -34,7 +38,7 @@ namespace GameFramework
                     if (objs.Length > 0)
                     {
                         m_AssetBundleManifest = objs[0] as AssetBundleManifest;
-                        mAllManifest = new List<string>(m_AssetBundleManifest.GetAllAssetBundles());
+                        mAllBundles = new List<string>(m_AssetBundleManifest.GetAllAssetBundles());
                     }
                     if (initOK != null) initOK();
                 });
@@ -50,16 +54,16 @@ namespace GameFramework
         /// 注意：lua回调是gameobjectlist，c#是gameobject
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="asbName"></param>
+        /// <param name="asbPath"></param>
         /// <param name="resName"></param>
         /// <param name="action"></param>
-        public void LoadRes<T>(string asbName, string resName, Action<UObj> action = null, LuaFunction luaFunc = null) where T : UObj
+        public void LoadRes<T>(string asbPath, string resName, Action<UObj> action = null, LuaFunction luaFunc = null) where T : UObj
         {
             //#if UNITY_EDITOR
             if (!GameConfig.Instance.useAsb)
             {
                 loadRes<T>(
-                    asbName
+                    asbPath
                     , new string[] { resName, }
                     , delegate (UObj[] objs)
                     {
@@ -77,7 +81,11 @@ namespace GameFramework
             }
             else
             {
-                asbName = Tools.GetAsbName(asbName);
+                string asbName = Tools.GetAsbName(asbPath);
+                if (!mAllBundles.Contains(asbName))
+                {
+                    asbName = Tools.GetAsbName(asbPath, true);
+                }
                 LoadAsset<T>(
                     asbName
                     , new string[] { resName, }
@@ -118,7 +126,7 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 将scene加载到内存中
+        /// 加载场景
         /// </summary>
         /// <param name="asbName"></param>
         /// <param name="sceneName"></param>
@@ -420,6 +428,12 @@ namespace GameFramework
         /// <param name="action">delegate</param>
         private void loadRes<T>(string path, string[] assetNames, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
         {
+            string fullPath = Tools.GetResPath(path);
+            if (!Directory.Exists(fullPath))
+            {
+                fullPath = Directory.GetParent(path).FullName;
+                path = Tools.RelativeTo(fullPath, mResPath);
+            }
             List<string> names = new List<string>();
             foreach (var name in assetNames)
             {
