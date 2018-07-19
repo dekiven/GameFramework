@@ -308,6 +308,7 @@ namespace GameFramework
                                         luaCallback.Call<float, string>(_rate, _msg);
                                         luaCallback.Dispose();
                                     }
+                                    yield break;
                                 }
                                 else
                                 {

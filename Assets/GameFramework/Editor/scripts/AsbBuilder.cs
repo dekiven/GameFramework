@@ -11,6 +11,8 @@ namespace GameFramework
         public static string sTempLuaDir = Tools.PathCombine(Application.dataPath, "Lua");
         public static string sResDir = Tools.GetResPath();
 
+        public static BuilderConfig mConfig;
+
         public static void BuildAsb(string path, BuildAssetBundleOptions opt = BuildAssetBundleOptions.None, BuildTarget target = BuildTarget.StandaloneWindows)
         {
             string absFolder = GetAsbFolderByTarget(target);
@@ -42,6 +44,9 @@ namespace GameFramework
             }
             Tools.CheckDirExists(path, true);
             BuildPipeline.BuildAssetBundles(path, builds, BuildAssetBundleOptions.None, target);
+
+            renameFiles();
+
             AssetDatabase.Refresh();
         }
 
@@ -96,6 +101,7 @@ namespace GameFramework
         /// <param name="t"></param>
         public static void BuildAllRes(BuilderConfig config)
         {
+            mConfig = config;
             GenResBuild(config);
             BuildAbsByConfig(config);
         }
@@ -106,6 +112,7 @@ namespace GameFramework
         /// <param name="config"></param>
         public static void BuildAllLua(BuilderConfig config)
         {
+            mConfig = config;
             //根据选择平台打包所有lua文件
             GenLuaBuild(config);
             BuildAbsByConfig(config);
@@ -123,6 +130,7 @@ namespace GameFramework
         /// <param name="config"></param>
         public static void BuildAll(BuilderConfig config)
         {
+            mConfig = config;
             // 配置lua打包信息
             GenLuaBuild(config);
             //配置所有资源打包信息
@@ -329,6 +337,21 @@ namespace GameFramework
                         }
                     }
                 }
+            }
+        }
+
+        private static void renameFiles()
+        {
+            Debug.Log("renameFiles");
+            string[] plats = { "pc","and","ios","mac", };
+            foreach (var p in plats)
+            {
+                string oriPath = Tools.PathCombine(mConfig.ExportPath, p, p);
+                string newPath = oriPath + GameConfig.STR_ASB_EXT;
+                Tools.RenameFile(oriPath, newPath);
+                oriPath = oriPath + ".manifest";
+                newPath = newPath + ".manifest";
+                Tools.RenameFile(oriPath, newPath);
             }
         }
     }
