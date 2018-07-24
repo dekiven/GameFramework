@@ -85,6 +85,24 @@ namespace GameFramework
             return exists;
         }
 
+        public static void RenameFile(string oriPath, string newPath)
+        {
+            if (File.Exists(oriPath))
+            {
+                if (File.Exists(newPath))
+                {
+                    File.Delete(newPath);
+                }
+                else
+                {
+                    Y3Tools.CheckDirExists(Directory.GetParent(newPath).FullName, true);
+                }
+                FileInfo fi = new FileInfo(oriPath);
+                fi.MoveTo(newPath);
+                Debug.LogFormat("Rename file: {0} ---> {1}", oriPath, newPath);
+            }
+        }
+
         public static string RelativeTo(string fullPath, string relative2, bool startWith=false)
         {
             fullPath = FormatPathStr(fullPath);

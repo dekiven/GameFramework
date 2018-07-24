@@ -8,7 +8,10 @@ namespace GameFramework
     {
         static PlayModeListener()
         {
-            EditorApplication.playModeStateChanged += OnPlayModeChanged;
+            if(!GameConfig.Instance.useAsb)
+            {
+                EditorApplication.playModeStateChanged += OnPlayModeChanged;
+            }
         }
 
         static void OnPlayModeChanged(PlayModeStateChange status)

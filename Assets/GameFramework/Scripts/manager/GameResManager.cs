@@ -249,6 +249,10 @@ namespace GameFramework
                 }
                 assetNames = names.ToArray();
             }
+            else
+            {
+                abName = abName + GameConfig.STR_ASB_EXT;
+            }
 
             LoadAssetRequest request = new LoadAssetRequest();
             request.assetType = typeof(T);
