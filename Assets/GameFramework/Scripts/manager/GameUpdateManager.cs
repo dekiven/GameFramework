@@ -685,22 +685,22 @@ namespace GameFramework
         {
             float progress = 0;
             float lastTime = Time.time;
-            isTimeOut = true;
+            isTimeOut = false;
             if (null != request)
             {
-                while (!request.isDone && isTimeOut)
+                while (!request.isDone && !isTimeOut)
                 {
-                    if (request.progress >= progress)
+                    if (request.progress > progress)
                     {
                         lastTime = Time.time;
-                    }
-                    if (Time.time - lastTime >= timeout)
+                        progress = request.progress;
+                    }else if (Time.time - lastTime >= timeout)
                     {
-                        isTimeOut = false;
+                        isTimeOut = true;
                     }
                     yield return null;
                 }
-                isTimeOut = true;
+                //isTimeOut = false;
             }
         }
 
