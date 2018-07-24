@@ -28,7 +28,7 @@ namespace GameFramework
                 AssetBundle bundle = AssetBundle.LoadFromMemory(bytes);
                 if (bundle != null)
                 {
-                    bundleName = bundleName.Replace(".unity3d", "");
+                    bundleName = bundleName.Replace(GameConfig.STR_ASB_EXT, "");
                     base.AddSearchBundle(bundleName.ToLower(), bundle);
                 }
             }

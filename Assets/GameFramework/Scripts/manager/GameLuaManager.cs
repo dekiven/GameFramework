@@ -159,6 +159,30 @@ namespace GameFramework
 
         }
 
+        /// <summary>
+        /// 添加Lua Assetbundle 文件
+        /// </summary>
+        /// <param name="asbName">Asb name.</param>
+        public void AddLuaBundle(string asbName)
+        {
+            if(loader.beZip)
+            {
+                loader.AddBundle(asbName);
+            }
+        }
+
+        /// <summary>
+        /// 添加多个lua AssetBundle 文件
+        /// </summary>
+        /// <param name="names">Names.</param>
+        public void AddLuaBundles(string[] names)
+        {
+            foreach (string n in names)
+            {
+                AddLuaBundle(n);
+            }
+        }
+
         public void DoFile(string filename)
         {
             lua.DoFile(filename);

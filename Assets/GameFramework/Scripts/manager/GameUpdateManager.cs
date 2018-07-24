@@ -54,7 +54,7 @@ namespace GameFramework
                     //LogFile.Log(resInfo.ToString());
                     if(2 == resInfo.Length)
                     {
-                        version = resInfo[1];
+                        version = resInfo[1].TrimEnd();
                     }else if (3 == resInfo.Length)
                     {
                         ResInfo res = new ResInfo(resInfo);
@@ -231,6 +231,11 @@ namespace GameFramework
         /// </summary>
         public UIHandler UIHandler;
 
+        /// <summary>
+        /// www下载的是否超时，manager中同时只有一个www存在，可以这样使用
+        /// </summary>
+        private bool isTimeOut;
+
         //Android、ios需要将StreamingAssets文件夹下的资源拷贝到可读写文件夹下
         public void CheckLocalCopy(Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
@@ -271,63 +276,79 @@ namespace GameFramework
                     WWW www = new WWW(confUrl);
                     LogFile.Log("检查服务器资源配置文件:" + confUrl);
                     updateMsgInfo("检查服务器资源配置文件");
-                    yield return www;
-                    if (!string.IsNullOrEmpty(www.error))
+                    yield return checkWWWTimeOut(www, 15f);
+                    if(isTimeOut)
                     {
-                        //LogFile.Log("检查配置文件{0}出错，错误信息：{1}", confUrl, www.error);
-                        LogFile.Warn("检查配置文件{0}出错，错误信息：{1}", confUrl, www.error);
-                    }else
+                        www.Dispose();
+                        www = null;
+                        LogFile.Warn("连接超时");
+                    }
+                    else
                     {
-                        ResConf serConf = new ResConf(www.text);
-                        if(!string.IsNullOrEmpty(serConf.version))
+                        yield return www;
+                        if (!string.IsNullOrEmpty(www.error))
                         {
-                            streamConf = serConf;
-                            streamConf.server = true;
-                            if (null != curConf)
-                            {
-                                //if(streamConf.CompareVer(curConf) != 0 || (-1 == streamConf.CompareVer(curConf) & !curConf.version.EndsWith("_base", StringComparison.Ordinal)))
-                                int compare = streamConf.CompareVer(curConf);
-                                if(compare != 1)
-                                {
-                                    //如果服务器版本跟本地版本一样  不下载资源
-                                    //如果服务器版本比本地的版本小(正常情况下不会出现),且不是以_base结尾(包体自带的资源配置是版本号加_base) 不下载资源
-                                    float _rate = 1f;
-                                    string _msg = "没有资源需要更新。";
-                                    if (compare == -1)
-                                    {
-                                        _msg = "服务器版本号小于当前版本号，请更新服务器资源！(某些平台可能会出现这种情况，是正常的)";
-                                        LogFile.Warn(_msg);
-                                    }
-                                    updateMsgInfo(_msg);
-                                    if(null != callback)
-                                    {
-                                        callback(_rate, _msg);
-                                    }
-                                    if(null != luaCallback)
-                                    {
-                                        luaCallback.Call<float, string>(_rate, _msg);
-                                        luaCallback.Dispose();
-                                    }
-                                }
-                                else
-                                {
-                                    //StartCoroutine(CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback));
-                                    updateMsgInfo("下载中...");
-                                    updateSlider(0f);
-                                    yield return CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback);
-                                }
-                                yield break;
-                            }
-                            else
-                            {
-                                LogFile.Warn("curConf == null:{0}, curConf.version:{1}, serConf.version:{2}", curConf == null, curConf.version, serConf.version);
-                            }
+                            //LogFile.Log("检查配置文件{0}出错，错误信息：{1}", confUrl, www.error);
+                            LogFile.Warn("检查配置文件{0}出错，错误信息：{1}", confUrl, www.error);
                         }
                         else
                         {
-                            LogFile.Warn("{0}没有版本信息，检查是否有误。", confUrl);
+                            ResConf serConf = new ResConf(www.text);
+
+                            www.Dispose();
+                            www = null;
+
+                            if (!string.IsNullOrEmpty(serConf.version))
+                            {
+                                streamConf = serConf;
+                                streamConf.server = true;
+                                if (null != curConf)
+                                {
+                                    //if(streamConf.CompareVer(curConf) != 0 || (-1 == streamConf.CompareVer(curConf) & !curConf.version.EndsWith("_base", StringComparison.Ordinal)))
+                                    int compare = streamConf.CompareVer(curConf);
+                                    if (compare != 1)
+                                    {
+                                        //如果服务器版本跟本地版本一样  不下载资源
+                                        //如果服务器版本比本地的版本小(正常情况下不会出现),且不是以_base结尾(包体自带的资源配置是版本号加_base) 不下载资源
+                                        float _rate = 1f;
+                                        string _msg = "没有资源需要更新。";
+                                        if (compare == -1)
+                                        {
+                                            _msg = "服务器版本号小于当前版本号，请更新服务器资源！(某些平台可能会出现这种情况，是正常的)";
+                                            LogFile.Warn(_msg);
+                                        }
+                                        updateMsgInfo(_msg);
+                                        if (null != callback)
+                                        {
+                                            callback(_rate, _msg);
+                                        }
+                                        if (null != luaCallback)
+                                        {
+                                            luaCallback.Call<float, string>(_rate, _msg);
+                                            luaCallback.Dispose();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //StartCoroutine(CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback));
+                                        updateMsgInfo("下载中...");
+                                        updateSlider(0f);
+                                        yield return CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback);
+                                    }
+                                    yield break;
+                                }
+                                else
+                                {
+                                    LogFile.Warn("curConf == null:{0}, curConf.version:{1}, serConf.version:{2}", curConf == null, curConf.version, serConf.version);
+                                }
+                            }
+                            else
+                            {
+                                LogFile.Warn("{0}没有版本信息，检查是否有误。", confUrl);
+                            }
                         }
                     }
+
                 }
             }
             //如果所有服务器都检查了，但是都没有获取版本信息，返回更新失败
@@ -529,8 +550,7 @@ namespace GameFramework
             }
             else
             {
-                src = Tools.GetUrlPathStream(Tools.PathCombine(fromServer, rPath));
-                //src = fromServer + oriFile;
+                src = Tools.PathCombine(fromServer, rPath);
             }
             string des = Tools.GetWriteableDataPath(rPath);//Application.persistentDataPath + "/" + rPath;
             //LogFile.Log("des:" + des);
@@ -652,6 +672,36 @@ namespace GameFramework
                     updateSlider(rate);
                 }
             });
+        }
+
+
+        /// <summary>
+        /// 检查www的超时
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
+        private IEnumerator checkWWWTimeOut(WWW request, float timeout)
+        {
+            float progress = 0;
+            float lastTime = Time.time;
+            isTimeOut = true;
+            if (null != request)
+            {
+                while (!request.isDone && isTimeOut)
+                {
+                    if (request.progress >= progress)
+                    {
+                        lastTime = Time.time;
+                    }
+                    if (Time.time - lastTime >= timeout)
+                    {
+                        isTimeOut = false;
+                    }
+                    yield return null;
+                }
+                isTimeOut = true;
+            }
         }
 
         private void updateVersionInfo()
