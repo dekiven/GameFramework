@@ -80,8 +80,8 @@ function singletonClass(classname, super)
     return cls
 end
 
--- 尝试重新require
-function tryRequire(modName)
+-- 强制require，之前require的会释放，重新require
+function forceRequire(modName)
     local oldMod = {}
     if package.loaded[modName] then
         -- 保存之前的模块

@@ -43,6 +43,25 @@ namespace GameFramework
         {
             GameResManager.Instance.LoadTextAssetBytes(abName, names, luaFunc);
         }
+
+        public static void LoadScene(string abName, string scenenName, bool sync, bool add, LuaFunction luaFunction)
+        {
+            GameResManager.Instance.LoadScene(abName, scenenName, sync, add, null, luaFunction);
+        }
+        #endregion
+
+        #region GameLuaManager
+
+        public void AddLuaBundle(string name)
+        {
+            GameLuaManager.Instance.AddLuaBundle(name);
+        }
+
+        public void AddLuaBundles(string[] names)
+        {
+            GameLuaManager.Instance.AddLuaBundles(names);
+        }
+
         #endregion
 
         #region Test
@@ -50,14 +69,6 @@ namespace GameFramework
         {
             action(100);
         }
-
-        public static void LoadScene(string asbName, string name)
-        {
-            GameResManager.Instance.LoadScene(asbName, name, delegate (bool rst) {
-                LogFile.Log("cs LoadScene rst:{0}",rst);
-            });
-
-        }
-#endregion
+        #endregion
     }
 }

@@ -8,6 +8,3 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/GameFramework/Scenes/GameMain.unity
     guid: e6acab6bad7e14c1fb8c32534a119d15
-  - enabled: 1
-    path: Assets/BundleRes/res/Scenes/stage01/test/Stage01.unity
-    guid: 6abfc8399c6614fa490501efd45a5b47

@@ -128,67 +128,58 @@ namespace GameFramework
         /// <summary>
         /// 加载场景
         /// </summary>
-        /// <param name="asbName"></param>
-        /// <param name="sceneName"></param>
-        /// <param name="callbcak"></param>
-        /// <param name="luaFunc"></param>
-        public void LoadScene(string asbName, string sceneName, Action<bool> callbcak = null, LuaFunction luaFunc = null)
+        /// <param name="asbName">Asb name.</param>
+        /// <param name="sceneName">Scene name.</param>
+        /// <param name="sync">If set to <c>true</c> sync.</param>
+        /// <param name="add">If set to <c>true</c> add.</param>
+        /// <param name="callback">Callback.</param>
+        /// <param name="luaFunc">Lua func.</param>
+        public void LoadScene(string asbName, string sceneName, bool sync, bool add, Action<float> callback = null, LuaFunction luaFunc = null)
         {
             string scenePath = Tools.GetResInAssetsName(asbName, sceneName);
+            LoadSceneMode mode = add ? LoadSceneMode.Additive : LoadSceneMode.Single;
 #if UNITY_EDITOR
             if (!GameConfig.Instance.useAsb)
             {
                 //Tools.RelativeTo(Tools.GetResPath(Tools.PathCombine(asbName, sceneName)), Application.dataPath, true);
                 Debug.LogWarning(scenePath);
-                int index =  SceneUtility.GetBuildIndexByScenePath(scenePath);
+                int index = SceneUtility.GetBuildIndexByScenePath(scenePath);
                 Debug.LogWarning(index);
 
-                bool rst = index >= 0;
-                if(rst)
+                bool hasSceneLoad = index >= 0;
+                string loadName = "";
+                if (hasSceneLoad)
                 {
-                    SceneManager.LoadScene(index);
+                    loadName = SceneUtility.GetScenePathByBuildIndex(index);
                 }
-                if (null != callbcak)
-                {
-                    callbcak(rst);
-                }
-                if (null != luaFunc)
-                {
-                    luaFunc.Call<bool>(rst);
-                    luaFunc.Dispose();
-                }
+                loadScene(sync, mode, loadName, hasSceneLoad, callback, luaFunc);
                 return;
             }
 #endif
             LoadRes<UObj>(asbName, string.Empty
             , delegate (UObj obj)
             {
-                //TODO:根据是否获取到asb判断
                 AssetBundleInfo info = GetLoadedAssetBundle(Tools.GetAsbName(asbName));
                 bool rst = false;
+                string loadName = "";
 
-                //LogFile.Log("obj is null:{0}", rst);
-                if(null != info)
+                if (null != info)
                 {
-                    //int idx = sceneName.LastIndexOf('/');
-                    //if(idx > 0)
-                    //{
-                    //    sceneName = sceneName.Substring(idx + 1);
-                    //}
                     string[] scenes = info.m_AssetBundle.GetAllScenePaths();
                     for (int i = 0; i < scenes.Length; ++i)
                     {
                         string s = scenes[i];
-                        //LogFile.Log("Scenename {0}: {1}, inputName:{2}", i, s, scenePath);
-                        if (s.Equals(scenePath))
+                    //LogFile.Log("Scenename {0}: {1}, inputName:{2}", i, s, scenePath);
+                    if (s.Equals(scenePath))
                         {
-                            SceneManager.LoadScene(s);
-                            rst = true;
-                            //LogFile.Log("找到名字相同的scene，break");
-                            break;
+                            loadName = s;
+                        //SceneManager.LoadScene(s, mode);
+                        rst = true;
+                        //LogFile.Log("找到名字相同的scene，break");
+                        break;
                         }
                     }
-                    if(!rst)
+                    if (!rst)
                     {
                         LogFile.Error("LoadScene加载Assetbundl:{0},查找{1}失败！！", asbName, scenePath);
                     }
@@ -197,15 +188,7 @@ namespace GameFramework
                 {
                     LogFile.Error("LoadScene找不到Assetbundle：{0}", asbName);
                 }
-                if (null != callbcak)
-                {
-                    callbcak(rst);
-                }
-                if (null != luaFunc)
-                {
-                    luaFunc.Call<bool>(obj);
-                    luaFunc.Dispose();
-                }
+                loadScene(sync, mode, loadName, rst, callback, luaFunc);
             });
 
         }
@@ -484,6 +467,68 @@ namespace GameFramework
             yield return null;
         }
 
+
+        private void loadScene(bool sync, LoadSceneMode mode, string sceneName, bool hasSceneLoad, Action<float> callback = null, LuaFunction luaFunc = null)
+        {
+            float rst = -1f;
+            if (hasSceneLoad)
+            {
+                if (!sync)
+                {
+                    rst = 1f;
+                    SceneManager.LoadScene(sceneName, mode);
+                }
+                else
+                {
+                    rst = 0f;
+                    AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, mode);
+                    operation.allowSceneActivation = false;
+                    StartCoroutine(onLoadingSceneSync(operation, callback, luaFunc));
+                    return;
+                }
+
+            }
+            if (null != callback)
+            {
+                callback(rst);
+            }
+            if (null != luaFunc)
+            {
+                luaFunc.Call<bool>(hasSceneLoad);
+                luaFunc.Dispose();
+            }
+            return;
+        }
+
+        IEnumerator onLoadingSceneSync(AsyncOperation operation, Action<float> calback, LuaFunction luaCall)
+        {
+            if (null == operation)
+            {
+                yield break;
+            }
+            while (!operation.isDone)
+            {
+                yield return null;
+                if (operation.progress >= 0.9f)
+                {
+                    operation.allowSceneActivation = true;
+                }
+                if (null != calback)
+                {
+                    calback(operation.progress);
+                }
+                if (luaCall != null)
+                {
+                    luaCall.Call<float>(operation.progress);
+                    //luaFunc = null;
+                }
+            }
+            if (luaCall != null)
+            {
+                luaCall.Dispose();
+            }
+            yield break;
+        }
         #endregion
 
         #region -----------------------方便lua使用的函数 begin--------------------------

@@ -95,7 +95,7 @@ namespace GameFramework
                 }
                 else
                 {
-                    Y3Tools.CheckDirExists(Directory.GetParent(newPath).FullName, true);
+                    CheckDirExists(Directory.GetParent(newPath).FullName, true);
                 }
                 FileInfo fi = new FileInfo(oriPath);
                 fi.MoveTo(newPath);
