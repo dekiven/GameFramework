@@ -268,6 +268,7 @@ namespace GameFramework
         public IEnumerator UpdateServerRes(string[] urls, Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
             string filePath = GetConfigPath();
+            int idx = 0;
             foreach (var url in urls)
             {
                 if(!string.IsNullOrEmpty(url))
@@ -275,7 +276,7 @@ namespace GameFramework
                     string confUrl = Tools.PathCombine(url, filePath);
                     WWW www = new WWW(confUrl);
                     LogFile.Log("检查服务器资源配置文件:" + confUrl);
-                    updateMsgInfo("检查服务器资源配置文件");
+                    updateMsgInfo(string.Format("检查服务器{0}资源...", ++idx));
                     yield return checkWWWTimeOut(www, 15f);
                     if(isTimeOut)
                     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 namespace GameFramework
 {
@@ -13,6 +14,8 @@ namespace GameFramework
         //Game
 
         ResUpdateView mUpdateView;
+
+        bool progressThreadEvent = false;
 
         void Awake()
         {
@@ -94,6 +97,21 @@ namespace GameFramework
             LogFile.Log("TestLoadRes");
             mLuaMgr.InitStart();
             mLuaMgr.CallGlobalFunc("TestLoadRes");
+
+            //根据progressThreadEvent判定是否启用线程处理线程上的事件
+            if(progressThreadEvent)
+            {
+                Loom.RunAsync(delegate ()
+                {
+                    while (progressThreadEvent)
+                    {
+                        Thread.Sleep(20);
+                        EventManager.progressThreadEvents();
+                    }
+
+                });
+            }
+
         }
 
         /// <summary>

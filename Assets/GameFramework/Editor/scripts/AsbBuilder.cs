@@ -27,6 +27,9 @@ namespace GameFramework
             }
             Tools.CheckDirExists(path, true);
             BuildPipeline.BuildAssetBundles(path, BuildAssetBundleOptions.None, target);
+
+            renameFiles();
+
             AssetDatabase.Refresh();
         }
 

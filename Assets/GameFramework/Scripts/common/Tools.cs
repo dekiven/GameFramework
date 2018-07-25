@@ -194,7 +194,10 @@ namespace GameFramework
 
             string pre = "file://";
 #if UNITY_ANDROID
-            pre = "";
+            if(Application.isMobilePlatform)
+            {                
+                pre = "";
+            }
 #endif
             return pre + path;
         }
@@ -264,6 +267,10 @@ namespace GameFramework
         /// <param name="resPath">Res path.</param>
         public static string GetResInAssetsName(string asbPath, string resPath)
         {
+            if(resPath[0] == '.')
+            {
+                return PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, asbPath+resPath);
+            }
             return PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, asbPath, resPath);
         }
         /// <summary>

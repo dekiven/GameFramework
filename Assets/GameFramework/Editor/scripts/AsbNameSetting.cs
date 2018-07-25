@@ -90,15 +90,14 @@ namespace GameFramework
         {
             AssetImporter importer = AssetImporter.GetAtPath(resPath);
             //test
-
-            if (bundleName.EndsWith(".unity3d.unity3d", System.StringComparison.Ordinal))
-            {
-                System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(new System.Diagnostics.StackFrame(true));
-                System.Diagnostics.StackFrame sf = st.GetFrame(0);
-                Debug.LogError(sf.ToString());
-                string s = bundleName;
-                Debug.LogError(bundleName);
-            }
+            //if (!string.IsNullOrEmpty(bundleName) && bundleName.EndsWith(".unity3d.unity3d", System.StringComparison.Ordinal))
+            //{
+            //    System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(new System.Diagnostics.StackFrame(true));
+            //    System.Diagnostics.StackFrame sf = st.GetFrame(0);
+            //    Debug.LogError(sf.ToString());
+            //    string s = bundleName;
+            //    Debug.LogError(bundleName);
+            //}
             if (importer && importer.assetBundleName != bundleName)
             {
                 if (skipIfHas && !string.IsNullOrEmpty(importer.assetBundleName))

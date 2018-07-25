@@ -124,22 +124,18 @@ namespace GameFramework
             if (loader.beZip)
             {
                 loader.AddBundle("lua.unity3d");
-                //loader.AddBundle("lua_math.unity3d");
                 loader.AddBundle("lua_system.unity3d");
                 loader.AddBundle("lua_system_reflection.unity3d");
                 loader.AddBundle("lua_unityengine.unity3d");
                 loader.AddBundle("lua_common.unity3d");
-                loader.AddBundle("lua_logic.unity3d");
-                loader.AddBundle("lua_view.unity3d");
-                loader.AddBundle("lua_controller.unity3d");
                 loader.AddBundle("lua_misc.unity3d");
 
                 loader.AddBundle("lua_protobuf.unity3d");
-                loader.AddBundle("lua_3rd_cjson.unity3d");
-                loader.AddBundle("lua_3rd_luabitop.unity3d");
-                loader.AddBundle("lua_3rd_pbc.unity3d");
-                loader.AddBundle("lua_3rd_pblua.unity3d");
-                loader.AddBundle("lua_3rd_sproto.unity3d");
+                //loader.AddBundle("lua_3rd_cjson.unity3d");
+                //loader.AddBundle("lua_3rd_luabitop.unity3d");
+                //loader.AddBundle("lua_3rd_pbc.unity3d");
+                //loader.AddBundle("lua_3rd_pblua.unity3d");
+                //loader.AddBundle("lua_3rd_sproto.unity3d");
 
             }
         }
@@ -154,7 +150,7 @@ namespace GameFramework
                 //loader.AddBundle("lua_netparser.unity3d");
                 ////test
                 //loader.AddBundle("lua_test.unity3d");
-                //loader.AddBundle("lua_framework.unity3d");
+                loader.AddBundle("lua_common.unity3d");
             }
 
         }

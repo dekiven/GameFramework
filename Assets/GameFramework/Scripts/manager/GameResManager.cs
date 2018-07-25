@@ -25,6 +25,9 @@ namespace GameFramework
         Dictionary<string, AssetBundleInfo> m_LoadedAssetBundles = new Dictionary<string, AssetBundleInfo>();
         Dictionary<string, List<LoadAssetRequest>> m_LoadRequests = new Dictionary<string, List<LoadAssetRequest>>();
 
+        Dictionary<string, Dictionary<string, int>> mGroups
+ = new Dictionary<string, Dictionary<string, int>>();
+
         string mResPath = "";
 
         public void Initialize(Action initOK, string manifestName = GameConfig.STR_ASB_MANIFIST)
@@ -51,7 +54,8 @@ namespace GameFramework
 
         /// <summary>
         /// 从Assetbundle或者原始资源中加载一个资源，编辑器和正式游戏均使用本函数加载资源
-        /// 注意：lua回调是gameobjectlist，c#是gameobject
+        /// 注意： 1.lua回调是gameobjectlist，c#是gameobject
+        ///       2.如果是load单个文件以文件的名字定义的AssetBundle名，resName 只填后缀  
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="asbPath"></param>
@@ -82,20 +86,21 @@ namespace GameFramework
             else
             {
                 string asbName = Tools.GetAsbName(asbPath);
-                if (!mAllBundles.Contains(asbName))
-                {
-                    asbName = Tools.GetAsbName(asbPath, true);
-                }
+                // if (!mAllBundles.Contains(asbName))
+                // {
+                //     asbName = Tools.GetAsbName(asbPath, true);
+                // }
                 LoadAsset<T>(
                     asbName
                     , new string[] { resName, }
                     , delegate (UObj[] objs)
                     {
-                    //LogFile.Log("LoadRes -> loadAsset 回调，asbName:{0}, obj.length:{1}", asbName, objs.Length);
+                        //LogFile.Log("LoadRes -> loadAsset 回调，asbName:{0}, obj.length:{1}", asbName, objs.Length);
                         if (null != action && objs.Length == 1)
                         {
                             action(objs[0]);
-                        }else if(null != action && objs.Length == 0 && string.IsNullOrEmpty(resName))
+                        }
+                        else if (null != action && objs.Length == 0 && string.IsNullOrEmpty(resName))
                         {
                             action(null);
                         }
@@ -194,6 +199,51 @@ namespace GameFramework
         }
 
         /// <summary>
+        /// 将asb 添加到分组并计数，需要释放的时候统一释放某一个组
+        /// </summary>
+        /// <param name="asbName">Asb name.</param>
+        /// <param name="groupName">Group name.</param>
+        public void CountAsbGroup(string asbName, string groupName)
+        {
+            Dictionary<string, int> group;
+            if(!mGroups.TryGetValue(groupName, out group))
+            {
+                group = new Dictionary<string, int>();
+            }
+            if(group.ContainsKey(asbName))
+            {
+                group[asbName] += 1;
+            }else
+            {
+                group[asbName] = 1;
+            }
+            mGroups[groupName] = group;
+        }
+
+        /// <summary>
+        /// 统一释放某一组资源
+        /// </summary>
+        /// <param name="groupName">Group name.</param>
+        public void UnloadAsbGroup(string groupName)
+        {
+            Dictionary<string, int> group;
+            if (mGroups.TryGetValue(groupName, out group))
+            {
+                foreach(var asbInfo in group)
+                {
+                    string asbName = Tools.GetAsbName(asbInfo.Key);
+                    if(!string.IsNullOrEmpty(asbName))
+                    {
+                        for (int i = 0; i < asbInfo.Value; i++)
+                        {
+                            UnloadAssetBundle(asbName);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 此函数交给外部卸载专用，自己调整是否需要彻底清除AB
         /// </summary>
         /// <param name="abName"></param>
@@ -202,8 +252,8 @@ namespace GameFramework
         {
             abName = Tools.GetAsbName(abName);
             Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);
-            UnloadAssetBundleInternal(abName, isThorough);
-            UnloadDependencies(abName, isThorough);
+            unloadAssetBundleInternal(abName, isThorough);
+            unloadDependencies(abName, isThorough);
             Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory after unloading " + abName);
         }
 
@@ -375,7 +425,7 @@ namespace GameFramework
             return bundle;
         }
 
-        void UnloadDependencies(string abName, bool isThorough)
+        void unloadDependencies(string abName, bool isThorough)
         {
             string[] dependencies = null;
             if (!m_Dependencies.TryGetValue(abName, out dependencies))
@@ -384,12 +434,12 @@ namespace GameFramework
             // Loop dependencies.
             foreach (var dependency in dependencies)
             {
-                UnloadAssetBundleInternal(dependency, isThorough);
+                unloadAssetBundleInternal(dependency, isThorough);
             }
             m_Dependencies.Remove(abName);
         }
 
-        void UnloadAssetBundleInternal(string abName, bool isThorough)
+        void unloadAssetBundleInternal(string abName, bool isThorough)
         {
             AssetBundleInfo bundle = GetLoadedAssetBundle(abName);
             if (bundle == null) return;
@@ -494,7 +544,7 @@ namespace GameFramework
             }
             if (null != luaFunc)
             {
-                luaFunc.Call<bool>(hasSceneLoad);
+                luaFunc.Call<float>(rst);
                 luaFunc.Dispose();
             }
             return;
