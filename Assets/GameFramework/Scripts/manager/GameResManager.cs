@@ -55,7 +55,7 @@ namespace GameFramework
         /// <summary>
         /// 从Assetbundle或者原始资源中加载一个资源，编辑器和正式游戏均使用本函数加载资源
         /// 注意： 1.lua回调是gameobjectlist，c#是gameobject
-        ///       2.如果是load单个文件以文件的名字定义的AssetBundle名，resName 只填后缀  
+        ///       2.如果是load单个文件以文件的名字定义的AssetBundle名(默认是以文件夹名为bundle名字，这是特殊情况)，resName 只填后缀  
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="asbPath"></param>
@@ -466,17 +466,18 @@ namespace GameFramework
         private void loadRes<T>(string path, string[] assetNames, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
         {
             string fullPath = Tools.GetResPath(path);
-            if (!Directory.Exists(fullPath))
-            {
-                fullPath = Directory.GetParent(path).FullName;
-                path = Tools.RelativeTo(fullPath, mResPath);
-            }
+            //if (!Directory.Exists(fullPath))
+            //{
+            //    fullPath = Directory.GetParent(path).FullName;
+            //    path = Tools.RelativeTo(fullPath, mResPath);
+            //}
             List<string> names = new List<string>();
             foreach (var name in assetNames)
             {
                 //if (!string.IsNullOrEmpty(name))
                 //{
-                names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, name));
+                //names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, name));
+                names.Add(Tools.GetResInAssetsName(path, name));
                 //}
             }
             StartCoroutine(onLoadRes<T>(names.ToArray(), action, luaFunc));

@@ -63,7 +63,7 @@ namespace GameFramework
         {
             lua.DoFile("GameMain.lua");
 
-            LuaFunction main = lua.GetFunction("GameMain");
+            LuaFunction main = GetFunction("GameMain");
             main.Call();
         }
 
@@ -73,7 +73,7 @@ namespace GameFramework
         /// <param name="funcName">Func name.</param>
         public void CallGlobalFunc(string funcName)
         {
-            LuaFunction func = lua.GetFunction(funcName);
+            LuaFunction func = GetFunction(funcName);
             if(null != func)
             {
                 func.Call();
@@ -184,26 +184,31 @@ namespace GameFramework
             lua.DoFile(filename);
         }
 
-        public object[] CallFunction(string funcName, params object[] args)
+        public LuaFunction GetFunction(string funcName)
         {
-            LuaFunction func = lua.GetFunction(funcName);
-            if (func != null)
-            {
-                //int oldTop = func.BeginPCall();
-                //for (int i = 0; i < args.Length; i++)
-                //{
-                //    func.PushGeneric(args[i]);
-                //}
-
-                //func.PCall();
-                //TODO：返回值
-                //object ret1 = func.CheckObjects(oldTop);
-                //func.EndPCall();
-                //return ret1;
-                return func.LazyCall(args);
-            }
-            return null;
+            return lua.GetFunction(funcName);
         }
+
+        //public object[] CallFunction(string funcName, params object[] args)
+        //{
+        //    LuaFunction func = lua.GetFunction(funcName);
+        //    if (func != null)
+        //    {
+        //        //int oldTop = func.BeginPCall();
+        //        //for (int i = 0; i < args.Length; i++)
+        //        //{
+        //        //    func.PushGeneric(args[i]);
+        //        //}
+
+        //        //func.PCall();
+        //        //TODO：返回值
+        //        //object ret1 = func.CheckObjects(oldTop);
+        //        //func.EndPCall();
+        //        //return ret1;
+        //        return func.LazyCall(args);
+        //    }
+        //    return null;
+        //}
 
         public void LuaGC()
         {

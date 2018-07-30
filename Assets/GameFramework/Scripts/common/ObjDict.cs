@@ -1,0 +1,91 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace GameFramework
+{
+    public class ObjDict<T> where T : class
+    {
+
+        #region delegate
+        public delegate void DisposeDelegate(ref T obj);
+        #endregion
+
+        private Dictionary<string, Dictionary<string, T>> mDict = new Dictionary<string, Dictionary<string, T>>();
+        public DisposeDelegate DisposeCallback;
+        /// <summary>
+        /// 同名的资源在多次载入的时候是否先处理Dispose回调
+        /// </summary>
+        public bool ReleaseBeforeReAdd = false;
+
+        public ObjDict() : this(null){}
+
+        public ObjDict(DisposeDelegate dispose)
+        {
+            DisposeCallback = dispose;
+        }
+
+        public void AddObj(string dictName, string key, T obj)
+        {
+            Dictionary<string, T> dict;
+            if(!mDict.TryGetValue(dictName, out dict))
+            {
+                dict = new Dictionary<string, T>();
+            }
+            if(dict.ContainsKey(key))
+            {
+                LogFile.Log("{0} 已经有{1}存在！", dictName, key);
+                T oriObj = dict[key];
+                if(!Equals(obj, oriObj))
+                {
+                    if(null != DisposeCallback && ReleaseBeforeReAdd)
+                    {
+                        DisposeCallback(ref oriObj);
+                    }
+                }
+            }
+            dict[key] = obj;
+        }
+
+        public T GetObj(string dictName, string key)
+        {
+            T audio = null;
+            Dictionary<string, T> audios;
+            if (mDict.TryGetValue(dictName, out audios))
+            {
+                if (audios.TryGetValue(key, out audio))
+                {
+                    return audio;
+                }
+            }
+            return audio;
+        }
+
+        public void ClearSubDict(string dictName)
+        {
+            Dictionary<string, T> dict;
+            if (mDict.TryGetValue(dictName, out dict))
+            {
+                if (null != DisposeCallback)
+                {
+                    foreach (var item in dict)
+                    {
+                        T obj = item.Value;
+                        DisposeCallback(ref obj);
+                    }
+                }
+
+                dict.Clear();
+                mDict.Remove(dictName);
+            }
+        }
+
+
+        public void ClearAll()
+        {
+            foreach (var dictName in mDict.Keys)
+            {
+                ClearSubDict(dictName);
+            }
+        }
+    }
+}

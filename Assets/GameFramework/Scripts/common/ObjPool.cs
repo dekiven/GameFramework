@@ -7,14 +7,17 @@ namespace GameFramework
 {
     public class ObjPool<T> : IDisposable where T : class 
     {
+        #region delegates
         public delegate bool OnGetDelegate(ref T obj);
         public delegate bool OnDisposeDelegate(ref T obj);
         public delegate bool OnRecoverDelegate(T obj);
+        #endregion
 
-        //private readonly List<T> mStack = new List<T>();
-        private OnGetDelegate mOnGet;
-        private OnRecoverDelegate mOnRecover;
-        private OnDisposeDelegate mOnDispose;
+        public OnGetDelegate OnGetCallback;
+        public OnRecoverDelegate OnRecoverCallback;
+        public OnDisposeDelegate OnDisposeCallback;
+
+
         private Queue<T> mQueue = new Queue<T>();
 
         public ObjPool() : this(null, null, null){}
@@ -23,15 +26,15 @@ namespace GameFramework
 
         public ObjPool(OnGetDelegate onGet, OnRecoverDelegate onRecover, OnDisposeDelegate onDispose)
         {
-            mOnGet = onGet;
-            mOnRecover = onRecover;
-            mOnDispose = onDispose;
+            OnGetCallback = onGet;
+            OnRecoverCallback = onRecover;
+            OnDisposeCallback = onDispose;
         }
 
         public T Get()
         {
             T obj = mQueue.Dequeue();
-            if (null != mOnGet && mOnGet(ref obj))
+            if (null != OnGetCallback && OnGetCallback(ref obj))
             {
                 return obj;
             }
@@ -46,9 +49,9 @@ namespace GameFramework
             if(!mQueue.Contains(obj))
             {
                 mQueue.Enqueue(obj);
-                if (null != mOnRecover)
+                if (null != OnRecoverCallback)
                 {
-                    return mOnRecover(obj);
+                    return OnRecoverCallback(obj);
                 }
                 {
                     return true;
@@ -59,12 +62,12 @@ namespace GameFramework
 
         public void Dispose()
         {
-            if(null != mOnDispose)
+            if(null != OnDisposeCallback)
             {
                 for (int i = 0; i < Count; ++i)
                 {
                     T obj = mQueue.Dequeue();
-                    mOnDispose(ref obj);
+                    OnDisposeCallback(ref obj);
                 }
             }else
             {
@@ -72,8 +75,8 @@ namespace GameFramework
             }
 
             mQueue = null;
-            mOnGet = null;
-            mOnRecover = null;
+            OnGetCallback = null;
+            OnRecoverCallback = null;
         }
 
         public int Count { get { return mQueue.Count; } }
