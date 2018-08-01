@@ -16,6 +16,80 @@ namespace GameFramework
         /// 在获取assetbundle的文件名必须为小写，后缀大写可能造成不能读取资源
         /// </summary>
         public const string STR_ASB_EXT = ".unity3d";
+
+        #region 私有常量
+        private const string STR_KEY_IS_BGM = "IsPlayBgm";
+        private const string STR_KEY_IS_SOUND = "IsPlaySound";
+        private const string STR_KEY_BGM_V = "BgmVolume";
+        private const string STR_KEY_SOUND_V = "SoundVolume";
+        #endregion
+        //静态常量 end==============================================================
+
+        //业务逻辑 begin--------------------------------------------------------------
+        public static bool IsPlayBgm { get { return GetBool(STR_KEY_IS_BGM); } internal set {SetBool(STR_KEY_IS_BGM, value);} }
+        public static bool IsPlaySound { get { return GetBool(STR_KEY_IS_SOUND); } internal set { SetBool(STR_KEY_IS_SOUND, value); } }
+        public static float BGMVolume { get { return GetFloat(STR_KEY_BGM_V); } internal set { SetFloat(STR_KEY_BGM_V, value); } }
+        public static float SoundVolume { get { return GetFloat(STR_KEY_SOUND_V); } internal set { SetFloat(STR_KEY_SOUND_V, value); } }
+
+
+        //配置是否在Assetbundle情况下使用luajit编译lua代码再打包
+        public static bool encodeLua = false;
+#if UNITY_EDITOR
+        //配置是否使用Assetbundle
+        public static bool useAsb = false;
+
+#else
+    // 注意，非编辑器模式下 useAsb只能为true，请勿修改，要在编辑器模式下不使用asb请修改上面的useAsb值
+    public static bool useAsb = true;
+#endif
+        
+        public static bool GetBool(string key, bool def=false)
+        {
+            return PlayerPrefs.GetInt(key, def?1:0) > 0; 
+        }
+
+        public static void SetBool(string key, bool value)
+        {
+            PlayerPrefs.SetInt(key, value ? 1 : 0);
+        }
+        
+        public static int GetInt(string key, int def=0)
+        {
+            return PlayerPrefs.GetInt(key, def);
+        }
+
+        public static void SetInt(string key, int value)
+        {
+            PlayerPrefs.SetInt(key, value);
+        }
+
+        public static float GetFloat(string key, float def=0f)
+        {
+            return PlayerPrefs.GetFloat(key, def);
+        }
+
+        public static void SetFloat(string key, float value)
+        {
+            PlayerPrefs.SetFloat(key, value);
+        }
+
+        public static string GetStr(string key, string def = "")
+        {
+            return PlayerPrefs.GetString(key, def);
+        }
+
+        public static void SetStr(string key, string value)
+        {
+            PlayerPrefs.SetString(key, value);
+        }
+
+        public static void DeleteKey(string key)
+        {
+            PlayerPrefs.DeleteKey(key);
+        }
+        //业务逻辑 end================================================================
+
+
         public const string STR_ASB_MANIFIST =
 #if UNITY_EDITOR
         "pc";
@@ -30,85 +104,5 @@ namespace GameFramework
 #else
         "pc";
 #endif
-        //静态常量 end==============================================================
-
-        //单例模式 begin------------------------------------------------------------
-        private static GameConfig sGameConfig = null;
-        private static object sSyncObj = new object();
-
-        private GameConfig()
-        {
-            //LoadConfig();
-        }
-
-        public static GameConfig Instance
-        {
-            get
-            {
-                if (sGameConfig == null)
-                {
-                    lock (sSyncObj)
-                    {
-                        if (sGameConfig == null)
-                        {
-                            sGameConfig = new GameConfig();
-                        }
-                    }
-                }
-                return sGameConfig;
-            }
-        }
-        //单例模式 end================================================================
-
-
-        //业务逻辑 begin--------------------------------------------------------------
-        
-        //配置是否在Assetbundle情况下使用luajit编译lua代码再打包
-        public bool encodeLua = false;
-#if UNITY_EDITOR
-        //配置是否使用Assetbundle
-        public bool useAsb = false;
-#else
-    // 注意，非编辑器模式下 useAsb只能为true，请勿修改，要在编辑器模式下不使用asb请修改上面的useAsb值
-    public bool useAsb = true;
-#endif
-
-
-
-        private IDictionary<string, string> mConfDic = new Dictionary<string, string>();
-        private string mConfigPath = Tools.PathCombine(Application.streamingAssetsPath, "gameConfig");
-
-        public void LoadConfig()
-        {
-            Tools.CheckFileExists(mConfigPath, true);
-            var config = Resources.Load<TextAsset>(mConfigPath);
-            if (null != config)
-            {
-                var text = config.text;
-                var lines = text.Split('\n');
-                var regex = new Regex("\"(.*)\":\"(.*)\"");
-                foreach (var item in lines)
-                {
-                    var m = regex.Match(item.Trim());
-                    if (null != m)
-                    {
-                        mConfDic[m.Groups[0].ToString()] = m.Groups[1].ToString();
-                    }
-
-                }
-            }
-        }
-
-        public string GetConf(string key)
-        {
-            string value = string.Empty;
-            mConfDic.TryGetValue(key, out value);
-            return value;
-        }
-
-        //业务逻辑 end================================================================
-
-
     }
-
 }

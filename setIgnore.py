@@ -14,6 +14,7 @@ ignoreList = [
     'Generate',
     '*.csproj',
     '*.sln',
+    '*.log'
 ]
 
 f = open('.gitignore', 'w')

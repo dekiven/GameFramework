@@ -239,7 +239,7 @@ namespace GameFramework
         //Android、ios需要将StreamingAssets文件夹下的资源拷贝到可读写文件夹下
         public void CheckLocalCopy(Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
-            if (GameConfig.Instance.useAsb){
+            if (GameConfig.useAsb){
                 Debug.LogWarning("CopyFolder");
                 StartCoroutine(CheckLocalResVer(delegate (ResInfo[] resList) {
                     StartCoroutine(CopyWWWFiles(resList, "", callback, luaCallback));
@@ -590,7 +590,7 @@ namespace GameFramework
         public void CheckServerRes(Action<float, string> callback = null, LuaFunction luaCallback=null)
         {
             updateMsgInfo("检查服务器资源...");
-            if(!GameConfig.Instance.useAsb)
+            if(!GameConfig.useAsb)
             {
                 float rate = 1;
                 string msg = "不使用Assetbundle不通过服务器更新资源";

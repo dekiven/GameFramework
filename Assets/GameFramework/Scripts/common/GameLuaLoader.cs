@@ -12,7 +12,7 @@ namespace GameFramework
         public GameLuaLoader()
         {
             instance = this;
-            beZip = GameConfig.Instance.useAsb;
+            beZip = GameConfig.useAsb;
         }
 
         /// <summary>

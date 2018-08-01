@@ -182,7 +182,7 @@ namespace GameFramework
             };
             foreach (var dir in srcDirs)
             {
-                if (GameConfig.Instance.encodeLua)
+                if (GameConfig.encodeLua)
                 {
                     string sourceDir = dir;
                     string[] files = Directory.GetFiles(sourceDir, "*.lua", SearchOption.AllDirectories);

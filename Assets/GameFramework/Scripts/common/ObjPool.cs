@@ -33,15 +33,16 @@ namespace GameFramework
 
         public T Get()
         {
-            T obj = mQueue.Dequeue();
-            if (null != OnGetCallback && OnGetCallback(ref obj))
+            T obj = null;
+            if(mQueue.Count > 0)
             {
-                return obj;
+                obj = mQueue.Dequeue();
             }
-            else
+            if (null != OnGetCallback)
             {
-                return null;
+                OnGetCallback(ref obj);
             }
+            return obj;
         }
 
         public bool Recover(T obj)

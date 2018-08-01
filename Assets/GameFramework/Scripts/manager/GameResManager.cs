@@ -33,7 +33,7 @@ namespace GameFramework
         public void Initialize(Action initOK, string manifestName = GameConfig.STR_ASB_MANIFIST)
         {
             mResPath = Tools.GetResPath();
-            if (GameConfig.Instance.useAsb)
+            if (GameConfig.useAsb)
             {
                 //这里由于manifest所在的bundle没有后缀名，所以直接走LoadAsset
                 LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate (UObj[] objs)
@@ -64,7 +64,7 @@ namespace GameFramework
         public void LoadRes<T>(string asbPath, string resName, Action<UObj> action = null, LuaFunction luaFunc = null) where T : UObj
         {
             //#if UNITY_EDITOR
-            if (!GameConfig.Instance.useAsb)
+            if (!GameConfig.useAsb)
             {
                 loadRes<T>(
                     asbPath
@@ -119,7 +119,7 @@ namespace GameFramework
         /// <param name="action"></param>
         public void LoadRes<T>(string asbName, string[] names, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
         {
-            if (!GameConfig.Instance.useAsb)
+            if (!GameConfig.useAsb)
             {
                 loadRes<T>(asbName, names, action, luaFunc);
             }
@@ -144,7 +144,7 @@ namespace GameFramework
             string scenePath = Tools.GetResInAssetsName(asbName, sceneName);
             LoadSceneMode mode = add ? LoadSceneMode.Additive : LoadSceneMode.Single;
 #if UNITY_EDITOR
-            if (!GameConfig.Instance.useAsb)
+            if (!GameConfig.useAsb)
             {
                 //Tools.RelativeTo(Tools.GetResPath(Tools.PathCombine(asbName, sceneName)), Application.dataPath, true);
                 Debug.LogWarning(scenePath);
@@ -472,12 +472,12 @@ namespace GameFramework
             //    path = Tools.RelativeTo(fullPath, mResPath);
             //}
             List<string> names = new List<string>();
-            foreach (var name in assetNames)
+            foreach (var _name in assetNames)
             {
                 //if (!string.IsNullOrEmpty(name))
                 //{
                 //names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, name));
-                names.Add(Tools.GetResInAssetsName(path, name));
+                names.Add(Tools.GetResInAssetsName(path, _name));
                 //}
             }
             StartCoroutine(onLoadRes<T>(names.ToArray(), action, luaFunc));
@@ -494,12 +494,12 @@ namespace GameFramework
         {
             List<T> list = new List<T>();
 #if UNITY_EDITOR
-            foreach (var name in assetNames)
+            foreach (var _name in assetNames)
             {
-                T t = AssetDatabase.LoadAssetAtPath<T>(name);
+                T t = AssetDatabase.LoadAssetAtPath<T>(_name);
                 if (t == null)
                 {
-                    LogFile.Error("加载本地零散资源{0}失败，类型：{1}", name, typeof(T));
+                    LogFile.Error("加载本地零散资源{0}失败，类型：{1}", _name, typeof(T));
                 }
                 list.Add(t);
                 //yield return null;

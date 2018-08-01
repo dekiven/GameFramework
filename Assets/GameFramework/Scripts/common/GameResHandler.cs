@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using LuaInterface;
 using UnityEngine;
 
 namespace GameFramework
@@ -8,7 +9,7 @@ namespace GameFramework
     public class GameResHandler<T> where T : UnityEngine.Object
     {
         #region 静态对象
-        static ObjPool<AsbInfo> sInfoPool;
+        private ObjPool<AsbInfo> mInfoPool;
         #endregion
 
         //#region delegates
@@ -31,9 +32,9 @@ namespace GameFramework
 
         public GameResHandler(string group)
         {
-            if (null == sInfoPool)
+            if (null == mInfoPool)
             {
-                sInfoPool = new ObjPool<AsbInfo>(delegate(ref AsbInfo info) {
+                mInfoPool = new ObjPool<AsbInfo>(delegate(ref AsbInfo info) {
                     if(null == info)
                     {
                         info = new AsbInfo();
@@ -116,6 +117,50 @@ namespace GameFramework
             return mDict.GetObj(asbName, assetName);
         }
 
+        public void GetSync(string asbName, string assetName, Action<T> callback=null, LuaFunction luaFunction=null)
+        {
+            T t = Get(asbName, assetName);
+            if(null == t)
+            {
+                string groupName = CurGroup;
+                mResMgr.LoadRes<T>(asbName, assetName, delegate (UnityEngine.Object obj)
+                {
+                    t = obj as T;
+                    if (null != t)
+                    {
+                        onLoad(asbName, assetName, t);
+                        if(null != callback)
+                        {
+                            callback(t);
+                        }
+                        if(null != luaFunction)
+                        {
+                            luaFunction.Call<T>(t);
+                            luaFunction.Dispose();
+                        }
+                    }
+                    else
+                    {
+                        LogFile.Warn("GetSync load:({0},{1})error.", asbName, assetName);
+                    }
+                    mResMgr.CountAsbGroup(asbName, groupName);
+                    addAsb2Group(asbName, groupName);
+                });               
+            }
+            else
+            {
+                if (null != callback)
+                {
+                    callback(t);
+                }
+                if (null != luaFunction)
+                {
+                    luaFunction.Call<T>(t);
+                    luaFunction.Dispose();
+                }
+            }
+        }
+
         public void ClearGroup(string group)
         {
             mResMgr.UnloadAsbGroup(group);
@@ -150,7 +195,7 @@ namespace GameFramework
                         {
                             OnLoadCallbcak(t, info);
                             mList.Remove(info);
-                            sInfoPool.Recover(info);
+                            mInfoPool.Recover(info);
 
                         }
                     }
@@ -163,7 +208,7 @@ namespace GameFramework
                     {
                         OnLoadCallbcak(t, info);
                         mQueue.Dequeue();
-                        sInfoPool.Recover(info);
+                        mInfoPool.Recover(info);
 
                         for (int i = 0; i < mQueue.Count; i++)
                         {
@@ -173,7 +218,7 @@ namespace GameFramework
                             {
                                 OnLoadCallbcak(obj, head);
                                 mQueue.Dequeue();
-                                sInfoPool.Recover(head);
+                                mInfoPool.Recover(head);
                             }
                             else
                             {
@@ -188,7 +233,7 @@ namespace GameFramework
 
         private void addAsbInfo(string asbName, string name, string extral, bool isOrdered)
         {
-            AsbInfo info = sInfoPool.Get();
+            AsbInfo info = mInfoPool.Get();
             info.Set(asbName, name, extral);
             if (isOrdered)
             {
@@ -207,7 +252,7 @@ namespace GameFramework
                 }
             }
             //如果已经在list或者队列里则回收
-            sInfoPool.Recover(info);
+            mInfoPool.Recover(info);
             return;
         }
 
@@ -224,34 +269,5 @@ namespace GameFramework
             }
         }
         #endregion
-    }
-
-    public class AsbInfo : IEquatable<AsbInfo>
-    {
-        public string asbName;
-        public string assetName;
-        public string extral;
-
-        public bool Equals(string asbName, string assetName)
-        {
-            return this.asbName.Equals(asbName) && this.assetName.Equals(assetName);
-        }
-
-        public bool Equals(AsbInfo other)
-        {
-            return this.asbName.Equals(other.asbName) && this.assetName.Equals(other.assetName);
-        }
-
-        public static bool Equals(AsbInfo info, AsbInfo info2)
-        {
-            return info.asbName.Equals(info2.asbName) && info.assetName.Equals(info2.assetName);
-        }
-
-        public void Set(string asbName, string assetName, string extral = null)
-        {
-            this.asbName = asbName;
-            this.assetName = assetName;
-            this.extral = extral;
-        }
     }
 }

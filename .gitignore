@@ -10,3 +10,4 @@ Assets/Lua.meta
 Generate
 *.csproj
 *.sln
+*.log

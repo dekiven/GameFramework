@@ -12,10 +12,47 @@ namespace GameFramework
         public const string STR_SOUND = "sound";
 
         //TODO:是否播放和音量设置的相关处理
-        public bool IsPlayBgm { get { return mPlayBgm; } set { mPlayBgm = value; } }
-        public bool IsPlaySound { get { return mPlaySound; } set { mPlaySound = value; } }
-        public float BGMVolume { get { return mBgmVolume; } set { mBgmVolume = value; } }
-        public float SoundVolume { get { return mSoundVolume; } set { mSoundVolume = value; } }
+        public bool IsPlayBgm 
+        { 
+            get { return mPlayBgm; } 
+            set 
+            { 
+                mPlayBgm = value;
+                GameConfig.IsPlayBgm = value;
+
+            } 
+        }
+        public bool IsPlaySound 
+        { 
+            get { return mPlaySound; } 
+            set 
+            { 
+                GameConfig.IsPlaySound = value;
+                mPlaySound = value; 
+            } 
+        }
+        public float BGMVolume 
+        { 
+            get { return mBgmVolume; } 
+            set 
+            { 
+                mBgmVolume = value; 
+                GameConfig.BGMVolume = value;
+                if (mBgmSource.isPlaying)
+                {
+                    mBgmSource.volume = value * mCurBgmFade;
+                }
+            } 
+        }
+        public float SoundVolume 
+        { 
+            get { return mSoundVolume; } 
+            set 
+            { 
+                mSoundVolume = value; 
+                GameConfig.SoundVolume = value;
+            } 
+        }
 
         /// <summary>
         /// source对象池
@@ -63,6 +100,12 @@ namespace GameFramework
         #region MonoBehavior
         void Start()
         {
+            //从GameConfig初始化音乐相关的配置
+            mPlayBgm = GameConfig.IsPlayBgm;
+            mPlaySound = GameConfig.IsPlaySound;
+            mBgmVolume = GameConfig.BGMVolume;
+            mSoundVolume = GameConfig.SoundVolume;
+
             mAudios = new GameResHandler<AudioClip>("audio");
             mAudios.OnReleaseCallback = delegate(ref AudioClip audioClip) {
                 audioClip.UnloadAudioData();
@@ -129,8 +172,6 @@ namespace GameFramework
             mAudios.Load(asbName, audioNames);
         }
 
-
-
         public void PlayBgm(string asbName, string audioName, float fadeOutTime = 0f)
         {
             if(!mPlayBgm)
@@ -182,11 +223,6 @@ namespace GameFramework
             }
 
         }
-
-        //public void StopSound(string asbName, string audioName)
-        //{
-            
-        //}
 
         #region private 
         private bool playBgm(AudioClip audioClip, float fadeOutTime)

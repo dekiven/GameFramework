@@ -44,20 +44,21 @@ namespace GameFramework
                 }
             }
             dict[key] = obj;
+            mDict[dictName] = dict;
         }
 
         public T GetObj(string dictName, string key)
         {
-            T audio = null;
-            Dictionary<string, T> audios;
-            if (mDict.TryGetValue(dictName, out audios))
+            T obj = null;
+            Dictionary<string, T> objs;
+            if (mDict.TryGetValue(dictName, out objs))
             {
-                if (audios.TryGetValue(key, out audio))
+                if (objs.TryGetValue(key, out obj))
                 {
-                    return audio;
+                    return obj;
                 }
             }
-            return audio;
+            return obj;
         }
 
         public void ClearSubDict(string dictName)
