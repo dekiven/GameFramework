@@ -11,7 +11,7 @@ public class Loom : MonoBehaviour
     static int numThreads;
 
     private static Loom _current;
-    private int _count;
+    //private int _count;
     public static Loom Current
     {
         get
@@ -59,7 +59,7 @@ public class Loom : MonoBehaviour
     }
     public static void QueueOnMainThread(Action action, float time)
     {
-        if (time != 0)
+        if (!Equals(time, 0f))
         {
             lock (Current._delayed)
             {
@@ -92,9 +92,6 @@ public class Loom : MonoBehaviour
         try
         {
             ((Action)action)();
-        }
-        catch
-        {
         }
         finally
         {

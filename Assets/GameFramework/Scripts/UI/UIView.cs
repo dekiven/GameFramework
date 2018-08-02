@@ -10,31 +10,18 @@ namespace GameFramework
     /// </summary>
     public class UIView : UIBase
     {
-        private Action<ViewStatus> mStatusChangeCall;
-        private LuaFunction mStatusChangeLua;
-
-        public void SetStatusListener(Action<ViewStatus> callback)
-        {
-            mStatusChangeCall = callback;
-        }
-
-        public void SetStatusListenerLua(LuaFunction callback)
-        {
-            mStatusChangeLua = callback;
-        }
-
         //默认使用大小等于屏幕的Panel作为View的Root
         protected override void init()
         {
-            base.init();
+            IsInStack = true;
             RectTransform trans = GetComponent<RectTransform>();
             if (Vector2.zero == trans.anchorMin && Vector2.one == trans.anchorMax)
             {
                 //当大小锚点为（0,0）和（1,1）时，表示Root是跟屏幕一样大，这个时候要设置top=0， right= 0，否则显示不正常
-                LogFile.Warn(trans.anchoredPosition.ToString());
+                //LogFile.Warn(trans.anchoredPosition.ToString());
                 trans.offsetMax = Vector2.zero;
             }
-            onStatusChange(ViewStatus.OnInit);
+            base.init();
         }
 
         public Vector2 CalcScreenPosFromWorld(Vector3 wPos, RectTransform rect)
@@ -59,58 +46,6 @@ namespace GameFramework
             return pos;
         }
 
-        void Dispose()
-        {
-            if (null != mStatusChangeCall)
-            {
-                mStatusChangeCall = null;
-            }
-            if (null != mStatusChangeLua)
-            {
-                mStatusChangeLua.Dispose();
-            }
-        }
 
-        #region 状态改变
-        private void onStatusChange(ViewStatus status)
-        {
-            if(null != mStatusChangeCall)
-            {
-                mStatusChangeCall(status);
-            }
-            if(null != mStatusChangeLua)
-            {
-                mStatusChangeLua.Call<int>((int)status);
-            }
-        }
-
-        private void OnEnable()
-        {
-            onStatusChange(ViewStatus.OnEnable);
-        }
-
-        private void OnDisable()
-        {
-            onStatusChange(ViewStatus.OnDisable);
-        }
-
-        private void OnDestroy()
-        {
-            onStatusChange(ViewStatus.OnDestroy);
-            Dispose();
-        }
-
-        #endregion
-    }
-
-    public enum ViewStatus
-    {
-        /// <summary>
-        /// 当View Start时调用
-        /// </summary>
-        OnInit = 0,
-        OnEnable,
-        OnDisable,
-        OnDestroy,
     }
 }

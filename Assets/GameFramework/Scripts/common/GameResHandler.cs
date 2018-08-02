@@ -19,6 +19,7 @@ namespace GameFramework
         public string CurGroup;
         public Action<T, AsbInfo> OnLoadCallbcak;
         public ObjDict<T>.DisposeDelegate OnReleaseCallback {set { if (null != mDict) { mDict.DisposeCallback = value; }}}
+        public string Suffix = null;
 
         #region private 属性
         ObjDict<T> mDict;
@@ -52,6 +53,7 @@ namespace GameFramework
 
         public void Load(string asbName, string assetName, string extral = null, bool isOrdered = false)
         {
+            assetName = FixResName(assetName);
             if (null == Get(asbName, assetName))
             {
                 string groupName = CurGroup;
@@ -79,11 +81,12 @@ namespace GameFramework
             List<string> list = new List<string>();
             foreach (var name in names)
             {
-                if (null == Get(asbName, name))
+                string assetName = FixResName(name);
+                if (null == Get(asbName, assetName))
                 {
-                    list.Add(name);
+                    list.Add(assetName);
                 }
-                addAsbInfo(asbName, name, extral, isOrdered);
+                addAsbInfo(asbName, assetName, extral, isOrdered);
             }
             string groupName = CurGroup;
             mResMgr.LoadRes<T>(asbName, names, delegate (UnityEngine.Object[] obj)
@@ -189,14 +192,14 @@ namespace GameFramework
             {
                 if (mList.Count > 0)
                 {
-                    foreach (var info in mList)
+                    for (int i = mList.Count - 1; i > -1; --i)
                     {
-                        if(info.Equals(asbName, assetName))
+                        AsbInfo info = mList[i];
+                        if (info.Equals(asbName, assetName))
                         {
                             OnLoadCallbcak(t, info);
                             mList.Remove(info);
                             mInfoPool.Recover(info);
-
                         }
                     }
                 }
@@ -233,6 +236,10 @@ namespace GameFramework
 
         private void addAsbInfo(string asbName, string name, string extral, bool isOrdered)
         {
+            if(null == OnLoadCallbcak)
+            {
+                return;
+            }
             AsbInfo info = mInfoPool.Get();
             info.Set(asbName, name, extral);
             if (isOrdered)
@@ -267,6 +274,15 @@ namespace GameFramework
             {
                 l.Add(asbName);
             }
+        }
+
+        public string FixResName(string name)
+        {
+            if (null != Suffix && !name.EndsWith(Suffix))
+            {
+                name = name + Suffix;
+            }
+            return name;
         }
         #endregion
     }

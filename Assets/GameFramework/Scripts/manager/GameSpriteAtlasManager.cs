@@ -8,7 +8,6 @@ namespace GameFramework
 {
     public class GameSpriteAtlasManager : SingletonComp<GameSpriteAtlasManager>, IResHandler<SpriteAtlas>
     {
-        public const string STR_SUFFIX = ".spriteatlas";
         #region private 属性
         private GameResHandler<SpriteAtlas> mSpriteDict;
         #endregion
@@ -17,27 +16,24 @@ namespace GameFramework
         void Awake()
         {
             mSpriteDict = new GameResHandler<SpriteAtlas>("SpriteAtlas");
+            mSpriteDict.Suffix = ".spriteatlas";
         }
         #endregion
 
         #region IResHandler
         public void Load(string asbName, string atlasName)
         {
-            mSpriteDict.Load(asbName, FixResName(atlasName));
+            mSpriteDict.Load(asbName, atlasName);
         }
 
         public void Load(string asbName, string[] resNames)
         {
-            for (int i = 0; i < resNames.Length; i++)
-            {
-                resNames[i] = FixResName(resNames[i]);
-            }
             mSpriteDict.Load(asbName, resNames);
         }
 
         public SpriteAtlas Get(string asbName, string atlasName)
         {
-            return mSpriteDict.Get(asbName, FixResName(atlasName));
+            return mSpriteDict.Get(asbName, atlasName);
         }
 
         public void SetCurGroup(string group)
@@ -48,15 +44,6 @@ namespace GameFramework
         public void ClearGroup(string group)
         {
             mSpriteDict.ClearGroup(group);
-        }
-
-        public string FixResName(string name)
-        {
-            if(!name.EndsWith(STR_SUFFIX))
-            {
-                name = name + STR_SUFFIX;
-            }
-            return name;
         }
         #endregion
 

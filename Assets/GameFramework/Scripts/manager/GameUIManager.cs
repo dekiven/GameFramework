@@ -9,17 +9,22 @@ namespace GameFramework
 {
     public class GameUIManager : SingletonComp<GameUIManager>
     {
-        public const string UIDir = "res/UI";
-
         private Canvas[] mCanvas;
         private Stack<UIBase> mUIViews;
         //private Dictionary<string, UIView> mSingleViewDic;
         //private ObjPool<GameObject> mObjPool;
 
         private EventSystem mEventSystem;
+        private GameResHandler<GameObject> mPrefabs;
 
-        void Start()
+        public bool HasInit { get { return GetCanvasByMode(RenderMode.ScreenSpaceOverlay).enabled; } }
+
+        #region MonoBehaviour
+        void Awake()
         {
+            mPrefabs = new GameResHandler<GameObject>("UI");
+            mPrefabs.OnLoadCallbcak = onLoadPrefab;
+            mPrefabs.Suffix = ".prefab";
 
             mCanvas = new Canvas[Enum.GetValues(typeof(RenderMode)).Length];
             mUIViews = new Stack<UIBase>();
@@ -48,7 +53,9 @@ namespace GameFramework
             eventObj.AddComponent<StandaloneInputModule>();
             eventObj.AddComponent<BaseInput>();
         }
+        #endregion
 
+        #region Canvas 相关
         public Canvas GetCanvasByMode(RenderMode mode)
         {
             Canvas c = mCanvas[(int)mode];
@@ -78,85 +85,50 @@ namespace GameFramework
             //}
             //return false;
         }
+        #endregion
 
-        public string GetUIAsbStr(string name)
+        public void ShowView(string asbName, string prefab, bool isWorldView)
         {
-            //if(!name.StartsWith(preffix) && !string.IsNullOrEmpty(name))
-            //if (!name.StartsWith(UIDir))
-            //{
-            name = Tools.PathCombine(UIDir, name);
-            //}
-            return name;
-        }
-
-        public UIView OpenView(string viewId)
-        {
-            GameResManager.Instance.LoadRes<GameObject>(GetUIAsbStr(viewId), viewId + ".prefab", delegate (UObj obj)
+            if(!HasInit)
             {
-                GameObject prefab = obj as GameObject;
-
-                if (null != prefab)
-                {
-                    UIView view = Instantiate(prefab).GetComponent<UIView>();
-                    if (view != null)
-                    {
-                        view.transform.name = viewId;
-                        pushUI(view);
-                    }
-                    //return ui;
-                }
-            });
-            return null;
-        }
-
-        public bool CloseView(UIView view)
-        {
-            return popView(view);
-        }
-
-        public bool CloseViewByID(string viewID)
-        {
-            return popView(viewID);
-        }
-
-        public bool CloseCurView()
-        {
-            UIBase v = mUIViews.Pop();
-            if (null != v)
-            {
-                removeUIObj(v);
-                return true;
+                LogFile.Warn("GameUIManager尚未初始化");
+                return;
             }
-            return false;
-        }
-
-        public UIWorld NewWorldUI(string viewId)
-        {
-            //TODO:待优化，加载路径等
-            GameResManager.Instance.LoadRes<GameObject>(GetUIAsbStr(viewId), viewId + ".prefab", delegate (UObj obj)
+            GameObject obj = getPrefab(asbName, prefab);
+            if(null != obj)
             {
-                GameObject prefab = obj as GameObject;
-
-                if (null != prefab)
-                {
-                    UIWorld ui = Instantiate(prefab).GetComponent<UIWorld>();
-                    if (ui != null)
-                    {
-                        addUIObj(ui);
-                    }
-                    //return ui;
-                }
-            });
-
-            return null;
+                showView(obj, isWorldView);
+            }
+            else
+            {
+                load(asbName, prefab, isWorldView);
+            }
         }
 
-        public bool ClearAllUI()
+        public void CloseView(UIBase view)
         {
-            return ClearUIByType(RenderMode.ScreenSpaceOverlay) && ClearUIByType(RenderMode.WorldSpace);
+            if(view.IsInStack)
+            {
+                popView(view as UIView);
+            }
+            else
+            {
+                removeUIObj(view);    
+            }
         }
 
-        public bool ClearUIByType(RenderMode type)
+        public void CloseCurView()
+        {
+            
+        }
+
+        public void ClearAllUI()
+        {
+            ClearUIByType(RenderMode.ScreenSpaceOverlay);
+            ClearUIByType(RenderMode.WorldSpace);
+        }
+
+        public void ClearUIByType(RenderMode type)
         {
             Canvas c = GetCanvasByMode(type);
             for (int i = 0; i < c.transform.childCount; ++i)
@@ -164,10 +136,50 @@ namespace GameFramework
                 GameObject child = c.transform.GetChild(i).gameObject;
                 Destroy(child);
             }
-            return true;
         }
 
         #region 私有方法
+
+        private void showView(GameObject prefab, bool isWorldView)
+        {
+            if(null != prefab)
+            {
+                GameObject uiObj = Instantiate(prefab);
+                UIBase ui = uiObj.GetComponent<UIBase>();
+                addUIObj(ui);
+                if(ui.IsInStack)
+                {
+                    if(ui.HideBefor && mUIViews.Count > 0)
+                    {
+                        UIBase curView = mUIViews.Peek();
+                        if(curView.isActiveAndEnabled)
+                        {
+                            curView.Hide((bool ret) =>
+                            {
+                                pushUI(ui as UIView);
+                                ui.Show(null);
+                            });
+                            return;
+                        }
+                    }
+                    //之前的UI隐藏或者本UI被设置为不隐藏之前的UI则不隐藏之前的UI直接push
+                    {
+                        pushUI(ui as UIView);
+                        ui.Show(null);
+                    }
+                }
+                else
+                {
+                    ui.Show(null);
+                }
+            }
+        }
+
+        private void load(string asbName, string prefab, bool isWorldView)
+        {
+            mPrefabs.Load(asbName, prefab, isWorldView ? "y" : "n");
+        }
+
         bool addUIObj(UIBase obj)
         {
             if (null != obj)
@@ -196,11 +208,10 @@ namespace GameFramework
 
         bool pushUI(UIView view)
         {
-            //TODO:
             if (null != view)
             {
                 mUIViews.Push(view);
-                addUIObj(view);
+                return true;
             }
             return false;
         }
@@ -215,20 +226,37 @@ namespace GameFramework
             //TODO:
             if (null != view && mUIViews.Contains(view))
             {
-                bool ret = false;
-                while (!ret)
+
+                UIBase v = mUIViews.Pop();
+                if (null != v)
                 {
-                    UIBase v = mUIViews.Pop();
-                    if (null != v)
+                    v.Hide((bool hide) =>
                     {
-                        ret = Equals(v, view);
+                        bool ret = Equals(v, view);
                         removeUIObj(v);
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                        if (!ret)
+                        {
+                            popView(view);
+                        }
+                        else
+                        {
+                            if (mUIViews.Count > 0)
+                            {
+                                UIBase cur = mUIViews.Peek();
+                                if (null != cur)
+                                {
+                                    cur.Show(null);
+                                }
+                            }
+                        }
+                    });
+
                 }
+                else
+                {
+                    return false;
+                }
+
                 return true;
             }
             return false;
@@ -243,7 +271,7 @@ namespace GameFramework
                 while (!ret)
                 {
                     UIBase v = mUIViews.Pop();
-                    if(null != v)
+                    if (null != v)
                     {
                         ret = Equals(v.transform.name, viewID);
                         removeUIObj(v);
@@ -257,6 +285,28 @@ namespace GameFramework
             return false;
         }
 
+        private void onLoadPrefab(GameObject prefab, AsbInfo info)
+        {
+            //TODO:test
+            showView(prefab, false);
+        }
+
+        private GameObject getPrefab(string asbName, string resName)
+        {
+            return mPrefabs.Get(asbName, resName);
+        }
         #endregion
+
+
+
+        public void SetCurGroup(string group)
+        {
+            mPrefabs.CurGroup = group;
+        }
+
+        public void ClearGroup(string group)
+        {
+            mPrefabs.ClearGroup(group);
+        }
     }
 }

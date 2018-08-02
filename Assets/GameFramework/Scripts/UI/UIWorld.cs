@@ -29,8 +29,9 @@ namespace GameFramework
 
         protected override void init()
         {
-            base.init();
             IsBillboard = true;
+            IsInStack = false;
+            base.init();
         }
 
         protected override void update()

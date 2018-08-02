@@ -8,6 +8,5 @@ namespace GameFramework
         T Get(string asbName, string resName);
         void SetCurGroup(string group);
         void ClearGroup(string group);
-        string FixResName(string name);
     }
 }

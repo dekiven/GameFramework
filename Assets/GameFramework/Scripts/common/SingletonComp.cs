@@ -11,7 +11,7 @@ namespace GameFramework
     {
         //单例模式组件 begin----------------------------------------------
         private static volatile T sInstance;
-        private static object syncRoot = new object();
+        private static readonly object syncRoot = new object();
         public static T Instance
         {
             get
