@@ -27,7 +27,7 @@ function TestClass:ctor( ... )
     --         end)
     --     end
     -- end)
-    gm.LoadScene('res/Scenes/TestSpriteAtlas', '.unity', true, false, function ( progress )
+    gm.LoadScene('res/Scenes/TestUIManager', '.unity', true, false, function ( progress )
         -- body
         -- printLog('SpriteAtlas 测试场景载入完成！')
         printLog('progress:'..progress)

@@ -22,7 +22,7 @@ public class TestUI : MonoBehaviour {
 	void Update () {
         if(mMgr.HasInit && !hasInit)
         {
-            mMgr.ShowView("res/UI/test", "TestUI.prefab", false);
+            mMgr.ShowView("res/UI/test", "TestUI.prefab");
             hasInit = true;
 
             StartCoroutine(showAnotherUI());
@@ -32,6 +32,9 @@ public class TestUI : MonoBehaviour {
     private IEnumerator showAnotherUI()
     {
         yield return new WaitForSeconds(3);
-        mMgr.ShowView("res/UI/test", "TestUI2", false);
+        mMgr.ShowView("res/UI/test", "TestUI2");
+        yield return new WaitForSeconds(5);
+        //mMgr.ClearAllUI();
+        //mMgr.PopView();
     }
 }

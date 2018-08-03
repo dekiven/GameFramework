@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UObj = UnityEngine.Object;
 
 namespace GameFramework
@@ -37,12 +38,7 @@ namespace GameFramework
                     //TODO: ScreenSpaceCamera 类型必须添加camera，否则相当于一个ScreenSpaceOverlay类型的Canvas
                     continue;
                 }
-                GameObject obj = new GameObject();
-                obj.name = "UICanvas" + (int)r;
-                Canvas c = obj.AddComponent<Canvas>();
-                c.renderMode = r;
-                SetCanvasByMode(c);
-                obj.transform.SetParent(transform);
+                GetCanvasByMode(r);
             }
 
             //给UI管理器添加EventSyetem
@@ -51,7 +47,7 @@ namespace GameFramework
             eventObj.name = "EventSystem";
             mEventSystem = eventObj.AddComponent<EventSystem>();
             eventObj.AddComponent<StandaloneInputModule>();
-            eventObj.AddComponent<BaseInput>();
+            //eventObj.AddComponent<BaseInput>();
         }
         #endregion
 
@@ -61,8 +57,13 @@ namespace GameFramework
             Canvas c = mCanvas[(int)mode];
             if (c == null)
             {
-                c = gameObject.AddComponent<Canvas>();
+                GameObject obj = new GameObject();
+                c = obj.AddComponent<Canvas>();
+                obj.name = "Canvas_s" + mode.ToString();
                 c.renderMode = mode;
+                obj.AddComponent<GraphicRaycaster>();
+                SetCanvasByMode(c);
+                obj.transform.SetParent(transform);
             }
             return c;
         }
@@ -87,7 +88,7 @@ namespace GameFramework
         }
         #endregion
 
-        public void ShowView(string asbName, string prefab, bool isWorldView)
+        public void ShowView(string asbName, string prefab)
         {
             if(!HasInit)
             {
@@ -97,11 +98,11 @@ namespace GameFramework
             GameObject obj = getPrefab(asbName, prefab);
             if(null != obj)
             {
-                showView(obj, isWorldView);
+                showView(obj);
             }
             else
             {
-                load(asbName, prefab, isWorldView);
+                load(asbName, prefab);
             }
         }
 
@@ -117,14 +118,20 @@ namespace GameFramework
             }
         }
 
-        public void CloseCurView()
+        public void PopView()
         {
-            
+            UIView view = null;
+            if (mUIViews.Count > 0)
+            {
+                view = mUIViews.Peek() as UIView;
+                popView(view);
+            }
         }
 
         public void ClearAllUI()
         {
             ClearUIByType(RenderMode.ScreenSpaceOverlay);
+            //ClearUIByType(RenderMode.ScreenSpaceCamera);
             ClearUIByType(RenderMode.WorldSpace);
         }
 
@@ -136,48 +143,58 @@ namespace GameFramework
                 GameObject child = c.transform.GetChild(i).gameObject;
                 Destroy(child);
             }
+            if(RenderMode.ScreenSpaceOverlay == type)
+            {
+                mUIViews.Clear();
+            }
         }
 
         #region 私有方法
 
-        private void showView(GameObject prefab, bool isWorldView)
+        private void showView(GameObject prefab)
         {
             if(null != prefab)
             {
                 GameObject uiObj = Instantiate(prefab);
                 UIBase ui = uiObj.GetComponent<UIBase>();
                 addUIObj(ui);
-                if(ui.IsInStack)
+                //要显示UI先SetActive(true)，防止有UIprefab中没有启用，不会进入Start方法
+                uiObj.SetActive(true);
+                //UI初始化后才Show（播放显示动画）
+                ui.OnInitCallbcak = (bool hasInit) =>
                 {
-                    if(ui.HideBefor && mUIViews.Count > 0)
+                    if (ui.IsInStack)
                     {
-                        UIBase curView = mUIViews.Peek();
-                        if(curView.isActiveAndEnabled)
+                        if (ui.HideBefor && mUIViews.Count > 0)
                         {
-                            curView.Hide((bool ret) =>
+                            UIBase curView = mUIViews.Peek();
+                            if (curView.isActiveAndEnabled)
                             {
-                                pushUI(ui as UIView);
-                                ui.Show(null);
-                            });
-                            return;
+                                curView.Hide((bool ret) =>
+                                {
+                                    pushUI(ui as UIView);
+                                    ui.Show(null);
+                                });
+                                return;
+                            }
+                        }
+                        //之前的UI隐藏或者本UI被设置为不隐藏之前的UI则不隐藏之前的UI直接push
+                        {
+                            pushUI(ui as UIView);
+                            ui.Show(null);
                         }
                     }
-                    //之前的UI隐藏或者本UI被设置为不隐藏之前的UI则不隐藏之前的UI直接push
+                    else
                     {
-                        pushUI(ui as UIView);
                         ui.Show(null);
                     }
-                }
-                else
-                {
-                    ui.Show(null);
-                }
+                };
             }
         }
 
-        private void load(string asbName, string prefab, bool isWorldView)
+        private void load(string asbName, string prefab)
         {
-            mPrefabs.Load(asbName, prefab, isWorldView ? "y" : "n");
+            mPrefabs.Load(asbName, prefab);
         }
 
         bool addUIObj(UIBase obj)
@@ -186,7 +203,6 @@ namespace GameFramework
             {
                 RenderMode mode = obj.GetUIMode();
                 Canvas c = GetCanvasByMode(mode);
-                //if (null != c && null == obj.transform.parent)
                 if (null != c)
                 {
                     obj.transform.SetParent(c.transform);
@@ -223,7 +239,6 @@ namespace GameFramework
         /// <returns>操作是否成功</returns>
         bool popView(UIView view)
         {
-            //TODO:
             if (null != view && mUIViews.Contains(view))
             {
 
@@ -264,7 +279,6 @@ namespace GameFramework
 
         bool popView(string viewID)
         {
-            //TODO:
             if (!string.IsNullOrEmpty(viewID))
             {
                 bool ret = false;
@@ -287,8 +301,7 @@ namespace GameFramework
 
         private void onLoadPrefab(GameObject prefab, AsbInfo info)
         {
-            //TODO:test
-            showView(prefab, false);
+            showView(prefab);
         }
 
         private GameObject getPrefab(string asbName, string resName)

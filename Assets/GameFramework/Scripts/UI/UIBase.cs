@@ -2,6 +2,7 @@
 using System.Collections;
 using LuaInterface;
 using UnityEngine;
+using DG.Tweening;
 
 //参考：http://blog.csdn.net/u011484013/article/details/52182997
 namespace GameFramework
@@ -13,14 +14,31 @@ namespace GameFramework
         #endregion
 
         public bool IsBillboard;
-        protected RenderMode mRenderMode = RenderMode.ScreenSpaceOverlay;
         public UIHandler UIObjs;
         public bool IsInStack;
-
-        //private Action<ViewStatus> mStatusChangeCall;
-        private LuaDictTable mLuaFuncs;
-
         public bool HideBefor = true;
+        /// <summary>
+        /// show和hide的动画时间
+        /// </summary>
+        public float AnimTime = 0.5f;
+        /// <summary>
+        /// show和hide的动画值，可能是缩放大小、某个轴的移动距离等
+        /// </summary>
+        public float AnimValue = 1f;
+        public ViewAnimType AnimType = ViewAnimType.none;
+        public UIAnimResult OnInitCallbcak;
+        /// <summary>
+        /// 动画缓动效果，默认无效果
+        /// </summary>
+        public Ease AnimEase = Ease.Linear;
+
+        protected RenderMode mRenderMode = RenderMode.ScreenSpaceOverlay;
+        //private Action<ViewStatus> mStatusChangeCall;
+
+        private Tween mAnimTween = null;
+        private LuaDictTable mLuaFuncs;
+        private RectTransform mRectTransform;
+
 
         public void SetLuaStatusListeners(LuaDictTable table)
         {
@@ -37,7 +55,7 @@ namespace GameFramework
         /// </summary>
         public void Show(UIAnimResult callback)
         {
-            onStartAnim(ViewStatus.onShow, callback);
+            onStartAnim(ViewStatus.onShowBegin, callback);
         }
 
         /// <summary>
@@ -45,7 +63,7 @@ namespace GameFramework
         /// </summary>
         public void Hide(UIAnimResult callback)
         {
-            onStartAnim(ViewStatus.onHide, callback);
+            onStartAnim(ViewStatus.onHideBegin, callback);
         }
 
         public void Close()
@@ -61,7 +79,13 @@ namespace GameFramework
         #region protected virtual 方法
         protected virtual void init()
         {
-            onStatusChange(ViewStatus.onInit);
+            if(!onLuaStatusChange(ViewStatus.onInit))
+            {
+                if(null != OnInitCallbcak)
+                {
+                    OnInitCallbcak(true);
+                }
+            }
         }
 
         protected virtual void update()
@@ -75,7 +99,9 @@ namespace GameFramework
         protected virtual void onShow(UIAnimResult callback)
         {
             //TODO:实现打开动画，可选择类型
-            callback(true);
+            gameObject.SetActive(true);
+            getAnimTween(AnimType, true, callback);
+            //callback(true);
         }
 
 
@@ -85,7 +111,8 @@ namespace GameFramework
         protected virtual void onHide(UIAnimResult callback)
         {
             //TODO:实现关闭动画，可选择类型
-            callback(true);
+            getAnimTween(AnimType, false, callback);
+            //callback(true);
         }
         #endregion
 
@@ -98,7 +125,7 @@ namespace GameFramework
             transform.rotation = Camera.main.transform.rotation;
         }
 
-        private void onStatusChange(ViewStatus status)
+        private bool onLuaStatusChange(ViewStatus status)
         {
             if(null != mLuaFuncs)
             {
@@ -107,14 +134,16 @@ namespace GameFramework
                 {
                     if (ViewStatus.onInit == status)
                     {
-                        func.Call<UIHandler>(UIObjs);
+                        func.Call<UIHandler, UIAnimResult>(UIObjs, OnInitCallbcak);
                     }
                     else
                     {
                         func.Call();
                     }
                 }
+                return true;
             }
+            return false;
         }
 
         private void onStartAnim(ViewStatus status, UIAnimResult callback)
@@ -123,13 +152,17 @@ namespace GameFramework
             {
                 switch (status)
                 {
-                    case ViewStatus.onHide:
+                    case ViewStatus.onHideBegin:
+                        onLuaStatusChange(ViewStatus.onDisable);
                         gameObject.SetActive(false);
                         break;
-                    case ViewStatus.onShow:
-                        gameObject.SetActive(true);
+                    case ViewStatus.onShowBegin:
+                        onLuaStatusChange(ViewStatus.onEnable);
+                        //gameObject.SetActive(true);
                         break;
                 }
+                //test
+                Debug.LogWarningFormat("status:{0}", status.ToString());
                 if(null != callback)
                 {
                     callback(ret);
@@ -147,10 +180,10 @@ namespace GameFramework
             {
                 switch(status)
                 {
-                    case ViewStatus.onHide :
+                    case ViewStatus.onHideBegin :
                         onHide(_callback);
                         break;
-                    case ViewStatus.onShow :
+                    case ViewStatus.onShowBegin :
                         onShow(_callback);
                         gameObject.SetActive(true);
                         break;
@@ -176,21 +209,88 @@ namespace GameFramework
         }
         #endregion
 
+        #region protected
+        protected void getAnimTween(ViewAnimType animType, bool revert, UIAnimResult result)
+        {
+            if (null != mAnimTween && mAnimTween.IsActive())
+            {
+                mAnimTween.Kill();
+                mAnimTween = null;
+            }
+            switch(animType)
+            {
+                case ViewAnimType.none :
+                    result(true);
+                    break;
+                case ViewAnimType.moveUp :
+                    if (!revert)
+                    {
+                        float posY = mRectTransform.localPosition.y;
+                        mAnimTween = mRectTransform.DOLocalMoveY(posY-AnimValue, AnimTime).SetEase(AnimEase).OnComplete(() => result(true));
+                    }else
+                    {
+                        mAnimTween = mRectTransform.DOLocalMoveY(-AnimValue, AnimTime).From(true).SetEase(AnimEase).OnComplete(() => result(true));
+                    }
+                    break;
+                case ViewAnimType.moveDown :
+                    if (!revert)
+                    {
+                        float posY = mRectTransform.localPosition.y;
+                        mAnimTween = mRectTransform.DOLocalMoveY(posY + AnimValue, AnimTime).SetEase(AnimEase).OnComplete(() => result(true));
+                    }
+                    else
+                    {
+                        mAnimTween = mRectTransform.DOLocalMoveY(AnimValue, AnimTime).From(true).SetEase(AnimEase).OnComplete(() => result(true));
+                    }
+                    break;
+                case ViewAnimType.move2Left :
+                    if (!revert)
+                    {
+                        float posX = mRectTransform.localPosition.x;
+                        mAnimTween = mRectTransform.DOLocalMoveX(posX+AnimValue, AnimTime).OnComplete(() => result(true));
+                    }
+                    else
+                    {
+                        mAnimTween = mRectTransform.DOLocalMoveX(AnimValue, AnimTime).From(true).OnComplete(() => result(true));
+                    }
+                    break;
+                case ViewAnimType.move2Right :
+                    if (!revert)
+                    {
+                        float posX = mRectTransform.localPosition.x;
+                        mAnimTween = mRectTransform.DOLocalMoveX(posX - AnimValue, AnimTime).OnComplete(() => result(true));
+                    }
+                    else
+                    {
+                        mAnimTween = mRectTransform.DOLocalMoveX(-AnimValue, AnimTime).From(true).OnComplete(() => result(true));
+                    }
+                    break;
+                case ViewAnimType.zoom :
+                    if (!revert)
+                    {
+                        mAnimTween = transform.DOScale(0f, AnimTime).OnComplete(() => result(true));
+                    }
+                    else
+                    {
+                        transform.localScale = Vector3.zero;
+                        mAnimTween = transform.DOScale(AnimValue, AnimTime).OnComplete(() => result(true));
+                    }
+                    break;
+            }
+        }
+        #endregion
+
         #region MonoBehaviour
         void Start()
         {
+            mRectTransform = GetComponent<RectTransform>();
+            if(null == mRectTransform)
+            {
+                LogFile.Error("mRectTransform is null");
+                return;
+            }
             IsBillboard = false;
             init();
-
-            //test
-            //TODO:
-            StartCoroutine(destroyAtTime());
-        }
-
-        IEnumerator destroyAtTime()
-        {
-            yield return new WaitForSeconds(10);
-            Close();
         }
 
         void Update()
@@ -204,7 +304,7 @@ namespace GameFramework
 
         void OnDestroy()
         {
-            onStatusChange(ViewStatus.onDestroy);
+            onLuaStatusChange(ViewStatus.onDestroy);
             Dispose();
         }
         #endregion
@@ -216,12 +316,22 @@ namespace GameFramework
         /// 当View Start时调用
         /// </summary>
         onInit = 0,
-        //onEnable,
-        //onDisable,
+        onEnable,
+        onDisable,
         onDestroy,
-        onShow,
+        onShowBegin,
         //onShowEnd,
-        onHide,
+        onHideBegin,
         //onHideEnd,
+    }
+
+    public enum ViewAnimType
+    {
+        none = 0,
+        moveUp,
+        moveDown,
+        move2Left,
+        move2Right,
+        zoom,
     }
 }
