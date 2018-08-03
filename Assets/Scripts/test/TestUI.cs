@@ -34,7 +34,11 @@ public class TestUI : MonoBehaviour {
         yield return new WaitForSeconds(3);
         mMgr.ShowView("res/UI/test", "TestUI2");
         yield return new WaitForSeconds(5);
+        mMgr.ShowView("res/UI/test", "TestUI3");
         //mMgr.ClearAllUI();
-        //mMgr.PopView();
+        yield return new WaitForSeconds(5);
+        mMgr.PopView();
+        yield return new WaitForSeconds(5);
+        mMgr.PopView();
     }
 }

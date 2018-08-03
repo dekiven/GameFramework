@@ -31,6 +31,9 @@ namespace GameFramework
         /// 动画缓动效果，默认无效果
         /// </summary>
         public Ease AnimEase = Ease.Linear;
+        public bool HasDarkMask = true;
+        //TODO:
+        public bool PassEvent = false;
 
         protected RenderMode mRenderMode = RenderMode.ScreenSpaceOverlay;
         //private Action<ViewStatus> mStatusChangeCall;
@@ -290,6 +293,8 @@ namespace GameFramework
                 return;
             }
             IsBillboard = false;
+            //进入初始化之后直接隐藏UI，否则在UI切换的时候回显示该UI
+            gameObject.SetActive(false);
             init();
         }
 

@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 114449951437994884}
   - component: {fileID: 114219605773628418}
   m_Layer: 5
-  m_Name: TestUI2
+  m_Name: TestUI3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -243,7 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.222, g: 1, b: 0.5492965, a: 0}
+  m_Color: {r: 0.222, g: 1, b: 0.5492965, a: 0.634}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

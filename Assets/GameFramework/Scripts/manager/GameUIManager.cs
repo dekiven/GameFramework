@@ -12,11 +12,10 @@ namespace GameFramework
     {
         private Canvas[] mCanvas;
         private Stack<UIBase> mUIViews;
-        //private Dictionary<string, UIView> mSingleViewDic;
-        //private ObjPool<GameObject> mObjPool;
 
         private EventSystem mEventSystem;
         private GameResHandler<GameObject> mPrefabs;
+        private Image mDarkMask;
 
         public bool HasInit { get { return GetCanvasByMode(RenderMode.ScreenSpaceOverlay).enabled; } }
 
@@ -29,7 +28,6 @@ namespace GameFramework
 
             mCanvas = new Canvas[Enum.GetValues(typeof(RenderMode)).Length];
             mUIViews = new Stack<UIBase>();
-            //mSingleViewDic = new Dictionary<string, UIView>();
 
             foreach (RenderMode r in Enum.GetValues(typeof(RenderMode)))
             {
@@ -47,7 +45,6 @@ namespace GameFramework
             eventObj.name = "EventSystem";
             mEventSystem = eventObj.AddComponent<EventSystem>();
             eventObj.AddComponent<StandaloneInputModule>();
-            //eventObj.AddComponent<BaseInput>();
         }
         #endregion
 
@@ -64,6 +61,10 @@ namespace GameFramework
                 obj.AddComponent<GraphicRaycaster>();
                 SetCanvasByMode(c);
                 obj.transform.SetParent(transform);
+                if(RenderMode.ScreenSpaceOverlay == mode)
+                {
+                    mDarkMask = getDarkMask(c);
+                }
             }
             return c;
         }
@@ -170,10 +171,10 @@ namespace GameFramework
                             UIBase curView = mUIViews.Peek();
                             if (curView.isActiveAndEnabled)
                             {
-                                curView.Hide((bool ret) =>
+                                hideUI(curView, (bool ret) =>
                                 {
                                     pushUI(ui as UIView);
-                                    ui.Show(null);
+                                    showUI(ui, null);
                                 });
                                 return;
                             }
@@ -181,12 +182,12 @@ namespace GameFramework
                         //之前的UI隐藏或者本UI被设置为不隐藏之前的UI则不隐藏之前的UI直接push
                         {
                             pushUI(ui as UIView);
-                            ui.Show(null);
+                            showUI(ui, null);
                         }
                     }
                     else
                     {
-                        ui.Show(null);
+                        showUI(ui, null);
                     }
                 };
             }
@@ -241,11 +242,10 @@ namespace GameFramework
         {
             if (null != view && mUIViews.Contains(view))
             {
-
                 UIBase v = mUIViews.Pop();
                 if (null != v)
                 {
-                    v.Hide((bool hide) =>
+                    hideUI(v, (bool hide) =>
                     {
                         bool ret = Equals(v, view);
                         removeUIObj(v);
@@ -260,12 +260,11 @@ namespace GameFramework
                                 UIBase cur = mUIViews.Peek();
                                 if (null != cur)
                                 {
-                                    cur.Show(null);
+                                    showUI(cur, null);
                                 }
                             }
                         }
                     });
-
                 }
                 else
                 {
@@ -275,6 +274,25 @@ namespace GameFramework
                 return true;
             }
             return false;
+        }
+
+        private void showUI(UIBase view, UIBase.UIAnimResult result)
+        {
+            view.Show(result);
+            if(view.HasDarkMask)
+            {
+                setMaskVisble(true);
+                setMaskOrderByView(view);
+            }
+        }
+
+        private void hideUI(UIBase view, UIBase.UIAnimResult result)
+        {
+            if(view.HasDarkMask)
+            {
+                setMaskVisble(false);
+            }
+            view.Hide(result);
         }
 
         bool popView(string viewID)
@@ -307,6 +325,35 @@ namespace GameFramework
         private GameObject getPrefab(string asbName, string resName)
         {
             return mPrefabs.Get(asbName, resName);
+        }
+
+        private Image getDarkMask(Canvas c)
+        {
+            GameObject maskObj = new GameObject();
+            maskObj.name = "DrakMask";
+            maskObj.transform.SetParent(c.transform);
+            RectTransform rect = maskObj.AddComponent<RectTransform>();
+            rect.anchorMax = Vector2.one;
+            rect.anchorMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            //rect.offsetMin = Vector2.zero;
+            maskObj.AddComponent<CanvasRenderer>();
+            //maskObj.AddComponent<UIView>();
+            Image darkMask = maskObj.AddComponent<Image>();
+            darkMask.color = new Color(0f, 0f, 0f, 0.5f);
+            darkMask.gameObject.SetActive(false);
+
+            return darkMask;
+        }
+
+        private void setMaskOrderByView(UIBase view)
+        {
+            mDarkMask.rectTransform.SetSiblingIndex(view.transform.GetSiblingIndex() - 1);
+        }
+
+        private void setMaskVisble(bool showMask)
+        {
+            mDarkMask.gameObject.SetActive(showMask);
         }
         #endregion
 
