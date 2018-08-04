@@ -206,7 +206,9 @@ namespace GameFramework
                 Canvas c = GetCanvasByMode(mode);
                 if (null != c)
                 {
-                    obj.transform.SetParent(c.transform);
+                    //worldPositionStays = false 修复UI加载到Canvas时错位等问题
+                    //worldPositionStays = false 表示setparent时保持自己的local属性（pos、scale等）不变
+                    obj.transform.SetParent(c.transform, false);
                     return true;
                 }
             }
@@ -278,7 +280,17 @@ namespace GameFramework
 
         private void showUI(UIBase view, UIBase.UIAnimResult result)
         {
-            view.Show(result);
+            if(!view.gameObject.activeSelf)
+            {
+                view.Show(result);
+            }
+            else
+            {
+                if(null != result)
+                {
+                    result(false);
+                }
+            }
             if(view.HasDarkMask)
             {
                 setMaskVisble(true);
@@ -288,11 +300,18 @@ namespace GameFramework
 
         private void hideUI(UIBase view, UIBase.UIAnimResult result)
         {
-            if(view.HasDarkMask)
+            
+            view.Hide((bool rst) =>
             {
-                setMaskVisble(false);
-            }
-            view.Hide(result);
+                if (view.HasDarkMask)
+                {
+                    setMaskVisble(false);
+                }
+                if(null != result)
+                {
+                    result(rst);
+                }
+            });
         }
 
         bool popView(string viewID)

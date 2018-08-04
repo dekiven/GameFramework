@@ -14,13 +14,6 @@ namespace GameFramework
         protected override void init()
         {
             IsInStack = true;
-            RectTransform trans = GetComponent<RectTransform>();
-            if (Vector2.zero == trans.anchorMin && Vector2.one == trans.anchorMax)
-            {
-                //当大小锚点为（0,0）和（1,1）时，表示Root是跟屏幕一样大，这个时候要设置top=0， right= 0，否则显示不正常
-                //LogFile.Warn(trans.anchoredPosition.ToString());
-                trans.offsetMax = Vector2.zero;
-            }
             base.init();
         }
 

@@ -293,7 +293,7 @@ namespace GameFramework
                 return;
             }
             IsBillboard = false;
-            //进入初始化之后直接隐藏UI，否则在UI切换的时候回显示该UI
+            //进入初始化之后直接隐藏UI，修复在UI切换的时候会显示该UI，等待上个UI隐藏动画完成后再播放动画修复的bug
             gameObject.SetActive(false);
             init();
         }
