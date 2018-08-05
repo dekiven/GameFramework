@@ -30,7 +30,7 @@ namespace GameFramework
                 || RuntimePlatform.OSXEditor == Application.platform
             )
             {
-                LogFile.Init(Tools.GetWriteableDataPath("../../game_log.log"));
+                LogFile.Init(Tools.PathCombine(Application.dataPath, "../Log/game_log.log"));
             }else
             {
                 LogFile.Init(Tools.GetWriteableDataPath("game_log.log"));

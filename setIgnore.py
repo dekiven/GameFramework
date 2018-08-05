@@ -11,7 +11,7 @@ ignoreList = [
     'Assets/Lua',
     'Assets/Lua.meta',
     '.vs/',
-    'Generate',
+    # 'Generate',
     '*.csproj',
     '*.sln',
     '*.log'

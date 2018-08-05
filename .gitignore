@@ -7,7 +7,6 @@ AssetBundles
 Assets/Lua
 Assets/Lua.meta
 .vs/
-Generate
 *.csproj
 *.sln
 *.log
