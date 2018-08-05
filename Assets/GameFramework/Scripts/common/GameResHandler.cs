@@ -117,11 +117,13 @@ namespace GameFramework
 
         public T Get(string asbName, string assetName)
         {
+            assetName = FixResName(assetName);
             return mDict.GetObj(asbName, assetName);
         }
 
         public void GetSync(string asbName, string assetName, Action<T> callback=null, LuaFunction luaFunction=null)
         {
+            assetName = FixResName(assetName);
             T t = Get(asbName, assetName);
             if(null == t)
             {

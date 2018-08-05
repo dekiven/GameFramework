@@ -129,14 +129,6 @@ function tryCatch(tryCall, catchCall, finalCall)
     end
 end
 
-function printLog( msg )
-    GameFramework.LogFile.Log(msg)
-end
-
-function printWarn( msg )
-    GameFramework.LogFile.Warn(msg)
-end
-
-function printError( msg )
-    GameFramework.LogFile.Error(msg)
-end
+printLog = GameFramework.LogFile.Log
+printWarn = GameFramework.LogFile.Warn
+printError = GameFramework.LogFile.Error
