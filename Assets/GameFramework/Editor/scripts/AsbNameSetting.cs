@@ -34,6 +34,13 @@ namespace GameFramework
         }
 
 
+        public static bool GetHasAsbName(string path)
+        {
+            path = Tools.RelativeTo(path, Application.dataPath, true);
+            AssetImporter importer = AssetImporter.GetAtPath(path);
+            return importer && !string.IsNullOrEmpty(importer.assetBundleName);
+        }
+
         //[MenuItem("Assets/打包测试")]
         //public static void BuildAll()
         //{
@@ -88,25 +95,20 @@ namespace GameFramework
         /// <param name="skipIfHas">If set to <c>true</c> 跳过已经设置AssetBundle name的</param>
         public static void SetBundleName(string resPath, string bundleName, bool skipIfHas = false)
         {
-            AssetImporter importer = AssetImporter.GetAtPath(resPath);
-            //test
-            //if (!string.IsNullOrEmpty(bundleName) && bundleName.EndsWith(".unity3d.unity3d", System.StringComparison.Ordinal))
-            //{
-            //    System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(new System.Diagnostics.StackFrame(true));
-            //    System.Diagnostics.StackFrame sf = st.GetFrame(0);
-            //    Debug.LogError(sf.ToString());
-            //    string s = bundleName;
-            //    Debug.LogError(bundleName);
-            //}
-            if (importer && importer.assetBundleName != bundleName)
+            if(BuilderConfig.IsResFile(resPath))
             {
-                if (skipIfHas && !string.IsNullOrEmpty(importer.assetBundleName))
+                AssetImporter importer = AssetImporter.GetAtPath(resPath);
+
+                if (importer && importer.assetBundleName != bundleName)
                 {
-                    //已经有Assetbundle name， 跳过
-                    return;
+                    if (skipIfHas && !string.IsNullOrEmpty(importer.assetBundleName))
+                    {
+                        //已经有Assetbundle name， 跳过
+                        return;
+                    }
+                    importer.assetBundleName = bundleName;
+                    Debug.LogFormat("设置 Assetbundle 名称：{0} -----> {1}", resPath, bundleName);
                 }
-                importer.assetBundleName = bundleName;
-                Debug.LogFormat("设置 Assetbundle 名称：{0} -----> {1}", resPath, bundleName);
             }
         }
 

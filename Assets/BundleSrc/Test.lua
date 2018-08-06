@@ -4,7 +4,8 @@ local TestClass = class("TestClass")
 local gm = GameFramework.LuaExportFuncs
 
 function TestClass:ctor( ... )    
-    self:testBySceneName('TestUIManager')
+    -- self:testBySceneName('TestUIManager')
+    self:testBySceneName('TestSpriteAtlas')
 end
 
 function TestClass:testLoadPrefab()
@@ -35,7 +36,7 @@ end
 function TestClass:testBySceneName(name)
     printLog('测试：加载场景：'..name)
     -- 测试UIManager
-    gm.LoadScene('res/Scenes/'..name, '.unity', true, false, function ( progress )
+    gm.LoadScene('Tests/Scenes/'..name, '.unity', true, false, function ( progress )
         -- body
         -- printLog('SpriteAtlas 测试场景载入完成！')
         printLog('progress:'..progress)

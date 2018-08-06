@@ -309,7 +309,7 @@ namespace GameFramework
                 {
                     if (BuilderConfig.IsResFile(f))
                     {
-                        count = 1;
+                        count += AsbNameSetting.GetHasAsbName(f) ? 0 : 1;
                         break;
                     }
                 }
