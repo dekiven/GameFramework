@@ -9,6 +9,7 @@ namespace GameFramework
 {
     public class Tools
     {
+        #region GameResManger等资源路径相关
         public static string GetWriteableDataPath(string subPath = "")
         {
             string root = string.Empty;
@@ -103,7 +104,7 @@ namespace GameFramework
             }
         }
 
-        public static string RelativeTo(string fullPath, string relative2, bool startWith=false)
+        public static string RelativeTo(string fullPath, string relative2, bool startWith = false)
         {
             fullPath = FormatPathStr(fullPath);
             relative2 = FormatPathStr(relative2);
@@ -132,7 +133,7 @@ namespace GameFramework
         public static string GetAsbName(string path, bool getParent = false)
         {
             path = FormatPathStr(path).Trim('/');
-            if(getParent)
+            if (getParent)
             {
                 path = path.Substring(0, path.LastIndexOf("/"));
             }
@@ -194,8 +195,8 @@ namespace GameFramework
 
             string pre = "file://";
 #if UNITY_ANDROID
-            if(Application.isMobilePlatform)
-            {                
+            if (Application.isMobilePlatform)
+            {
                 pre = "";
             }
 #endif
@@ -267,9 +268,9 @@ namespace GameFramework
         /// <param name="resPath">Res path.</param>
         public static string GetResInAssetsName(string asbPath, string resPath)
         {
-            if(resPath[0] == '.')
+            if (resPath[0] == '.')
             {
-                return PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, asbPath+resPath);
+                return PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, asbPath + resPath);
             }
             return PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, asbPath, resPath);
         }
@@ -316,7 +317,7 @@ namespace GameFramework
         /// <param name="root">Root.</param>
         public static string GetTransformName(Transform transform, Transform root)
         {
-            if(null != transform)
+            if (null != transform)
             {
                 if (null == root)
                 {
@@ -326,7 +327,7 @@ namespace GameFramework
                 {
                     string name = transform.name;
                     Transform parent = transform.parent;
-                    while(null != parent)
+                    while (null != parent)
                     {
                         if (parent.Equals(root))
                         {
@@ -345,6 +346,19 @@ namespace GameFramework
         {
             return GetTransformName(transform, null);
         }
+        #endregion GameResManger等资源路径相关
+
+        #region U3D常用类型转换相关
+        public static Rect GenRect(float[] array)
+        {
+            Rect rect = new Rect();
+            rect.x = array[0];
+            rect.y = array[1];
+            rect.width = array[2];
+            rect.height = array[3];
+            return rect;
+        }
+        #endregion U3D常用类型转换相关
     }
 }
 
