@@ -12,6 +12,7 @@ namespace GameFramework
         private static StreamWriter mSWriter;
         private static LogLevel mMinLevel;
         private static string mPath;
+        private static bool mHasShowInitErr = false;
 
         public enum LogLevel
         {
@@ -118,7 +119,12 @@ namespace GameFramework
         {
             if(string.IsNullOrEmpty(mPath))
             {
-                Debug.LogError("请先调用Init方法初始化LogFile");
+                if(!mHasShowInitErr)
+                {
+                    Debug.LogWarning("不能写入日志文件，请先调用Init方法初始化LogFile。");
+                    mHasShowInitErr = true;
+                }
+                return;
             }
             Tools.CheckFileExists(mPath, true);
             FileStream stream = new FileStream(mPath, FileMode.Create);

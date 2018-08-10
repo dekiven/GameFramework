@@ -16,9 +16,10 @@ namespace GameFramework
         public OnGetDelegate OnGetCallback;
         public OnRecoverDelegate OnRecoverCallback;
         public OnDisposeDelegate OnDisposeCallback;
-
+        public int TotalObjCount { get { return mObjCount; }}
 
         private Queue<T> mQueue = new Queue<T>();
+        private int mObjCount = 0;
 
         public ObjPool() : this(null, null, null){}
 
@@ -34,13 +35,20 @@ namespace GameFramework
         public T Get()
         {
             T obj = null;
-            if(mQueue.Count > 0)
+            bool hasObj = mQueue.Count > 0;
+            if(hasObj)
             {
                 obj = mQueue.Dequeue();
             }
             if (null != OnGetCallback)
             {
-                OnGetCallback(ref obj);
+                if(OnGetCallback(ref obj))
+                {
+                    if(!hasObj)
+                    {
+                        ++mObjCount;
+                    }
+                }
             }
             return obj;
         }

@@ -32,8 +32,6 @@ namespace GameFramework
         /// </summary>
         public Ease AnimEase = Ease.Linear;
         public bool HasDarkMask = true;
-        //TODO:
-        public bool PassEvent = false;
 
         protected RenderMode mRenderMode = RenderMode.ScreenSpaceOverlay;
         //private Action<ViewStatus> mStatusChangeCall;

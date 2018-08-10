@@ -86,8 +86,8 @@ namespace GameFramework
                 mPolygon = mTarget.GetPolygonCollider2D();
                 string[] comps = new string[]
                 {
-                "UnityEditor.PolygonCollider2DEditor",
-                typeof(PolygonClickInspector).ToString(),
+                    "UnityEditor.PolygonCollider2DEditor",
+                    typeof(PolygonClickInspector).ToString(),
                 };
                 EditorTools.SetInspectorTrackerVisible(comps, true);
                 //显示ScnenView方便编辑

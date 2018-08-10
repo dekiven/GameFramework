@@ -949,3 +949,29 @@ namespace GameFramework
 
     }
 }
+
+//// 正则
+//public bool \1\2\3(int index, \4 \5)
+//        {
+//            \2 ui = GetCompByIndex<\2>(index);
+//            return \6\2\3(ui, \5);
+//        }
+
+//        public bool \1\2\3(string cName, \4 \5)
+//        {
+//            \2 ui = GetCompByName<\2>(cName);
+//            return \6\2\3(ui, \5);
+//        }
+
+//        private static bool \6\2\3(\2 ui, \4 \5)
+//        {
+//            if(null != ui)
+//            {
+//                //
+//                return true;
+//            }
+//            return false;
+//        }
+
+//Set,Image,Sprite,Sprite,sprite,set
+//(\S+),(\S+),(\S+),(\S+),(\S+),(\S+)

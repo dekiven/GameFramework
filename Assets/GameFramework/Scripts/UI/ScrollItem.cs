@@ -4,22 +4,32 @@ using System;
 
 namespace GameFramework
 {   
-    public class ScrollItem : MonoBehaviour, IDisposable
+    public class ScrollItem : MonoBehaviour
     {
-        private UIHandler mHandler;
-        public ObjPool<ScrollItem> ItemPool;
+        public UIHandler UIHandler;
         
         void Start()
         {
-            if(null == mHandler)
+            if(null == UIHandler)
             {
-                mHandler = GetComponent<UIHandler>();
+                UIHandler = GetComponent<UIHandler>();
             }
         }
 
-        public void Dispose()
+        void OnDestroy()
         {
             
+        }
+
+        public void SetData(ScrollItemData scrollItemData)
+        {
+            if(null != UIHandler)
+            {
+                //test
+                UIHandler.SetTextString(0, scrollItemData.Info);
+
+                //TODO:实现根据传入的data修改UI组件
+            }
         }
     }
 }
