@@ -132,7 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e06185dfb7f94a7aa2cf0d061382feb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemSize: {x: 400, y: 400}
+  UIHandler: {fileID: 0}
 --- !u!222 &222199408648900850
 CanvasRenderer:
   m_ObjectHideFlags: 1

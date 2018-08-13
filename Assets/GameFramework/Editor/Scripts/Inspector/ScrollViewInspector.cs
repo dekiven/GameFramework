@@ -24,14 +24,14 @@ namespace GameFramework
         private SerializedProperty mPTop;
         private SerializedProperty mPBottom;
         private SerializedProperty mItemSize;
-        public GameObject Prefab 
-        { 
-            get 
-            { 
-                return mPrefab; 
-            } 
+        public GameObject Prefab
+        {
+            get
+            {
+                return mPrefab;
+            }
 
-            set 
+            set
             {
                 if (null != value)
                 {
@@ -40,22 +40,22 @@ namespace GameFramework
                         GameObject obj = Instantiate(value);
                         RectTransform rectTransform = obj.GetComponent<RectTransform>();
                         ScrollItem i = obj.GetComponent<ScrollItem>();
-                        if(null == i)
+                        if (null == i)
                         {
                             LogFile.Error("ScrollView 的 Item 必须添加ScrollView组件！");
                             return;
                         }
-                        if(null != rectTransform)
+                        if (null != rectTransform)
                         {
                             mTarget.ItemSize = rectTransform.rect.size;
                             //mTarget.CalculateContentSize();
                         }
                         DestroyImmediate(obj);
                         mPrefab = value;
-                        mTarget.ItemPrefab = value; 
+                        mTarget.ItemPrefab = value;
                     }
-                } 
-            } 
+                }
+            }
         }
 
         public ScrollViewType ScrollType
@@ -133,7 +133,7 @@ namespace GameFramework
             {
                 if (mScrollType.enumValueIndex == (int)item)
                 {
-                    if(mTarget.ScrollType != (ScrollViewType)item)
+                    if (mTarget.ScrollType != (ScrollViewType)item)
                     {
                         bool isVertical = ScrollViewType.Vertical == (ScrollViewType)item;
                         mTarget.ScrollType = (ScrollViewType)item;
@@ -141,7 +141,7 @@ namespace GameFramework
                         mTarget.horizontal = !isVertical;
                         RectTransform content = mTarget.content;
 
-                        if(isVertical)
+                        if (isVertical)
                         {
                             //设置与父节点等宽，顶端与父节点对齐，高度暂定与父节点一样
                             content.anchorMin = new Vector2(0, 1);

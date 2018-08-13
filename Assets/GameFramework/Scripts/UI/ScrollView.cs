@@ -230,13 +230,14 @@ namespace GameFramework
             {
                 colume = i % mNumPerLine;
                 row = i / mNumPerLine;
+                return new Vector3(PaddingLeft + colume * ItemSize.x + ItemSize.x / 2 + mContntSpace.x * colume, -(PaddingTop + row * ItemSize.y + ItemSize.y / 2 + mContntSpace.y * row));
             }
             else
             {
                 row = i % mNumPerLine;
                 colume = i / mNumPerLine;
             }
-            var pos =  new Vector3(PaddingLeft + colume * ItemSize.x + ItemSize.x/2 + mContntSpace.x * colume, -(PaddingTop + row * ItemSize.y + ItemSize.y / 2 + mContntSpace.y * row));
+            var pos =  new Vector3(PaddingLeft + colume * ItemSize.x + ItemSize.x / 2 + mContntSpace.x * colume,viewport.rect.height/2 -(PaddingTop + row * ItemSize.y + ItemSize.y / 2 + mContntSpace.y * row));
             return pos;
             //return new Vector3(PadingLeft + colume * mItemSize.x + mItemSize.x/2 + mContntSpace.x * colume, PadingTop + row * mItemSize.y + mItemSize.y/2 + mContntSpace.y * row);
         }
@@ -255,7 +256,7 @@ namespace GameFramework
                 return posY > -ItemSize.y / 2 && posY < viewport.rect.height + ItemSize.y / 2;
             }else
             {
-                float posX = pos.x - content.localPosition.x;
+                float posX = pos.x + content.localPosition.x;
                 return posX > -ItemSize.x / 2 && posX < viewport.rect.width + ItemSize.x / 2;
             }
         }
