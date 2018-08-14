@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LuaInterface;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -47,9 +48,9 @@ namespace GameFramework
         }
         #endregion
 
-        public void GetAtlasSync(string asbName, string atlasName, Action<SpriteAtlas> callbcak)
+        public void GetAtlasSync(string asbName, string atlasName, Action<SpriteAtlas> callbcak, LuaFunction luaCall)
         {
-            mSpriteDict.GetSync(asbName, atlasName, callbcak);
+            mSpriteDict.GetSync(asbName, atlasName, callbcak, luaCall);
         }
     }
 }

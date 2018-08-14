@@ -74,11 +74,71 @@ namespace GameFramework
 
         #endregion
 
+        #region GameUIManager
+        public static void ShowView(string asbName, string viewName)
+        {
+            GameUIManager.Instance.ShowView(asbName, viewName);
+        }
+
+        public static void PopView()
+        {
+            GameUIManager.Instance.PopView();
+        }
+        #endregion GameUIManager
+
+        #region GameSpriteAtlasManager
+        public static void GetAtlasSync(string asbName, string atlasName, LuaFunction luaCall)
+        {
+            GameSpriteAtlasManager.Instance.GetAtlasSync(asbName, atlasName, null, luaCall);
+        }
+        #endregion GameSpriteAtlasManager
+
+        #region Res 释放相关
+        public void SetCurGroup(EnumResGroup e, string group)
+        {
+            switch(e)
+            {
+                case EnumResGroup.UI:
+                    GameUIManager.Instance.SetCurGroup(group);
+                    break;
+                case EnumResGroup.Audio:
+                    GameSoundManager.Instance.SetCurGroup(group);
+                    break;
+                case EnumResGroup.SpriteAtlas:
+                    GameSoundManager.Instance.SetCurGroup(group);
+                    break;
+            }
+        }
+
+        public void ClearGroup(EnumResGroup e, string group)
+        {
+            switch (e)
+            {
+                case EnumResGroup.UI:
+                    GameUIManager.Instance.ClearGroup(group);
+                    break;
+                case EnumResGroup.Audio:
+                    GameSoundManager.Instance.ClearGroup(group);
+                    break;
+                case EnumResGroup.SpriteAtlas:
+                    GameSoundManager.Instance.ClearGroup(group);
+                    break;
+            }
+        }
+        #endregion Res 释放相关
+
         #region Test
         public static void TestDelegate(System.Action<float> action)
         {
             action(100);
         }
         #endregion
+    }
+
+    public enum EnumResGroup
+    {
+        UI,
+        Audio,
+        SpriteAtlas,
     }
 }

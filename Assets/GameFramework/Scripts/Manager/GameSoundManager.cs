@@ -222,6 +222,16 @@ namespace GameFramework
 
         }
 
+        public void SetCurGroup(string group)
+        {
+            mAudios.CurGroup = group;
+        }
+
+        public void ClearGroup(string group)
+        {
+            mAudios.ClearGroup(group);
+        }
+
         #region private 
         private bool playBgm(AudioClip audioClip, float fadeOutTime)
         {
