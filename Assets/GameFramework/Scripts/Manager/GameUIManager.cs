@@ -31,11 +31,11 @@ namespace GameFramework
 
             foreach (RenderMode r in Enum.GetValues(typeof(RenderMode)))
             {
-                if (r == RenderMode.ScreenSpaceCamera)
-                {
-                    //TODO: ScreenSpaceCamera 类型必须添加camera，否则相当于一个ScreenSpaceOverlay类型的Canvas
-                    continue;
-                }
+                //if (r == RenderMode.ScreenSpaceCamera)
+                //{
+                //    //TODO: ScreenSpaceCamera 类型必须添加camera，否则相当于一个ScreenSpaceOverlay类型的Canvas
+                //    continue;
+                //}
                 GetCanvasByMode(r);
             }
 
@@ -58,14 +58,23 @@ namespace GameFramework
                 GameObject obj = new GameObject();
                 c = obj.AddComponent<Canvas>();
                 obj.name = "Canvas_s" + mode.ToString();
-                c.renderMode = mode;
+                obj.AddComponent<CanvasScaler>();
                 obj.AddComponent<GraphicRaycaster>();
-                SetCanvasByMode(c);
                 obj.transform.SetParent(transform);
+                c.renderMode = mode;
                 if(RenderMode.ScreenSpaceOverlay == mode)
                 {
                     mDarkMask = getDarkMask(c);
                 }
+                if (RenderMode.ScreenSpaceCamera == mode)
+                {
+                    GameObject cameraObj = new GameObject();
+                    Camera camera = cameraObj.AddComponent<Camera>();
+                    cameraObj.transform.SetParent(obj.transform);
+                    c.worldCamera = camera;
+                }
+                SetCanvasByMode(c);
+                //mCanvas[(int)mode] = c;
             }
             return c;
         }
@@ -77,6 +86,7 @@ namespace GameFramework
                 return false;
             }
             RenderMode mode = canvas.renderMode;
+            Debug.LogWarning("mode" + mode + ", int:" + (int)mode);
             //if (mCanvas[(int)mode] == null)
             //{
             mCanvas[(int)mode] = canvas;
