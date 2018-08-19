@@ -6,6 +6,7 @@ StreamingAssets.meta
 AssetBundles
 Assets/Lua
 Assets/Lua.meta
+Temp.meta
 .vs/
 *.csproj
 *.sln

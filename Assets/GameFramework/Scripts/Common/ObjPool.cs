@@ -36,7 +36,8 @@ namespace GameFramework
         {
             T obj = null;
             bool hasObj = mQueue.Count > 0;
-            if(hasObj)
+            //LogFile.Log("mQueue.Count" + mQueue.Count);
+            if (hasObj)
             {
                 obj = mQueue.Dequeue();
             }

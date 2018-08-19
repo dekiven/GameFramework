@@ -10,6 +10,7 @@ ignoreList = [
     'AssetBundles',
     'Assets/Lua',
     'Assets/Lua.meta',
+    'Temp.meta',
     '.vs/',
     # 'Generate',
     '*.csproj',
