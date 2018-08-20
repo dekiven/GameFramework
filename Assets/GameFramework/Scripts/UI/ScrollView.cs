@@ -32,6 +32,8 @@ namespace GameFramework
         public float PaddingTop;
         [HideInInspector]
         public float PaddingBottom;
+        [HideInInspector]
+        public int ItemNumPerStep=1;
 
         private ObjPool<ScrollItem> mItemPool;
         private List<ScrollItem> mCurItems;
@@ -41,6 +43,7 @@ namespace GameFramework
         private int mTotalLines;
         private int mShowStart = -1;
         private int mShowEnd = -1;
+        private Coroutine mUpCoroutine = null;
 
         private Vector2 mContntSpace = new Vector2();
 
@@ -256,7 +259,7 @@ namespace GameFramework
             return canItemShow(line * mNumPerLine);
         }
 
-        private void checkNeedUpdate()
+        private void checkNeedUpdate(bool forceUpdate=false)
         {
             bool start = false;
             int startLine = -1;
@@ -277,27 +280,21 @@ namespace GameFramework
                     endLine = i;
                 }
             }
-            //当显示行数没有变化，跳过
-            if (startLine != mShowStart || endLine != mShowEnd)
+            //当显示行数有变化或者需要强制刷新时刷新所有UI
+            if (forceUpdate || startLine != mShowStart || endLine != mShowEnd)
             {
-                updateAllItem(startLine, endLine);
+                if(null != mUpCoroutine)
+                {
+                    StopCoroutine(mUpCoroutine);
+                    mUpCoroutine = null;
+                }
+                mUpCoroutine = StartCoroutine(updateAllItem(startLine, endLine));
             }
 
         }
 
-        private void updateAllItem(int startLine, int endLine)
+        private IEnumerator updateAllItem(int startLine, int endLine)
         {
-            float _endLine = Mathf.Clamp(endLine, 0, mTotalLines - 1);
-            if (_endLine != endLine)
-            {
-                LogFile.Log("_endLine != endLine endLine:{0}, _endLine{1}", endLine, _endLine);
-            }
-            //LogFile.Log("updateAllItem start:{0}, end{1}", startLine, endLine);
-            if (startLine > endLine || 0 == endLine)
-            {
-                LogFile.Warn("startLine > endLine || 0 == endLine");
-                return;
-            }
             if (mShowStart != startLine || mShowEnd != endLine)
             {
                 //只有首尾的行变动，只处理相应的行
@@ -335,35 +332,28 @@ namespace GameFramework
                     //TODO:修复因拖动过快导致新的Item被生成问题
                     LogFile.Log("updateAllItem 滑动多行了，直接全部刷新 start:{0}, end{1}", startLine, endLine);
                     //滑动多行了，直接全部刷新
-                    int startIndex = Mathf.Clamp(startLine * mNumPerLine, 0, mItemDatas.Count);
-                    int endIndex = Mathf.Clamp((endLine + 1) * mNumPerLine - 1, 0, mItemDatas.Count);
+                    int startIndex = Mathf.Clamp(startLine * mNumPerLine, 0, mItemDatas.Count- 1);
+                    int endIndex = Mathf.Clamp((endLine + 1) * mNumPerLine - 1, 0, mItemDatas.Count-1);
                     int count = endIndex - startIndex + 1;
-                    if (count > mCurItems.Count)
-                    {
-                        //LogFile.Log("count:{0},mCurItems.Count:{1}, objPool.count:{2}", count, mCurItems.Count, mItemPool.Count);
-                        recoverAll();
-                        //LogFile.Warn("count:{0},mCurItems.Count:{1}, objPool.count:{2}", count, mCurItems.Count, mItemPool.Count);
-                        for (int i = 0; i < count; ++i)
-                        {
-                            mCurItems.Add(getItem());
-                        }
-                    }
-                    else if (count < mCurItems.Count)
-                    {
-                        for (int i = 0; i < mCurItems.Count - count; ++i)
-                        {
-                            ScrollItem item = mCurItems[0];
-                            recoverItem(item);
-                            mCurItems.RemoveAt(0);
-                        }
-                    }
+                    recoverAll();
+
                     for (int i = 0; i < count; i++)
                     {
+                        if(startIndex + i >= mItemDatas.Count)
+                        {
+                            LogFile.Log("count:{0},  mCurItems.Count:{1}, i:{2}, startIndex:{3} ", count, mCurItems.Count, i, startIndex);
+                        }
+
                         //try
                         {
-                            ScrollItem item = mCurItems[i];
+                            ScrollItem item = getItem();
+                            mCurItems.Add(item);
                             item.SetData(mItemDatas[startIndex + i]);
                             item.transform.localPosition = getItemPosByIndex(startIndex + i);
+                            if((count + 1) % ItemNumPerStep == 0 )
+                            {
+                                yield return null;
+                            }
                         }
                         //catch (Exception)
                         //{
@@ -377,7 +367,11 @@ namespace GameFramework
                 mShowStart = startLine;
                 mShowEnd = endLine;
             }
-
+            if(null != mUpCoroutine)
+            {
+                StopCoroutine(mUpCoroutine);
+                mUpCoroutine = null;
+            }
         }
 
         private void addStartLine(int line)
@@ -442,14 +436,14 @@ namespace GameFramework
 
         private void recoverAll()
         {
-            //LogFile.Log("recoverAll 1 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
+            LogFile.Log("recoverAll 1 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
             for (int i = mCurItems.Count - 1; i > -1; --i)
             {
                 ScrollItem item = mCurItems[i];
                 recoverItem(item);
                 mCurItems.RemoveAt(i);
             }
-            //LogFile.Warn("recoverAll 2 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
+            LogFile.Warn("recoverAll 2 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
         }
 
         #region ObjPool回调

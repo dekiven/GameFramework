@@ -99,6 +99,8 @@ namespace GameFramework
             mTarget.PaddingTop = EditorGUILayout.FloatField("PaddingTop", mTarget.PaddingTop);
             mTarget.PaddingBottom = EditorGUILayout.FloatField("PaddingBottom", mTarget.PaddingBottom);
             GUILayout.Space(5);
+
+            mTarget.ItemNumPerStep = EditorGUILayout.IntField("ItemNumPerSte", mTarget.ItemNumPerStep);
         }
 
 
