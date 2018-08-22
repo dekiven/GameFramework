@@ -1,3 +1,4 @@
+.vs/
 Library/
 Temp/
 UnityPackageManager/
@@ -6,8 +7,10 @@ StreamingAssets.meta
 AssetBundles
 Assets/Lua
 Assets/Lua.meta
-Temp.meta
-.vs/
+Assets/Temp.meta
+Generate/
+!Generate/DelegateFactory.cs
+!Generate/LuaBinder.cs
 *.csproj
 *.sln
 *.log

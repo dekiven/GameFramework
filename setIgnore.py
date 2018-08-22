@@ -2,6 +2,7 @@ import os
 from DKVTools.Funcs import *
 
 ignoreList = [
+    '.vs/',
     'Library/',
     'Temp/',
     'UnityPackageManager/',
@@ -10,9 +11,10 @@ ignoreList = [
     'AssetBundles',
     'Assets/Lua',
     'Assets/Lua.meta',
-    'Temp.meta',
-    '.vs/',
-    # 'Generate',
+    'Assets/Temp.meta',
+    'Generate/',
+    '!Generate/DelegateFactory.cs',
+    '!Generate/LuaBinder.cs',
     '*.csproj',
     '*.sln',
     '*.log'
