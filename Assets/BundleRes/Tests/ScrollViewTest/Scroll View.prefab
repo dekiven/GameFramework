@@ -388,11 +388,12 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   ScrollType: 1
   ItemSize: {x: 100, y: 100}
-  ItemPrefab: {fileID: 1773335594908646, guid: 0703c7a1ea56647c39023db82543a8b2, type: 2}
+  ItemPrefab: {fileID: 1759485999332060, guid: 075b37c31dba34fe1abbd0b43f6876f3, type: 2}
   PaddingLeft: 10
   PaddingRight: 10
   PaddingTop: 10
   PaddingBottom: 10
+  ItemNumPerStep: 1
 --- !u!114 &114764700775545902
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -537,7 +538,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 400}
+  m_SizeDelta: {x: 0, y: 560}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!224 &224426704657334052
 RectTransform:

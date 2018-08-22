@@ -48,9 +48,30 @@ namespace GameFramework
         }
         #endregion
 
-        public void GetAtlasSync(string asbName, string atlasName, Action<SpriteAtlas> callbcak, LuaFunction luaCall)
+        public void GetAtlasSync(string asbName, string atlasName, Action<SpriteAtlas> callbcak, LuaFunction luaCall=null)
         {
             mSpriteDict.GetSync(asbName, atlasName, callbcak, luaCall);
+        }
+
+        public void GetSpriteSync(string asbName, string atlasName, string spriteName,Action<Sprite> callbcak, LuaFunction luaCall=null)
+        {
+            mSpriteDict.GetSync(asbName, atlasName, (SpriteAtlas atlas)=>
+            {
+                Sprite sprite = null;
+                if(null != atlas)
+                {
+                    sprite = atlas.GetSprite(spriteName);
+                }
+                if(null != callbcak)
+                {
+                    callbcak(sprite);
+                }
+                if(null != luaCall)
+                {
+                    luaCall.Call(sprite);
+                    luaCall.Dispose();
+                }
+            });
         }
     }
 }

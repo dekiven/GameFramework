@@ -15,6 +15,12 @@ public class GameFramework_LuaExportFuncsWrap
 		L.RegFunction("UnloadAsbGroup", UnloadAsbGroup);
 		L.RegFunction("AddLuaBundle", AddLuaBundle);
 		L.RegFunction("AddLuaBundles", AddLuaBundles);
+		L.RegFunction("ShowView", ShowView);
+		L.RegFunction("PopView", PopView);
+		L.RegFunction("GetAtlasSync", GetAtlasSync);
+		L.RegFunction("GetSpriteSync", GetSpriteSync);
+		L.RegFunction("SetCurGroup", SetCurGroup);
+		L.RegFunction("ClearGroup", ClearGroup);
 		L.RegFunction("TestDelegate", TestDelegate);
 		L.RegFunction("New", _CreateGameFramework_LuaExportFuncs);
 		L.RegFunction("__tostring", ToLua.op_ToString);
@@ -226,6 +232,111 @@ public class GameFramework_LuaExportFuncsWrap
 			GameFramework.LuaExportFuncs obj = (GameFramework.LuaExportFuncs)ToLua.CheckObject<GameFramework.LuaExportFuncs>(L, 1);
 			string[] arg0 = ToLua.CheckStringArray(L, 2);
 			obj.AddLuaBundles(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int ShowView(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			string arg0 = ToLua.CheckString(L, 1);
+			string arg1 = ToLua.CheckString(L, 2);
+			GameFramework.LuaExportFuncs.ShowView(arg0, arg1);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int PopView(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 0);
+			GameFramework.LuaExportFuncs.PopView();
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetAtlasSync(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 3);
+			string arg0 = ToLua.CheckString(L, 1);
+			string arg1 = ToLua.CheckString(L, 2);
+			LuaFunction arg2 = ToLua.CheckLuaFunction(L, 3);
+			GameFramework.LuaExportFuncs.GetAtlasSync(arg0, arg1, arg2);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetSpriteSync(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 4);
+			string arg0 = ToLua.CheckString(L, 1);
+			string arg1 = ToLua.CheckString(L, 2);
+			string arg2 = ToLua.CheckString(L, 3);
+			LuaFunction arg3 = ToLua.CheckLuaFunction(L, 4);
+			GameFramework.LuaExportFuncs.GetSpriteSync(arg0, arg1, arg2, arg3);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SetCurGroup(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 3);
+			GameFramework.LuaExportFuncs obj = (GameFramework.LuaExportFuncs)ToLua.CheckObject<GameFramework.LuaExportFuncs>(L, 1);
+			GameFramework.EnumResGroup arg0 = (GameFramework.EnumResGroup)ToLua.CheckObject(L, 2, typeof(GameFramework.EnumResGroup));
+			string arg1 = ToLua.CheckString(L, 3);
+			obj.SetCurGroup(arg0, arg1);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int ClearGroup(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 3);
+			GameFramework.LuaExportFuncs obj = (GameFramework.LuaExportFuncs)ToLua.CheckObject<GameFramework.LuaExportFuncs>(L, 1);
+			GameFramework.EnumResGroup arg0 = (GameFramework.EnumResGroup)ToLua.CheckObject(L, 2, typeof(GameFramework.EnumResGroup));
+			string arg1 = ToLua.CheckString(L, 3);
+			obj.ClearGroup(arg0, arg1);
 			return 0;
 		}
 		catch (Exception e)

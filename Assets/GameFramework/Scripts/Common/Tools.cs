@@ -43,7 +43,15 @@ namespace GameFramework
 
         public static string GetReadOnlyPath(string suPath = "")
         {
-            return Application.streamingAssetsPath;
+            if(string.IsNullOrEmpty(suPath))
+            {
+                return Application.streamingAssetsPath;
+            }
+            else
+            {
+                return PathCombine(Application.streamingAssetsPath, suPath);
+            }
+
         }
 
         public static string PathCombine(string root, string file)
@@ -194,12 +202,12 @@ namespace GameFramework
             }
 
             string pre = "file://";
-#if UNITY_ANDROID
-            if (Application.isMobilePlatform)
+//#if UNITY_ANDROID
+            if (Application.platform == RuntimePlatform.Android)
             {
                 pre = "";
             }
-#endif
+//#endif
             return pre + path;
         }
 
@@ -274,40 +282,41 @@ namespace GameFramework
             }
             return PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, asbPath, resPath);
         }
-        /// <summary>
-        /// 根据传入的路径获取正式加载资源时的asbPath和filePath
-        /// 在地图编辑器会用到
-        /// </summary>
-        /// <param name="fullPath"></param>
-        /// <param name="asbPath"></param>
-        /// <param name="filePath"></param>
-        public static void SplitResPath(string fullPath, out string asbPath, out string filePath, bool useFullPath = false)
-        {
-            asbPath = null;
-            filePath = null;
-            if (string.IsNullOrEmpty(fullPath))
-            {
-                return;
-            }
-            string relative = Tools.RelativeTo(fullPath, Tools.GetResPath());
-            if (!useFullPath || fullPath != relative)
-            {
-                int index = 0;
-                for (int i = 0; i < 3; ++i)
-                {
-                    if (index < relative.Length)
-                    {
-                        index = relative.IndexOf('/', index + 1);
-                    }
-                }
-                if (-1 != index)
-                {
-                    asbPath = relative.Substring(0, index);
-                    filePath = relative.Substring(index + 1);
-                }
-            }
 
-        }
+        ///// <summary>
+        ///// 根据传入的路径获取正式加载资源时的asbPath和filePath
+        ///// 在地图编辑器会用到
+        ///// </summary>
+        ///// <param name="fullPath"></param>
+        ///// <param name="asbPath"></param>
+        ///// <param name="filePath"></param>
+        //public static void SplitResPath(string fullPath, out string asbPath, out string filePath, bool useFullPath = false)
+        //{
+        //    asbPath = null;
+        //    filePath = null;
+        //    if (string.IsNullOrEmpty(fullPath))
+        //    {
+        //        return;
+        //    }
+        //    string relative = Tools.RelativeTo(fullPath, Tools.GetResPath());
+        //    if (!useFullPath || fullPath != relative)
+        //    {
+        //        int index = 0;
+        //        for (int i = 0; i < 3; ++i)
+        //        {
+        //            if (index < relative.Length)
+        //            {
+        //                index = relative.IndexOf('/', index + 1);
+        //            }
+        //        }
+        //        if (-1 != index)
+        //        {
+        //            asbPath = relative.Substring(0, index);
+        //            filePath = relative.Substring(index + 1);
+        //        }
+        //    }
+
+        //}
 
         /// <summary>
         /// 获取Transform的名字，如果传入了root则返回相对于root的名字
@@ -351,12 +360,165 @@ namespace GameFramework
         #region U3D常用类型转换相关
         public static Rect GenRect(float[] array)
         {
-            Rect rect = new Rect();
-            rect.x = array[0];
-            rect.y = array[1];
-            rect.width = array[2];
-            rect.height = array[3];
+            Rect rect = Rect.zero;
+            if(array.Length == 4)
+            {
+                rect = new Rect(array[0], array[1], array[2], array[3]);
+            }
+
             return rect;
+        }
+
+        public static Rect GenRectByStr(string rectStr)
+        {
+            Rect rect = Rect.zero;
+            string[] array = rectStr.Split(',');
+            if (array.Length == 4)
+            {
+                float[] _params = new float[array.Length];
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if (!float.TryParse(array[i], out _params[i]))
+                    {
+                        LogFile.Warn("GenRectByStr error -> rectStr:" + rectStr);
+                        return rect;
+                    }
+                }
+                return GenRect(_params);
+            }
+            return rect;
+        }
+
+        public static Color GenColor(float[] array)
+        {
+            Color color = Color.white;
+            if(array.Length == 3)
+            {
+                color = new Color(array[0], array[1], array[2]);
+            }
+            else if (array.Length == 4)
+            {
+                color = new Color(array[0], array[1], array[2], array[3]);
+            }
+            return color;
+        }
+
+        public static Color GenColorByStr(string colorStr)
+        {
+            Color color = Color.white;
+            string[] array = colorStr.Split(',');
+            if (array.Length >= 3)
+            {
+                float[] rgba = new float[array.Length];
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if(!float.TryParse(array[i], out rgba[i]))
+                    {
+                        LogFile.Warn("GenColorByStr error -> colorStr:"+colorStr);
+                        return color;
+                    }
+                }
+                return GenColor(rgba);
+            }
+            switch(colorStr.ToLower())
+            {
+                case "black":
+                    color = Color.black;
+                    break;
+                case "blue":
+                    color = Color.blue;
+                    break;
+                case "cyan":
+                    color = Color.cyan;
+                    break;
+                case "clear":
+                    color = Color.clear;
+                    break;
+                case "gray":
+                    color = Color.gray;
+                    break;
+                case "grey":
+                    color = Color.grey;
+                    break;
+                case "green":
+                    color = Color.green;
+                    break;
+                case "magenta":
+                    color = Color.magenta;
+                    break;
+                case "red":
+                    color = Color.red;
+                    break;
+                case "white":
+                    color = Color.white;
+                    break;
+                case "yellow":
+                    color = Color.yellow;
+                    break;
+            }
+            return color;
+        }
+
+        public static Vector3 GenVector3(float[] array)
+        {
+            Vector3 pos = Vector3.zero;
+            if(array.Length == 3)
+            {
+                pos = new Vector3(array[0], array[1], array[2]);
+            }
+            else if(array.Length == 2)
+            {
+                pos = new Vector3(array[0], array[1]);
+            }
+            return pos;
+        }
+
+        public static Vector3 GenVector3ByStr(string vecStr)
+        {
+            Vector3 pos = Vector3.zero;
+            string[] array = vecStr.Split(',');
+            if (array.Length >= 2)
+            {
+                float[] _array = new float[array.Length];
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if (!float.TryParse(array[i], out _array[i]))
+                    {
+                        LogFile.Warn("GenVector3ByStr error -> vecStr:" + vecStr);
+                        return pos;
+                    }
+                }
+                return GenVector3(_array);
+            }
+
+            switch (vecStr.ToLower())
+            {
+                case "back":
+                    pos = Vector3.back;
+                    break;
+                case "down":
+                    pos = Vector3.down;
+                    break;
+                case "forward":
+                    pos = Vector3.forward;
+                    break;
+                case "left":
+                    pos = Vector3.left;
+                    break;
+                case "one":
+                    pos = Vector3.one;
+                    break;
+                case "right":
+                    pos = Vector3.right;
+                    break;
+                case "up":
+                    pos = Vector3.up;
+                    break;
+                case "zero":
+                    pos = Vector3.zero;
+                    break;   
+            }
+            return pos;
         }
         #endregion U3D常用类型转换相关
     }

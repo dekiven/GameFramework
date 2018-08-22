@@ -91,6 +91,12 @@ namespace GameFramework
         {
             GameSpriteAtlasManager.Instance.GetAtlasSync(asbName, atlasName, null, luaCall);
         }
+
+        public static void GetSpriteSync(string asbName, string atlasName, string spriteName, LuaFunction luaCall)
+        {
+            GameSpriteAtlasManager.Instance.GetSpriteSync(asbName, atlasName, spriteName, null, luaCall);
+        }
+
         #endregion GameSpriteAtlasManager
 
         #region Res 释放相关

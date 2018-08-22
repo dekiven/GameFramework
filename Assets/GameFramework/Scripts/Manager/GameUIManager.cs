@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using LuaInterface;
 using UObj = UnityEngine.Object;
 
 namespace GameFramework
@@ -16,12 +17,15 @@ namespace GameFramework
         private EventSystem mEventSystem;
         private GameResHandler<GameObject> mPrefabs;
         private Image mDarkMask;
+        private Dictionary<string, LuaTable> mViewListeners;
 
         public bool HasInit { get { return GetCanvasByMode(RenderMode.ScreenSpaceOverlay).enabled; } }
 
         #region MonoBehaviour
         void Awake()
         {
+
+            mViewListeners = new Dictionary<string, LuaTable>();
             mPrefabs = new GameResHandler<GameObject>("UI");
             mPrefabs.OnLoadCallbcak = onLoadPrefab;
             mPrefabs.Suffix = ".prefab";
@@ -69,9 +73,9 @@ namespace GameFramework
                 if (RenderMode.ScreenSpaceCamera == mode)
                 {
                     GameObject cameraObj = new GameObject();
-                    Camera camera = cameraObj.AddComponent<Camera>();
+                    Camera _camera = cameraObj.AddComponent<Camera>();
                     cameraObj.transform.SetParent(obj.transform);
-                    c.worldCamera = camera;
+                    c.worldCamera = _camera;
                 }
                 SetCanvasByMode(c);
                 //mCanvas[(int)mode] = c;
@@ -100,7 +104,7 @@ namespace GameFramework
         }
         #endregion
 
-        public void ShowView(string asbName, string prefab)
+        public void ShowView(string asbName, string prefab, LuaTable listeners=null)
         {
             if(!HasInit)
             {
@@ -110,11 +114,11 @@ namespace GameFramework
             GameObject obj = getPrefab(asbName, prefab);
             if(null != obj)
             {
-                showView(obj);
+                showView(obj, listeners);
             }
             else
             {
-                load(asbName, prefab);
+                load(asbName, prefab, listeners);
             }
         }
 
@@ -163,12 +167,16 @@ namespace GameFramework
 
         #region 私有方法
 
-        private void showView(GameObject prefab)
+        private void showView(GameObject prefab, LuaTable luaTable = null)
         {
             if(null != prefab)
             {
                 GameObject uiObj = Instantiate(prefab);
                 UIBase ui = uiObj.GetComponent<UIBase>();
+                if(null != luaTable)
+                {
+                    ui.SetLuaStatusListeners(luaTable);
+                }
                 addUIObj(ui);
                 //要显示UI先SetActive(true)，防止有UIprefab中没有启用，不会进入Start方法
                 uiObj.SetActive(true);
@@ -204,9 +212,18 @@ namespace GameFramework
             }
         }
 
-        private void load(string asbName, string prefab)
+        private void load(string asbName, string prefab, LuaTable table=null)
         {
-            mPrefabs.Load(asbName, prefab);
+            if(null != table)
+            {
+                string extral = asbName + "_" + prefab + Time.time;
+                mViewListeners[extral] = table;
+                mPrefabs.Load(asbName, prefab, extral);
+            }
+            else
+            {
+                mPrefabs.Load(asbName, prefab);
+            }
         }
 
         bool addUIObj(UIBase obj)
@@ -349,7 +366,12 @@ namespace GameFramework
 
         private void onLoadPrefab(GameObject prefab, AsbInfo info)
         {
-            showView(prefab);
+            LuaTable table = null;
+            if(mViewListeners.TryGetValue(info.extral, out table))
+            {
+                mViewListeners.Remove(info.extral);
+            }
+            showView(prefab, table);
         }
 
         private GameObject getPrefab(string asbName, string resName)

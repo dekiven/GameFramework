@@ -26,8 +26,13 @@ public class GameFramework_ToolsWrap
 		L.RegFunction("GetLuaSrcPath", GetLuaSrcPath);
 		L.RegFunction("GetLuaAsbPath", GetLuaAsbPath);
 		L.RegFunction("GetResInAssetsName", GetResInAssetsName);
-		L.RegFunction("SplitResPath", SplitResPath);
 		L.RegFunction("GetTransformName", GetTransformName);
+		L.RegFunction("GenRect", GenRect);
+		L.RegFunction("GenRectByStr", GenRectByStr);
+		L.RegFunction("GenColor", GenColor);
+		L.RegFunction("GenColorByStr", GenColorByStr);
+		L.RegFunction("GenVector3", GenVector3);
+		L.RegFunction("GenVector3ByStr", GenVector3ByStr);
 		L.RegFunction("New", _CreateGameFramework_Tools);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.EndClass();
@@ -537,45 +542,6 @@ public class GameFramework_ToolsWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SplitResPath(IntPtr L)
-	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);
-
-			if (count == 3)
-			{
-				string arg0 = ToLua.CheckString(L, 1);
-				string arg1 = null;
-				string arg2 = null;
-				GameFramework.Tools.SplitResPath(arg0, out arg1, out arg2);
-				LuaDLL.lua_pushstring(L, arg1);
-				LuaDLL.lua_pushstring(L, arg2);
-				return 2;
-			}
-			else if (count == 4)
-			{
-				string arg0 = ToLua.CheckString(L, 1);
-				string arg1 = null;
-				string arg2 = null;
-				bool arg3 = LuaDLL.luaL_checkboolean(L, 4);
-				GameFramework.Tools.SplitResPath(arg0, out arg1, out arg2, arg3);
-				LuaDLL.lua_pushstring(L, arg1);
-				LuaDLL.lua_pushstring(L, arg2);
-				return 2;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFramework.Tools.SplitResPath");
-			}
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int GetTransformName(IntPtr L)
 	{
 		try
@@ -601,6 +567,108 @@ public class GameFramework_ToolsWrap
 			{
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: GameFramework.Tools.GetTransformName");
 			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GenRect(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			float[] arg0 = ToLua.CheckNumberArray<float>(L, 1);
+			UnityEngine.Rect o = GameFramework.Tools.GenRect(arg0);
+			ToLua.PushValue(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GenRectByStr(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			string arg0 = ToLua.CheckString(L, 1);
+			UnityEngine.Rect o = GameFramework.Tools.GenRectByStr(arg0);
+			ToLua.PushValue(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GenColor(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			float[] arg0 = ToLua.CheckNumberArray<float>(L, 1);
+			UnityEngine.Color o = GameFramework.Tools.GenColor(arg0);
+			ToLua.Push(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GenColorByStr(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			string arg0 = ToLua.CheckString(L, 1);
+			UnityEngine.Color o = GameFramework.Tools.GenColorByStr(arg0);
+			ToLua.Push(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GenVector3(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			float[] arg0 = ToLua.CheckNumberArray<float>(L, 1);
+			UnityEngine.Vector3 o = GameFramework.Tools.GenVector3(arg0);
+			ToLua.Push(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GenVector3ByStr(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			string arg0 = ToLua.CheckString(L, 1);
+			UnityEngine.Vector3 o = GameFramework.Tools.GenVector3ByStr(arg0);
+			ToLua.Push(L, o);
+			return 1;
 		}
 		catch (Exception e)
 		{

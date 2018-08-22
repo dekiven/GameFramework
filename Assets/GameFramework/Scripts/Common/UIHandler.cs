@@ -126,7 +126,250 @@ namespace GameFramework
             return setUISelectable(ui, value);
         }
 
+        public bool ChangeUI(UIHandlerData data)
+        {
+            string uiName = data.UIName;
+            int uiIndex = data.UIIndex;
+
+            switch(data.FuncStr.ToLower())
+            {
+                case "setuiactive":
+                    if (uiIndex != -1)
+                    {
+                        return SetUIActive(uiIndex, (bool)data.Content);
+                    }
+                    else
+                    {
+                        return SetUIActive(uiName, (bool)data.Content);
+                    }
+                    //break;
+                case "setuiselectable":
+                    if (uiIndex != -1)
+                    {
+                        return SetUISelectable(uiIndex, (bool)data.Content);
+                    }
+                    else
+                    {
+                        return SetUISelectable(uiName, (bool)data.Content);
+                    }
+                    //break;
+                case "settextstring":
+                    if (uiIndex != -1)
+                    {
+                        return SetTextString(uiIndex, (string)data.Content);
+                    }
+                    else
+                    {
+                        return SetTextString(uiName, (string)data.Content);
+                    }
+                    //break;
+                case "settextcolor":
+                    if (uiIndex != -1)
+                    {
+                        return SetTextColor(uiIndex, (Color)data.Content);
+                    }
+                    else
+                    {
+                        return SetTextColor(uiName, (Color)data.Content);
+                    }
+                    //break;
+                case "setrichtextstring":
+                    if (uiIndex != -1)
+                    {
+                        return SetRichTextString(uiIndex, (string)data.Content);
+                    }
+                    else
+                    {
+                        return SetRichTextString(uiName, (string)data.Content);
+                    }
+                    //break;
+                case "setimagesprite":
+                    if (uiIndex != -1)
+                    {
+                        return SetImageSprite(uiIndex, (Sprite)data.Content);
+                    }
+                    else
+                    {
+                        return SetImageSprite(uiName, (Sprite)data.Content);
+                    }
+                    //break;
+                case "setrawimagetexture":
+                    //TODO:
+                    //if (uiIndex != -1)
+                    //{
+                    //    return SetRawImageTexture(uiIndex, data.Content);
+                    //}
+                    //else
+                    //{
+                    //    return SetRawImageTexture(uiName, data.Content);
+                    //}
+                    break;
+                case "setrawimagerect":
+                    if (uiIndex != -1)
+                    {
+                        return SetRawImageRect(uiIndex, (Rect)data.Content);
+                    }
+                    else
+                    {
+                        return SetRawImageRect(uiName, (Rect)data.Content);
+                    }
+                    //break;
+                case "addbtnclick":
+                    if (uiIndex != -1)
+                    {
+                        return AddBtnClick(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return AddBtnClick(uiName, (LuaFunction)data.Content);
+                    }
+                    //break;
+                case "adddropdownonvaluechanged":
+                    if (uiIndex != -1)
+                    {
+                        return AddDropdownOnValueChanged(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return AddDropdownOnValueChanged(uiName, (LuaFunction)data.Content);
+                    }
+                    //break;
+                case "setinputfeildstring":
+                    if (uiIndex != -1)
+                    {
+                        return SetInputFeildString(uiIndex, (string)data.Content);
+                    }
+                    else
+                    {
+                        return SetInputFeildString(uiName, (string)data.Content);
+                    }
+                    //break;
+                case "addinputfieldonvaluechanged":
+                    if (uiIndex != -1)
+                    {
+                        return AddInputFieldOnValueChanged(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return AddInputFieldOnValueChanged(uiName, (LuaFunction)data.Content);
+                    }
+                    //break;
+                case "addinputfieldonendedit":
+                    if (uiIndex != -1)
+                    {
+                        return AddInputFieldOnEndEdit(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return AddInputFieldOnEndEdit(uiName, (LuaFunction)data.Content);
+                    }
+                    //break;
+                case "setslidervalue":
+                    if (uiIndex != -1)
+                    {
+                        return SetSliderValue(uiIndex, (float)data.Content);
+                    }
+                    else
+                    {
+                        return SetSliderValue(uiName, (float)data.Content);
+                    }
+                    //break;
+                case "addonslidervaluechanged":
+                    if (uiIndex != -1)
+                    {
+                        return AddOnSliderValueChanged(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return AddOnSliderValueChanged(uiName, (LuaFunction)data.Content);
+                    }
+                    //break;
+                case "settoggleison":
+                    if (uiIndex != -1)
+                    {
+                        return SetToggleIsOn(uiIndex, (bool)data.Content);
+                    }
+                    else
+                    {
+                        return SetToggleIsOn(uiName, (bool)data.Content);
+                    }
+                    //break;
+                case "addtoggleonvaluechanged":
+                    if (uiIndex != -1)
+                    {
+                        return AddToggleOnValueChanged(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return AddToggleOnValueChanged(uiName, (LuaFunction)data.Content);
+                    }
+                    //break;
+                case "setscrollbarvalue":
+                    if (uiIndex != -1)
+                    {
+                        return SetScrollbarValue(uiIndex, (float)data.Content);
+                    }
+                    else
+                    {
+                        return SetScrollbarValue(uiName, (float)data.Content);
+                    }
+                    //break;
+                case "addonscrollbarvaluechanged":
+                    if (uiIndex != -1)
+                    {
+                        return AddOnScrollbarValueChanged(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return AddOnScrollbarValueChanged(uiName, (LuaFunction)data.Content);
+                    }
+                    //break;
+                case "setscrollbarsize":
+                    if (uiIndex != -1)
+                    {
+                        return SetScrollbarSize(uiIndex, (float)data.Content);
+                    }
+                    else
+                    {
+                        return SetScrollbarSize(uiName, (float)data.Content);
+                    }
+                    //break;
+                case "setscrollbarstepnumber":
+                    if (uiIndex != -1)
+                    {
+                        return SetScrollbarStepNumber(uiIndex, (int)data.Content);
+                    }
+                    else
+                    {
+                        return SetScrollbarStepNumber(uiName, (int)data.Content);
+                    }
+                    //break;
+            }
+            return false;
+        }
+
         #region Text
+        public string GetTextString(int index)
+        {
+            Text ui = GetCompByIndex<Text>(index);
+            return getTextString(ui);
+        }
+
+        public string GetTextString(string cName)
+        {
+            Text ui = GetCompByName<Text>(cName);
+            return getTextString(ui);
+        }
+
+        private string getTextString(Text ui)
+        {
+            if (null != ui)
+            {
+                return ui.text;
+            }
+            return string.Empty;
+        }
+
         public bool SetTextString(int index, string content)
         {
             Text text = GetCompByIndex<Text>(index);
@@ -137,6 +380,18 @@ namespace GameFramework
         {
             Text text = GetCompByName<Text>(cName);
             return setTextStr(text, content);
+        }
+
+        public bool SetTextColor(int index, Color color)
+        {
+            Text text = GetCompByIndex<Text>(index);
+            return setTextColor(text, color);
+        }
+
+        public bool SetTextColor(string cName, Color color)
+        {
+            Text text = GetCompByName<Text>(cName);
+            return setTextColor(text, color);
         }
 
         public bool SetRichTextString(int index, string content)
@@ -200,6 +455,18 @@ namespace GameFramework
             return false;
         }
 
+        public bool SetRawImageRect(int index, Rect rect)
+        {
+            RawImage ui = GetCompByIndex<RawImage>(index);
+            return setRawImageRect(ui, rect);
+        }
+
+        public bool SetRawImageRect(string cName, Rect rect)
+        {
+            RawImage ui = GetCompByName<RawImage>(cName);
+            return setRawImageRect(ui, rect);
+        }
+
         public bool SetRawImageRect(int index, float[] rect)
         {
             RawImage ui = GetCompByIndex<RawImage>(index);
@@ -212,15 +479,23 @@ namespace GameFramework
             return setRawImageRect(ui, rect);
         }
 
-        private static bool setRawImageRect(RawImage ui, float[] rect)
+        private static bool setRawImageRect(RawImage ui, Rect rect)
         {
-            if (null != ui && 4 == rect.Length)
+            if (null != ui)
             {
-                Rect _rect = Tools.GenRect(rect);
-
-                ui.uvRect = _rect;
+                ui.uvRect = rect;
                 ui.SetNativeSize();
                 return true;
+            }
+            return false;
+        }
+
+        private static bool setRawImageRect(RawImage ui, float[] rect)
+        {
+            if (4 == rect.Length)
+            {
+                Rect _rect = Tools.GenRect(rect);
+                return setRawImageRect(ui, _rect);
             }
             return false;
         }
@@ -253,39 +528,19 @@ namespace GameFramework
         #endregion Button
 
         #region Dropdwon
-        public string GetInputFieldText(int index)
-        {
-            InputField ui = GetCompByIndex<InputField>(index);
-            return getInputFieldText(ui);
-        }
-
-        public string GetInputFieldText(string cName)
-        {
-            InputField ui = GetCompByName<InputField>(cName);
-            return getInputFieldText(ui);
-        }
-
-        private static string getInputFieldText(InputField ui)
-        {
-            if (null != ui)
-            {
-                return ui.text;
-            }
-            return null;
-        }
-        public bool AddDropdownOnValueChange(int index, UnityAction<int> call)
+        public bool AddDropdownOnValueChanged(int index, UnityAction<int> call)
         {
             Dropdown ui = GetCompByIndex<Dropdown>(index);
-            return addDropdownOnValueChange(ui, call);
+            return addDropdownOnValueChanged(ui, call);
         }
 
-        public bool AddDropdownOnValueChange(string cName, UnityAction<int> call)
+        public bool AddDropdownOnValueChanged(string cName, UnityAction<int> call)
         {
             Dropdown ui = GetCompByName<Dropdown>(cName);
-            return addDropdownOnValueChange(ui, call);
+            return addDropdownOnValueChanged(ui, call);
         }
 
-        private static bool addDropdownOnValueChange(Dropdown ui, UnityAction<int> call)
+        private static bool addDropdownOnValueChanged(Dropdown ui, UnityAction<int> call)
         {
             if (null != ui)
             {
@@ -295,19 +550,19 @@ namespace GameFramework
             return false;
         }
 
-        public bool AddDropdownOnValueChange(int index, LuaFunction call)
+        public bool AddDropdownOnValueChanged(int index, LuaFunction call)
         {
             Dropdown ui = GetCompByIndex<Dropdown>(index);
-            return addDropdownOnValueChange(ui, call);
+            return addDropdownOnValueChanged(ui, call);
         }
 
-        public bool AddDropdownOnValueChange(string cName, LuaFunction call)
+        public bool AddDropdownOnValueChanged(string cName, LuaFunction call)
         {
             Dropdown ui = GetCompByName<Dropdown>(cName);
-            return addDropdownOnValueChange(ui, call);
+            return addDropdownOnValueChanged(ui, call);
         }
 
-        private static bool addDropdownOnValueChange(Dropdown ui, LuaFunction call)
+        private static bool addDropdownOnValueChanged(Dropdown ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -324,19 +579,62 @@ namespace GameFramework
         #endregion Dropdown
 
         #region InputField
-        public bool AddInputFieldOnValueChange(int index, UnityAction<string> call)
+        public string GetInputFieldString(int index)
         {
             InputField ui = GetCompByIndex<InputField>(index);
-            return addInputFieldOnValueChange(ui, call);
+            return getInputFieldString(ui);
         }
 
-        public bool AddInputFieldOnValueChange(string cName, UnityAction<string> call)
+        public string GetInputFieldString(string cName)
         {
             InputField ui = GetCompByName<InputField>(cName);
-            return addInputFieldOnValueChange(ui, call);
+            return getInputFieldString(ui);
         }
 
-        private static bool addInputFieldOnValueChange(InputField ui, UnityAction<string> call)
+        private string getInputFieldString(InputField ui)
+        {
+            if (null != ui)
+            {
+                return ui.text;
+            }
+            return string.Empty;
+        }
+
+        public bool SetInputFeildString(int index, string text)
+        {
+            InputField ui = GetCompByIndex<InputField>(index);
+            return setInputFeildString(ui, text);
+        }
+
+        public bool SetInputFeildString(string cName, string text)
+        {
+            InputField ui = GetCompByName<InputField>(cName);
+            return setInputFeildString(ui, text);
+        }
+
+        private bool setInputFeildString(InputField ui, string text)
+        {
+            if (null != ui)
+            {
+                ui.text = text;
+                return true;
+            }
+            return false;
+        }
+
+        public bool AddInputFieldOnValueChanged(int index, UnityAction<string> call)
+        {
+            InputField ui = GetCompByIndex<InputField>(index);
+            return addInputFieldOnValueChanged(ui, call);
+        }
+
+        public bool AddInputFieldOnValueChanged(string cName, UnityAction<string> call)
+        {
+            InputField ui = GetCompByName<InputField>(cName);
+            return addInputFieldOnValueChanged(ui, call);
+        }
+
+        private static bool addInputFieldOnValueChanged(InputField ui, UnityAction<string> call)
         {
             if (null != ui)
             {
@@ -346,19 +644,19 @@ namespace GameFramework
             return false;
         }
 
-        public bool AddInputFieldOnValueChange(int index, LuaFunction call)
+        public bool AddInputFieldOnValueChanged(int index, LuaFunction call)
         {
             InputField ui = GetCompByIndex<InputField>(index);
-            return addInputFieldOnValueChange(ui, call);
+            return addInputFieldOnValueChanged(ui, call);
         }
 
-        public bool AddInputFieldOnValueChange(string cName, LuaFunction call)
+        public bool AddInputFieldOnValueChanged(string cName, LuaFunction call)
         {
             InputField ui = GetCompByName<InputField>(cName);
-            return addInputFieldOnValueChange(ui, call);
+            return addInputFieldOnValueChanged(ui, call);
         }
 
-        private static bool addInputFieldOnValueChange(InputField ui, LuaFunction call)
+        private static bool addInputFieldOnValueChanged(InputField ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -417,7 +715,6 @@ namespace GameFramework
             }
             return false;
         }
-
         //TODO:Input.onValidateInput相关操作在需要时完善
         #endregion InputField
 
@@ -459,16 +756,28 @@ namespace GameFramework
             return setSliderValue(slider, value);
         }
 
-        public bool AddOnSliderValueChange(int index, UnityAction<float> call)
+        public bool AddOnSliderValueChanged(int index, UnityAction<float> call)
         {
             Slider slider = GetCompByIndex<Slider>(index);
-            return addOnSliderValueChange(slider, call);
+            return addOnSliderValueChanged(slider, call);
         }
 
-        public bool AddOnSliderValueChange(string cName, UnityAction<float> call)
+        public bool AddOnSliderValueChanged(string cName, UnityAction<float> call)
         {
             Slider slider = GetCompByName<Slider>(cName);
-            return addOnSliderValueChange(slider, call);
+            return addOnSliderValueChanged(slider, call);
+        }
+
+        public bool AddOnSliderValueChanged(int index, LuaFunction call)
+        {
+            Slider slider = GetCompByIndex<Slider>(index);
+            return addOnSliderValueChanged(slider, call);
+        }
+
+        public bool AddOnSliderValueChanged(string cName, LuaFunction call)
+        {
+            Slider slider = GetCompByName<Slider>(cName);
+            return addOnSliderValueChanged(slider, call);
         }
         #endregion Slider
 
@@ -602,16 +911,28 @@ namespace GameFramework
             return setScrollbarValue(slider, value);
         }
 
-        public bool AddOnScrollbarValueChange(int index, UnityAction<float> call)
+        public bool AddOnScrollbarValueChanged(int index, UnityAction<float> call)
         {
             Scrollbar slider = GetCompByIndex<Scrollbar>(index);
-            return addOnScrollbarValueChange(slider, call);
+            return addOnScrollbarValueChanged(slider, call);
         }
 
-        public bool AddOnScrollbarValueChange(string cName, UnityAction<float> call)
+        public bool AddOnScrollbarValueChanged(string cName, UnityAction<float> call)
         {
             Scrollbar slider = GetCompByName<Scrollbar>(cName);
-            return addOnScrollbarValueChange(slider, call);
+            return addOnScrollbarValueChanged(slider, call);
+        }
+
+        public bool AddOnScrollbarValueChanged(int index, LuaFunction call)
+        {
+            Scrollbar slider = GetCompByIndex<Scrollbar>(index);
+            return addOnScrollbarValueChanged(slider, call);
+        }
+
+        public bool AddOnScrollbarValueChanged(string cName, LuaFunction call)
+        {
+            Scrollbar slider = GetCompByName<Scrollbar>(cName);
+            return addOnScrollbarValueChanged(slider, call);
         }
 
         public bool SetScrollbarSize(int index, float size)
@@ -696,6 +1017,16 @@ namespace GameFramework
             return false;
         }
 
+        private static bool setTextColor(Text text, Color color)
+        {
+            if (null != text)
+            {
+                text.color = color;
+                return true;
+            }
+            return false;
+        }
+
         private bool setRichTextStr(Text text, string content)
         {
             if (null != text)
@@ -744,7 +1075,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addOnSliderValueChange(Slider slider, UnityAction<float> call)
+        private static bool addOnSliderValueChanged(Slider slider, UnityAction<float> call)
         {
             if(null != slider)
             {
@@ -753,7 +1084,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addOnSliderValueChange(Slider slider, LuaFunction call)
+        private static bool addOnSliderValueChanged(Slider slider, LuaFunction call)
         {
             if (null != slider)
             {
@@ -779,7 +1110,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addOnScrollbarValueChange(Scrollbar slider, UnityAction<float> call)
+        private static bool addOnScrollbarValueChanged(Scrollbar slider, UnityAction<float> call)
         {
             if (null != slider)
             {
@@ -788,7 +1119,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addOnScrollbarValueChange(Scrollbar slider, LuaFunction call)
+        private static bool addOnScrollbarValueChanged(Scrollbar slider, LuaFunction call)
         {
             if (null != slider)
             {

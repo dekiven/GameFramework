@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using LuaInterface;
 using UnityEngine;
 namespace GameFramework
 {
@@ -11,7 +12,14 @@ namespace GameFramework
 
         // Use this for initialization
         void Start () {
-            StartCoroutine(SetDatas());
+            if(null != mScrollView)
+            {
+                mScrollView.SetOnItemClickDelegate((int index) =>
+                {
+                    Debug.Log("OnItemClick: " + index);
+                });
+                StartCoroutine(SetDatas());
+            }
         }
 
         private IEnumerator SetDatas()
@@ -22,8 +30,10 @@ namespace GameFramework
                 List<ScrollItemData> datas = new List<ScrollItemData>();
                 for (int i = 0; i < 43; i++)
                 {
-                    var d = new ScrollItemData();
-                    d.Info = "Item" + i;
+                    List<UIHandlerData> data = new List<UIHandlerData>();
+                    data.Add(new UIHandlerData("SetTextString", 0, "Item" + i));
+                    var d = new ScrollItemData(data);
+                    //d.Info = "Item" + i;
                     datas.Add(d);
                 }
                 mScrollView.SetDatas(datas);
@@ -34,5 +44,11 @@ namespace GameFramework
         void Update () {
             
         }
+
+        //void test()
+        //{
+        //    LuaTable lTabble = new LuaTable();
+        //}
+
     }
 }

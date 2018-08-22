@@ -37,11 +37,11 @@ namespace GameFramework
         //private Action<ViewStatus> mStatusChangeCall;
 
         private Tween mAnimTween = null;
-        private LuaDictTable mLuaFuncs;
+        private LuaTable mLuaFuncs;
         private RectTransform mRectTransform;
 
 
-        public void SetLuaStatusListeners(LuaDictTable table)
+        public void SetLuaStatusListeners(LuaTable table)
         {
             mLuaFuncs = table;
         }
@@ -162,8 +162,7 @@ namespace GameFramework
                         //gameObject.SetActive(true);
                         break;
                 }
-                //test
-                Debug.LogWarningFormat("status:{0}", status.ToString());
+                //Debug.LogWarningFormat("status:{0}", status.ToString());
                 if(null != callback)
                 {
                     callback(ret);

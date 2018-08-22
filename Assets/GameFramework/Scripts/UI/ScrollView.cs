@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using LuaInterface;
 
 
 //参考资料：「Unity3D」(10)自定义属性面板Inspector详解
@@ -13,8 +14,6 @@ namespace GameFramework
     [RequireComponent(typeof(ScrollRect))]
     public class ScrollView : ScrollRect
     {
-        public Action<int> OnClickItem;
-
         [HideInInspector]
         public ScrollViewType ScrollType;
 
@@ -35,6 +34,7 @@ namespace GameFramework
         [HideInInspector]
         public int ItemNumPerStep=1;
 
+        #region 私有属性
         private ObjPool<ScrollItem> mItemPool;
         private List<ScrollItem> mCurItems;
         private List<ScrollItemData> mItemDatas;
@@ -47,6 +47,12 @@ namespace GameFramework
 
         private Vector2 mContntSpace = new Vector2();
 
+        //Item 点击回调
+        private DelScrollItemClicked mOnItemClicked;
+        private LuaFunction mOnItemClickFunc;
+        #endregion 私有属性
+
+        #region MonoBehaviour
         protected override void Awake()
         {
             base.Awake();
@@ -71,33 +77,47 @@ namespace GameFramework
             this.onValueChanged.AddListener(onSrollViewValueChanged);
         }
 
-        private ScrollItem getItem()
+        protected override void OnDestroy()
         {
-            return mItemPool.Get();
+            recoverAll();
+            if(null != mCurItems)
+            {
+                mCurItems.Clear();
+            }
+            if(null != mItemPool)
+            {
+                mItemPool.Dispose();
+            }
+            if(null != mItemDatas)
+            {
+                for (int i = 0; i < mItemDatas.Count; i++)
+                {
+                    mItemDatas[i].Dispose();
+                }
+                mItemDatas.Clear();
+            }
+            if(null != mOnItemClickFunc)
+            {
+                mOnItemClickFunc.Dispose();
+            }
+            base.OnDestroy();
         }
-
-        private void recoverItem(ScrollItem item)
-        {
-            mItemPool.Recover(item);
-        }
+        #endregion MonoBehaviour
 
         public void SetDatas(List<ScrollItemData> data)
         {
             mItemDatas = data;
-            CalculateContentSize();
-
-            //normalizedPosition = Vector2.zero;
-            checkNeedUpdate();
+            CalculateAndUpdateContent();
         }
 
-        public void UpdateData(ScrollItemData data)
+        public void UpdateData(int index, ScrollItemData data)
         {
             //TODO:
-        }
-
-        public void UpdateData(int indext)
-        {
-            //TODO:
+            if(index >= 0 && index < mItemDatas.Count)
+            {
+                mItemDatas[index] = data;
+            }
+            checkNeedUpdate(true);
         }
 
         public void AddData(ScrollItemData data)
@@ -114,6 +134,7 @@ namespace GameFramework
         {
             if (mItemDatas.Contains(data))
             {
+                data.Dispose();
                 mItemDatas.Remove(data);
             }
         }
@@ -122,6 +143,7 @@ namespace GameFramework
         {
             if (mItemDatas.Count > index && index >= 0)
             {
+                mItemDatas[index].Dispose();
                 mItemDatas.RemoveAt(index);
             }
         }
@@ -217,6 +239,27 @@ namespace GameFramework
             }
         }
 
+        public void SetOnItemClickDelegate(DelScrollItemClicked del)
+        {
+            mOnItemClicked = del;
+        }
+
+        public void SetOnItemClickLuaCall(LuaFunction call)
+        {
+            mOnItemClickFunc = call;
+        }
+
+        #region 私有方法
+        private ScrollItem getItem()
+        {
+            return mItemPool.Get();
+        }
+
+        private void recoverItem(ScrollItem item)
+        {
+            mItemPool.Recover(item);
+        }
+
         private Vector3 getItemPosByIndex(int i)
         {
             int row = 0;
@@ -288,16 +331,16 @@ namespace GameFramework
                     StopCoroutine(mUpCoroutine);
                     mUpCoroutine = null;
                 }
-                mUpCoroutine = StartCoroutine(updateAllItem(startLine, endLine));
+                mUpCoroutine = StartCoroutine(updateAllItem(startLine, endLine, forceUpdate));
             }
 
         }
 
-        private IEnumerator updateAllItem(int startLine, int endLine)
+        private IEnumerator updateAllItem(int startLine, int endLine, bool forceUpdate=false)
         {
-            if (mShowStart != startLine || mShowEnd != endLine)
+            if (mShowStart != startLine || mShowEnd != endLine || forceUpdate)
             {
-                //只有首尾的行变动，只处理相应的行
+                //只有首尾的行变动，只处理相应的行,只在一帧处理完
                 if (Math.Abs(mShowStart - startLine) <= 1 && Math.Abs(endLine - mShowEnd) <= 1)
                 {
                     //减少Item
@@ -329,39 +372,25 @@ namespace GameFramework
                 }
                 else
                 {
-                    //TODO:修复因拖动过快导致新的Item被生成问题
-                    LogFile.Log("updateAllItem 滑动多行了，直接全部刷新 start:{0}, end{1}", startLine, endLine);
+                    //有多行变动，在协程中处理所有刷新，有新变动停止协程重新处理
+                    //LogFile.Log("updateAllItem 滑动多行了，直接全部刷新 start:{0}, end{1}", startLine, endLine);
                     //滑动多行了，直接全部刷新
                     int startIndex = Mathf.Clamp(startLine * mNumPerLine, 0, mItemDatas.Count- 1);
                     int endIndex = Mathf.Clamp((endLine + 1) * mNumPerLine - 1, 0, mItemDatas.Count-1);
                     int count = endIndex - startIndex + 1;
+
+                    //回收所有Item，在之后的协程中刷新
                     recoverAll();
 
                     for (int i = 0; i < count; i++)
                     {
-                        if(startIndex + i >= mItemDatas.Count)
+                        ScrollItem item = getItem();
+                        mCurItems.Add(item);
+                        setItemDataByIndex(item, startIndex + i);
+                        if((count + 1) % ItemNumPerStep == 0 )
                         {
-                            LogFile.Log("count:{0},  mCurItems.Count:{1}, i:{2}, startIndex:{3} ", count, mCurItems.Count, i, startIndex);
+                            yield return null;
                         }
-
-                        //try
-                        {
-                            ScrollItem item = getItem();
-                            mCurItems.Add(item);
-                            item.SetData(mItemDatas[startIndex + i]);
-                            item.transform.localPosition = getItemPosByIndex(startIndex + i);
-                            if((count + 1) % ItemNumPerStep == 0 )
-                            {
-                                yield return null;
-                            }
-                        }
-                        //catch (Exception)
-                        //{
-
-                        //LogFile.Log(i + "");
-                        //LogFile.Log("count:{0},  mCurItems.Count:{1}, i{2} ", count, mCurItems.Count, i);
-                        //}
-
                     }
                 }
                 mShowStart = startLine;
@@ -383,10 +412,17 @@ namespace GameFramework
                 {
                     ScrollItem item = getItem();
                     mCurItems.Insert(0, item);
-                    item.SetData(mItemDatas[index]);
-                    item.transform.localPosition = getItemPosByIndex(index);
+                    setItemDataByIndex(item, index);
                 }
             }
+        }
+
+        private void setItemDataByIndex(ScrollItem item, int index)
+        {
+            ScrollItemData data = mItemDatas[index];
+            item.Index = index;
+            item.SetData(data);
+            item.transform.localPosition = getItemPosByIndex(index);
         }
 
         private void addEndLine(int line)
@@ -398,8 +434,7 @@ namespace GameFramework
                 {
                     ScrollItem item = getItem();
                     mCurItems.Add(item);
-                    item.SetData(mItemDatas[index]);
-                    item.transform.localPosition = getItemPosByIndex(index);
+                    setItemDataByIndex(item, index);
                 }
             }
         }
@@ -436,15 +471,35 @@ namespace GameFramework
 
         private void recoverAll()
         {
-            LogFile.Log("recoverAll 1 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
+            //LogFile.Log("recoverAll 1 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
             for (int i = mCurItems.Count - 1; i > -1; --i)
             {
                 ScrollItem item = mCurItems[i];
                 recoverItem(item);
                 mCurItems.RemoveAt(i);
             }
-            LogFile.Warn("recoverAll 2 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
+            //LogFile.Warn("recoverAll 2 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
         }
+
+        private void CalculateAndUpdateContent()
+        {
+            CalculateContentSize();
+            checkNeedUpdate(true);
+        }
+
+        private void onItemClicked(int index)
+        {
+            if(null != mOnItemClicked)
+            {
+                mOnItemClicked(index);
+            }
+
+            if(null != mOnItemClickFunc)
+            {
+                mOnItemClickFunc.Call(index);
+            }
+        }
+        #endregion 私有方法
 
         #region ObjPool回调
         bool onPoolGetDelegate(ref ScrollItem obj)
@@ -453,13 +508,14 @@ namespace GameFramework
             {
                 GameObject gobj = Instantiate(ItemPrefab, this.content, false);
                 gobj.name = "item" + mItemPool.TotalObjCount;
-                LogFile.Warn(gobj.name);
+                //LogFile.Warn(gobj.name);
                 obj = gobj.GetComponent<ScrollItem>();
                 if (null == obj)
                 {
                     LogFile.Error("ItemPrefab：{0} prefab没有添加ScrollItem组件", ItemPrefab.name);
                     return false;
                 }
+                obj.OnItemClicked = onItemClicked;
             }
             obj.gameObject.SetActive(true);
             return true;
@@ -479,7 +535,6 @@ namespace GameFramework
         }
         #endregion ObjPool回调
 
-
         #region ScrollRect 显示区域改变回调
         void onSrollViewValueChanged(Vector2 value)
         {
@@ -489,9 +544,11 @@ namespace GameFramework
 
     }
 
+    #region 辅助类或枚举
     public enum ScrollViewType
     {
         Horizontal,
         Vertical,
     }
+    #endregion 辅助类或枚举
 }
