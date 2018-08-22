@@ -21,7 +21,7 @@ namespace GameFramework
     /// InputField
     /// Canvas
     /// Panel
-    /// ScrollRect
+    /// ScrollView
     /// </summary>
     public class UIHandler : MonoBehaviour
     {
@@ -37,6 +37,15 @@ namespace GameFramework
             if (null == RootTransform)
             {
                 RootTransform = transform;
+            }
+            GetUI2RootNames();
+        }
+
+        private void GetUI2RootNames()
+        {
+            if(null != mUINames)
+            {
+                mUINames.Clear();
             }
             if (UIArray.Length > 0)
             {
@@ -90,42 +99,6 @@ namespace GameFramework
             return null;
         }
 
-        public bool SetUIActive(int index, bool value)
-        {
-            UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
-            return setUIActive(ui, value);
-        }
-
-        public bool SetUIActive(string cName, bool value)
-        {
-            UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
-            return setUIActive(ui, value);
-        }
-
-        /// <summary>
-        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择
-        /// </summary>
-        /// <returns><c>true</c>, if UIS electable was set, <c>false</c> otherwise.</returns>
-        /// <param name="index">Index.</param>
-        /// <param name="value">If set to <c>true</c> value.</param>
-        public bool SetUISelectable(int index, bool value)
-        {
-            Selectable ui = GetCompByIndex<Selectable>(index);
-            return setUISelectable(ui, value);
-        }
-
-        /// <summary>
-        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择
-        /// </summary>
-        /// <returns><c>true</c>, if UIS electable was set, <c>false</c> otherwise.</returns>
-        /// <param name="cName">Name.</param>
-        /// <param name="value">If set to <c>true</c> value.</param>
-        public bool SetUISelectable(string cName, bool value)
-        {
-            Selectable ui = GetCompByName<Selectable>(cName);
-            return setUISelectable(ui, value);
-        }
-
         public bool ChangeUI(UIHandlerData data)
         {
             string uiName = data.UIName;
@@ -133,6 +106,16 @@ namespace GameFramework
 
             switch(data.FuncStr.ToLower())
             {
+                case "setuiname":
+                    if (uiIndex != -1)
+                    {
+                        return SetUIName(uiIndex, (string)data.Content);
+                    }
+                    else
+                    {
+                        return SetUIName(uiName, (string)data.Content);
+                    }
+                    //break;
                 case "setuiactive":
                     if (uiIndex != -1)
                     {
@@ -217,21 +200,49 @@ namespace GameFramework
                 case "addbtnclick":
                     if (uiIndex != -1)
                     {
-                        return AddBtnClick(uiIndex, (LuaFunction)data.Content);
+                        if(null != (LuaFunction)data.Content)
+                        {
+                            return AddBtnClick(uiIndex, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddBtnClick(uiIndex, (UnityAction<string>)data.Content);
+                        }
                     }
                     else
                     {
-                        return AddBtnClick(uiName, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddBtnClick(uiName, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddBtnClick(uiName, (UnityAction<string>)data.Content);
+                        }
                     }
                     //break;
                 case "adddropdownonvaluechanged":
                     if (uiIndex != -1)
                     {
-                        return AddDropdownOnValueChanged(uiIndex, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddDropdownOnValueChanged(uiIndex, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddDropdownOnValueChanged(uiIndex, (UnityAction<int>)data.Content);
+                        }
                     }
                     else
                     {
-                        return AddDropdownOnValueChanged(uiName, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddDropdownOnValueChanged(uiName, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddDropdownOnValueChanged(uiName, (UnityAction<int>)data.Content);
+                        }
                     }
                     //break;
                 case "setinputfeildstring":
@@ -247,21 +258,49 @@ namespace GameFramework
                 case "addinputfieldonvaluechanged":
                     if (uiIndex != -1)
                     {
-                        return AddInputFieldOnValueChanged(uiIndex, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddInputFieldOnValueChanged(uiIndex, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddInputFieldOnValueChanged(uiIndex, (UnityAction<string>)data.Content);
+                        }
                     }
                     else
                     {
-                        return AddInputFieldOnValueChanged(uiName, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddInputFieldOnValueChanged(uiName, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddInputFieldOnValueChanged(uiName, (UnityAction<string>)data.Content);
+                        }
                     }
                     //break;
                 case "addinputfieldonendedit":
                     if (uiIndex != -1)
                     {
-                        return AddInputFieldOnEndEdit(uiIndex, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddInputFieldOnEndEdit(uiIndex, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddInputFieldOnEndEdit(uiIndex, (UnityAction<string>)data.Content);
+                        }
                     }
                     else
                     {
-                        return AddInputFieldOnEndEdit(uiName, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddInputFieldOnEndEdit(uiName, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddInputFieldOnEndEdit(uiName, (UnityAction<string>)data.Content);
+                        }
                     }
                     //break;
                 case "setslidervalue":
@@ -277,11 +316,93 @@ namespace GameFramework
                 case "addonslidervaluechanged":
                     if (uiIndex != -1)
                     {
-                        return AddOnSliderValueChanged(uiIndex, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddOnSliderValueChanged(uiIndex, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddOnSliderValueChanged(uiIndex, (UnityAction<float>)data.Content);
+                        }
                     }
                     else
                     {
-                        return AddOnSliderValueChanged(uiName, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddOnSliderValueChanged(uiName, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddOnSliderValueChanged(uiName, (UnityAction<float>)data.Content);
+                        }
+                    }
+                    //break;
+                case "setscrollviewdatas":
+                    if (uiIndex != -1)
+                    {
+                        if (null != (LuaTable)data.Content)
+                        {
+                            return SetScrollViewDatas(uiIndex, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return SetScrollViewDatas(uiIndex, (List<UIItemData>)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        if (null != (LuaTable)data.Content)
+                        {
+                            return SetScrollViewDatas(uiName, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return SetScrollViewDatas(uiName, (List<UIItemData>)data.Content);
+                        }
+                    }
+                //break;
+                case "updatescrollviewdata":
+                    if (uiIndex != -1)
+                    {
+                        return UpdateScrollViewData(uiIndex, (LuaTable)data.Content);
+                    }
+                    else
+                    {
+                        return UpdateScrollViewData(uiName, (LuaTable)data.Content);
+                    }
+                    //break;
+                case "addscrollviewdata":
+                    if (uiIndex != -1)
+                    {
+                        if (null != (LuaTable)data.Content)
+                        {
+                            return AddScrollViewData(uiIndex, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return AddScrollViewData(uiIndex, (UIItemData)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        if (null != (LuaTable)data.Content)
+                        {
+                            return AddScrollViewData(uiName, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return AddScrollViewData(uiName, (UIItemData)data.Content);
+                        }
+                    }
+                    //break;
+                case "insertscrollviewdata":
+                    if (uiIndex != -1)
+                    {
+                        return InsertScrollViewData(uiIndex, (LuaTable)data.Content);
+                    }
+                    else
+                    {
+                        return InsertScrollViewData(uiName, (LuaTable)data.Content);
                     }
                     //break;
                 case "settoggleison":
@@ -297,11 +418,25 @@ namespace GameFramework
                 case "addtoggleonvaluechanged":
                     if (uiIndex != -1)
                     {
-                        return AddToggleOnValueChanged(uiIndex, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddToggleOnValueChanged(uiIndex, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddToggleOnValueChanged(uiIndex, (UnityAction<bool>)data.Content);
+                        }
                     }
                     else
                     {
-                        return AddToggleOnValueChanged(uiName, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddToggleOnValueChanged(uiName, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddToggleOnValueChanged(uiName, (UnityAction<bool>)data.Content);
+                        }
                     }
                     //break;
                 case "setscrollbarvalue":
@@ -317,11 +452,25 @@ namespace GameFramework
                 case "addonscrollbarvaluechanged":
                     if (uiIndex != -1)
                     {
-                        return AddOnScrollbarValueChanged(uiIndex, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddOnScrollbarValueChanged(uiIndex, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddOnScrollbarValueChanged(uiIndex, (UnityAction<float>)data.Content);
+                        }
                     }
                     else
                     {
-                        return AddOnScrollbarValueChanged(uiName, (LuaFunction)data.Content);
+                        if (null != (LuaFunction)data.Content)
+                        {
+                            return AddOnScrollbarValueChanged(uiName, (LuaFunction)data.Content);
+                        }
+                        else
+                        {
+                            return AddOnScrollbarValueChanged(uiName, (UnityAction<float>)data.Content);
+                        }
                     }
                     //break;
                 case "setscrollbarsize":
@@ -347,6 +496,56 @@ namespace GameFramework
             }
             return false;
         }
+
+        #region UI 通用
+        public bool SetUIName(int index, string name)
+        {
+            UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
+            return setUIName(ui, name);
+        }
+
+        public bool SetUIName(string cName, string name)
+        {
+            UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
+            return setUIName(ui, name);
+        }
+
+        public bool SetUIActive(int index, bool value)
+        {
+            UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
+            return setUIActive(ui, value);
+        }
+
+        public bool SetUIActive(string cName, bool value)
+        {
+            UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
+            return setUIActive(ui, value);
+        }
+
+        /// <summary>
+        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择
+        /// </summary>
+        /// <returns><c>true</c>, if UIS electable was set, <c>false</c> otherwise.</returns>
+        /// <param name="index">Index.</param>
+        /// <param name="value">If set to <c>true</c> value.</param>
+        public bool SetUISelectable(int index, bool value)
+        {
+            Selectable ui = GetCompByIndex<Selectable>(index);
+            return setUISelectable(ui, value);
+        }
+
+        /// <summary>
+        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择
+        /// </summary>
+        /// <returns><c>true</c>, if UIS electable was set, <c>false</c> otherwise.</returns>
+        /// <param name="cName">Name.</param>
+        /// <param name="value">If set to <c>true</c> value.</param>
+        public bool SetUISelectable(string cName, bool value)
+        {
+            Selectable ui = GetCompByName<Selectable>(cName);
+            return setUISelectable(ui, value);
+        }
+        #endregion UI 通用
 
         #region Text
         public string GetTextString(int index)
@@ -502,7 +701,7 @@ namespace GameFramework
         #endregion RawImage
 
         #region Button
-        public bool AddBtnClick(int index, UnityAction call)
+        public bool AddBtnClick(int index, UnityAction<string> call)
         {
             Button btn = GetCompByIndex<Button>(index);
             return addBtnClick(btn, call);
@@ -514,7 +713,7 @@ namespace GameFramework
             return addBtnClick(btn, call);
         }
 
-        public bool AddBtnClick(string cName, UnityAction call)
+        public bool AddBtnClick(string cName, UnityAction<string> call)
         {
             Button btn = GetCompByName<Button>(cName);
             return addBtnClick(btn, call);
@@ -718,8 +917,152 @@ namespace GameFramework
         //TODO:Input.onValidateInput相关操作在需要时完善
         #endregion InputField
 
-        #region ScrollRect
+        #region ScrollView
+        public bool SetScrollViewDatas(int index, LuaTable table)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return setScrollViewDatas(ui, table);
+        }
 
+        public bool SetScrollViewDatas(string cName, LuaTable table)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return setScrollViewDatas(ui, table);
+        }
+
+        private static bool setScrollViewDatas(ScrollView ui, LuaTable table)
+        {
+            if (null != ui)
+            {
+                ui.SetDatas(table);
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetScrollViewDatas(int index, List<UIItemData> datas)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return setScrollViewDatas(ui, datas);
+        }
+
+        public bool SetScrollViewDatas(string cName, List<UIItemData> datas)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return setScrollViewDatas(ui, datas);
+        }
+
+        private static bool setScrollViewDatas(ScrollView ui, List<UIItemData> datas)
+        {
+            if (null != ui)
+            {
+                ui.SetDatas(datas);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 跟新某位置的数据
+        /// 由于C#部分UpdateData需要两个参数，这里只导出lua相关的方法
+        /// </summary>
+        /// <returns><c>true</c>, if scroll view data was updataed, <c>false</c> otherwise.</returns>
+        /// <param name="index">Index.</param>
+        /// <param name="table">Table.</param>
+        public bool UpdateScrollViewData(int index, LuaTable table)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return updateScoriewData(ui, table);
+        }
+
+        /// <summary>
+        /// 跟新某位置的数据
+        /// 由于C#部分UpdateData需要两个参数，这里只导出lua相关的方法
+        /// </summary>
+        /// <returns><c>true</c>, if scroll view data was updataed, <c>false</c> otherwise.</returns>
+        /// <param name="cName">C name.</param>
+        /// <param name="table">Table.</param>
+        public bool UpdateScrollViewData(string cName, LuaTable table)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return updateScoriewData(ui, table);
+        }
+
+        private static bool updateScoriewData(ScrollView ui, LuaTable table)
+        {
+            if (null != ui)
+            {
+                ui.UpdateData(table);
+                return true;
+            }
+            return false;
+        }
+
+        public bool AddScrollViewData(int index, LuaTable table)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return addScrollViewData(ui, table);
+        }
+
+        public bool AddScrollViewData(string cName, LuaTable table)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return addScrollViewData(ui, table);
+        }
+
+        private static bool addScrollViewData(ScrollView ui, LuaTable table)
+        {
+            if (null != ui)
+            {
+                ui.AddData(table);
+                return true;
+            }
+            return false;
+        }
+
+        public bool AddScrollViewData(int index, UIItemData data)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return addScrollViewData(ui, data);
+        }
+
+        public bool AddScrollViewData(string cName, UIItemData data)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return addScrollViewData(ui, data);
+        }
+
+        private static bool addScrollViewData(ScrollView ui, UIItemData data)
+        {
+            if (null != ui)
+            {
+                ui.AddData(data);
+                return true;
+            }
+            return false;
+        }
+
+        public bool InsertScrollViewData(int index, LuaTable table)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return insertScrollViewData(ui, table);
+        }
+
+        public bool InsertScrollViewData(string cName, LuaTable table)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return insertScrollViewData(ui, table);
+        }
+
+        private static bool insertScrollViewData(ScrollView ui, LuaTable table)
+        {
+            if (null != ui)
+            {
+                ui.InsertData(table);
+                return true;
+            }
+            return false;
+        }
         #endregion
 
         #region Slider
@@ -987,6 +1330,16 @@ namespace GameFramework
 
         #region private 方法
 
+        private bool setUIName(UIBehaviour ui, string name)
+        {
+            if (null != ui)
+            {
+                ui.gameObject.name = name;
+                return true;
+            }
+            return false;
+        }
+
         private static bool setUIActive(UIBehaviour ui, bool value)
         {
             if (null != ui)
@@ -1038,11 +1391,12 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addBtnClick(Button btn, UnityAction call)
+        private static bool addBtnClick(Button btn, UnityAction<string> call)
         {
             if (null != btn)
             {
-                btn.onClick.AddListener(call);
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(()=>call(btn.name));
                 return true;
             }
             return false;
@@ -1052,12 +1406,13 @@ namespace GameFramework
         {
             if (null != btn)
             {
+                btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() =>
                 {
                     if (null != call)
                     {
                         //TODO:想办法在Destroy时释放call（调用Dispose方法）
-                        call.Call();
+                        call.Call(btn.name);
                     }
                 });
                 return true;
@@ -1281,28 +1636,39 @@ namespace GameFramework
     }
 }
 
-//// 正则
-//public bool \1\2\3(int index, \4 \5)
-//        {
-//            \2 ui = GetCompByIndex<\2>(index);
-//            return \6\2\3(ui, \5);
-//        }
+        //// 正则
+        //public bool \1\2\3(int index, \4 \5)
+        //{
+        //    \2 ui = GetCompByIndex<\2>(index);
+        //    return \6\2\3(ui, \5);
+        //}
 
-//        public bool \1\2\3(string cName, \4 \5)
-//        {
-//            \2 ui = GetCompByName<\2>(cName);
-//            return \6\2\3(ui, \5);
-//        }
+        //public bool \1\2\3(string cName, \4 \5)
+        //{
+        //    \2 ui = GetCompByName<\2>(cName);
+        //    return \6\2\3(ui, \5);
+        //}
 
-//        private static bool \6\2\3(\2 ui, \4 \5)
-//        {
-//            if(null != ui)
-//            {
-//                //
-//                return true;
-//            }
-//            return false;
-//        }
+        //private static bool \6\2\3(\2 ui, \4 \5)
+        //{
+        //    if(null != ui)
+        //    {
+        //        //
+        //        return true;
+        //    }
+        //    return false;
+        //}
+
+                    ////case "setrichtextstring":
+                    ////if (uiIndex != -1)
+                    ////{
+                    ////    return SetRichTextString(uiIndex, (string) data.Content);
+                    ////}
+                    ////else
+                    ////{
+                    ////    return SetRichTextString(uiName, (string) data.Content);
+                    ////}
+                    //////break;
 
 //Set,Image,Sprite,Sprite,sprite,set
 //(\S+),(\S+),(\S+),(\S+),(\S+),(\S+)

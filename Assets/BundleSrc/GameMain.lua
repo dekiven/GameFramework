@@ -10,6 +10,7 @@ function GameMain()
     UpdateBeat:AddListener(listner)
     
     -- print(tostring(test))
+    StartTest();
 end
 
 --场景切换通知
@@ -25,7 +26,7 @@ function MainUpdate()
     -- print("MainUpdate")
 end
 
-function TestLoadRes()
+function StartTest()
     local test = require("Test").new()
-    GameFramework.LogFile.Log('lua:TestLoadRes')
+    printLog('lua:StartTest')
 end

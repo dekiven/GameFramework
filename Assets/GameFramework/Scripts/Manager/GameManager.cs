@@ -105,7 +105,7 @@ namespace GameFramework
         {
             LogFile.Log("TestLoadRes");
             mLuaMgr.InitStart();
-            mLuaMgr.CallGlobalFunc("TestLoadRes");
+            //mLuaMgr.CallGlobalFunc("TestLoadRes");
 
             //根据progressThreadEvent判定是否启用线程处理线程上的事件
             if (progressThreadEvent)

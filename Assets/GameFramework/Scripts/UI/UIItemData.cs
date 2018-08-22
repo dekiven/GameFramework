@@ -5,24 +5,24 @@ using LuaInterface;
 
 namespace GameFramework
 {
-    public class ScrollItemData : IDisposable
+    public class UIItemData : IDisposable
     {
         //public string Info;
         public List<UIHandlerData> DataList { get { return mList; }}
         private List<UIHandlerData> mList;
 
-        public ScrollItemData()
+        public UIItemData()
         {
             mList = new List<UIHandlerData>();
         }
 
-        public ScrollItemData(LuaTable luaTable)
+        public UIItemData(LuaTable luaTable)
         {
             mList = new List<UIHandlerData>();
             convertLuaTable2Data(luaTable);
         }
 
-        public ScrollItemData(List<UIHandlerData> data)
+        public UIItemData(List<UIHandlerData> data)
         {
             mList = data;
         }
@@ -38,13 +38,17 @@ namespace GameFramework
 
         private void convertLuaTable2Data(LuaTable luaTable)
         {
-            int count = luaTable.RawGet<string, int>("count");
-            if(count > 0)
+            if(null != luaTable)
             {
-                for (int i = 0; i < count; i++)
+                int count = luaTable.RawGet<string, int>("count");
+                if(count > 0)
                 {
-                    mList.Add(new UIHandlerData(luaTable.RawGetIndex<LuaTable>(i+1)));
+                    for (int i = 0; i < count; i++)
+                    {
+                        mList.Add(new UIHandlerData(luaTable.RawGetIndex<LuaTable>(i+1)));
+                    }
                 }
+                luaTable.Dispose();
             }
         }
     }

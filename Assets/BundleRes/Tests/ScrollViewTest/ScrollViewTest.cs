@@ -27,12 +27,12 @@ namespace GameFramework
             yield return new WaitForSeconds(2);
             if (null != mScrollView)
             {
-                List<ScrollItemData> datas = new List<ScrollItemData>();
+                List<UIItemData> datas = new List<UIItemData>();
                 for (int i = 0; i < 43; i++)
                 {
                     List<UIHandlerData> data = new List<UIHandlerData>();
                     data.Add(new UIHandlerData("SetTextString", 0, "Item" + i));
-                    var d = new ScrollItemData(data);
+                    var d = new UIItemData(data);
                     //d.Info = "Item" + i;
                     datas.Add(d);
                 }

@@ -37,7 +37,7 @@ namespace GameFramework
         #region 私有属性
         private ObjPool<ScrollItem> mItemPool;
         private List<ScrollItem> mCurItems;
-        private List<ScrollItemData> mItemDatas;
+        private List<UIItemData> mItemDatas;
         private int mNumPerLine;
         private int mLinePerPage;
         private int mTotalLines;
@@ -104,13 +104,20 @@ namespace GameFramework
         }
         #endregion MonoBehaviour
 
-        public void SetDatas(List<ScrollItemData> data)
+        public void SetDatas(List<UIItemData> data)
         {
             mItemDatas = data;
             CalculateAndUpdateContent();
         }
 
-        public void UpdateData(int index, ScrollItemData data)
+        public void SetDatas(LuaTable table)
+        {
+            List<UIItemData> data = Tools.GenUIIemDataList(table);
+            mItemDatas = data;
+            CalculateAndUpdateContent();
+        }
+
+        public void UpdateData(int index, UIItemData data)
         {
             //TODO:
             if(index >= 0 && index < mItemDatas.Count)
@@ -120,22 +127,54 @@ namespace GameFramework
             checkNeedUpdate(true);
         }
 
-        public void AddData(ScrollItemData data)
+        /// <summary>
+        /// 更新某位置的数据,为了方便UIhandler使用LuaTable包含index和数据
+        /// </summary>
+        /// <param name="table">包含index和UIItemData的teble，/n格式：{index=0, data={{"xxx",0,"xxx"},...},...,count=x}</param>
+        public void UpdateData(LuaTable table)
+        {
+            int index = table.RawGet<string, int>("index");
+            UIItemData data = new UIItemData(table.RawGet<string, LuaTable>("data"));
+            UpdateData(index, data);
+        }
+
+        public void AddData(UIItemData data)
         {
             mItemDatas.Add(data);
+            CalculateAndUpdateContent();
         }
 
-        public void Insert(ScrollItemData data, int index)
+        public void AddData(LuaTable table)
+        {
+            UIItemData data = new UIItemData(table);
+            AddData(data);
+        }
+
+        public void InsertData(UIItemData data, int index)
         {
             mItemDatas.Insert(index, data);
+            CalculateAndUpdateContent();
         }
 
-        public void RemoveData(ScrollItemData data)
+        /// <summary>
+        /// 在某位置插入数据,为了方便UIhandler使用LuaTable包含index和数据
+        /// </summary>
+        /// <param name="table">包含index和UIItemData的teble，/n格式：{index=0, data={{"xxx",0,"xxx"},...},...,count=x}</param>
+        public void InsertData(LuaTable table)
+        {
+            int index = table.RawGet<string, int>("index");
+            UIItemData data = new UIItemData(table.RawGet<string, LuaTable>("data"));
+            InsertData(data, index);
+        }
+
+        public void RemoveData(UIItemData data)
         {
             if (mItemDatas.Contains(data))
             {
                 data.Dispose();
                 mItemDatas.Remove(data);
+
+                CalculateAndUpdateContent();
             }
         }
 
@@ -145,6 +184,8 @@ namespace GameFramework
             {
                 mItemDatas[index].Dispose();
                 mItemDatas.RemoveAt(index);
+
+                CalculateAndUpdateContent();
             }
         }
 
@@ -153,10 +194,10 @@ namespace GameFramework
 #if UNITY_EDITOR
             if (null == mItemDatas)
             {
-                mItemDatas = new List<ScrollItemData>();
+                mItemDatas = new List<UIItemData>();
                 for (int i = 0; i < 100; i++)
                 {
-                    mItemDatas.Add(new ScrollItemData());
+                    mItemDatas.Add(new UIItemData());
                 }
             }
 #endif
@@ -419,7 +460,7 @@ namespace GameFramework
 
         private void setItemDataByIndex(ScrollItem item, int index)
         {
-            ScrollItemData data = mItemDatas[index];
+            UIItemData data = mItemDatas[index];
             item.Index = index;
             item.SetData(data);
             item.transform.localPosition = getItemPosByIndex(index);

@@ -3,9 +3,23 @@ local TestClass = class("TestClass")
 
 local gm = GameFramework.LuaExportFuncs
 
+local tests = 
+{
+    {name='UIManagerTest', dir='UIManagerTest', scene='UIManagerTest.unity'},
+    {name='ScrollViewTest', dir='ScrollViewTest', scene='ScrollViewTest.unity'},
+    {name='SpriteAtlasTest', dir='SpriteAtlasTest', scene='SpriteAtlasTest.unity'},
+    {name='LoadPrefabTest', dir='LoadPrefabTest', scene='LoadPrefabTest.unity'},
+}
+
 function TestClass:ctor( ... )    
+    LoadScene('Tests/Main', 'TestScene.unity3d', true, false, function( progress )
+        if(progress >= 1)
+        {
+            slef:showTestView()
+        }
+    end)
     -- self:testBySceneName('TestUIManager')
-    self:testBySceneName('TestSpriteAtlas')
+    -- self:testBySceneName('TestSpriteAtlas')
 end
 
 function TestClass:testLoadPrefab()
@@ -43,5 +57,9 @@ function TestClass:testBySceneName(name)
     end)
 end
 
+
+function TestClass:showTestView()
+    -- ShowView('', '', )
+end
 
 return TestClass

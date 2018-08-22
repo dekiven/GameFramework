@@ -62,12 +62,12 @@ namespace GameFramework
 
         #region GameLuaManager
 
-        public void AddLuaBundle(string name)
+        public static void AddLuaBundle(string name)
         {
             GameLuaManager.Instance.AddLuaBundle(name);
         }
 
-        public void AddLuaBundles(string[] names)
+        public static void AddLuaBundles(string[] names)
         {
             GameLuaManager.Instance.AddLuaBundles(names);
         }
@@ -75,9 +75,9 @@ namespace GameFramework
         #endregion
 
         #region GameUIManager
-        public static void ShowView(string asbName, string viewName)
+        public static void ShowView(string asbName, string viewName, LuaTable table)
         {
-            GameUIManager.Instance.ShowView(asbName, viewName);
+            GameUIManager.Instance.ShowView(asbName, viewName, table);
         }
 
         public static void PopView()
@@ -100,7 +100,7 @@ namespace GameFramework
         #endregion GameSpriteAtlasManager
 
         #region Res 释放相关
-        public void SetCurGroup(EnumResGroup e, string group)
+        public static void SetCurGroup(EnumResGroup e, string group)
         {
             switch(e)
             {
@@ -116,7 +116,7 @@ namespace GameFramework
             }
         }
 
-        public void ClearGroup(EnumResGroup e, string group)
+        public static void ClearGroup(EnumResGroup e, string group)
         {
             switch (e)
             {
@@ -147,4 +147,8 @@ namespace GameFramework
         Audio,
         SpriteAtlas,
     }
+
+    //正则
+    //public static (\S+) (\S+)\((.*)\) 
+    //-- \1 \2 (\3)\n\2 = luaExp.\2
 }

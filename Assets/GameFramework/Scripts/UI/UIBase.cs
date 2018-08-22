@@ -135,14 +135,14 @@ namespace GameFramework
                 {
                     if (ViewStatus.onInit == status)
                     {
-                        func.Call<UIHandler, UIAnimResult>(UIObjs, OnInitCallbcak);
+                        func.Call<UIBase, UIHandler, UIAnimResult>(this, UIObjs, OnInitCallbcak);
                     }
                     else
                     {
                         func.Call();
                     }
+                    return true;
                 }
-                return true;
             }
             return false;
         }
@@ -288,6 +288,10 @@ namespace GameFramework
             {
                 LogFile.Error("mRectTransform is null");
                 return;
+            }
+            if(null == UIObjs)
+            {
+                UIObjs = GetComponent<UIHandler>();
             }
             IsBillboard = false;
             //进入初始化之后直接隐藏UI，修复在UI切换的时候会显示该UI，等待上个UI隐藏动画完成后再播放动画修复的bug

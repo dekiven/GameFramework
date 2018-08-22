@@ -166,6 +166,7 @@ public static class CustomSettings
         _GT(typeof(GameFramework.LuaExportFuncs)),
         _GT(typeof(GameFramework.UIHandlerData)),
         _GT(typeof(GameFramework.UIHandler)),
+        _GT(typeof(GameFramework.UIBase)),
         //---------------customRigister end=================
 
     };

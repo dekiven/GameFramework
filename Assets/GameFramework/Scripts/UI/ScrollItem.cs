@@ -42,7 +42,7 @@ namespace GameFramework
         /// 根据设置的data修改Item内容
         /// </summary>
         /// <param name="scrollItemData">Scroll item data.</param>
-        public void SetData(ScrollItemData scrollItemData)
+        public void SetData(UIItemData scrollItemData)
         {
             if(null != UIHandler)
             {

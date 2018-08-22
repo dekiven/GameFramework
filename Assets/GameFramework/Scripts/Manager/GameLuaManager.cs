@@ -38,7 +38,7 @@ namespace GameFramework
             //TODO:发布的游戏会在资源更新之后再调用这个方法，甚至可以动态读取Bundle
             InitGameLuaBundle();
             this.lua.Start();    //启动LUAVM
-            this.StartMain();
+            this.StartMain();  //在资源更新后调用
             this.StartLooper();
         }
 

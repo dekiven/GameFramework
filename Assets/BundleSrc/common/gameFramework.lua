@@ -93,8 +93,8 @@ function forceRequire(modName)
     -- pcall下执行require
     local ok, err = pcall(require, modName)
     if not ok then
-        -- 热更新失败，将之前的值赋值回去
-        print(string.format('[%s] 热加载失败，日志：%s', modName, tostring(err)))
+        -- 热加载失败，将之前的值赋值回去
+        printLog(string.format('[%s] 热加载失败，日志：%s', modName, tostring(err)))
         package.loaded[modName] = oldMod
     else
         return err
@@ -129,6 +129,44 @@ function tryCatch(tryCall, catchCall, finalCall)
     end
 end
 
+-- LogFile 相关
 printLog = GameFramework.LogFile.Log
 printWarn = GameFramework.LogFile.Warn
 printError = GameFramework.LogFile.Error
+
+
+local luaExp = GameFramework.LuaExportFuncs
+-- void LoadGameObj (string abName, string name, LuaFunction luaFunc)
+-- void LoadGameObj (string abName, string[] names, LuaFunction luaFunc)
+LoadGameObj = luaExp.LoadGameObj
+-- void LoadTextAsset (string abName, string name, LuaFunction luaFunc)
+-- void LoadTextAsset (string abName, string[] names, LuaFunction luaFunc)
+LoadTextAsset = luaExp.LoadTextAsset
+-- void LoadTextAssetBytes (string abName, string name, LuaFunction luaFunc)
+-- void LoadTextAssetBytes (string abName, string[] names, LuaFunction luaFunc)
+LoadTextAssetBytes = luaExp.LoadTextAssetBytes
+-- void LoadScene (string abName, string scenenName, bool sync, bool add, LuaFunction luaFunction)
+LoadScene = luaExp.LoadScene
+-- void CountAsbGroup (string asbName, string group)
+CountAsbGroup = luaExp.CountAsbGroup
+-- void UnloadAsbGroup (string group)
+UnloadAsbGroup = luaExp.UnloadAsbGroup
+-- void AddLuaBundle (string name)
+AddLuaBundle = luaExp.AddLuaBundle
+-- void AddLuaBundles (string[] names)
+AddLuaBundles = luaExp.AddLuaBundles
+-- void ShowView (string asbName, string viewName)
+ShowView = luaExp.ShowView
+-- void PopView ()
+PopView = luaExp.PopView
+-- void GetAtlasSync (string asbName, string atlasName, LuaFunction luaCall)
+GetAtlasSync = luaExp.GetAtlasSync
+-- void GetSpriteSync (string asbName, string atlasName, string spriteName, LuaFunction luaCall)
+GetSpriteSync = luaExp.GetSpriteSync
+-- void SetCurGroup (EnumResGroup e, string group)
+SetCurGroup = luaExp.SetCurGroup
+-- void ClearGroup (EnumResGroup e, string group)
+ClearGroup = luaExp.ClearGroup
+
+
+

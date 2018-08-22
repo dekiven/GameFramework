@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using LuaInterface;
 using UnityEngine;
 
 namespace GameFramework
@@ -519,6 +520,24 @@ namespace GameFramework
                     break;   
             }
             return pos;
+        }
+
+        public static List<UIItemData> GenUIIemDataList(LuaTable table)
+        {
+            List<UIItemData> list = new List<UIItemData>();
+            if(null != table)
+            {
+                int count = table.RawGet<string, int>("count");
+                if (count > 0)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        list.Add(new UIItemData(table.RawGetIndex<LuaTable>(i + 1)));
+                    }
+                }
+                table.Dispose();
+            }
+            return list;
         }
         #endregion U3D常用类型转换相关
     }
