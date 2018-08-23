@@ -1,10 +1,10 @@
 fileFormatVersion: 2
 guid: 1d7ba4627bf664414a6599093e15346f
-timeCreated: 1534930938
+timeCreated: 1535008530
 licenseType: Free
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 100100000
   userData: 
-  assetBundleName: 
+  assetBundleName: tests/main.unity3d
   assetBundleVariant: 

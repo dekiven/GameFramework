@@ -141,6 +141,10 @@ namespace GameFramework
         /// <param name="luaFunc">Lua func.</param>
         public void LoadScene(string asbName, string sceneName, bool sync, bool add, Action<float> callback = null, LuaFunction luaFunc = null)
         {
+            if (sceneName.Equals(""))
+            {
+                sceneName = ".unity";
+            }
             string scenePath = Tools.GetResInAssetsName(asbName, sceneName);
             LoadSceneMode mode = add ? LoadSceneMode.Additive : LoadSceneMode.Single;
 #if UNITY_EDITOR

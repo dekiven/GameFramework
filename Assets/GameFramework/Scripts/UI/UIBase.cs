@@ -27,6 +27,7 @@ namespace GameFramework
         public float AnimValue = 1f;
         public ViewAnimType AnimType = ViewAnimType.none;
         public UIAnimResult OnInitCallbcak;
+        public UIAnimResult OnAnimCallbcak;
         /// <summary>
         /// 动画缓动效果，默认无效果
         /// </summary>
@@ -72,6 +73,29 @@ namespace GameFramework
             GameUIManager.Instance.CloseView(this);
         }
 
+        /// <summary>
+        /// 在Lua ViewBase(或其子类）的onInit方法中调
+        /// </summary>
+        /// <param name="rst">If set to <c>true</c> lua初始化成功.</param>
+        public void OnLuaInitResult(bool rst)
+        {
+            if (null != OnInitCallbcak)
+            {
+                OnInitCallbcak(rst);
+            }
+        }
+
+        /// <summary>
+        /// 在Lua ViewBase(或其子类）需要重载C#的show或hide动画时，在动画完成后调用
+        /// </summary>
+        /// <param name="rst">If set to <c>true</c> 动画播放成功.</param>
+        public void OnLuaAnimResult(bool rst)
+        {
+            if(null != OnAnimCallbcak)
+            {
+                OnAnimCallbcak(rst);
+            }
+        }
         #region public virtual 方法
 
 
@@ -135,7 +159,7 @@ namespace GameFramework
                 {
                     if (ViewStatus.onInit == status)
                     {
-                        func.Call<UIBase, UIHandler, UIAnimResult>(this, UIObjs, OnInitCallbcak);
+                        func.Call<UIBase, UIHandler>(this, UIObjs);
                     }
                     else
                     {
@@ -173,21 +197,22 @@ namespace GameFramework
                 LuaFunction func = getLuaFunc(status.ToString());
                 if (null != func)
                 {
-                    func.Call<UIAnimResult>(_callback);
+                    OnAnimCallbcak = _callback;
+                    func.Call();
+                    return;
                 }
             }
-            else
+
+            //不在lua上修改动画直接使用C#定义的
+            switch(status)
             {
-                switch(status)
-                {
-                    case ViewStatus.onHideBegin :
-                        onHide(_callback);
-                        break;
-                    case ViewStatus.onShowBegin :
-                        onShow(_callback);
-                        gameObject.SetActive(true);
-                        break;
-                }
+                case ViewStatus.onHideBegin :
+                    onHide(_callback);
+                    break;
+                case ViewStatus.onShowBegin :
+                    onShow(_callback);
+                    gameObject.SetActive(true);
+                    break;
             }
         }
 

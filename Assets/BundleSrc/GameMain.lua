@@ -1,6 +1,4 @@
-require("common.functions")
-require("common.u3dFuncs")
-require("common.gameFramework")
+require('common.requireCommon')
 
 --主入口函数。从这里开始lua逻辑
 function GameMain()					
@@ -27,6 +25,12 @@ function MainUpdate()
 end
 
 function StartTest()
-    local test = require("Test").new()
+    local bundles = 
+    {
+        'lua_test',
+    }
+    AddLuaBundles(bundles)
+
+    local test = require("test.Test").new()
     printLog('lua:StartTest')
 end

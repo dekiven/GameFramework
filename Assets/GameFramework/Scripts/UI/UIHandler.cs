@@ -337,6 +337,16 @@ namespace GameFramework
                         }
                     }
                     //break;
+                case "setscrollviewonitemclick":
+                    if (uiIndex != -1)
+                    {
+                        return SetScrollViewOnItemClick(uiIndex, (LuaFunction) data.Content);
+                    }
+                    else
+                    {
+                        return SetScrollViewOnItemClick(uiName, (LuaFunction) data.Content);
+                    }
+                    //break;
                 case "setscrollviewdatas":
                     if (uiIndex != -1)
                     {
@@ -498,16 +508,16 @@ namespace GameFramework
         }
 
         #region UI 通用
-        public bool SetUIName(int index, string name)
+        public bool SetUIName(int index, string uiName)
         {
             UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
-            return setUIName(ui, name);
+            return setUIName(ui, uiName);
         }
 
-        public bool SetUIName(string cName, string name)
+        public bool SetUIName(string cName, string uiName)
         {
             UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
-            return setUIName(ui, name);
+            return setUIName(ui, uiName);
         }
 
         public bool SetUIActive(int index, bool value)
@@ -918,6 +928,29 @@ namespace GameFramework
         #endregion InputField
 
         #region ScrollView
+
+        public bool SetScrollViewOnItemClick(int index, LuaFunction call)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return setScrollViewOnItemClick(ui, call);
+        }
+
+        public bool SetScrollViewOnItemClick(string cName, LuaFunction call)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return setScrollViewOnItemClick(ui, call);
+        }
+
+        private static bool setScrollViewOnItemClick(ScrollView ui, LuaFunction call)
+        {
+            if (null != ui)
+            {
+                ui.SetOnItemClickLua(call);
+                return true;
+            }
+            return false;
+        }
+
         public bool SetScrollViewDatas(int index, LuaTable table)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
@@ -939,6 +972,8 @@ namespace GameFramework
             }
             return false;
         }
+
+        //SetOnItemClickLua
 
         public bool SetScrollViewDatas(int index, List<UIItemData> datas)
         {
@@ -1330,11 +1365,11 @@ namespace GameFramework
 
         #region private 方法
 
-        private bool setUIName(UIBehaviour ui, string name)
+        private bool setUIName(UIBehaviour ui, string cName)
         {
             if (null != ui)
             {
-                ui.gameObject.name = name;
+                ui.gameObject.name = cName;
                 return true;
             }
             return false;
@@ -1659,14 +1694,14 @@ namespace GameFramework
         //    return false;
         //}
 
-                    ////case "setrichtextstring":
+                ////case "\1\2\3":
                     ////if (uiIndex != -1)
                     ////{
-                    ////    return SetRichTextString(uiIndex, (string) data.Content);
+                    ////    return \1\2\3(uiIndex, (\4) data.Content);
                     ////}
                     ////else
                     ////{
-                    ////    return SetRichTextString(uiName, (string) data.Content);
+                    ////    return \1\2\3(uiName, (\4) data.Content);
                     ////}
                     //////break;
 

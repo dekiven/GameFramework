@@ -11,20 +11,40 @@
 local ViewBase = class( 'ViewBase' )
 
 function ViewBase:ctor(  )
-    self.initViewParams()
+    self:initViewParams()
 end
 
 function ViewBase:initViewParams( )
     self.asbName = ''
     self.prefabName = ''
+    -- 是否使用lua定义新的show动画
     self.useLuaShowAnim = false
+    -- 是否使用lua定义新的hide动画
     self.useLuaHideAnim = false
     self.uiBase = nil
     self.uiHandler = nil
 end
 
 function ViewBase:showView()
-    ShowView(self.asbName, self.prefabName, self._getUIBaseListeners())
+    ShowView(self.asbName, self.prefabName, self:_getUIBaseListeners())
+end
+
+function ViewBase:show()
+    if nil ~= self.uiBase then
+        self.uiBase:Show(nil)
+    end
+end
+
+function ViewBase:hide()
+    if nil ~= self.uiBase then
+        self.uiBase:Hide(nil)
+    end
+end
+
+function ViewBase:closeView()
+    if nil ~= self.uiBase then
+        self.uiBase:Close()
+    end
 end
 
 function ViewBase:_getUIBaseListeners()
@@ -40,9 +60,9 @@ function ViewBase:_getUIBaseListeners()
     return table
 end
 
---  =================================UI状态改变CS调用的方法-----------------------------------
--- 子类需要实现对initCallback的处理
-function ViewBase:onInit(uiBase, uiHandler, initCallback)
+--  =================================UI状态改变的回调方法-----------------------------------
+-- 子类需要调用self.uiBase:OnLuaInitResult(true/false)告知是否初始化成功
+function ViewBase:onInit(uiBase, uiHandler)
     self.uiBase = uiBase
     self.uiHandler = uiHandler
 end
@@ -56,7 +76,7 @@ function ViewBase:onDisable()
 end
 
 function ViewBase:onDestroy()
-
+    self:dispose()
 end
 
 function ViewBase:onShowBegin()
@@ -67,5 +87,11 @@ function ViewBase:onHideBegin()
 
 end
 --  -----------------------------------UI状态改变CS调用的方法=================================
+
+-- 清理函数
+function ViewBase:dispose()
+    self.uiBase = nil
+    self.uiHandler = nil
+end
 
 return ViewBase

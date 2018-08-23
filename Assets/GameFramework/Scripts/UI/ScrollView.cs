@@ -49,7 +49,7 @@ namespace GameFramework
 
         //Item 点击回调
         private DelScrollItemClicked mOnItemClicked;
-        private LuaFunction mOnItemClickFunc;
+        private LuaFunction mOnItemClickLua;
         #endregion 私有属性
 
         #region MonoBehaviour
@@ -96,9 +96,9 @@ namespace GameFramework
                 }
                 mItemDatas.Clear();
             }
-            if(null != mOnItemClickFunc)
+            if(null != mOnItemClickLua)
             {
-                mOnItemClickFunc.Dispose();
+                mOnItemClickLua.Dispose();
             }
             base.OnDestroy();
         }
@@ -285,9 +285,14 @@ namespace GameFramework
             mOnItemClicked = del;
         }
 
-        public void SetOnItemClickLuaCall(LuaFunction call)
+        public void SetOnItemClickLua(LuaFunction call)
         {
-            mOnItemClickFunc = call;
+            if(null != mOnItemClickLua)
+            {
+                mOnItemClickLua.Dispose();
+                mOnItemClickLua = null;
+            }
+            mOnItemClickLua = call;
         }
 
         #region 私有方法
@@ -482,6 +487,10 @@ namespace GameFramework
 
         private void recoverStartLine(int line)
         {
+            if(line < 0 || line > mTotalLines-1)
+            {
+                return;
+            }
             for (int i = 0; i < mNumPerLine; i++)
             {
                 int index = line * mNumPerLine + i;
@@ -496,6 +505,10 @@ namespace GameFramework
 
         private void recoverEndLine(int line)
         {
+            if (line < 0 || line > mTotalLines - 1)
+            {
+                return;
+            }
             int count = mCurItems.Count;
             for (int i = 0; i < mNumPerLine; i++)
             {
@@ -535,9 +548,9 @@ namespace GameFramework
                 mOnItemClicked(index);
             }
 
-            if(null != mOnItemClickFunc)
+            if(null != mOnItemClickLua)
             {
-                mOnItemClickFunc.Call(index);
+                mOnItemClickLua.Call(index);
             }
         }
         #endregion 私有方法

@@ -5,18 +5,18 @@ local gm = GameFramework.LuaExportFuncs
 
 local tests = 
 {
-    {name='UIManagerTest', dir='UIManagerTest', scene='UIManagerTest.unity'},
-    {name='ScrollViewTest', dir='ScrollViewTest', scene='ScrollViewTest.unity'},
-    {name='SpriteAtlasTest', dir='SpriteAtlasTest', scene='SpriteAtlasTest.unity'},
-    {name='LoadPrefabTest', dir='LoadPrefabTest', scene='LoadPrefabTest.unity'},
+    {name='UIManager', dir='Tests/UIManagerTest', scene='TestUIManager'},
+    {name='ScrollView', dir='Tests/ScrollViewTest', scene='ScrollViewTest'},
+    {name='SpriteAtlas', dir='Tests/SpriteAtlasTest', scene='TestSpriteAtlas'},
+    {name='LoadPrefab', dir='Tests/LoadPrefabTest',},
 }
 
-function TestClass:ctor( ... )    
-    LoadScene('Tests/Main', 'TestScene.unity3d', true, false, function( progress )
-        if(progress >= 1)
-        {
-            slef:showTestView()
-        }
+function TestClass:ctor( ... )
+    self.testMainView = nil
+    LoadScene('Tests/Scenes/TestScene', '.unity', true, false, function( progress )
+        if progress >= 1 then
+            self:showTestView()
+        end
     end)
     -- self:testBySceneName('TestUIManager')
     -- self:testBySceneName('TestSpriteAtlas')
@@ -59,7 +59,10 @@ end
 
 
 function TestClass:showTestView()
-    -- ShowView('', '', )
+    testMainView = forceRequire('test.TestMainView').new()
+    testMainView:showView()
+    testMainView:setTestDatas(tests)
+    self.testMainView = testMainView
 end
 
 return TestClass

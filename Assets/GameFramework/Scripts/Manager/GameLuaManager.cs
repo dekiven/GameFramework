@@ -163,6 +163,10 @@ namespace GameFramework
         {
             if(loader.beZip)
             {
+                if (!asbName.EndsWith(GameConfig.STR_ASB_EXT))
+                {
+                    asbName = asbName + GameConfig.STR_ASB_EXT;
+                }
                 loader.AddBundle(asbName);
             }
         }
