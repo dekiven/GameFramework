@@ -9,11 +9,6 @@
 
 local TestMainView = class( 'TestMainView', ViewBase )
 
--- function ViewBase:ctor(  )
---     print(self)
---     self:initViewParams()
--- end
-
 function TestMainView:initViewParams( )
     -- print(TestMainView)
     self.super.initViewParams(self)
@@ -62,8 +57,6 @@ function TestMainView:setScrollViewDatas()
 end
 
 function TestMainView:onItemClick( index )
-    -- print('onclick :'..index)
-    -- self:closeView()
     if index < #self.testDatas then
         local data = self.testDatas[index+1]
         printLog('测试：'..data.name)

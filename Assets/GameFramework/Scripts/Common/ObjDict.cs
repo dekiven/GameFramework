@@ -83,9 +83,16 @@ namespace GameFramework
 
         public void ClearAll()
         {
-            foreach (var dictName in mDict.Keys)
+            int len = mDict.Count;
+            string[] keys = new string[len];
+            int idx = 0;
+            foreach (string dictName in mDict.Keys)
             {
-                ClearSubDict(dictName);
+                keys[idx++] = dictName;
+            }
+            for (int i = 0; i < len; i++)
+            {
+                ClearSubDict(keys[i]);
             }
         }
     }

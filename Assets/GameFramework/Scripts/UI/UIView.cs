@@ -10,11 +10,10 @@ namespace GameFramework
     /// </summary>
     public class UIView : UIBase
     {
-        //默认使用大小等于屏幕的Panel作为View的Root
-        protected override void init()
+        void Awake()
         {
-            IsInStack = true;
-            base.init();
+            RenderMode = RenderMode.ScreenSpaceOverlay;
+            IsBillboard = false;
         }
 
         public Vector2 CalcScreenPosFromWorld(Vector3 wPos, RectTransform rect)

@@ -15,8 +15,18 @@ namespace GameFramework
 
         public bool IsBillboard;
         public UIHandler UIObjs;
-        public bool IsInStack;
+        /// <summary>
+        /// 是否加入UI栈
+        /// </summary>
+        public bool IsInStack = true;
+        /// <summary>
+        /// 加入栈中的UI是否隐藏当前栈顶
+        /// </summary>
         public bool HideBefor = true;
+        /// <summary>
+        /// 是否是静态的UI(全局多次使用，close不释放)
+        /// </summary>
+        public bool IsStatic = false;
         /// <summary>
         /// show和hide的动画时间
         /// </summary>
@@ -33,29 +43,45 @@ namespace GameFramework
         /// </summary>
         public Ease AnimEase = Ease.Linear;
         public bool HasDarkMask = true;
+        public RenderMode RenderMode { get { return mRenderMode; } set { mRenderMode = value; }}
+        //public RectTransform rectTransform { get { return mRectTransform; }}
 
-        protected RenderMode mRenderMode = RenderMode.ScreenSpaceOverlay;
+        //protected RenderMode RenderMode = UnityEngine.RenderMode.ScreenSpaceOverlay;
         //private Action<ViewStatus> mStatusChangeCall;
 
         private Tween mAnimTween = null;
         private LuaTable mLuaFuncs;
         private RectTransform mRectTransform;
-
+        private RenderMode mRenderMode ;
 
         public void SetLuaStatusListeners(LuaTable table)
         {
             mLuaFuncs = table;
         }
 
-        public RenderMode GetUIMode()
+
+        /// <summary>
+        /// 通过GameUImanager显示View
+        /// </summary>
+        /// <param name="callback">Callback.</param>
+        public void Show(UIAnimResult callback)
         {
-            return mRenderMode;
+            GameUIManager.Instance.ShowViewObj(this, callback);
+        }
+
+        /// <summary>
+        /// 通过GameUImanager关闭View
+        /// </summary>
+        /// <param name="callback">Callback.</param>
+        public void Hide(UIAnimResult callback)
+        {
+            GameUIManager.Instance.HideView(this, callback);
         }
 
         /// <summary>
         /// 准备显示的处理，可以在这里做打开动画,同时有lua和c#代码时执行lua
         /// </summary>
-        public void Show(UIAnimResult callback)
+        public void ShowAnim(UIAnimResult callback)
         {
             onStartAnim(ViewStatus.onShowBegin, callback);
         }
@@ -63,7 +89,7 @@ namespace GameFramework
         /// <summary>
         /// 准备关闭的处理，可以在这里做关闭动画
         /// </summary>
-        public void Hide(UIAnimResult callback)
+        public void HideAnim(UIAnimResult callback)
         {
             onStartAnim(ViewStatus.onHideBegin, callback);
         }
@@ -123,9 +149,8 @@ namespace GameFramework
         /// </summary>
         protected virtual void onShow(UIAnimResult callback)
         {
-            //TODO:实现打开动画，可选择类型
             gameObject.SetActive(true);
-            getAnimTween(AnimType, true, callback);
+            runAnimTween(AnimType, true, callback);
             //callback(true);
         }
 
@@ -135,8 +160,7 @@ namespace GameFramework
         /// </summary>
         protected virtual void onHide(UIAnimResult callback)
         {
-            //TODO:实现关闭动画，可选择类型
-            getAnimTween(AnimType, false, callback);
+            runAnimTween(AnimType, false, callback);
             //callback(true);
         }
         #endregion
@@ -235,7 +259,7 @@ namespace GameFramework
         #endregion
 
         #region protected
-        protected void getAnimTween(ViewAnimType animType, bool revert, UIAnimResult result)
+        protected void runAnimTween(ViewAnimType animType, bool revert, UIAnimResult result)
         {
             if (null != mAnimTween && mAnimTween.IsActive())
             {

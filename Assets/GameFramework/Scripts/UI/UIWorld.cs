@@ -12,11 +12,7 @@ namespace GameFramework
     {
         protected Transform mUITarget;
         public Vector3 UIOffset = Vector3.up;
-
-        void Awake()
-        {
-            mRenderMode = RenderMode.WorldSpace;
-        }
+        //public new bool IsBillboard = true;
 
         public Transform UITarget
         {
@@ -27,11 +23,13 @@ namespace GameFramework
             }
         }
 
-        protected override void init()
+        void Awake()
         {
-            IsBillboard = true;
+            RenderMode = RenderMode.WorldSpace;
+            IsStatic = false;
             IsInStack = false;
-            base.init();
+            IsBillboard = true;
+            HideBefor = false;
         }
 
         protected override void update()

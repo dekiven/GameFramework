@@ -181,6 +181,13 @@ namespace GameFramework
             }
         }
 
+        public void Dispose()
+        {
+            mDict.ClearAll();
+            mList.Clear();
+            mQueue.Clear();
+            mGroups.Clear();
+        }
 
         #endregion
 

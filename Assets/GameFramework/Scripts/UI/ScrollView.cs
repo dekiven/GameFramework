@@ -73,7 +73,6 @@ namespace GameFramework
             vertical = isVertical;
             horizontal = !isVertical;
 
-            //TODO:优化，直接在OnDragxxxx上处理
             this.onValueChanged.AddListener(onSrollViewValueChanged);
         }
 
@@ -119,7 +118,6 @@ namespace GameFramework
 
         public void UpdateData(int index, UIItemData data)
         {
-            //TODO:
             if(index >= 0 && index < mItemDatas.Count)
             {
                 mItemDatas[index] = data;
@@ -368,6 +366,10 @@ namespace GameFramework
                 {
                     endLine = i;
                 }
+            }
+            if(-1 == startLine || -1 == endLine)
+            {
+                return;
             }
             //当显示行数有变化或者需要强制刷新时刷新所有UI
             if (forceUpdate || startLine != mShowStart || endLine != mShowEnd)

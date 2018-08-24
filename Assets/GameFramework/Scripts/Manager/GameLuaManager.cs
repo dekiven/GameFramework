@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
+    //TODO:dekiven 修改为单纯的单例
     public class GameLuaManager : SingletonComp<GameLuaManager>
     {
         private LuaState lua;
@@ -31,6 +32,9 @@ namespace GameFramework
             LuaCoroutine.Register(lua, this);
         }
 
+        /// <summary>
+        /// 资源更新完成后启动游戏逻辑
+        /// </summary>
         public void InitStart()
         {
             InitLuaPath();

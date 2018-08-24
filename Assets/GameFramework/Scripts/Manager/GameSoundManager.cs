@@ -6,6 +6,7 @@ using DG.Tweening;
 
 namespace GameFramework
 {
+    //TODO:dekiven 修改为单纯的单例
     public class GameSoundManager : SingletonComp<GameSoundManager>
     {
         public const string STR_BGM = "bgm";

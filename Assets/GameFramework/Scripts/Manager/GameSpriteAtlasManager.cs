@@ -7,6 +7,7 @@ using UnityEngine.U2D;
 
 namespace GameFramework
 {
+    //TODO:dekiven 修改为单纯的单例
     public class GameSpriteAtlasManager : SingletonComp<GameSpriteAtlasManager>, IResHandler<SpriteAtlas>
     {
         #region private 属性

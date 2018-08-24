@@ -7,6 +7,20 @@ namespace GameFramework
         public string assetName;
         public string extral;
 
+        public AsbInfo()
+        {
+        }
+
+        public AsbInfo(string asbName, string assetName)
+        {
+            Set(asbName, assetName);
+        }
+
+        public AsbInfo(string asbName, string assetName, string extral)
+        {
+            Set(asbName, assetName, extral);
+        }
+
         public bool Equals(string asbName, string assetName)
         {
             return this.asbName.Equals(asbName) && this.assetName.Equals(assetName);
