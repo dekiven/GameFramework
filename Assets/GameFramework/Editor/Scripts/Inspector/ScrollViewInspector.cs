@@ -48,7 +48,7 @@ namespace GameFramework
                 resetItemSize();
             }
 
-            resetScrollType();
+            //resetScrollType();
             mScrollType = mTarget.ScrollType;
 
             //super 属性折叠相关
@@ -146,7 +146,11 @@ namespace GameFramework
             if (isVertical)
             {
                 viewport.offsetMin = Vector2.zero;
-                viewport.offsetMax = new Vector2(-(mTarget.verticalScrollbar.transform as RectTransform).rect.width - mTarget.verticalScrollbarSpacing, 0);
+                viewport.offsetMax = Vector2.zero;
+                if(null != mTarget.verticalScrollbar)
+                {
+                    viewport.offsetMax = new Vector2(-(mTarget.verticalScrollbar.transform as RectTransform).rect.width - mTarget.verticalScrollbarSpacing, 0);
+                }
                 //设置与父节点等宽，顶端与父节点对齐，高度暂定与父节点一样
                 content.anchorMin = new Vector2(0, 1);
                 content.anchorMax = new Vector2(1, 1);
@@ -158,7 +162,11 @@ namespace GameFramework
             }
             else
             {
-                viewport.offsetMin = new Vector2(0, (mTarget.horizontalScrollbar.transform as RectTransform).rect.height + mTarget.horizontalScrollbarSpacing);
+                viewport.offsetMin = Vector2.zero;
+                if (null != mTarget.horizontalScrollbar)
+                {
+                    viewport.offsetMin = new Vector2(0, (mTarget.horizontalScrollbar.transform as RectTransform).rect.height + mTarget.horizontalScrollbarSpacing);
+                }
                 viewport.offsetMax = Vector2.zero;
                 //设置与父节点等高，左侧与父节点对齐，宽度暂定与父节点一样
                 mTarget.content.anchorMin = new Vector2(0, 0);

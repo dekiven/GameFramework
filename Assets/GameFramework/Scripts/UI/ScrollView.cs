@@ -32,7 +32,7 @@ namespace GameFramework
         [HideInInspector]
         public float PaddingBottom;
         [HideInInspector]
-        public int ItemNumPerStep=1;
+        public int ItemNumPerStep = 1;
 
         #region 私有属性
         private ObjPool<ScrollItem> mItemPool;
@@ -74,20 +74,27 @@ namespace GameFramework
             horizontal = !isVertical;
 
             this.onValueChanged.AddListener(onSrollViewValueChanged);
+
+#if UNITY_EDITOR
+            if(Application.isPlaying)
+            {
+                StartCoroutine(setTestDatas());
+            }
+#endif
         }
 
         protected override void OnDestroy()
         {
             recoverAll();
-            if(null != mCurItems)
+            if (null != mCurItems)
             {
                 mCurItems.Clear();
             }
-            if(null != mItemPool)
+            if (null != mItemPool)
             {
                 mItemPool.Dispose();
             }
-            if(null != mItemDatas)
+            if (null != mItemDatas)
             {
                 for (int i = 0; i < mItemDatas.Count; i++)
                 {
@@ -95,7 +102,7 @@ namespace GameFramework
                 }
                 mItemDatas.Clear();
             }
-            if(null != mOnItemClickLua)
+            if (null != mOnItemClickLua)
             {
                 mOnItemClickLua.Dispose();
             }
@@ -118,7 +125,7 @@ namespace GameFramework
 
         public void UpdateData(int index, UIItemData data)
         {
-            if(index >= 0 && index < mItemDatas.Count)
+            if (index >= 0 && index < mItemDatas.Count)
             {
                 mItemDatas[index] = data;
             }
@@ -189,16 +196,6 @@ namespace GameFramework
 
         public void CalculateContentSize()
         {
-#if UNITY_EDITOR
-            if (null == mItemDatas)
-            {
-                mItemDatas = new List<UIItemData>();
-                for (int i = 0; i < 100; i++)
-                {
-                    mItemDatas.Add(new UIItemData());
-                }
-            }
-#endif
             if (null == mItemDatas || null == ItemPrefab)
             {
                 LogFile.Warn("ScrollView calculateContentSize Error: null == mItemDatas || null == ItemPrefab");
@@ -285,7 +282,7 @@ namespace GameFramework
 
         public void SetOnItemClickLua(LuaFunction call)
         {
-            if(null != mOnItemClickLua)
+            if (null != mOnItemClickLua)
             {
                 mOnItemClickLua.Dispose();
                 mOnItemClickLua = null;
@@ -346,7 +343,7 @@ namespace GameFramework
             return canItemShow(line * mNumPerLine);
         }
 
-        private void checkNeedUpdate(bool forceUpdate=false)
+        private void checkNeedUpdate(bool forceUpdate = false)
         {
             bool start = false;
             int startLine = -1;
@@ -367,14 +364,14 @@ namespace GameFramework
                     endLine = i;
                 }
             }
-            if(-1 == startLine || -1 == endLine)
+            if (-1 == startLine || -1 == endLine)
             {
                 return;
             }
             //当显示行数有变化或者需要强制刷新时刷新所有UI
             if (forceUpdate || startLine != mShowStart || endLine != mShowEnd)
             {
-                if(null != mUpCoroutine)
+                if (null != mUpCoroutine)
                 {
                     StopCoroutine(mUpCoroutine);
                     mUpCoroutine = null;
@@ -384,7 +381,7 @@ namespace GameFramework
 
         }
 
-        private IEnumerator updateAllItem(int startLine, int endLine, bool forceUpdate=false)
+        private IEnumerator updateAllItem(int startLine, int endLine, bool forceUpdate = false)
         {
             if (mShowStart != startLine || mShowEnd != endLine || forceUpdate)
             {
@@ -423,8 +420,8 @@ namespace GameFramework
                     //有多行变动，在协程中处理所有刷新，有新变动停止协程重新处理
                     //LogFile.Log("updateAllItem 滑动多行了，直接全部刷新 start:{0}, end{1}", startLine, endLine);
                     //滑动多行了，直接全部刷新
-                    int startIndex = Mathf.Clamp(startLine * mNumPerLine, 0, mItemDatas.Count- 1);
-                    int endIndex = Mathf.Clamp((endLine + 1) * mNumPerLine - 1, 0, mItemDatas.Count-1);
+                    int startIndex = Mathf.Clamp(startLine * mNumPerLine, 0, mItemDatas.Count - 1);
+                    int endIndex = Mathf.Clamp((endLine + 1) * mNumPerLine - 1, 0, mItemDatas.Count - 1);
                     int count = endIndex - startIndex + 1;
 
                     //回收所有Item，在之后的协程中刷新
@@ -435,7 +432,7 @@ namespace GameFramework
                         ScrollItem item = getItem();
                         mCurItems.Add(item);
                         setItemDataByIndex(item, startIndex + i);
-                        if((count + 1) % ItemNumPerStep == 0 )
+                        if ((count + 1) % ItemNumPerStep == 0)
                         {
                             yield return null;
                         }
@@ -444,7 +441,7 @@ namespace GameFramework
                 mShowStart = startLine;
                 mShowEnd = endLine;
             }
-            if(null != mUpCoroutine)
+            if (null != mUpCoroutine)
             {
                 StopCoroutine(mUpCoroutine);
                 mUpCoroutine = null;
@@ -489,7 +486,7 @@ namespace GameFramework
 
         private void recoverStartLine(int line)
         {
-            if(line < 0 || line > mTotalLines-1)
+            if (line < 0 || line > mTotalLines - 1)
             {
                 return;
             }
@@ -545,12 +542,12 @@ namespace GameFramework
 
         private void onItemClicked(int index)
         {
-            if(null != mOnItemClicked)
+            if (null != mOnItemClicked)
             {
                 mOnItemClicked(index);
             }
 
-            if(null != mOnItemClickLua)
+            if (null != mOnItemClickLua)
             {
                 mOnItemClickLua.Call(index);
             }
@@ -597,6 +594,22 @@ namespace GameFramework
             checkNeedUpdate();
         }
         #endregion ScrollRect 显示区域改变回调
+
+        #region 编辑器测试相关
+        IEnumerator setTestDatas()
+        {
+            yield return new WaitForSeconds(5);
+            if(null == mItemDatas)
+            {
+                List<UIItemData> datas = new List<UIItemData>();
+                for (int i = 0; i < 20; i++)
+                {
+                    datas.Add(new UIItemData());
+                }
+                SetDatas(datas);
+            }
+        }
+        #endregion
 
     }
 
