@@ -12,6 +12,7 @@ namespace GameFramework
         [HideInInspector]
         public int Index;
         public DelScrollItemClicked OnItemClicked;
+        public RectTransform rectTransform { get { return transform as RectTransform; }}
 
         #region MonoBehaviour
         void Start()
@@ -34,7 +35,10 @@ namespace GameFramework
 
         void OnDestroy()
         {
-            
+            if(null != ItemClickBg)
+            {
+                ItemClickBg.onClick.RemoveAllListeners();
+            }
         }
         #endregion MonoBehaviour
 

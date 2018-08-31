@@ -110,13 +110,13 @@ namespace GameFramework
         }
         #endregion MonoBehaviour
 
-        public void SetDatas(List<UIItemData> data)
+        public void SetData(List<UIItemData> data)
         {
             mItemDatas = data;
             CalculateAndUpdateContent();
         }
 
-        public void SetDatas(LuaTable table)
+        public void SetData(LuaTable table)
         {
             List<UIItemData> data = Tools.GenUIIemDataList(table);
             mItemDatas = data;
@@ -606,7 +606,7 @@ namespace GameFramework
                 {
                     datas.Add(new UIItemData());
                 }
-                SetDatas(datas);
+                SetData(datas);
             }
         }
         #endregion

@@ -70,10 +70,11 @@ namespace GameFramework
 
         public void Dispose()
         {
-            LuaFunction func = Content as LuaFunction;
-            if (null != func)
+            LuaBaseRef lua = Content as LuaBaseRef;
+            if (null != lua)
             {
-                func.Dispose();
+                lua.Dispose();
+                Content = null;
             }
         }
     }

@@ -36,7 +36,7 @@ namespace GameFramework
                     //d.Info = "Item" + i;
                     datas.Add(d);
                 }
-                mScrollView.SetDatas(datas);
+                mScrollView.SetData(datas);
             }
         }
 
