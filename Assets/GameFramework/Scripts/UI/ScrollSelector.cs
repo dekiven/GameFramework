@@ -11,7 +11,7 @@ namespace GameFramework
 {
     using SelectorData = List<UIItemData>;
 
-
+    //TODO:使用AnimationCurve支持Item位置变换
     public class ScrollSelector : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public RectTransform Viewport;
@@ -39,7 +39,7 @@ namespace GameFramework
         private int mShowStart;
         private int mShowEnd;
         private Coroutine mUpCoroutine;
-
+        private int mTargetIndex = 0;
 
         public void SetData(SelectorData data)
         {
@@ -54,7 +54,32 @@ namespace GameFramework
             //if (null == mItemPos || mItemPos.Length != count)
             calulateItemPos(count);
             checkNeedUpdate(true);
+            SetCurIndex(0);
         }
+
+        public void SetDataAndIndex(SelectorData data, int index)
+        {
+            SetData(data);
+            SetCurIndex(index);
+        }
+
+
+        public void SetCurIndex(int index)
+        {
+            if(null != mData)
+            {
+                if (null != mUpCoroutine)
+                {
+                    mTargetIndex = index;
+                }
+                else
+                {
+                    mTargetIndex = -1;
+                    tweenToIndex(index);
+                }
+            }
+        }
+
 
         public void SetOnSelectCallbackLua(LuaFunction call)
         {
@@ -565,6 +590,12 @@ namespace GameFramework
                 }
                 mShowStart = startIndex;
                 mShowEnd = endIndex;
+
+                if (mTargetIndex != -1)
+                {
+                    tweenToIndex(mTargetIndex);
+                    mTargetIndex = -1;
+                }
             }
             if (null != mUpCoroutine)
             {
@@ -643,6 +674,8 @@ namespace GameFramework
                 data.Add(new UIItemData(_data));
             }
             SetData(data);
+            yield return new WaitForSeconds(3);
+            SetCurIndex(2);
             //mCurIndex = 3;
         }
 #endif

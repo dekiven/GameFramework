@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
+    [CustomEditor(typeof(UIView))]
     public class UIViewInspector : Editor
     {
         private UIBase mTarget;

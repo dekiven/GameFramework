@@ -26,7 +26,7 @@ namespace GameFramework
     public class UIHandler : MonoBehaviour
     {
 
-        public UIBehaviour[] UIArray;
+        public List<UIBehaviour> UIArray;
         public Transform RootTransform;
 
         private List<string> mUINames;
@@ -47,7 +47,7 @@ namespace GameFramework
             {
                 mUINames.Clear();
             }
-            if (UIArray.Length > 0)
+            if (UIArray.Count > 0)
             {
                 mUINames = new List<string>();
                 for (int i = 0; i < Count; ++i)
@@ -66,7 +66,7 @@ namespace GameFramework
         }
         #endregion
 
-        public int Count { get { return UIArray.Length; } }
+        public int Count { get { return UIArray.Count; } }
 
         public string[] CompNames { get { return mUINames.ToArray(); } }
 
