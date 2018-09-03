@@ -29,10 +29,10 @@ namespace GameFramework
             };
         }
 
-        void OnDestroy()
-        {
-            listInspector = null;
-        }
+        //void OnDestroy()
+        //{
+        //    listInspector = null;
+        //}
         //void onEnabled()
         //{
 
@@ -43,21 +43,26 @@ namespace GameFramework
             //base.OnInspectorGUI();
             serializedObject.Update();
             SerializedProperty list = serializedObject.FindProperty("UIArray");
+            Debug.Log("listInspector:" + listInspector);
             listInspector.Show(list);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("RootTransform"));
             serializedObject.ApplyModifiedProperties();
 
-            string commandName = Event.current.commandName;
-            if (commandName == "ObjectSelectorUpdated" && mIsSelecting)
+            Event e = Event.current;
+            string commandName = e.commandName;
+            if (mIsSelecting && e.type != EventType.Layout && commandName == "ObjectSelectorUpdated" )
             {
                 //Debug.Log("Update");
-                Debug.Log(EditorGUIUtility.GetObjectPickerObject());
+                //Debug.Log(Event.current);
+                //Debug.Log(EditorGUIUtility.GetObjectPickerObject());
                 setPickerObj();
 
             }
-            if (commandName == "ObjectSelectorClosed" && mIsSelecting)
+            if (mIsSelecting && e.type != EventType.Layout && commandName == "ObjectSelectorClosed")
             {
-                Debug.Log(EditorGUIUtility.GetObjectPickerObject());
+                Debug.Log("e.type:" + e.type);
+                //Debug.Log(EditorGUIUtility.GetObjectPickerObject());
+                Event.current = null;
                 setPickerObj(true);
             }
         }
@@ -81,7 +86,7 @@ namespace GameFramework
                                 for (int i = 0; i < uIBehaviours.Length; i++)
                                 {
                                     UIBehaviour ui = uIBehaviours[i];
-                                    if(!mTarget.UIArray.Contains(ui))
+                                    if(!mTarget.UIArray.Contains(ui) || mTarget.UIArray.IndexOf(ui) == mSelectingIndex)
                                     {
                                         list.Add(ui);
                                         options.Add(ui.ToString());
@@ -92,7 +97,15 @@ namespace GameFramework
                                     //TODO:显示选择窗口
                                     SeclectWindow.ShowWithOptions(options.ToArray(), (int index) => 
                                     {
-                                        Debug.Log("Selceted:" + index);
+                                        Debug.Log("Selceted:" + index+ ",mTarget.UIArray.Count:" + mTarget.UIArray.Count+"ui index:"+mSelectingIndex);
+                                        //if(-1 == index)
+                                        //{
+                                        //    mTarget.UIArray.RemoveAt(mSelectingIndex);
+                                        //}
+                                        //else
+                                        //{
+                                        //    mTarget.UIArray[mSelectingIndex] = list[index];
+                                        //}
                                     });
                                 }
                                 if(list.Count == 1)
@@ -102,8 +115,20 @@ namespace GameFramework
                                 list.Clear();
                                 options.Clear();
                             }
+                            else
+                            {
+                                mTarget.UIArray[mSelectingIndex] = uIBehaviours[0];
+                            }
                         }
                     }
+                    else
+                    {
+                        mTarget.UIArray[mSelectingIndex] = obj.GetComponent<UIBehaviour>();
+                    }
+                }
+                else
+                {
+                    mTarget.UIArray[mSelectingIndex] = null;
                 }
             }
         }

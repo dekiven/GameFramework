@@ -110,9 +110,9 @@ namespace GameFramework
 
             if (listProperty.arraySize == 0 && GUILayout.Button(new GUIContent("+", "添加一个元素")))
             {
-                listProperty.arraySize += 1;
-                Debug.Log("listProperty.arraySize:" + listProperty.arraySize);
-                onAdd(listProperty, 0);
+                //listProperty.arraySize += 1;
+                //Debug.Log("listProperty.arraySize:" + listProperty.arraySize);
+                onAdd(listProperty, -1);
             }
         }
 
@@ -143,7 +143,15 @@ namespace GameFramework
 
         private void onAdd(SerializedProperty listProperty, int index)
         {
-            listProperty.InsertArrayElementAtIndex(index);
+            //-1 == index是列表数量为0时，创建第一个元素
+            if (-1 == index)
+            {
+                listProperty.InsertArrayElementAtIndex(0);
+            }
+            else
+            {
+                listProperty.InsertArrayElementAtIndex(index);
+            }
             if(null != OnAddCallback && !OnAddCallback(index))
             {
                 onRemove(listProperty, index);
