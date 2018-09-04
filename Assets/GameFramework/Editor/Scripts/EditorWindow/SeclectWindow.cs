@@ -9,9 +9,10 @@ namespace GameFramework
         private Action<int> mOnSelected;
         private string[] options;
         private int mSelected = 0;
+        private bool mHasKeyDown = false;
 
         //test
-        [MenuItem("GameFramework/test")]
+        //[MenuItem("GameFramework/test")]
         public static void Test()
         {
             ShowWithOptions(new string[] { "test1", "test2", "test3", "test4" }, (int i) => { Debug.Log("callback:"+i); });
@@ -20,6 +21,7 @@ namespace GameFramework
         public static void ShowWithOptions(string[] options, Action<int> callback)
         {
             SeclectWindow window = GetWindow(typeof(SeclectWindow)) as SeclectWindow;
+            window.mHasKeyDown = false;
             window.mOnSelected = callback;
             window.options = options;
             window.Show();
@@ -37,7 +39,7 @@ namespace GameFramework
             Event e = Event.current;
             if(null != e)
             {
-                if (e.type == EventType.KeyUp)
+                if (mHasKeyDown && e.type == EventType.KeyUp)
                 {
                     if (e.keyCode == KeyCode.UpArrow || e.keyCode == KeyCode.PageUp)
                     {
@@ -62,6 +64,10 @@ namespace GameFramework
                             Close();
                         }
                     }
+                }
+                if(e.type == EventType.KeyDown)
+                {
+                    mHasKeyDown = true;
                 }
             }
         }

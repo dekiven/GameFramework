@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace GameFramework
 {
@@ -18,15 +19,17 @@ namespace GameFramework
         All = Default,
     }
 
-    public class CustomListInspector
+    public static class CustomListInspector
     {
-        public delegate bool PassIndexCallback(int index);
+        //public delegate bool PassIndexCallback(int index);
 
+        public class ElementAddEvent : UnityEvent<SerializedProperty, int> {};
+        public static ElementAddEvent OnElementAdd = new ElementAddEvent();
         /// <summary>
         /// 添加完成后对数据进行处理，如果返回false 取消添加
         /// </summary>
-        public PassIndexCallback OnAddCallback;
-        public CustomListOption mOptions = CustomListOption.Default;
+        //public PassIndexCallback OnAddCallback;
+        public static CustomListOption sOptions = CustomListOption.Default;
 
         private static GUIContent sBtnUp = new GUIContent("\u2191", "上移");
         private static GUIContent sBtnDown = new GUIContent("\u2193", "下移");
@@ -35,8 +38,9 @@ namespace GameFramework
 
         private static GUILayoutOption sMinBtnWidth = GUILayout.Width(20f);
 
-        public void Show(SerializedProperty listProperty)
+        public static void Show(SerializedProperty listProperty, CustomListOption options = CustomListOption.Default)
         {
+            sOptions = options;
             int oldIndentLevel = EditorGUI.indentLevel;
             if(!listProperty.isArray)
             {
@@ -49,8 +53,8 @@ namespace GameFramework
             }
 
             bool
-                showLabel = (mOptions & CustomListOption.ShowLabel) != 0,
-                showSize = (mOptions & CustomListOption.ShowSize) != 0;
+                showLabel = (sOptions & CustomListOption.ShowLabel) != 0,
+                showSize = (sOptions & CustomListOption.ShowSize) != 0;
 
             if(showLabel)
             {
@@ -82,11 +86,11 @@ namespace GameFramework
             }
         }
 
-        private void showElement(SerializedProperty listProperty)
+        private static void showElement(SerializedProperty listProperty)
         {
             bool
-                showLabel = (mOptions & CustomListOption.ShowElementLabels) != 0,
-                showBtn = (mOptions & CustomListOption.ShowBtns) != 0;
+                showLabel = (sOptions & CustomListOption.ShowElementLabels) != 0,
+                showBtn = (sOptions & CustomListOption.ShowBtns) != 0;
             for (int i = 0; i < listProperty.arraySize; i++)
             {
                 if(showBtn)
@@ -116,7 +120,7 @@ namespace GameFramework
             }
         }
 
-        private void showBtns(SerializedProperty listProperty, int index)
+        private static void showBtns(SerializedProperty listProperty, int index)
         {
             //if (GUILayout.Button(sBtnUp, EditorStyles.miniButtonLeft, sMinBtnWidth))
             GUI.enabled = index != 0;
@@ -141,7 +145,7 @@ namespace GameFramework
             }
         }
 
-        private void onAdd(SerializedProperty listProperty, int index)
+        private static void onAdd(SerializedProperty listProperty, int index)
         {
             //-1 == index是列表数量为0时，创建第一个元素
             if (-1 == index)
@@ -152,13 +156,13 @@ namespace GameFramework
             {
                 listProperty.InsertArrayElementAtIndex(index);
             }
-            if(null != OnAddCallback && !OnAddCallback(index))
+            if(null != OnElementAdd)
             {
-                onRemove(listProperty, index);
+                OnElementAdd.Invoke(listProperty, index);
             }
         }
 
-        private void onRemove(SerializedProperty listProperty, int index)
+        private static void onRemove(SerializedProperty listProperty, int index)
         {
             int oldSize = listProperty.arraySize;
             listProperty.DeleteArrayElementAtIndex(index);
@@ -168,12 +172,12 @@ namespace GameFramework
             }
         }
 
-        private void onMoveUp(SerializedProperty listProperty, int index)
+        private static void onMoveUp(SerializedProperty listProperty, int index)
         {
             listProperty.MoveArrayElement(index, index - 1);
         }
 
-        private void onMoveDown(SerializedProperty listProperty, int index)
+        private static void onMoveDown(SerializedProperty listProperty, int index)
         {
             listProperty.MoveArrayElement(index, index + 1);
         }
