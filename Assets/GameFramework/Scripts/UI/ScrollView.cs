@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using LuaInterface;
+using DG.Tweening;
 
 
 //参考资料：「Unity3D」(10)自定义属性面板Inspector详解
@@ -44,71 +45,15 @@ namespace GameFramework
         private int mShowStart = -1;
         private int mShowEnd = -1;
         private Coroutine mUpCoroutine = null;
-
         private Vector2 mContntSpace = new Vector2();
+        private int mTargetIndex = -1;
+        private Tween mMoveTween = null;
+
 
         //Item 点击回调
         private DelScrollItemClicked mOnItemClicked;
         private LuaFunction mOnItemClickLua;
         #endregion 私有属性
-
-        #region MonoBehaviour
-        protected override void Awake()
-        {
-            base.Awake();
-            mItemPool = new ObjPool<ScrollItem>(onPoolGetDelegate, onPoolRecoverDelegate, onPoolDisposeDelegate);
-            mCurItems = new List<ScrollItem>();
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            if (null == ItemPrefab)
-            {
-                LogFile.Error("ScrollView error：ItemPrefab 为空。");
-                return;
-            }
-
-            bool isVertical = ScrollViewType.Vertical == ScrollType;
-            vertical = isVertical;
-            horizontal = !isVertical;
-
-            this.onValueChanged.AddListener(onSrollViewValueChanged);
-
-#if UNITY_EDITOR
-            if(Application.isPlaying)
-            {
-                StartCoroutine(setTestDatas());
-            }
-#endif
-        }
-
-        protected override void OnDestroy()
-        {
-            recoverAll();
-            if (null != mCurItems)
-            {
-                mCurItems.Clear();
-            }
-            if (null != mItemPool)
-            {
-                mItemPool.Dispose();
-            }
-            if (null != mItemDatas)
-            {
-                for (int i = 0; i < mItemDatas.Count; i++)
-                {
-                    mItemDatas[i].Dispose();
-                }
-                mItemDatas.Clear();
-            }
-            if (null != mOnItemClickLua)
-            {
-                mOnItemClickLua.Dispose();
-            }
-            base.OnDestroy();
-        }
-        #endregion MonoBehaviour
 
         public void SetData(List<UIItemData> data)
         {
@@ -119,8 +64,7 @@ namespace GameFramework
         public void SetData(LuaTable table)
         {
             List<UIItemData> data = Tools.GenUIIemDataList(table);
-            mItemDatas = data;
-            CalculateAndUpdateContent();
+            SetData(data);
         }
 
         public void UpdateData(int index, UIItemData data)
@@ -191,6 +135,18 @@ namespace GameFramework
                 mItemDatas.RemoveAt(index);
 
                 CalculateAndUpdateContent();
+            }
+        }
+
+        public void SetCurIndex(int index)
+        {
+            if(null != mUpCoroutine)
+            {
+                mTargetIndex = index;
+            }
+            else
+            {
+                tweenToIndex(index);
             }
         }
 
@@ -289,6 +245,64 @@ namespace GameFramework
             }
             mOnItemClickLua = call;
         }
+
+        #region MonoBehaviour
+        protected override void Awake()
+        {
+            base.Awake();
+            mItemPool = new ObjPool<ScrollItem>(onPoolGetDelegate, onPoolRecoverDelegate, onPoolDisposeDelegate);
+            mCurItems = new List<ScrollItem>();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+            if (null == ItemPrefab)
+            {
+                LogFile.Error("ScrollView error：ItemPrefab 为空。");
+                return;
+            }
+
+            bool isVertical = ScrollViewType.Vertical == ScrollType;
+            vertical = isVertical;
+            horizontal = !isVertical;
+
+            this.onValueChanged.AddListener(onSrollViewValueChanged);
+
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+            {
+                StartCoroutine(setTestDatas());
+            }
+#endif
+        }
+
+        protected override void OnDestroy()
+        {
+            recoverAll();
+            if (null != mCurItems)
+            {
+                mCurItems.Clear();
+            }
+            if (null != mItemPool)
+            {
+                mItemPool.Dispose();
+            }
+            if (null != mItemDatas)
+            {
+                for (int i = 0; i < mItemDatas.Count; i++)
+                {
+                    mItemDatas[i].Dispose();
+                }
+                mItemDatas.Clear();
+            }
+            if (null != mOnItemClickLua)
+            {
+                mOnItemClickLua.Dispose();
+            }
+            base.OnDestroy();
+        }
+        #endregion MonoBehaviour
 
         #region 私有方法
         private ScrollItem getItem()
@@ -437,6 +451,11 @@ namespace GameFramework
                             yield return null;
                         }
                     }
+                    if(mTargetIndex != -1)
+                    {
+                        tweenToIndex(mTargetIndex);
+                        mTargetIndex = -1;
+                    }
                 }
                 mShowStart = startLine;
                 mShowEnd = endLine;
@@ -552,6 +571,41 @@ namespace GameFramework
                 mOnItemClickLua.Call(index);
             }
         }
+
+        //TODO:待优化，根据位置精确定位
+        private void tweenToIndex(int index)
+        {
+            if(mTotalLines < 2)
+            {
+                return;
+            }
+            index = Mathf.Clamp(index, 0, mItemDatas.Count - 1);
+            int lineIndex = index / mNumPerLine;
+            if(null != mMoveTween)
+            {
+                mMoveTween.Kill();
+                mMoveTween = null;
+            }
+            Vector2 pos = Vector2.zero;
+            float value = (float)(lineIndex + 0.5f) / (mTotalLines);
+            if(0 == lineIndex)
+            {
+                value = 0;
+            }
+            if (mTotalLines-1 == lineIndex)
+            {
+                value = 1;
+            }
+            if(ScrollType == ScrollViewType.Vertical)
+            {
+                pos.y = 1 - value;
+            }
+            else
+            {
+                pos.x = value;
+            }
+            mMoveTween = DOTween.To(()=>normalizedPosition, (Vector2 v)=> normalizedPosition=v, pos, 0.4f);
+        }
         #endregion 私有方法
 
         #region ObjPool回调
@@ -602,11 +656,12 @@ namespace GameFramework
             if(null == mItemDatas)
             {
                 List<UIItemData> datas = new List<UIItemData>();
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < 30; i++)
                 {
                     datas.Add(new UIItemData());
                 }
                 SetData(datas);
+                SetCurIndex(29);
             }
         }
         #endregion

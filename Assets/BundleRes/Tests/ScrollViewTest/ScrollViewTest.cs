@@ -37,6 +37,13 @@ namespace GameFramework
                     datas.Add(d);
                 }
                 mScrollView.SetData(datas);
+                foreach (var item in new int[]{40, 38, 28, 15, 5,0})
+                {
+
+                    yield return new WaitForSeconds(5);
+                    Debug.LogWarning(item);
+                    mScrollView.SetCurIndex(item);
+                }
             }
         }
 

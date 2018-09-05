@@ -49,6 +49,20 @@ namespace GameFramework
             }
         }
         #endregion ScrollSelector
+
+        #region SelectorToggles
+        [MenuItem("GameObject/UI/SelectorToggles")]
+        public static void CreateASelectorToggles()
+        {
+            if (null != Selection.activeGameObject)
+            {
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/SelectorToggles.prefab");
+                GameObject obj = Object.Instantiate(prefab);
+                obj.name = "SelectorToggles";
+                obj.transform.SetParent(Selection.activeGameObject.transform, false);
+            }
+        }
+        #endregion SelectorToggles
     }
    
 }

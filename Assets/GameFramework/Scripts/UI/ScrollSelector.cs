@@ -26,6 +26,7 @@ namespace GameFramework
         public UnityAction<int> OnItemSelected;
         public Ease AnimEase = Ease.Linear;
         public int ItemNumPerStep = 1;
+        public SelectorToggles Toggles;
 
         private ObjPool<ScrollItem> mItemPool;
         private List<ScrollItem> mCurItems;
@@ -54,7 +55,17 @@ namespace GameFramework
             //if (null == mItemPos || mItemPos.Length != count)
             calulateItemPos(count);
             checkNeedUpdate(true);
+            if(null != Toggles)
+            {
+                Toggles.SetTotalNum(data.Count);
+            }
             SetCurIndex(0);
+        }
+
+        public void SetData(LuaTable luaTable)
+        {
+            List<UIItemData> data = Tools.GenUIIemDataList(luaTable);
+            SetData(data);
         }
 
         public void SetDataAndIndex(SelectorData data, int index)
@@ -62,7 +73,6 @@ namespace GameFramework
             SetData(data);
             SetCurIndex(index);
         }
-
 
         public void SetCurIndex(int index)
         {
@@ -91,6 +101,10 @@ namespace GameFramework
             mOnItemSelectedLua = call;
         }
 
+        /// <summary>
+        /// 本函数在编辑器使用
+        /// </summary>
+        /// <param name="showNum">Show number.</param>
         public void ShowNumFix(int showNum)
         {
             if (showNum > 1)
@@ -102,6 +116,7 @@ namespace GameFramework
                 }
             }
         }
+
         #region UIBehaviour
         protected override void Awake()
         {
@@ -120,6 +135,10 @@ namespace GameFramework
         {
             base.Start();
             calculateItemOffset();
+            if(null != Toggles)
+            {
+                Toggles.SetOnIndexChange(SetCurIndex);
+            }
 #if UNITY_EDITOR
             if (Application.isPlaying)
             {
@@ -347,6 +366,10 @@ namespace GameFramework
                 int count = mCurItems.Count;
                 Debug.LogWarning("curIndex:" + curIndex);
                 mCurIndex = curIndex;
+                if(null != Toggles)
+                {
+                    Toggles.SetCurIndex(mCurIndex);
+                }
                 List<ItemSortData> siblings = new List<ItemSortData>();
                 for (int i = 0; i < count; i++)
                 {

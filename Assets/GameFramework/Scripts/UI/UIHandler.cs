@@ -16,6 +16,8 @@ namespace GameFramework
     /// Button
     /// Toggle
     /// Slider
+    /// ScrollView
+    /// ScrollSelector
     /// Scrollbar
     /// Dropdown
     /// InputField
@@ -107,6 +109,7 @@ namespace GameFramework
             return null;
         }
 
+        #region ChangeUI
         public bool ChangeUI(UIHandlerData data)
         {
             string uiName = data.UIName;
@@ -144,6 +147,16 @@ namespace GameFramework
                         return SetUISelectable(uiName, (bool)data.Content);
                     }
                     //break;
+                case "setuienable":
+                    if (uiIndex != -1)
+                    {
+                        return SetUIEnable(uiIndex, (bool)data.Content);
+                    }
+                    else
+                    {
+                        return SetUIEnable(uiName, (bool)data.Content);
+                    }
+                //break;
                 case "settextstring":
                     if (uiIndex != -1)
                     {
@@ -360,7 +373,7 @@ namespace GameFramework
                     {
                         if (null != (LuaTable)data.Content)
                         {
-                            return SetScrollViewDatas(uiIndex, (LuaTable)data.Content);
+                            return SetScrollViewData(uiIndex, (LuaTable)data.Content);
                         }
                         else
                         {
@@ -371,7 +384,7 @@ namespace GameFramework
                     {
                         if (null != (LuaTable)data.Content)
                         {
-                            return SetScrollViewDatas(uiName, (LuaTable)data.Content);
+                            return SetScrollViewData(uiName, (LuaTable)data.Content);
                         }
                         else
                         {
@@ -423,6 +436,50 @@ namespace GameFramework
                         return InsertScrollViewData(uiName, (LuaTable)data.Content);
                     }
                     //break;
+                case "setscrollselectordata":
+                    if (uiIndex != -1)
+                    {
+                        if (null != (LuaTable)data.Content)
+                        {
+                            return SetScrollSelectorData(uiIndex, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return SetScrollSelectorData(uiIndex, (List<UIItemData>)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        if (null != (LuaTable)data.Content)
+                        {
+                            return SetScrollSelectorData(uiName, (List<UIItemData>)data.Content);
+                        }
+                        else
+                        {
+                            return SetScrollSelectorData(uiName, (LuaTable)data.Content);
+                        }
+                    }
+                //break;
+                case "setscrollselectorcurindex":
+                    if (uiIndex != -1)
+                    {
+                        return SetScrollSelectorCurIndex(uiIndex, (int)data.Content);
+                    }
+                    else
+                    {
+                        return SetScrollSelectorCurIndex(uiName, (int)data.Content);
+                    }
+                //break;
+                case "setscrollselectoronselect":
+                    if (uiIndex != -1)
+                    {
+                        return SetScrollSelectorOnSelect(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return SetScrollSelectorOnSelect(uiName, (LuaFunction)data.Content);
+                    }
+                //break;
                 case "settoggleison":
                     if (uiIndex != -1)
                     {
@@ -514,6 +571,7 @@ namespace GameFramework
             }
             return false;
         }
+        #endregion ChangeUI
 
         #region UI 通用
         public bool SetUIName(int index, string uiName)
@@ -541,7 +599,7 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择
+        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择,不能选择变灰
         /// </summary>
         /// <returns><c>true</c>, if UIS electable was set, <c>false</c> otherwise.</returns>
         /// <param name="index">Index.</param>
@@ -553,7 +611,7 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择
+        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择,不能选择变灰
         /// </summary>
         /// <returns><c>true</c>, if UIS electable was set, <c>false</c> otherwise.</returns>
         /// <param name="cName">Name.</param>
@@ -562,6 +620,18 @@ namespace GameFramework
         {
             Selectable ui = GetCompByName<Selectable>(cName);
             return setUISelectable(ui, value);
+        }
+
+        public bool SetUIEnable(int index, bool value)
+        {
+            UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
+            return setUIEnable(ui, value);
+        }
+
+        public bool SetUIEnable(string cName, bool value)
+        {
+            UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
+            return setUIEnable(ui, value);
         }
         #endregion UI 通用
 
@@ -959,13 +1029,13 @@ namespace GameFramework
             return false;
         }
 
-        public bool SetScrollViewDatas(int index, LuaTable table)
+        public bool SetScrollViewData(int index, LuaTable table)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
             return setScrollViewDatas(ui, table);
         }
 
-        public bool SetScrollViewDatas(string cName, LuaTable table)
+        public bool SetScrollViewData(string cName, LuaTable table)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
             return setScrollViewDatas(ui, table);
@@ -1107,6 +1177,96 @@ namespace GameFramework
             return false;
         }
         #endregion
+
+        #region ScrollSelector
+        public bool SetScrollSelectorData(int index, List<UIItemData> data)
+        {
+            ScrollSelector ui = GetCompByIndex<ScrollSelector>(index);
+            return setScrollSelectorData(ui, data);
+        }
+
+        public bool SetScrollSelectorData(string cName, List<UIItemData> data)
+        {
+            ScrollSelector ui = GetCompByName<ScrollSelector>(cName);
+            return setScrollSelectorData(ui, data);
+        }
+
+        private static bool setScrollSelectorData(ScrollSelector ui, List<UIItemData> data)
+        {
+            if(null != ui)
+            {
+                ui.SetData(data);
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetScrollSelectorData(int index, LuaTable luaTable)
+        {
+            ScrollSelector ui = GetCompByIndex<ScrollSelector>(index);
+            return setScrollSelectorData(ui, luaTable);
+        }
+
+        public bool SetScrollSelectorData(string cName, LuaTable luaTable)
+        {
+            ScrollSelector ui = GetCompByName<ScrollSelector>(cName);
+            return setScrollSelectorData(ui, luaTable);
+        }
+
+        private static bool setScrollSelectorData(ScrollSelector ui, LuaTable luaTable)
+        {
+            if(null != ui)
+            {
+                ui.SetData(luaTable);
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetScrollSelectorCurIndex(int uiIndex, int index)
+        {
+            ScrollSelector ui = GetCompByIndex<ScrollSelector>(uiIndex);
+            return setScrollSelectorCurIndex(ui, index);
+        }
+
+        public bool SetScrollSelectorCurIndex(string cName, int index)
+        {
+            ScrollSelector ui = GetCompByName<ScrollSelector>(cName);
+            return setScrollSelectorCurIndex(ui, index);
+        }
+
+        private static bool setScrollSelectorCurIndex(ScrollSelector ui, int index)
+        {
+            if(null != ui)
+            {
+                ui.SetCurIndex(index);
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetScrollSelectorOnSelect(int index, LuaFunction call)
+        {
+            ScrollSelector ui = GetCompByIndex<ScrollSelector>(index);
+            return setScrollSelectorOnSelect(ui, call);
+        }
+
+        public bool SetScrollSelectorOnSelect(string cName, LuaFunction call)
+        {
+            ScrollSelector ui = GetCompByName<ScrollSelector>(cName);
+            return setScrollSelectorOnSelect(ui, call);
+        }
+
+        private static bool setScrollSelectorOnSelect(ScrollSelector ui, LuaFunction call)
+        {
+            if(null != ui)
+            {
+                ui.SetOnSelectCallbackLua(call);
+                return true;
+            }
+            return false;
+        }
+        #endregion ScrollSelector
 
         #region Slider
         public float GetSliderValue(int index)
@@ -1398,6 +1558,16 @@ namespace GameFramework
             if (null != ui)
             {
                 ui.interactable = value;
+                return true;
+            }
+            return false;
+        }
+
+        private static bool setUIEnable(UIBehaviour ui, bool value)
+        {
+            if (null != ui)
+            {
+                ui.enabled = value;
                 return true;
             }
             return false;
