@@ -164,7 +164,7 @@ namespace GameFramework
             int dataCount = mItemDatas.Count;
             if (ScrollViewType.Vertical == ScrollType)
             {
-                useSize.x = rectSize.x - PaddingLeft - PaddingBottom;
+                useSize.x = rectSize.x - PaddingLeft - PaddingRight;
                 useSize.y = viewSize.y - PaddingTop - PaddingBottom;
                 mNumPerLine = Mathf.FloorToInt(useSize.x / ItemSize.x);
                 mLinePerPage = Mathf.FloorToInt(useSize.y / ItemSize.y);
@@ -199,7 +199,7 @@ namespace GameFramework
             }
             else
             {
-                useSize.x = viewSize.x - PaddingLeft - PaddingBottom;
+                useSize.x = viewSize.x - PaddingLeft - PaddingRight;
                 useSize.y = rectSize.y - PaddingTop - PaddingBottom;
                 mNumPerLine = Mathf.FloorToInt(useSize.y / ItemSize.y);
                 mLinePerPage = Mathf.FloorToInt(useSize.x / ItemSize.x);

@@ -36,9 +36,17 @@ namespace GameFramework
         /// <summary>
         /// 设置的当前选中toggle时，是否通知
         /// </summary>
-        [Tooltip("设置的当前选中toggle时，是否回调通知")]
         public bool CallbackOnSet=false;
+        /// <summary>
+        /// 是否动态创建Toggle
+        /// </summary>
+        public bool Dynamically = true;
+        /// <summary>
+        /// 仅当Dynamically==false时，将StaticToggles添加到Group
+        /// </summary>
+        //public Toggle[] StaticToggles;
 
+        [SerializeField]
         private List<Toggle> mToggls;
         private ObjPool<Toggle> mPool;
         private ToggleGroup mGroup;
@@ -47,9 +55,14 @@ namespace GameFramework
         private int mTargetIndex = -1;
         private UnityAction<int> mOnValueChange;
         private LuaFunction mOnValueChangeLua;
+        private List<UIItemData> mData;
 
         public void SetTotalNum(int num)
         {
+            if(!Dynamically)
+            {
+                return;
+            }
             if (null != mSetToggleCor)
             {
                 StopCoroutine(mSetToggleCor);
@@ -57,6 +70,15 @@ namespace GameFramework
             }
             mSetToggleCor = StartCoroutine(setTotalNum(num));
 
+        }
+
+        public void SetData(List<UIItemData> data)
+        {
+            mData = data;
+            if(null != data)
+            {
+                SetTotalNum(data.Count);
+            }
         }
 
         public void SetCurIndex(int index)
@@ -84,7 +106,10 @@ namespace GameFramework
         protected override void Awake()
         {
             base.Awake();
-            mToggls = new List<Toggle>();
+            if (Dynamically)
+            {
+                mToggls = new List<Toggle>();
+            }
             mPool = new ObjPool<Toggle>(onGetDelegate, onRecoverDelegate, onDisposeDelegate);
         }
 
@@ -97,7 +122,13 @@ namespace GameFramework
                 mGroup = Content.gameObject.AddComponent<ToggleGroup>();
                 mGroup.allowSwitchOff = false;
             }
-
+            if(!Dynamically && null != mToggls)
+            {
+                for (int i = 0; i < mToggls.Count; i++)
+                {
+                    addToggleToGroup(i, mToggls[i]);
+                }
+            }
 
 #if UNITY_EDITOR
             if (Application.isPlaying)
@@ -185,12 +216,15 @@ namespace GameFramework
             {
                 Toggle toggle = getToggle();
                 mToggls.Add(toggle);
-                toggle.isOn = (i == mCurIndex);
-                toggle.group = mGroup;
-                toggle.onValueChanged.AddListener(delegate (bool isOn)
+                addToggleToGroup(i, toggle);
+                if (null != mData && i < mData.Count)
                 {
-                    onToggleOn(toggle, isOn);
-                });
+                    UIHandler handler = toggle.GetComponent<UIHandler>();
+                    if (null != handler)
+                    {
+                        handler.ChangeItem(mData[i]);
+                    }
+                }
                 yield return null;
             }
             if (null != mSetToggleCor)
@@ -202,6 +236,19 @@ namespace GameFramework
             {
                 setCurIndex(mTargetIndex);
                 mTargetIndex = -1;
+            }
+        }
+
+        private void addToggleToGroup(int i, Toggle toggle)
+        {
+            if(null != toggle)
+            {
+                toggle.isOn = (i == mCurIndex);
+                toggle.group = mGroup;
+                toggle.onValueChanged.AddListener(delegate (bool isOn)
+                {
+                    onToggleOn(i, isOn);
+                });
             }
         }
 
@@ -236,11 +283,11 @@ namespace GameFramework
             }
         }
 
-        private void onToggleOn(Toggle toggle, bool value)
+        private void onToggleOn(int index, bool value)
         {
             if(value)
             {
-                int index = mToggls.IndexOf(toggle);
+                //int index = mToggls.IndexOf(toggle);
                 if(mCurIndex != index && index >=0 && index < mToggls.Count)
                 {
                     mCurIndex = index;
@@ -261,6 +308,7 @@ namespace GameFramework
             {
                 mOnValueChangeLua.Call(mCurIndex);
             }
+            //Debug.Log("mCurIndex:" + mCurIndex);
         }
         #endregion 私有方法
 
@@ -270,7 +318,7 @@ namespace GameFramework
         {
             
             yield return new WaitForSeconds(4);
-            if (mToggls.Count == 0)
+            if (mToggls.Count == 0 && Dynamically)
             {
                 SetTotalNum(5);
                 yield return new WaitForSeconds(4);

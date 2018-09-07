@@ -571,8 +571,30 @@ namespace GameFramework
             }
             return false;
         }
+
+        public bool ChangeUILua(LuaTable luaTable)
+        {
+            UIHandlerData data = new UIHandlerData(luaTable);
+            return ChangeUI(data);
+        }
         #endregion ChangeUI
 
+        public bool ChangeItem(UIItemData data)
+        {
+            bool ret = true;
+            List<UIHandlerData> datas = data.DataList;
+            for (int i = 0; i < datas.Count; i++)
+            {
+                ret &= ChangeUI(datas[i]);
+            }
+            return ret;
+        }
+
+        public bool ChangeItemLua(LuaTable luaTable)
+        {
+            UIItemData data = new UIItemData(luaTable);
+            return ChangeItem(data);
+        }
         #region UI 通用
         public bool SetUIName(int index, string uiName)
         {
