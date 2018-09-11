@@ -19,11 +19,13 @@ namespace GameFramework
             mTarget = target as UIHandler;
             mListProperty = serializedObject.FindProperty("UIArray");
             CustomListInspector.OnElementAdd.AddListener(onListAdd);
+            UIHandlerHierarchy.CurUIHandler = mTarget;
         }
 
         void OnDisable()
         {
             CustomListInspector.OnElementAdd.RemoveListener(onListAdd);
+            UIHandlerHierarchy.CurUIHandler = null;
         }
 
         public override void OnInspectorGUI()

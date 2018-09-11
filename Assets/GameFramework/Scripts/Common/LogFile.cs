@@ -78,6 +78,15 @@ namespace GameFramework
             writeLine((int)LogLevel.L_Error, format, args);
         }
 
+        public static void WriteLine(string str)
+        {
+            lock (locker)
+            {
+                mSWriter.WriteLine(str);
+                mSWriter.Flush();
+            }
+        }
+
         private static void writeLine(int level, string format, params object[] args)
         {
             writeLine(level, string.Format(format, args));
@@ -94,24 +103,20 @@ namespace GameFramework
             }
             if (null != mSWriter && level >= (int)mMinLevel)
             {
-                lock (locker)
+                string l = "log";
+                switch (level)
                 {
-                    string l = "log";
-                    switch (level)
-                    {
-                        case 1:
-                            break;
-                        case 2:
-                            l = "warning";
-                            break;
-                        case 3:
-                            l = "error";
-                            break;
-                    }
-                    string str = string.Format("{0} [{1}] ---> {2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ffff"), l, msg);
-                    mSWriter.WriteLine(str);
-                    mSWriter.Flush();
+                    case 1:
+                        break;
+                    case 2:
+                        l = "warning";
+                        break;
+                    case 3:
+                        l = "error";
+                        break;
                 }
+                string str = string.Format("{0} [{1}] ---> {2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ffff"), l, msg);
+                WriteLine(str);
             }
         }
 

@@ -129,10 +129,53 @@ function tryCatch(tryCall, catchCall, finalCall)
     end
 end
 
+-- TODO:待优化
+function  printTable( table, tName, deepth, indent, maxDeep )
+    deepth = deepth or 0
+    indent = indent or '    '
+    maxDeep = maxDeep or 4
+    local _indent = string.rep(indent, deepth)
+    local msg = ''
+    if nil ~= tName then 
+        if type(tName) == 'number' then
+            msg=  _indent..'['..tName..'] = '
+        else
+            msg=  _indent..tName..' = '
+        end
+    end
+    if type(table) == 'table' then
+        writeLog(msg..'\n'.._indent..'{')
+        if deepth < maxDeep then
+            for k, v in pairs(table) do
+                printTable(v, k, deepth+1, indent, maxDeep)
+            end
+        else
+            writeLog(_indent..indent..'...')
+        end
+        writeLog(_indent..'},')
+    elseif type(table) == 'string' then
+        writeLog(msg..'"'..table..'",')
+    else
+        writeLog(msg..table..',')
+    -- elseif type(table) == 'boolean' then
+    -- elseif type(table) == 'number' then
+    -- elseif type(table) == 'funtion' then
+    -- elseif type(table) == 'userdata' then
+    -- elseif type(table) == 'thread' then
+    end
+end
+
+function dump( )
+    -- body
+    -- TODO:
+end
+
 -- LogFile 相关
 printLog = GameFramework.LogFile.Log
 printWarn = GameFramework.LogFile.Warn
 printError = GameFramework.LogFile.Error
+-- WriteLine仅写入
+writeLog = GameFramework.LogFile.WriteLine
 
 
 local luaExp = GameFramework.LuaExportFuncs
