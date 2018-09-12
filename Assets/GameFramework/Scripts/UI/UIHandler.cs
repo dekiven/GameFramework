@@ -452,11 +452,11 @@ namespace GameFramework
                     {
                         if (null != (LuaTable)data.Content)
                         {
-                            return SetScrollSelectorData(uiName, (List<UIItemData>)data.Content);
+                            return SetScrollSelectorData(uiName, (LuaTable)data.Content);
                         }
                         else
                         {
-                            return SetScrollSelectorData(uiName, (LuaTable)data.Content);
+                            return SetScrollSelectorData(uiName, (List<UIItemData>)data.Content);
                         }
                     }
                 //break;

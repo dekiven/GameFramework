@@ -45,11 +45,11 @@ namespace GameFramework
         /// 仅当Dynamically==false时，将StaticToggles添加到Group
         /// </summary>
         //public Toggle[] StaticToggles;
+        public ToggleGroup Group;
 
         [SerializeField]
         private List<Toggle> mToggls;
         private ObjPool<Toggle> mPool;
-        private ToggleGroup mGroup;
         private Coroutine mSetToggleCor;
         private int mCurIndex = 0;
         private int mTargetIndex = -1;
@@ -69,7 +69,6 @@ namespace GameFramework
                 mSetToggleCor = null;
             }
             mSetToggleCor = StartCoroutine(setTotalNum(num));
-
         }
 
         public void SetData(List<UIItemData> data)
@@ -116,11 +115,11 @@ namespace GameFramework
         protected override void Start()
         {
             base.Start();
-            mGroup = Content.GetComponent<ToggleGroup>();
-            if (null == mGroup)
+            //Group = gameObject.GetComponent<ToggleGroup>();
+            if (null == Group)
             {
-                mGroup = Content.gameObject.AddComponent<ToggleGroup>();
-                mGroup.allowSwitchOff = false;
+                Group = gameObject.AddComponent<ToggleGroup>();
+                Group.allowSwitchOff = false;
             }
             if(!Dynamically && null != mToggls)
             {
@@ -163,21 +162,23 @@ namespace GameFramework
 
                 if (null == obj)
                 {
-                    LogFile.Error("TogglePrefab：{0} prefab没有添加ScrollItem组件", TogglePrefab.name);
+                    // LogFile.Error("TogglePrefab：{0} prefab没有添加ScrollItem组件", TogglePrefab.name);
                     return false;
                 }
             }
+            obj.transform.SetParent(Content.transform);
             obj.enabled = EnableTouch;
             obj.gameObject.SetActive(true);
-            mGroup.RegisterToggle(obj);
+            Group.RegisterToggle(obj);
             return true;
         }
 
         bool onRecoverDelegate(Toggle obj)
         {
-            mGroup.UnregisterToggle(obj);
+            Group.UnregisterToggle(obj);
             obj.onValueChanged.RemoveAllListeners();
             obj.gameObject.SetActive(false);
+            obj.transform.SetParent (transform);
             return true;
         }
 
@@ -234,7 +235,7 @@ namespace GameFramework
             }
             if(mTargetIndex != -1)
             {
-                setCurIndex(mTargetIndex);
+                setCurIndex(mTargetIndex, true);
                 mTargetIndex = -1;
             }
         }
@@ -244,18 +245,19 @@ namespace GameFramework
             if(null != toggle)
             {
                 toggle.isOn = (i == mCurIndex);
-                toggle.group = mGroup;
-                toggle.onValueChanged.AddListener(delegate (bool isOn)
+                toggle.group = Group;
+                toggle.onValueChanged.RemoveAllListeners();
+                toggle.onValueChanged.AddListener(delegate(bool isOn)
                 {
                     onToggleOn(i, isOn);
                 });
             }
         }
 
-        private void setCurIndex(int index)
+        private void setCurIndex(int index, bool force=false)
         {
             int idx = Mathf.Clamp(index, 0, mToggls.Count - 1);
-            if(mCurIndex != idx)
+            if(mCurIndex != idx || force)
             {
                 mCurIndex = idx;
                 if (!EnableTouch)

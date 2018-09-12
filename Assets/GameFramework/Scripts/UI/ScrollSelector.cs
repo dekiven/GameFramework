@@ -27,6 +27,7 @@ namespace GameFramework
         public Ease AnimEase = Ease.Linear;
         public int ItemNumPerStep = 1;
         public SelectorToggles Toggles;
+        public float DragRate = 1f;
 
         private ObjPool<ScrollItem> mItemPool;
         private List<ScrollItem> mCurItems;
@@ -60,6 +61,7 @@ namespace GameFramework
                 Toggles.SetTotalNum(data.Count);
             }
             SetCurIndex(0);
+            updateDrag (new Vector2(5, 0));
         }
 
         public void SetData(LuaTable luaTable)
@@ -123,7 +125,7 @@ namespace GameFramework
             base.Awake();
             if (null == Content)
             {
-                LogFile.Error("Selector Content is null");
+                // LogFile.Error("Selector Content is null");
                 return;
             }
             mItemPool = new ObjPool<ScrollItem>(OnGetItemDelegate, OnItemRecoverDelegate, OnItemDisposeDelegate);
@@ -212,7 +214,7 @@ namespace GameFramework
             {
                 return;
             }
-            updateDrag(eventData.delta);
+            updateDrag(eventData.delta * DragRate);
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -235,11 +237,11 @@ namespace GameFramework
             {
                 GameObject gobj = Instantiate(ItemPrefab, Content, false);
                 gobj.name = "item" + mItemPool.TotalObjCount;
-                //LogFile.Warn(gobj.name);
+                //// LogFile.Warn(gobj.name);
                 obj = gobj.GetComponent<ScrollItem>();
                 if (null == obj)
                 {
-                    LogFile.Error("ItemPrefab：{0} prefab没有添加ScrollItem组件", ItemPrefab.name);
+                    // LogFile.Error("ItemPrefab：{0} prefab没有添加ScrollItem组件", ItemPrefab.name);
                     return false;
                 }
                 obj.OnItemClicked = onItemClicked;
@@ -298,7 +300,7 @@ namespace GameFramework
                 //    realSize = contentSize.y - ItemSize.y * OtherScale * 2;
                 //    mItemOffset.y = realSize / (ShowNum - 2);
                 //}
-                LogFile.Log("contentSize{0}, mItemOffset:{1}, ItemSize:{2}, realSize:{3}", contentSize, mItemOffset, ItemSize, realSize);
+                // LogFile.Log("contentSize{0}, mItemOffset:{1}, ItemSize:{2}, realSize:{3}", contentSize, mItemOffset, ItemSize, realSize);
             }
         }
 
@@ -358,13 +360,13 @@ namespace GameFramework
             return index;
         }
 
-        private void sortItems()
+        private void sortItems(bool force = false)
         {
             int curIndex = getCurIndex();
-            if (mCurIndex != curIndex)
+            if (mCurIndex != curIndex || force)
             {
                 int count = mCurItems.Count;
-                Debug.LogWarning("curIndex:" + curIndex);
+                //Debug.LogWarning("curIndex:" + curIndex);
                 mCurIndex = curIndex;
                 if(null != Toggles)
                 {
@@ -454,7 +456,11 @@ namespace GameFramework
                     Vector3 pos = new Vector3(targetPosX, 0, 0);
                     float dt = Math.Min(1f, Math.Abs(targetPosX - posX) / ItemSize.x / 8);
                     killMoveTween();
-                    mMoveTween = DOTween.To(() => Content.localPosition, (Vector3 v) => Content.localPosition = v, pos, dt).SetEase(AnimEase).OnComplete(() => { noticeIndexChange(index); });
+                    mMoveTween = DOTween.To(() => Content.localPosition, (Vector3 v) => Content.localPosition = v, pos, dt).SetEase(AnimEase).OnComplete(() => 
+                    { 
+                        noticeIndexChange(index);
+                        checkNeedUpdate(true);
+                    });
                 }
             }
         }
@@ -499,7 +505,7 @@ namespace GameFramework
             {
                 return mItemPos[i];
             }
-            LogFile.Error("ScrollSelector getItemPosByIndex error => wrong index");
+            // LogFile.Error("ScrollSelector getItemPosByIndex error => wrong index");
             return Vector3.zero;
         }
 
@@ -550,7 +556,7 @@ namespace GameFramework
                 mUpCoroutine = StartCoroutine(updateAllItem(startIndex, endIndex, forceUpdate));
             }
 
-            sortItems();
+            sortItems(forceUpdate);
 
         }
 
@@ -559,7 +565,7 @@ namespace GameFramework
             if (mShowStart != startIndex || mShowEnd != endIndex || forceUpdate)
             {
                 //只有首尾的行变动，只处理相应的行,只在一帧处理完
-                if (Math.Abs(mShowStart - startIndex) <= 1 && Math.Abs(endIndex - mShowEnd) <= 1)
+                if (Math.Abs(mShowStart - startIndex) <= 1 && Math.Abs(endIndex - mShowEnd) <= 1 && startIndex != endIndex)
                 {
                     //减少Item
                     //如果开始的行数比当前的大1，证明现在在开头少显示了一行
@@ -591,8 +597,10 @@ namespace GameFramework
                 else
                 {
                     //有多行变动，在协程中处理所有刷新，有新变动停止协程重新处理
-                    //LogFile.Log("updateAllItem 滑动多行了，直接全部刷新 start:{0}, end{1}", startLine, endLine);
+                    //// LogFile.Log("updateAllItem 滑动多行了，直接全部刷新 start:{0}, end{1}", startLine, endLine);
                     //滑动多行了，直接全部刷新
+                    mShowStart = startIndex;
+                    mShowEnd = endIndex;
                     int startIdx = Mathf.Clamp(startIndex, 0, mData.Count - 1);
                     int endIdx = Mathf.Clamp(endIndex, 0, mData.Count - 1);
                     int count = endIdx - startIdx + 1;
@@ -611,8 +619,7 @@ namespace GameFramework
                         }
                     }
                 }
-                mShowStart = startIndex;
-                mShowEnd = endIndex;
+                
 
                 if (mTargetIndex != -1)
                 {
@@ -682,24 +689,26 @@ namespace GameFramework
 #if UNITY_EDITOR
         IEnumerator setTestData()
         {
-            OnItemSelected = (int index) =>
-            {
-                Debug.Log("Callbcak index:" + index);
-            };
-
             yield return new WaitForSeconds(3);
-            var data = new List<UIItemData>();
-            for (int i = 0; i < 20; i++)
+            if (mData.Count == 0)
             {
-                List<UIHandlerData> _data = new List<UIHandlerData>();
-                _data.Add(new UIHandlerData("SetTextString", 0, "Button" + i));
-                _data.Add(new UIHandlerData("setUIName", 1, "Button" + i));
-                data.Add(new UIItemData(_data));
+                OnItemSelected = (int index) =>
+                {
+                    Debug.Log("Callbcak index:" + index);
+                };
+                var data = new List<UIItemData>();
+                for (int i = 0; i < 10; i++)
+                {
+                    List<UIHandlerData> _data = new List<UIHandlerData>();
+                    _data.Add(new UIHandlerData("SetTextString", 0, "Button" + i));
+                    _data.Add(new UIHandlerData("setUIName", 1, "Button" + i));
+                    data.Add(new UIItemData(_data));
+                }
+                SetData(data);
+                yield return new WaitForSeconds(3);
+                SetCurIndex(2);
+                //mCurIndex = 3;
             }
-            SetData(data);
-            yield return new WaitForSeconds(3);
-            SetCurIndex(2);
-            //mCurIndex = 3;
         }
 #endif
 
