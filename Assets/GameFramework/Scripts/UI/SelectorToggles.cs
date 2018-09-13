@@ -80,6 +80,12 @@ namespace GameFramework
             }
         }
 
+        public void SetData(LuaTable luaTable)
+        {
+            List<UIItemData> data = Tools.GenUIIemDataList(luaTable);
+            SetData(data);
+        }
+
         public void SetCurIndex(int index)
         {
             if (null != mSetToggleCor)
@@ -99,6 +105,11 @@ namespace GameFramework
 
         public void SetOnIndexChange(LuaFunction function)
         {
+			if (null != mOnValueChangeLua) 
+			{
+				mOnValueChangeLua.Dispose ();
+				mOnValueChangeLua = null;
+			}
             mOnValueChangeLua = function;
         }
         #region UIBehaviour

@@ -82,11 +82,11 @@ namespace GameFramework
             else
             {
                 LogFile.Warn(
-                    "{0}找不到index为{1}，且类型是{2}的UI组件。"
-                    , Tools.GetTransformName(transform, Camera.main.transform)
-                    , index
-                    , typeof(T)
-                );
+                   "{0}找不到index为{1}，且类型是{2}的UI组件。"
+                   , Tools.GetTransformName(transform, Camera.main.transform)
+                   , index
+                   , typeof(T)
+               );
             }
             return comp;
         }
@@ -101,10 +101,10 @@ namespace GameFramework
             else
             {
                 LogFile.Warn(
-                    "{0}找不到name为{1}的UI组件。"
-                    , Tools.GetTransformName(transform, Camera.main.transform)
-                    , cName
-                );
+                   "{0}找不到name为{1}的UI组件。"
+                   , Tools.GetTransformName(transform, Camera.main.transform)
+                   , cName
+               );
             }
             return null;
         }
@@ -566,6 +566,94 @@ namespace GameFramework
                     else
                     {
                         return SetScrollbarStepNumber(uiName, (int)data.Content);
+                    }
+                    //break;
+                case "setselectortogglescantouch":
+                    if (uiIndex != -1)
+                    {
+                        return SetSelectorTogglesCanTouch(uiIndex, (bool) data.Content);
+                    }
+                    else
+                    {
+                        return SetSelectorTogglesCanTouch(uiName, (bool) data.Content);
+                    }
+                    //break;
+                case "setselectortogglescallonset":
+                    if (uiIndex != -1)
+                    {
+                        return SetSelectorTogglesCallOnSet(uiIndex, (bool) data.Content);
+                    }
+                    else
+                    {
+                        return SetSelectorTogglesCallOnSet(uiName, (bool) data.Content);
+                    }
+                    //break;
+                case "setselectortogglesnum":
+                    if (uiIndex != -1)
+                    {
+                        return SetSelectorTogglesNum(uiIndex, (int) data.Content);
+                    }
+                    else
+                    {
+                        return SetSelectorTogglesNum(uiName, (int) data.Content);
+                    }
+                    //break;
+                case "setselectortogglesdata":
+                    if (uiIndex != -1)
+                    {
+                        if (null != (LuaTable)data.Content)
+                        {
+                            return SetSelectorTogglesData(uiIndex, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return SetSelectorTogglesData(uiIndex, (List<UIItemData>)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        if (null != (LuaTable)data.Content)
+                        {
+                            return SetSelectorTogglesData(uiName, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return SetSelectorTogglesData(uiName, (List<UIItemData>)data.Content);
+                        }
+                    }
+                    //break;
+                case "setselectortogglesindex":
+                    if (uiIndex != -1)
+                    {
+                        return SetSelectorTogglesIndex(uiIndex, (int) data.Content);
+                    }
+                    else
+                    {
+                        return SetSelectorTogglesIndex(uiName, (int) data.Content);
+                    }
+                    //break;
+                case "setselectortogglesonchange":
+                    if (uiIndex != -1)
+                    {
+                        if (null != (UnityAction<int>)data.Content)
+                        {
+                            return SetSelectorTogglesOnChange(uiIndex, (UnityAction<int>) data.Content);
+                        }
+                        else
+                        {
+                            return SetSelectorTogglesOnChange(uiIndex, (LuaFunction)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        if (null != (UnityAction<int>)data.Content)
+                        {
+                            return SetSelectorTogglesOnChange(uiName, (UnityAction<int>) data.Content);
+                        }
+                        else
+                        {
+                            return SetSelectorTogglesOnChange(uiName, (LuaFunction)data.Content);
+                        }
                     }
                     //break;
             }
@@ -1289,6 +1377,186 @@ namespace GameFramework
             return false;
         }
         #endregion ScrollSelector
+
+        #region SelectorToggle
+        public bool SetSelectorTogglesCanTouch(int index, bool enabled)
+        {
+            SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
+            return setSelectorTogglesCanTouch(ui, enabled);
+        }
+
+        public bool SetSelectorTogglesCanTouch(string cName, bool enabled)
+        {
+            SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
+            return setSelectorTogglesCanTouch(ui, enabled);
+        }
+
+        private static bool setSelectorTogglesCanTouch(SelectorToggles ui, bool enabled)
+        {
+            if(null != ui)
+            {
+				ui.EnableTouch = enabled;
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetSelectorTogglesCallOnSet(int index, bool enabled)
+        {
+            SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
+            return setSelectorTogglesCallOnSet(ui, enabled);
+        }
+
+        public bool SetSelectorTogglesCallOnSet(string cName, bool enabled)
+        {
+            SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
+            return setSelectorTogglesCallOnSet(ui, enabled);
+        }
+
+        private static bool setSelectorTogglesCallOnSet(SelectorToggles ui, bool enabled)
+        {
+            if(null != ui)
+            {
+				ui.CallbackOnSet = enabled;
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetSelectorTogglesNum(int index, int num)
+        {
+            SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
+            return setSelectorTogglesNum(ui, num);
+        }
+
+        public bool SetSelectorTogglesNum(string cName, int num)
+        {
+            SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
+            return setSelectorTogglesNum(ui, num);
+        }
+
+        private static bool setSelectorTogglesNum(SelectorToggles ui, int num)
+        {
+            if(null != ui)
+            {
+				ui.SetTotalNum (num);
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetSelectorTogglesData(int index, List<UIItemData> data)
+        {
+            SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
+            return setSelectorTogglesData(ui, data);
+        }
+
+        public bool SetSelectorTogglesData(string cName, List<UIItemData> data)
+        {
+            SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
+            return setSelectorTogglesData(ui, data);
+        }
+
+        private static bool setSelectorTogglesData(SelectorToggles ui, List<UIItemData> data)
+        {
+            if(null != ui)
+            {
+				ui.SetData (data);
+                return true;
+            }
+            return false;
+        }                
+
+        public bool SetSelectorTogglesData(int index, LuaTable luaTable)
+        {
+            SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
+            return setSelectorTogglesData(ui, luaTable);
+        }
+
+        public bool SetSelectorTogglesData(string cName, LuaTable luaTable)
+        {
+            SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
+            return setSelectorTogglesData(ui, luaTable);
+        }
+
+        private static bool setSelectorTogglesData(SelectorToggles ui, LuaTable luaTable)
+        {
+            if(null != ui)
+            {
+                
+				ui.SetData (luaTable);
+                return true;
+            }
+            return false;
+        }                
+
+        public bool SetSelectorTogglesIndex(int index, int curIndex)
+        {
+            SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
+            return setSelectorTogglesIndex(ui, curIndex);
+        }
+
+        public bool SetSelectorTogglesIndex(string cName, int curIndex)
+        {
+            SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
+            return setSelectorTogglesIndex(ui, curIndex);
+        }
+
+        private static bool setSelectorTogglesIndex(SelectorToggles ui, int curIndex)
+        {
+            if(null != ui)
+            {
+				ui.SetCurIndex (curIndex);
+                return true;
+            }
+            return false;
+        }                
+
+        public bool SetSelectorTogglesOnChange(int index, UnityAction<int> action)
+        {
+            SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
+            return setSelectorTogglesOnChange(ui, action);
+        }
+
+        public bool SetSelectorTogglesOnChange(string cName, UnityAction<int> action)
+        {
+            SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
+            return setSelectorTogglesOnChange(ui, action);
+        }
+
+        private static bool setSelectorTogglesOnChange(SelectorToggles ui, UnityAction<int> action)
+        {
+            if(null != ui)
+            {
+				ui.SetOnIndexChange (action);
+                return true;
+            }
+            return false;
+        }                      
+
+        public bool SetSelectorTogglesOnChange(int index, LuaFunction function)
+        {
+            SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
+            return setSelectorTogglesOnChange(ui, function);
+        }
+
+        public bool SetSelectorTogglesOnChange(string cName, LuaFunction function)
+        {
+            SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
+            return setSelectorTogglesOnChange(ui, function);
+        }
+
+        private static bool setSelectorTogglesOnChange(SelectorToggles ui, LuaFunction function)
+        {
+            if(null != ui)
+            {
+                
+				ui.SetOnIndexChange (function);
+                return true;
+            }
+            return false;
+        }                
+        #endregion SelectorToggle
 
         #region Slider
         public float GetSliderValue(int index)
