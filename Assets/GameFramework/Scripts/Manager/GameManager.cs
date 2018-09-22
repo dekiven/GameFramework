@@ -44,8 +44,16 @@ namespace GameFramework
             init();
             //开始监听游戏异常并输出到日志文件
             registerExceptionHandler();
-            //检测资源更新
-            checkResUpdate();
+            if (GameConfig.checkUpdate)
+            {
+                //检测资源更新
+                checkResUpdate();
+            }
+            else
+            {
+                StartGameLogic();
+            }
+            
         }
 
         void Update()

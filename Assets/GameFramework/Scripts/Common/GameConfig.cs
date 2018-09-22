@@ -37,12 +37,16 @@ namespace GameFramework
 #if UNITY_EDITOR
         //配置是否使用Assetbundle
         public static bool useAsb = false;
+        // 检查更新
+        public static bool checkUpdate = false;
 
 #else
     // 注意，非编辑器模式下 useAsb只能为true，请勿修改，要在编辑器模式下不使用asb请修改上面的useAsb值
     public static bool useAsb = true;
+    // 检查更新
+    public static bool checkUpdate = true;
 #endif
-        
+
         public static bool GetBool(string key, bool def=false)
         {
             return PlayerPrefs.GetInt(key, def?1:0) > 0; 

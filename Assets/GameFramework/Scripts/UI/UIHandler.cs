@@ -29,9 +29,11 @@ namespace GameFramework
     {
 
         public List<UIBehaviour> UIArray;
+		public List<UIHandler> SubHandlers;
         public Transform RootTransform;
 
         private List<string> mUINames;
+        private List<string> mSubNames;
 
         #region MonoBehaviour
         void Start()
@@ -49,6 +51,10 @@ namespace GameFramework
             {
                 mUINames.Clear();
             }
+            else
+            {
+                mUINames = new List<string>();
+            }
             if (UIArray.Count > 0)
             {
                 mUINames = new List<string>();
@@ -61,14 +67,40 @@ namespace GameFramework
                     else
                     {
                         mUINames.Add(string.Empty);
-                        LogFile.Warn("UIHandler.UIArry[{0}] is null", i);
+                        // LogFile.Warn("UIHandler.UIArry[{0}] is null", i);
+                    }
+                }
+            }
+            if (null != mSubNames)
+            {
+                mSubNames.Clear();
+            }
+            else
+            {
+                mSubNames = new List<string>();
+            }
+            if ( SubCount > 0 )
+            {
+                mSubNames = new List<string>();
+                for (int i = 0; i < SubCount; ++i)
+                {
+                    if (null != UIArray[i])
+                    {
+                        mSubNames.Add(Tools.GetTransformName(SubHandlers[i].transform, RootTransform));
+                    }
+                    else
+                    {
+                        mSubNames.Add(string.Empty);
+                        // LogFile.Warn("UIHandler.UIArry[{0}] is null", i);
                     }
                 }
             }
         }
         #endregion
 
+        #region 通用方法
         public int Count { get { return UIArray.Count; } }
+        public int SubCount { get { return SubHandlers.Count; } }
 
         public string[] CompNames { get { return mUINames.ToArray(); } }
 
@@ -107,6 +139,38 @@ namespace GameFramework
                );
             }
             return null;
+        }
+
+        public UIHandler GetSubHandler(int index)
+        {
+            UIHandler handler = null;
+            if(null != SubHandlers && SubCount > 0 && index < SubCount && index >= 0 )
+            {
+                return SubHandlers[index];
+            }
+            else
+            {
+                LogFile.Warn("{0}找不到index为{1}的Sub Handler", name, index);
+            }
+            return handler;
+        }
+
+        public UIHandler GetSubHandler(string path)
+        {
+            UIHandler handler = null;
+            if (!string.IsNullOrEmpty(path) &&null != mSubNames)
+            {
+                int index = mSubNames.IndexOf(path);
+                if (index < 0)
+                {
+                    LogFile.Warn("{0}找不到path为{1}的Sub Handler", name, path);
+                }
+                else
+                {
+                    handler = GetSubHandler(index);
+                }
+            }
+            return handler;
         }
 
         #region ChangeUI
@@ -683,6 +747,8 @@ namespace GameFramework
             UIItemData data = new UIItemData(luaTable);
             return ChangeItem(data);
         }
+        #endregion 通用方法
+
         #region UI 通用
         public bool SetUIName(int index, string uiName)
         {

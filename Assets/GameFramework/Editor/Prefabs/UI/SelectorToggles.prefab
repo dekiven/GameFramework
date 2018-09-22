@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 222594475049262164}
   - component: {fileID: 114977977024827454}
   - component: {fileID: 114267244413521948}
-  - component: {fileID: 114616299896117030}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -41,6 +40,7 @@ GameObject:
   - component: {fileID: 222390767113128176}
   - component: {fileID: 114294459639035172}
   - component: {fileID: 114615633901339208}
+  - component: {fileID: 114173921419652674}
   m_Layer: 5
   m_Name: SelectorToggles
   m_TagString: Untagged
@@ -48,6 +48,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &114173921419652674
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1364379535157830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1184210157, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AllowSwitchOff: 0
 --- !u!114 &114267244413521948
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -113,18 +125,9 @@ MonoBehaviour:
   mContent: {fileID: 224802767676827354}
   mEnableTouch: 1
   CallbackOnSet: 0
---- !u!114 &114616299896117030
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1237179571093208}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1184210157, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AllowSwitchOff: 0
+  Dynamically: 1
+  Group: {fileID: 114173921419652674}
+  mToggls: []
 --- !u!114 &114977977024827454
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -237,11 +237,11 @@ namespace GameFramework
             {
                 GameObject gobj = Instantiate(ItemPrefab, Content, false);
                 gobj.name = "item" + mItemPool.TotalObjCount;
-                //// LogFile.Warn(gobj.name);
+                //LogFile.Warn(gobj.name);
                 obj = gobj.GetComponent<ScrollItem>();
                 if (null == obj)
                 {
-                    // LogFile.Error("ItemPrefab：{0} prefab没有添加ScrollItem组件", ItemPrefab.name);
+                    LogFile.Error("ItemPrefab：{0} prefab没有添加ScrollItem组件", ItemPrefab.name);
                     return false;
                 }
                 obj.OnItemClicked = onItemClicked;
@@ -597,7 +597,7 @@ namespace GameFramework
                 else
                 {
                     //有多行变动，在协程中处理所有刷新，有新变动停止协程重新处理
-                    //// LogFile.Log("updateAllItem 滑动多行了，直接全部刷新 start:{0}, end{1}", startLine, endLine);
+                    //LogFile.Log("updateAllItem 滑动多行了，直接全部刷新 start:{0}, end{1}", startLine, endLine);
                     //滑动多行了，直接全部刷新
                     mShowStart = startIndex;
                     mShowEnd = endIndex;
@@ -690,7 +690,7 @@ namespace GameFramework
         IEnumerator setTestData()
         {
             yield return new WaitForSeconds(3);
-            if (mData.Count == 0)
+            if (null == mData)
             {
                 OnItemSelected = (int index) =>
                 {

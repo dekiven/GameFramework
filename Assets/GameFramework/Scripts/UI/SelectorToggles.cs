@@ -82,8 +82,7 @@ namespace GameFramework
 
         public void SetData(LuaTable luaTable)
         {
-            List<UIItemData> data = Tools.GenUIIemDataList(luaTable);
-            SetData(data);
+            SetData(Tools.GenUIIemDataList(luaTable));
         }
 
         public void SetCurIndex(int index)
@@ -173,7 +172,7 @@ namespace GameFramework
 
                 if (null == obj)
                 {
-                    // LogFile.Error("TogglePrefab：{0} prefab没有添加ScrollItem组件", TogglePrefab.name);
+                    LogFile.Error("TogglePrefab：{0} prefab没有添加ScrollItem组件", TogglePrefab.name);
                     return false;
                 }
             }

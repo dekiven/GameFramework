@@ -10,14 +10,16 @@ namespace GameFramework
     public class UIHandlerInspector : Editor
     {
         UIHandler mTarget;
-        SerializedProperty mListProperty;
+		SerializedProperty mListProperty;
+		SerializedProperty mSubProperty;
         bool mIsSelecting = false;
         int mSelectingIndex = -1;
 
         void OnEnable()
         {
             mTarget = target as UIHandler;
-            mListProperty = serializedObject.FindProperty("UIArray");
+			mListProperty = serializedObject.FindProperty("UIArray");
+            mSubProperty = serializedObject.FindProperty("SubHandlers");
             CustomListInspector.OnElementAdd.AddListener(onListAdd);
             UIHandlerHierarchy.CurUIHandler = mTarget;
         }
@@ -31,7 +33,8 @@ namespace GameFramework
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            CustomListInspector.Show(mListProperty);
+			CustomListInspector.Show(mListProperty);
+			CustomListInspector.Show(mSubProperty);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("RootTransform"));
             serializedObject.ApplyModifiedProperties();
 
@@ -45,6 +48,23 @@ namespace GameFramework
             {
                 mIsSelecting = false;
                 setPickerObj(true);
+            }
+            if (GUILayout.Button(new GUIContent("拷贝Index信息到剪贴板")))
+            {
+                string s = "local uiIndex =\n{";
+                for (int i = 0; i < mTarget.UIArray.Count; i++)
+                {
+                    UIBehaviour ui = mTarget.UIArray[i];
+                    s = s + getComponentInfo(ui, i);
+                }
+                s = s + "\n}\nlocal subIndex =\n{";
+                for (int i = 0; i < mTarget.SubHandlers.Count; i++)
+                {
+                    UIHandler uih = mTarget.SubHandlers[i];
+                    s = s + getComponentInfo(uih, i);
+                }
+                s = s + "\n}";
+                GUIUtility.systemCopyBuffer = s;
             }
         }
 
@@ -124,6 +144,14 @@ namespace GameFramework
             EditorGUIUtility.ShowObjectPicker<UIBehaviour>(null, true, "", controlID);
             mIsSelecting = true;
             mSelectingIndex = index + 1;
+        }
+
+        private string getComponentInfo(Component com, int index)
+        {
+            string transName = Tools.GetTransformName(com.transform, null == mTarget.RootTransform ? mTarget.transform : mTarget.RootTransform);
+            string s = "\n\t-- " + transName + " (" + com.GetType().ToString() + ")";
+            s = s + "\n\t" + com.name + " = " + index + ",";
+            return s;
         }
     }
 }

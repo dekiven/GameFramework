@@ -83,7 +83,7 @@ namespace GameFramework
                 //List<AssetBundleBuild> list = new List<AssetBundleBuild>();
 
                 ////测试常规打包载入
-                //list.Add(AsbBuilder.GenBuildByDir(_config.LoadPath, Y3Tools.GetResPath(), "*.*"));
+                //list.Add(AsbBuilder.GenBuildByDir(_config.LoadPath, Tools.GetResPath(), "*.*"));
 
                 ////更新相关测试 begin ------------------------------------------------
                 ////测试资源依赖

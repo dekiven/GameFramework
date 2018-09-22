@@ -42,24 +42,39 @@ namespace GameFramework
             if(null == obj)
             {
                 return;
-            }            
+            }
 
-            if(null != CurUIHandler && CurUIHandler.UIArray.Count > 0)
+            if (null != CurUIHandler) 
             {
                 float height = selectionrect.height;
                 float total = 0f;
                 obj.SetActive(GUI.Toggle(getRect(selectionrect, height, ref total, 5), obj.activeSelf, string.Empty));
-                for (int i = 0; i < CurUIHandler.UIArray.Count; i++)
+                if( null != CurUIHandler.UIArray && CurUIHandler.UIArray.Count > 0)
                 {
-                    UIBehaviour ui = CurUIHandler.UIArray[i];
-                    if(null != ui && ui.gameObject.Equals(obj))
+                    for (int i = 0; i < CurUIHandler.UIArray.Count; i++)
                     {
-                        drawLabel("" + (i+10), getRect(selectionrect, height+2, ref total));
-                        drawIcon(ui, getRect(selectionrect, height, ref total));
+                        UIBehaviour ui = CurUIHandler.UIArray[i];
+                        if(null != ui && ui.gameObject.Equals(obj))
+                        {
+                            drawLabel("" + i, getRect(selectionrect, height+2, ref total));
+                            drawIcon(ui, getRect(selectionrect, height, ref total));
+                        }
+                    }
+                }
+
+                if (null != CurUIHandler.SubHandlers && CurUIHandler.SubHandlers.Count > 0) 
+                {
+                    for (int i = 0; i < CurUIHandler.SubHandlers.Count; i++)
+                    {
+                        UIHandler ui = CurUIHandler.SubHandlers[i];
+                        if(null != ui && ui.gameObject.Equals(obj))
+                        {
+                            drawLabel(""+i, getRect(selectionrect, height+4, ref total, 10));
+                            drawLabel("sub:  ", getRect(selectionrect, height*2, ref total));
+                        }
                     }
                 }
             }
-
         }
     }
 }

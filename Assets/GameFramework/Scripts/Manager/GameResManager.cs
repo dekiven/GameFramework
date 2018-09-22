@@ -71,15 +71,32 @@ namespace GameFramework
                     , new string[] { resName, }
                     , delegate (UObj[] objs)
                     {
-                        if (null != action && objs.Length == 1)
+                        if (null != action)
                         {
-                            action(objs[0]);
-                        }else if (null != action && objs.Length == 0 && string.IsNullOrEmpty(resName))
+                            if(objs.Length == 1)
+                            {
+                                action(objs[0]);
+                            }
+                            else
+                            {
+                                action(null);
+                            }
+                        } 
+                        if (null != luaFunc)
                         {
-                            action(null);
+                            if (objs.Length == 1)
+                            {
+                                luaFunc.Call(objs[0]);
+                            }
+                            else
+                            {
+                                luaFunc.Call();
+                            }
+                            luaFunc.Dispose();
+                            luaFunc = null;
                         }
                     }
-                    , luaFunc
+                    , null
                 );
 
             }
@@ -151,9 +168,9 @@ namespace GameFramework
             if (!GameConfig.useAsb)
             {
                 //Tools.RelativeTo(Tools.GetResPath(Tools.PathCombine(asbName, sceneName)), Application.dataPath, true);
-                Debug.LogWarning(scenePath);
+                //Debug.LogWarning(scenePath);
                 int index = SceneUtility.GetBuildIndexByScenePath(scenePath);
-                Debug.LogWarning(index);
+                //Debug.LogWarning(index);
 
                 bool hasSceneLoad = index >= 0;
                 string loadName = "";

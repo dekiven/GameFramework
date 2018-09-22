@@ -21,7 +21,7 @@ namespace GameFramework
             else
             {
                 SerializedProperty toggles = serializedObject.FindProperty("mToggls");
-                CustomListInspector.Show(toggles, CustomListOption.NoBtns);
+                CustomListInspector.Show(toggles);
                 if(toggles.arraySize == 0)
                 {
                     EditorGUILayout.HelpBox("请手动创建所有Toggle", MessageType.Warning);
@@ -29,6 +29,8 @@ namespace GameFramework
             }
             SerializedProperty callbackOnSet = serializedObject.FindProperty("CallbackOnSet");
             EditorGUILayout.PropertyField(callbackOnSet, new GUIContent("Callback On Set", "通过SetCurIndex设置的当前选中toggle时是否回调通知"));
+
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Group"));
 
             serializedObject.ApplyModifiedProperties();
         }
