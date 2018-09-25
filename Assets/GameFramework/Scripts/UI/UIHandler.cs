@@ -29,14 +29,14 @@ namespace GameFramework
     {
 
         public List<UIBehaviour> UIArray;
-		public List<UIHandler> SubHandlers;
+        public List<UIHandler> SubHandlers;
         public Transform RootTransform;
 
         private List<string> mUINames;
         private List<string> mSubNames;
 
         #region MonoBehaviour
-        void Start()
+        void Awake()
         {
             if (null == RootTransform)
             {
@@ -110,6 +110,10 @@ namespace GameFramework
             if (index < Count)
             {
                 comp = UIArray[index] as T;
+                if (null != UIArray[index] && null == comp)
+                {
+                    comp = UIArray[index].GetComponent<T>();
+                }
             }
             else
             {
@@ -172,6 +176,17 @@ namespace GameFramework
             }
             return handler;
         }
+
+        public void SetHandlerActive(bool active)
+        {
+            gameObject.SetActive (active);
+        }
+
+        public int GetUIIndex(UIBehaviour ui)
+        {
+            return UIArray.IndexOf(ui);
+        }
+        #endregion
 
         #region ChangeUI
         public bool ChangeUI(UIHandlerData data)
@@ -500,6 +515,26 @@ namespace GameFramework
                         return InsertScrollViewData(uiName, (LuaTable)data.Content);
                     }
                     //break;
+                case "setscrollviewbtnclicklua_s":
+                    if (uiIndex != -1)
+                    {
+                        return SetScrollViewBtnClickLua_S(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return SetScrollViewBtnClickLua_S(uiName, (LuaFunction)data.Content);
+                    }
+                    // break;
+                case "setscrollviewbtnclicklua_i":
+                    if (uiIndex != -1)
+                    {
+                        return SetScrollViewBtnClickLua_I(uiIndex, (LuaFunction)data.Content);
+                    }
+                    else
+                    {
+                        return SetScrollViewBtnClickLua_I(uiName, (LuaFunction)data.Content);
+                    }
+                    // break;
                 case "setscrollselectordata":
                     if (uiIndex != -1)
                     {
@@ -747,7 +782,6 @@ namespace GameFramework
             UIItemData data = new UIItemData(luaTable);
             return ChangeItem(data);
         }
-        #endregion 通用方法
 
         #region UI 通用
         public bool SetUIName(int index, string uiName)
@@ -1352,6 +1386,50 @@ namespace GameFramework
             }
             return false;
         }
+
+        public bool SetScrollViewBtnClickLua_S(int index, LuaFunction call)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return setScrollViewBtnClickLua_S(ui, call);
+        }
+
+        public bool SetScrollViewBtnClickLua_S(string cName, LuaFunction call)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return setScrollViewBtnClickLua_S(ui, call);
+        }
+
+        private static bool setScrollViewBtnClickLua_S(ScrollView ui, LuaFunction call)
+        {
+            if(null != ui)
+            {
+                ui.SetOnBtnClickLua_S(call);
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetScrollViewBtnClickLua_I(int index, LuaFunction call)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return setScrollViewBtnClickLua_I(ui, call);
+        }
+
+        public bool SetScrollViewBtnClickLua_I(string cName, LuaFunction call)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return setScrollViewBtnClickLua_I(ui, call);
+        }
+
+        private static bool setScrollViewBtnClickLua_I(ScrollView ui, LuaFunction call)
+        {
+            if(null != ui)
+            {
+                ui.SetOnBtnClickLua_I(call);
+                return true;
+            }
+            return false;
+        }
         #endregion
 
         #region ScrollSelector
@@ -1461,7 +1539,7 @@ namespace GameFramework
         {
             if(null != ui)
             {
-				ui.EnableTouch = enabled;
+                ui.EnableTouch = enabled;
                 return true;
             }
             return false;
@@ -1483,7 +1561,7 @@ namespace GameFramework
         {
             if(null != ui)
             {
-				ui.CallbackOnSet = enabled;
+                ui.CallbackOnSet = enabled;
                 return true;
             }
             return false;
@@ -1505,7 +1583,7 @@ namespace GameFramework
         {
             if(null != ui)
             {
-				ui.SetTotalNum (num);
+                ui.SetTotalNum (num);
                 return true;
             }
             return false;
@@ -1527,7 +1605,7 @@ namespace GameFramework
         {
             if(null != ui)
             {
-				ui.SetData (data);
+                ui.SetData (data);
                 return true;
             }
             return false;
@@ -1550,7 +1628,7 @@ namespace GameFramework
             if(null != ui)
             {
                 
-				ui.SetData (luaTable);
+                ui.SetData (luaTable);
                 return true;
             }
             return false;
@@ -1572,7 +1650,7 @@ namespace GameFramework
         {
             if(null != ui)
             {
-				ui.SetCurIndex (curIndex);
+                ui.SetCurIndex (curIndex);
                 return true;
             }
             return false;
@@ -1594,7 +1672,7 @@ namespace GameFramework
         {
             if(null != ui)
             {
-				ui.SetOnIndexChange (action);
+                ui.SetOnIndexChange (action);
                 return true;
             }
             return false;
@@ -1617,7 +1695,7 @@ namespace GameFramework
             if(null != ui)
             {
                 
-				ui.SetOnIndexChange (function);
+                ui.SetOnIndexChange (function);
                 return true;
             }
             return false;
@@ -1973,13 +2051,10 @@ namespace GameFramework
 
         private static bool addBtnClick(Button btn, LuaFunction call)
         {
-            if (null != btn)
-            {
-                btn.onClick.RemoveAllListeners();
-                btn.onClick.AddListener(() =>
-                {
-                    if (null != call)
-                    {
+            if (null != btn) {
+                btn.onClick.RemoveAllListeners ();
+                btn.onClick.AddListener (() => {
+                    if (null != call) {
                         //TODO:想办法在Destroy时释放call（调用Dispose方法）
                         call.Call(btn.name);
                     }

@@ -12,6 +12,8 @@ namespace GameFramework
         [HideInInspector]
         public int Index;
         public DelScrollItemClicked OnItemClicked;
+        public DelBtnClickedStr OnBtnClickedStr;
+        public DelBtnClickedIndex OnBtnClickedIndex;
         public RectTransform rectTransform { get { return transform as RectTransform; }}
 
         #region MonoBehaviour
@@ -30,6 +32,27 @@ namespace GameFramework
                         OnItemClicked(Index);
                     }
                 });
+            }
+            if (UIHandler.Count > 0)
+            {
+                for (int i = 0; i < UIHandler.Count; i++)
+                {
+                    Button btn = UIHandler.UIArray[i] as Button;
+                    if(null != btn && !btn.Equals(ItemClickBg))
+                    {
+                        btn.onClick.AddListener(() => 
+                        {
+                            if (null != OnBtnClickedStr)
+                            {
+                                OnBtnClickedStr(Index, btn.name);
+                            }
+                            if (null != OnBtnClickedIndex)
+                            {
+                                OnBtnClickedIndex(Index, UIHandler.GetUIIndex(btn));
+                            }
+                        });
+                    }
+                }
             }
         }
 
@@ -61,4 +84,6 @@ namespace GameFramework
     }
 
     public delegate void DelScrollItemClicked(int index);
+    public delegate void DelBtnClickedStr(int index, string name);
+    public delegate void DelBtnClickedIndex(int index, int btnIndex);
 }

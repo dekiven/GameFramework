@@ -48,11 +48,20 @@ namespace GameFramework
         private Vector2 mContntSpace = new Vector2();
         private int mTargetIndex = -1;
         private Tween mMoveTween = null;
+        /// <summary>
+        /// ScrollItem 上的btn被点击时是否传递btn名，否则传UIHandler的index
+        /// </summary>
+        public bool mBtnClickPassStr = false;
 
 
         //Item 点击回调
         private DelScrollItemClicked mOnItemClicked;
         private LuaFunction mOnItemClickLua;
+
+        // Item 上按钮点击回调（BG除外）
+        private DelBtnClickedStr mOnBtnClickedS;
+        private DelBtnClickedIndex mOnBtnClickedI;
+        private LuaFunction mOnBtnClickLua;
         #endregion 私有属性
 
         public void SetData(List<UIItemData> data)
@@ -246,6 +255,28 @@ namespace GameFramework
             mOnItemClickLua = call;
         }
 
+        public void SetOnBtnClick_S(DelBtnClickedStr del)
+        {
+            mBtnClickPassStr = true;
+            mOnBtnClickedS = del;
+        }
+
+        public void SetOnBtnClick_I(DelBtnClickedIndex del)
+        {
+            mBtnClickPassStr = false;
+            mOnBtnClickedI = del;
+        }
+
+        public void SetOnBtnClickLua_S(LuaFunction call)
+        {
+            setOnBtnClickLua(call, true);
+        }
+
+        public void SetOnBtnClickLua_I(LuaFunction call)
+        {
+            setOnBtnClickLua(call, false);
+        }
+
         #region MonoBehaviour
         protected override void Awake()
         {
@@ -359,6 +390,11 @@ namespace GameFramework
 
         private void checkNeedUpdate(bool forceUpdate = false)
         {
+            if (null == mItemDatas || mItemDatas.Count == 0)
+            {
+                recoverAll ();
+                return;
+            }
             bool start = false;
             int startLine = -1;
             int endLine = -1;
@@ -400,7 +436,7 @@ namespace GameFramework
             if (mShowStart != startLine || mShowEnd != endLine || forceUpdate)
             {
                 //只有首尾的行变动，只处理相应的行,只在一帧处理完
-                if (Math.Abs(mShowStart - startLine) <= 1 && Math.Abs(endLine - mShowEnd) <= 1)
+                if (Math.Abs(mShowStart - startLine) <= 1 && Math.Abs(endLine - mShowEnd) <= 1 && !forceUpdate)
                 {
                     //减少Item
                     //如果开始的行数比当前的大1，证明现在在开头少显示了一行
@@ -436,7 +472,7 @@ namespace GameFramework
                     //滑动多行了，直接全部刷新
                     int startIndex = Mathf.Clamp(startLine * mNumPerLine, 0, mItemDatas.Count - 1);
                     int endIndex = Mathf.Clamp((endLine + 1) * mNumPerLine - 1, 0, mItemDatas.Count - 1);
-                    int count = endIndex - startIndex + 1;
+                    int count = Mathf.Clamp(endIndex - startIndex + 1, 0, mItemDatas.Count);
 
                     //回收所有Item，在之后的协程中刷新
                     recoverAll();
@@ -572,6 +608,38 @@ namespace GameFramework
             }
         }
 
+        private void onItemBtnClickI(int index, int btnIndex)
+        {
+            //Debug.LogWarningFormat("onItemBtnClickI({0}, {1})", index, btnIndex);
+            if(!mBtnClickPassStr)
+            {
+                if (null != mOnBtnClickedI)
+                {
+                    mOnBtnClickedI(index, btnIndex);
+                }
+                if (null != mOnBtnClickLua)
+                {
+                    mOnBtnClickLua.Call(index, btnIndex);
+                }
+            }
+        }
+
+        private void onItemBtnClickS(int index, string btnName)
+        {
+            //Debug.LogWarningFormat("onItemBtnClickS({0}, {1})", index, btnName);
+            if (mBtnClickPassStr)
+            {
+                if (null != mOnBtnClickedI)
+                {
+                    mOnBtnClickedS(index, btnName);
+                }
+                if (null != mOnBtnClickLua)
+                {
+                    mOnBtnClickLua.Call(index, btnName);
+                }
+            }
+        }
+
         //TODO:待优化，根据位置精确定位
         private void tweenToIndex(int index)
         {
@@ -606,6 +674,17 @@ namespace GameFramework
             }
             mMoveTween = DOTween.To(()=>normalizedPosition, (Vector2 v)=> normalizedPosition=v, pos, 0.4f);
         }
+
+        private void setOnBtnClickLua(LuaFunction call, bool passStr)
+        {
+            mBtnClickPassStr = passStr;
+            if (null != mOnBtnClickLua)
+            {
+                mOnBtnClickLua.Dispose();
+                mOnBtnClickLua = null;
+            }
+            mOnBtnClickLua = call;
+        }
         #endregion 私有方法
 
         #region ObjPool回调
@@ -623,6 +702,8 @@ namespace GameFramework
                     return false;
                 }
                 obj.OnItemClicked = onItemClicked;
+                obj.OnBtnClickedIndex = onItemBtnClickI;
+                obj.OnBtnClickedStr = onItemBtnClickS;
             }
             obj.gameObject.SetActive(true);
             return true;
@@ -661,7 +742,6 @@ namespace GameFramework
                     datas.Add(new UIItemData());
                 }
                 SetData(datas);
-                SetCurIndex(29);
             }
         }
         #endregion
