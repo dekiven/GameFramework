@@ -129,7 +129,6 @@ function tryCatch(tryCall, catchCall, finalCall)
     end
 end
 
--- TODO:待优化
 function  printTable( table, tName, deepth, indent, maxDeep )
     deepth = deepth or 0
     indent = indent or '    '
@@ -163,6 +162,23 @@ function  printTable( table, tName, deepth, indent, maxDeep )
     -- elseif type(table) == 'userdata' then
     -- elseif type(table) == 'thread' then
     end
+end
+
+function string.split2(input, delimiter, handle)
+    input = tostring(input)
+    delimiter = tostring(delimiter)
+    handle = handle or function ( v )
+        return v
+    end
+    if (delimiter=='') then return false end
+    local pos,arr = 0, {}
+    -- for each divider found
+    for st,sp in function() return string.find(input, delimiter, pos, true) end do
+        table.insert(arr, handle(string.sub(input, pos, st - 1)))
+        pos = sp + 1
+    end
+    table.insert(arr, handle(string.sub(input, pos)))
+    return arr
 end
 
 function dump( )

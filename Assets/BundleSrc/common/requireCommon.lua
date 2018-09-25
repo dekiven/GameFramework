@@ -14,5 +14,7 @@ require('common.gameFramework')
 AddLuaBundle('lua_common_ui')
 -- common.ui
 require('common.ui.UIItemDataHelper')
-ViewBase = forceRequire('common.ui.ViewBase')
+ViewBase = require('common.ui.ViewBase')
 
+-- AddLuaBundle('lua_common')
+SceneBase = require('common.SceneBase')

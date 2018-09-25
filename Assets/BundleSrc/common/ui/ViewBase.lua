@@ -25,13 +25,15 @@ function ViewBase:initViewParams( )
     self.uiHandler = nil
 end
 
-function ViewBase:showView()
-    ShowView(self.asbName, self.prefabName, self:_getUIBaseListeners())
-end
+-- function ViewBase:showView()
+--     ShowView(self.asbName, self.prefabName, self:_getUIBaseListeners())
+-- end
 
 function ViewBase:show()
     if nil ~= self.uiBase then
         self.uiBase:Show(nil)
+    else
+        ShowView(self.asbName, self.prefabName, self:_getUIBaseListeners())
     end
 end
 
@@ -86,6 +88,23 @@ end
 function ViewBase:onHideBegin()
 
 end
+
+-- 子类在Oninit后调用，告知c#初始化结果，以便下一步处理
+function ViewBase:OnLuaInitResult( rst )
+    printLog('ViewBase:OnLuaInitResult( rst ):'..tostring(rst))
+    if self.uiBase then
+        printLog('2 ViewBase:OnLuaInitResult( rst ):'..tostring(rst))
+        self.uiBase:OnLuaInitResult(rst)
+    end
+end
+
+-- 子类在自定义动画效果调用后onShowBegin、onHideBegin后调用，告知c#初始化结果，以便下一步处理
+function ViewBase:OnLuaAnimResult( rst )
+    if self.uiBase then
+        self.uiBase:OnLuaAnimResult(rst)
+    end
+end
+
 --  -----------------------------------UI状态改变CS调用的方法=================================
 
 -- 清理函数
