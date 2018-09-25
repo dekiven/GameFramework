@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 222639559281814740}
   - component: {fileID: 114751249753623460}
   - component: {fileID: 114002074919874656}
-  - component: {fileID: 114896379344004170}
+  - component: {fileID: 114056807728405468}
   m_Layer: 5
   m_Name: PanelTestMain
   m_TagString: Untagged
@@ -193,9 +193,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsBillboard: 0
-  UIObjs: {fileID: 0}
+  UIObjs: {fileID: 114056807728405468}
   IsInStack: 0
   HideBefor: 1
+  IsStatic: 0
   AnimTime: 0.3
   AnimValue: 1
   AnimType: 5
@@ -228,6 +229,21 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114056807728405468
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1731804397750212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff8acb5a1dfe12845aacf1f5ddd1b506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UIArray:
+  - {fileID: 114250551053696956}
+  SubHandlers: []
+  RootTransform: {fileID: 0}
 --- !u!114 &114129326581979252
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -313,6 +329,7 @@ MonoBehaviour:
   PaddingTop: 10
   PaddingBottom: 10
   ItemNumPerStep: 1
+  mBtnClickPassStr: 0
 --- !u!114 &114295137773264868
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -433,7 +450,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 224686616139429938}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.70858896
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -521,20 +538,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114896379344004170
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1731804397750212}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a891ba201a4343b69d2a2dc5fa2837b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIArray:
-  - {fileID: 114250551053696956}
-  RootTransform: {fileID: 0}
 --- !u!114 &114924693974571918
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -719,7 +722,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 190}
   m_SizeDelta: {x: 0, y: 652}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!224 &224686616139429938

@@ -60,7 +60,7 @@ end
 
 function TestClass:showTestView()
     testMainView = forceRequire('test.TestMainView').new()
-    testMainView:showView()
+    testMainView:show()
     testMainView:setTestDatas(tests)
     self.testMainView = testMainView
 end

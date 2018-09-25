@@ -39,14 +39,14 @@ GameObject:
   - component: {fileID: 222932450982581216}
   - component: {fileID: 114046556466675868}
   - component: {fileID: 114608673216653274}
-  - component: {fileID: 114411985308854852}
+  - component: {fileID: 114080014344828956}
   m_Layer: 5
   m_Name: PanelItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &114046556466675868
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -74,7 +74,7 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114411985308854852
+--- !u!114 &114080014344828956
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -82,11 +82,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1773335594908646}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a891ba201a4343b69d2a2dc5fa2837b, type: 3}
+  m_Script: {fileID: 11500000, guid: ff8acb5a1dfe12845aacf1f5ddd1b506, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UIArray:
   - {fileID: 114570497289861342}
+  SubHandlers: []
   RootTransform: {fileID: 0}
 --- !u!114 &114570497289861342
 MonoBehaviour:
@@ -132,7 +133,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e06185dfb7f94a7aa2cf0d061382feb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIHandler: {fileID: 114411985308854852}
+  ItemClickBg: {fileID: 0}
+  UIHandler: {fileID: 114080014344828956}
+  Index: 0
 --- !u!222 &222252086473353548
 CanvasRenderer:
   m_ObjectHideFlags: 1

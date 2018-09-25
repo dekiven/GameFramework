@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 222995150589384844}
   - component: {fileID: 114366779492962240}
   - component: {fileID: 114870515185068256}
-  - component: {fileID: 114882723859839858}
+  - component: {fileID: 114804369616046904}
   m_Layer: 5
   m_Name: ScrollItem_btn
   m_TagString: Untagged
@@ -193,6 +193,21 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114804369616046904
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1759485999332060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff8acb5a1dfe12845aacf1f5ddd1b506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UIArray:
+  - {fileID: 114480259860710872}
+  SubHandlers: []
+  RootTransform: {fileID: 0}
 --- !u!114 &114870515185068256
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -205,22 +220,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemClickBg: {fileID: 114232387145941758}
-  UIHandler: {fileID: 114882723859839858}
+  UIHandler: {fileID: 114804369616046904}
   Index: 0
---- !u!114 &114882723859839858
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1759485999332060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a891ba201a4343b69d2a2dc5fa2837b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIArray:
-  - {fileID: 114480259860710872}
-  RootTransform: {fileID: 0}
 --- !u!222 &222739062017189270
 CanvasRenderer:
   m_ObjectHideFlags: 1

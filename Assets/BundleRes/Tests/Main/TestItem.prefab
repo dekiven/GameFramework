@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 222745654462191912}
   - component: {fileID: 114061571011289638}
   - component: {fileID: 114875651153298450}
-  - component: {fileID: 114511737747391340}
+  - component: {fileID: 114688020846760326}
   m_Layer: 5
   m_Name: TestItem
   m_TagString: Untagged
@@ -160,7 +160,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114511737747391340
+--- !u!114 &114688020846760326
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -168,11 +168,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1153959021830694}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a891ba201a4343b69d2a2dc5fa2837b, type: 3}
+  m_Script: {fileID: 11500000, guid: ff8acb5a1dfe12845aacf1f5ddd1b506, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UIArray:
   - {fileID: 114821225283132448}
+  SubHandlers: []
   RootTransform: {fileID: 0}
 --- !u!114 &114821225283132448
 MonoBehaviour:
@@ -219,7 +220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemClickBg: {fileID: 114311564621748004}
-  UIHandler: {fileID: 114511737747391340}
+  UIHandler: {fileID: 114688020846760326}
   Index: 0
 --- !u!222 &222348696024166544
 CanvasRenderer:

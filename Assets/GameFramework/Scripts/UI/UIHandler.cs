@@ -447,12 +447,12 @@ namespace GameFramework
                         return SetScrollViewOnItemClick(uiName, (LuaFunction) data.Content);
                     }
                     //break;
-                case "setscrollviewdata":
+                case "setscrollviewdatas":
                     if (uiIndex != -1)
                     {
                         if (null != (LuaTable)data.Content)
                         {
-                            return SetScrollViewData(uiIndex, (LuaTable)data.Content);
+                            return SetScrollViewDatas(uiIndex, (LuaTable)data.Content);
                         }
                         else
                         {
@@ -463,7 +463,7 @@ namespace GameFramework
                     {
                         if (null != (LuaTable)data.Content)
                         {
-                            return SetScrollViewData(uiName, (LuaTable)data.Content);
+                            return SetScrollViewDatas(uiName, (LuaTable)data.Content);
                         }
                         else
                         {
@@ -1239,13 +1239,13 @@ namespace GameFramework
             return false;
         }
 
-        public bool SetScrollViewData(int index, LuaTable table)
+        public bool SetScrollViewDatas(int index, LuaTable table)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
             return setScrollViewDatas(ui, table);
         }
 
-        public bool SetScrollViewData(string cName, LuaTable table)
+        public bool SetScrollViewDatas(string cName, LuaTable table)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
             return setScrollViewDatas(ui, table);

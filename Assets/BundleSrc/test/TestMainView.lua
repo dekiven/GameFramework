@@ -7,6 +7,21 @@
         
 --]]
 
+local uiIndex =
+{
+    -- ScrollView (GameFramework.ScrollView)
+    ScrollView = 0,
+}
+local subIndex =
+{
+}
+
+local itemIndex =
+{
+    -- Button/Text (UnityEngine.UI.Text)
+    Text = 0,
+}
+
 local TestMainView = class( 'TestMainView', ViewBase )
 
 function TestMainView:initViewParams( )
@@ -23,7 +38,7 @@ end
 function TestMainView:onInit(uiBase, uiHandler)
     self.super.onInit(self, uiBase, uiHandler)
 
-    self.uiHandler:SetScrollViewOnItemClick(0, handler(self, self.onItemClick))
+    self.uiHandler:SetScrollViewOnItemClick(uiIndex.ScrollView, handler(self, self.onItemClick))
 
     self.uiBase:OnLuaInitResult(true)
 end
@@ -49,11 +64,11 @@ function TestMainView:setScrollViewDatas()
     local scrollData = {}
     for i,v in ipairs(self.testDatas) do
         if nil ~= v.name then
-            table.insert(scrollData, {{'SetTextString', 0, v.name},})
+            table.insert(scrollData, {{'SetTextString', itemIndex.Text, v.name},})
         end
     end
     scrollData = getScrollViewData(scrollData)
-    self.uiHandler:SetScrollViewDatas(0, scrollData)
+    self.uiHandler:SetScrollViewDatas(uiIndex.ScrollView, scrollData)
 end
 
 function TestMainView:onItemClick( index )
