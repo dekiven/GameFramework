@@ -30,10 +30,12 @@ namespace GameFramework
 
         public List<UIBehaviour> UIArray;
         public List<UIHandler> SubHandlers;
+        public List<RectTransform> RTArray;
         public Transform RootTransform;
 
         private List<string> mUINames;
         private List<string> mSubNames;
+        private List<string> mRTNames;
 
         #region MonoBehaviour
         void Awake()
@@ -45,9 +47,20 @@ namespace GameFramework
             GetUI2RootNames();
         }
 
+        void OnDestroy()
+        {
+            UIArray.Clear();
+            SubHandlers.Clear();
+            RTArray.Clear();
+
+            mUINames.Clear();
+            mSubNames.Clear();
+            mRTNames.Clear();
+        }
+
         private void GetUI2RootNames()
         {
-            if(null != mUINames)
+            if (null != mUINames)
             {
                 mUINames.Clear();
             }
@@ -55,12 +68,11 @@ namespace GameFramework
             {
                 mUINames = new List<string>();
             }
-            if (UIArray.Count > 0)
+            if (Count > 0)
             {
-                mUINames = new List<string>();
                 for (int i = 0; i < Count; ++i)
                 {
-                    if(null != UIArray[i])
+                    if (null != UIArray[i])
                     {
                         mUINames.Add(Tools.GetTransformName(UIArray[i].transform, RootTransform));
                     }
@@ -79,9 +91,8 @@ namespace GameFramework
             {
                 mSubNames = new List<string>();
             }
-            if ( SubCount > 0 )
+            if (SubCount > 0)
             {
-                mSubNames = new List<string>();
                 for (int i = 0; i < SubCount; ++i)
                 {
                     if (null != UIArray[i])
@@ -95,12 +106,37 @@ namespace GameFramework
                     }
                 }
             }
+            //mRTNames
+            if (null != mRTNames)
+            {
+                mRTNames.Clear();
+            }
+            else
+            {
+                mRTNames = new List<string>();
+            }
+            if (SubCount > 0)
+            {
+                for (int i = 0; i < SubCount; ++i)
+                {
+                    if (null != UIArray[i])
+                    {
+                        mRTNames.Add(Tools.GetTransformName(RTArray[i].transform, RootTransform));
+                    }
+                    else
+                    {
+                        mRTNames.Add(string.Empty);
+                        // LogFile.Warn("UIHandler.UIArry[{0}] is null", i);
+                    }
+                }
+            }
         }
         #endregion
 
         #region 通用方法
         public int Count { get { return UIArray.Count; } }
         public int SubCount { get { return SubHandlers.Count; } }
+        public int RTCount { get { return RTArray.Count; } }
 
         public string[] CompNames { get { return mUINames.ToArray(); } }
 
@@ -148,7 +184,7 @@ namespace GameFramework
         public UIHandler GetSubHandler(int index)
         {
             UIHandler handler = null;
-            if(null != SubHandlers && SubCount > 0 && index < SubCount && index >= 0 )
+            if (null != SubHandlers && SubCount > 0 && index < SubCount && index >= 0)
             {
                 return SubHandlers[index];
             }
@@ -162,7 +198,7 @@ namespace GameFramework
         public UIHandler GetSubHandler(string path)
         {
             UIHandler handler = null;
-            if (!string.IsNullOrEmpty(path) &&null != mSubNames)
+            if (!string.IsNullOrEmpty(path) && null != mSubNames)
             {
                 int index = mSubNames.IndexOf(path);
                 if (index < 0)
@@ -179,7 +215,7 @@ namespace GameFramework
 
         public void SetHandlerActive(bool active)
         {
-            gameObject.SetActive (active);
+            gameObject.SetActive(active);
         }
 
         public int GetUIIndex(UIBehaviour ui)
@@ -194,7 +230,7 @@ namespace GameFramework
             string uiName = data.UIName;
             int uiIndex = data.UIIndex;
 
-            switch(data.FuncStr.ToLower())
+            switch (data.FuncStr.ToLower())
             {
                 case "setuiname":
                     if (uiIndex != -1)
@@ -205,7 +241,7 @@ namespace GameFramework
                     {
                         return SetUIName(uiName, (string)data.Content);
                     }
-                    //break;
+                //break;
                 case "setuiactive":
                     if (uiIndex != -1)
                     {
@@ -215,7 +251,7 @@ namespace GameFramework
                     {
                         return SetUIActive(uiName, (bool)data.Content);
                     }
-                    //break;
+                //break;
                 case "setuiselectable":
                     if (uiIndex != -1)
                     {
@@ -225,7 +261,7 @@ namespace GameFramework
                     {
                         return SetUISelectable(uiName, (bool)data.Content);
                     }
-                    //break;
+                //break;
                 case "setuienable":
                     if (uiIndex != -1)
                     {
@@ -245,7 +281,7 @@ namespace GameFramework
                     {
                         return SetTextString(uiName, (string)data.Content);
                     }
-                    //break;
+                //break;
                 case "settextcolor":
                     if (uiIndex != -1)
                     {
@@ -255,7 +291,7 @@ namespace GameFramework
                     {
                         return SetTextColor(uiName, (Color)data.Content);
                     }
-                    //break;
+                //break;
                 case "setrichtextstring":
                     if (uiIndex != -1)
                     {
@@ -265,7 +301,7 @@ namespace GameFramework
                     {
                         return SetRichTextString(uiName, (string)data.Content);
                     }
-                    //break;
+                //break;
                 case "setimagesprite":
                     if (uiIndex != -1)
                     {
@@ -275,7 +311,7 @@ namespace GameFramework
                     {
                         return SetImageSprite(uiName, (Sprite)data.Content);
                     }
-                    //break;
+                //break;
                 case "setrawimagetexture":
                     //TODO:
                     //if (uiIndex != -1)
@@ -296,11 +332,11 @@ namespace GameFramework
                     {
                         return SetRawImageRect(uiName, (Rect)data.Content);
                     }
-                    //break;
+                //break;
                 case "addbtnclick":
                     if (uiIndex != -1)
                     {
-                        if(null != (LuaFunction)data.Content)
+                        if (null != (LuaFunction)data.Content)
                         {
                             return AddBtnClick(uiIndex, (LuaFunction)data.Content);
                         }
@@ -320,7 +356,7 @@ namespace GameFramework
                             return AddBtnClick(uiName, (UnityAction<string>)data.Content);
                         }
                     }
-                    //break;
+                //break;
                 case "adddropdownonvaluechanged":
                     if (uiIndex != -1)
                     {
@@ -344,7 +380,7 @@ namespace GameFramework
                             return AddDropdownOnValueChanged(uiName, (UnityAction<int>)data.Content);
                         }
                     }
-                    //break;
+                //break;
                 case "setinputfeildstring":
                     if (uiIndex != -1)
                     {
@@ -354,7 +390,7 @@ namespace GameFramework
                     {
                         return SetInputFeildString(uiName, (string)data.Content);
                     }
-                    //break;
+                //break;
                 case "addinputfieldonvaluechanged":
                     if (uiIndex != -1)
                     {
@@ -378,7 +414,7 @@ namespace GameFramework
                             return AddInputFieldOnValueChanged(uiName, (UnityAction<string>)data.Content);
                         }
                     }
-                    //break;
+                //break;
                 case "addinputfieldonendedit":
                     if (uiIndex != -1)
                     {
@@ -402,7 +438,7 @@ namespace GameFramework
                             return AddInputFieldOnEndEdit(uiName, (UnityAction<string>)data.Content);
                         }
                     }
-                    //break;
+                //break;
                 case "setslidervalue":
                     if (uiIndex != -1)
                     {
@@ -412,7 +448,7 @@ namespace GameFramework
                     {
                         return SetSliderValue(uiName, (float)data.Content);
                     }
-                    //break;
+                //break;
                 case "addonslidervaluechanged":
                     if (uiIndex != -1)
                     {
@@ -436,17 +472,17 @@ namespace GameFramework
                             return AddOnSliderValueChanged(uiName, (UnityAction<float>)data.Content);
                         }
                     }
-                    //break;
+                //break;
                 case "setscrollviewonitemclick":
                     if (uiIndex != -1)
                     {
-                        return SetScrollViewOnItemClick(uiIndex, (LuaFunction) data.Content);
+                        return SetScrollViewOnItemClick(uiIndex, (LuaFunction)data.Content);
                     }
                     else
                     {
-                        return SetScrollViewOnItemClick(uiName, (LuaFunction) data.Content);
+                        return SetScrollViewOnItemClick(uiName, (LuaFunction)data.Content);
                     }
-                    //break;
+                //break;
                 case "setscrollviewdatas":
                     if (uiIndex != -1)
                     {
@@ -480,7 +516,7 @@ namespace GameFramework
                     {
                         return UpdateScrollViewData(uiName, (LuaTable)data.Content);
                     }
-                    //break;
+                //break;
                 case "addscrollviewdata":
                     if (uiIndex != -1)
                     {
@@ -504,7 +540,7 @@ namespace GameFramework
                             return AddScrollViewData(uiName, (UIItemData)data.Content);
                         }
                     }
-                    //break;
+                //break;
                 case "insertscrollviewdata":
                     if (uiIndex != -1)
                     {
@@ -514,7 +550,7 @@ namespace GameFramework
                     {
                         return InsertScrollViewData(uiName, (LuaTable)data.Content);
                     }
-                    //break;
+                //break;
                 case "setscrollviewbtnclicklua_s":
                     if (uiIndex != -1)
                     {
@@ -524,7 +560,7 @@ namespace GameFramework
                     {
                         return SetScrollViewBtnClickLua_S(uiName, (LuaFunction)data.Content);
                     }
-                    // break;
+                // break;
                 case "setscrollviewbtnclicklua_i":
                     if (uiIndex != -1)
                     {
@@ -534,7 +570,7 @@ namespace GameFramework
                     {
                         return SetScrollViewBtnClickLua_I(uiName, (LuaFunction)data.Content);
                     }
-                    // break;
+                // break;
                 case "setscrollselectordata":
                     if (uiIndex != -1)
                     {
@@ -588,7 +624,7 @@ namespace GameFramework
                     {
                         return SetToggleIsOn(uiName, (bool)data.Content);
                     }
-                    //break;
+                //break;
                 case "addtoggleonvaluechanged":
                     if (uiIndex != -1)
                     {
@@ -612,7 +648,7 @@ namespace GameFramework
                             return AddToggleOnValueChanged(uiName, (UnityAction<bool>)data.Content);
                         }
                     }
-                    //break;
+                //break;
                 case "setscrollbarvalue":
                     if (uiIndex != -1)
                     {
@@ -622,7 +658,7 @@ namespace GameFramework
                     {
                         return SetScrollbarValue(uiName, (float)data.Content);
                     }
-                    //break;
+                //break;
                 case "addonscrollbarvaluechanged":
                     if (uiIndex != -1)
                     {
@@ -646,7 +682,7 @@ namespace GameFramework
                             return AddOnScrollbarValueChanged(uiName, (UnityAction<float>)data.Content);
                         }
                     }
-                    //break;
+                //break;
                 case "setscrollbarsize":
                     if (uiIndex != -1)
                     {
@@ -656,7 +692,7 @@ namespace GameFramework
                     {
                         return SetScrollbarSize(uiName, (float)data.Content);
                     }
-                    //break;
+                //break;
                 case "setscrollbarstepnumber":
                     if (uiIndex != -1)
                     {
@@ -666,37 +702,37 @@ namespace GameFramework
                     {
                         return SetScrollbarStepNumber(uiName, (int)data.Content);
                     }
-                    //break;
+                //break;
                 case "setselectortogglescantouch":
                     if (uiIndex != -1)
                     {
-                        return SetSelectorTogglesCanTouch(uiIndex, (bool) data.Content);
+                        return SetSelectorTogglesCanTouch(uiIndex, (bool)data.Content);
                     }
                     else
                     {
-                        return SetSelectorTogglesCanTouch(uiName, (bool) data.Content);
+                        return SetSelectorTogglesCanTouch(uiName, (bool)data.Content);
                     }
-                    //break;
+                //break;
                 case "setselectortogglescallonset":
                     if (uiIndex != -1)
                     {
-                        return SetSelectorTogglesCallOnSet(uiIndex, (bool) data.Content);
+                        return SetSelectorTogglesCallOnSet(uiIndex, (bool)data.Content);
                     }
                     else
                     {
-                        return SetSelectorTogglesCallOnSet(uiName, (bool) data.Content);
+                        return SetSelectorTogglesCallOnSet(uiName, (bool)data.Content);
                     }
-                    //break;
+                //break;
                 case "setselectortogglesnum":
                     if (uiIndex != -1)
                     {
-                        return SetSelectorTogglesNum(uiIndex, (int) data.Content);
+                        return SetSelectorTogglesNum(uiIndex, (int)data.Content);
                     }
                     else
                     {
-                        return SetSelectorTogglesNum(uiName, (int) data.Content);
+                        return SetSelectorTogglesNum(uiName, (int)data.Content);
                     }
-                    //break;
+                //break;
                 case "setselectortogglesdata":
                     if (uiIndex != -1)
                     {
@@ -720,23 +756,23 @@ namespace GameFramework
                             return SetSelectorTogglesData(uiName, (List<UIItemData>)data.Content);
                         }
                     }
-                    //break;
+                //break;
                 case "setselectortogglesindex":
                     if (uiIndex != -1)
                     {
-                        return SetSelectorTogglesIndex(uiIndex, (int) data.Content);
+                        return SetSelectorTogglesIndex(uiIndex, (int)data.Content);
                     }
                     else
                     {
-                        return SetSelectorTogglesIndex(uiName, (int) data.Content);
+                        return SetSelectorTogglesIndex(uiName, (int)data.Content);
                     }
-                    //break;
+                //break;
                 case "setselectortogglesonchange":
                     if (uiIndex != -1)
                     {
                         if (null != (UnityAction<int>)data.Content)
                         {
-                            return SetSelectorTogglesOnChange(uiIndex, (UnityAction<int>) data.Content);
+                            return SetSelectorTogglesOnChange(uiIndex, (UnityAction<int>)data.Content);
                         }
                         else
                         {
@@ -747,7 +783,7 @@ namespace GameFramework
                     {
                         if (null != (UnityAction<int>)data.Content)
                         {
-                            return SetSelectorTogglesOnChange(uiName, (UnityAction<int>) data.Content);
+                            return SetSelectorTogglesOnChange(uiName, (UnityAction<int>)data.Content);
                         }
                         else
                         {
@@ -845,6 +881,144 @@ namespace GameFramework
         }
         #endregion UI 通用
 
+        #region RectTransform
+        public RectTransform GetRectTrans_U(int index)
+        {
+            UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
+            if(null != ui)
+            {
+                return ui.transform as RectTransform;
+            }
+            return null;
+        }
+
+        public RectTransform GetRectTrans_U(string cName)
+        {
+            UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
+            if (null != ui)
+            {
+                return ui.transform as RectTransform;
+            }
+            return null;
+        }
+
+        public RectTransform GetRectTrans_S(int index)
+        {
+            UIHandler ui = GetSubHandler(index);
+            if (null != ui)
+            {
+                return ui.transform as RectTransform;
+            }
+            return null;
+        }
+
+        public RectTransform GetRectTrans_S(string cName)
+        {
+            UIHandler ui = GetSubHandler(cName);
+            if (null != ui)
+            {
+                return ui.transform as RectTransform;
+            }
+            return null;
+        }
+
+        public RectTransform GetRectTrans_R(int index)
+        {
+            return getRectTransform(index);
+        }
+
+        public RectTransform GetRectTrans_R(string cName)
+        {
+            return getRectTransform(cName);
+        }
+
+        // 修改UIArray中的RectTransform
+        public bool ModifyURectTransfrom(int index, LuaTable table)
+        {
+            RectTransform ui = GetRectTrans_U(index);
+            return modifyRectTransform(ui, table);
+        }
+
+        // 修改UIArray中的RectTransform
+        public bool ModifyURectTransfrom(string cName, LuaTable table)
+        {
+            RectTransform ui = GetRectTrans_U(cName);
+            return modifyRectTransform(ui, table);
+        }
+
+        // 修改SubHandlers中的RectTransform
+        public bool ModifySRectTransfrom(int index, LuaTable table)
+        {
+            RectTransform ui = GetRectTrans_S(index);
+            return modifyRectTransform(ui, table);
+        }
+
+        // 修改SubHandlers中的RectTransform
+        public bool ModifySRectTransfrom(string cName, LuaTable table)
+        {
+            RectTransform ui = GetRectTrans_S(cName);
+            return modifyRectTransform(ui, table);
+        }
+
+        // 修改RTArray中的RectTransform
+        public bool ModifyRRectTransfrom(int index, LuaTable table)
+        {
+            RectTransform ui = GetRectTrans_R(index);
+            return modifyRectTransform(ui, table);
+        }
+
+        // 修改RTArray中的RectTransform
+        public bool ModifyRRectTransfrom(string cName, LuaTable table)
+        {
+            RectTransform ui = GetRectTrans_R(cName);
+            return modifyRectTransform(ui, table);
+        }
+
+
+        // 修改UIArray中的RectTransform
+        public bool ModifyURectTransfrom(int index, Dictionary<string, System.Object> dict)
+        {
+            RectTransform ui = GetRectTrans_U(index);
+            return modifyRectTransform(ui, dict);
+        }
+
+        // 修改UIArray中的RectTransform
+        public bool ModifyURectTransfrom(string cName, Dictionary<string, System.Object> dict)
+        {
+            RectTransform ui = GetRectTrans_U(cName);
+            return modifyRectTransform(ui, dict);
+        }
+
+
+        // 修改SubHandlers中的RectTransform
+        public bool ModifySRectTransfrom(int index, Dictionary<string, System.Object> dict)
+        {
+            RectTransform ui = GetRectTrans_S(index);
+            return modifyRectTransform(ui, dict);
+        }
+
+        // 修改SubHandlers中的RectTransform
+        public bool ModifySRectTransfrom(string cName, Dictionary<string, System.Object> dict)
+        {
+            RectTransform ui = GetRectTrans_S(cName);
+            return modifyRectTransform(ui, dict);
+        }
+
+        // 修改RTArray中的RectTransform
+        public bool ModifyRRectTransfrom(int index, Dictionary<string, System.Object> dict)
+        {
+            RectTransform ui = GetRectTrans_R(index);
+            return modifyRectTransform(ui, dict);
+        }
+
+        // 修改RTArray中的RectTransform
+        public bool ModifyRRectTransfrom(string cName, Dictionary<string, System.Object> dict)
+        {
+            RectTransform ui = GetRectTrans_R(cName);
+            return modifyRectTransform(ui, dict);
+        }
+        #endregion
+
         #region Text
         public string GetTextString(int index)
         {
@@ -900,7 +1074,7 @@ namespace GameFramework
         public bool SetRichTextString(string cName, string content)
         {
             Text text = GetCompByName<Text>(cName);
-            return setRichTextStr(text, content);  
+            return setRichTextStr(text, content);
         }
         #endregion
 
@@ -1401,7 +1575,7 @@ namespace GameFramework
 
         private static bool setScrollViewBtnClickLua_S(ScrollView ui, LuaFunction call)
         {
-            if(null != ui)
+            if (null != ui)
             {
                 ui.SetOnBtnClickLua_S(call);
                 return true;
@@ -1423,7 +1597,7 @@ namespace GameFramework
 
         private static bool setScrollViewBtnClickLua_I(ScrollView ui, LuaFunction call)
         {
-            if(null != ui)
+            if (null != ui)
             {
                 ui.SetOnBtnClickLua_I(call);
                 return true;
@@ -1447,7 +1621,7 @@ namespace GameFramework
 
         private static bool setScrollSelectorData(ScrollSelector ui, List<UIItemData> data)
         {
-            if(null != ui)
+            if (null != ui)
             {
                 ui.SetData(data);
                 return true;
@@ -1469,7 +1643,7 @@ namespace GameFramework
 
         private static bool setScrollSelectorData(ScrollSelector ui, LuaTable luaTable)
         {
-            if(null != ui)
+            if (null != ui)
             {
                 ui.SetData(luaTable);
                 return true;
@@ -1491,7 +1665,7 @@ namespace GameFramework
 
         private static bool setScrollSelectorCurIndex(ScrollSelector ui, int index)
         {
-            if(null != ui)
+            if (null != ui)
             {
                 ui.SetCurIndex(index);
                 return true;
@@ -1513,7 +1687,7 @@ namespace GameFramework
 
         private static bool setScrollSelectorOnSelect(ScrollSelector ui, LuaFunction call)
         {
-            if(null != ui)
+            if (null != ui)
             {
                 ui.SetOnSelectCallbackLua(call);
                 return true;
@@ -1537,7 +1711,7 @@ namespace GameFramework
 
         private static bool setSelectorTogglesCanTouch(SelectorToggles ui, bool enabled)
         {
-            if(null != ui)
+            if (null != ui)
             {
                 ui.EnableTouch = enabled;
                 return true;
@@ -1559,7 +1733,7 @@ namespace GameFramework
 
         private static bool setSelectorTogglesCallOnSet(SelectorToggles ui, bool enabled)
         {
-            if(null != ui)
+            if (null != ui)
             {
                 ui.CallbackOnSet = enabled;
                 return true;
@@ -1581,9 +1755,9 @@ namespace GameFramework
 
         private static bool setSelectorTogglesNum(SelectorToggles ui, int num)
         {
-            if(null != ui)
+            if (null != ui)
             {
-                ui.SetTotalNum (num);
+                ui.SetTotalNum(num);
                 return true;
             }
             return false;
@@ -1603,13 +1777,13 @@ namespace GameFramework
 
         private static bool setSelectorTogglesData(SelectorToggles ui, List<UIItemData> data)
         {
-            if(null != ui)
+            if (null != ui)
             {
-                ui.SetData (data);
+                ui.SetData(data);
                 return true;
             }
             return false;
-        }                
+        }
 
         public bool SetSelectorTogglesData(int index, LuaTable luaTable)
         {
@@ -1625,14 +1799,14 @@ namespace GameFramework
 
         private static bool setSelectorTogglesData(SelectorToggles ui, LuaTable luaTable)
         {
-            if(null != ui)
+            if (null != ui)
             {
-                
-                ui.SetData (luaTable);
+
+                ui.SetData(luaTable);
                 return true;
             }
             return false;
-        }                
+        }
 
         public bool SetSelectorTogglesIndex(int index, int curIndex)
         {
@@ -1648,13 +1822,13 @@ namespace GameFramework
 
         private static bool setSelectorTogglesIndex(SelectorToggles ui, int curIndex)
         {
-            if(null != ui)
+            if (null != ui)
             {
-                ui.SetCurIndex (curIndex);
+                ui.SetCurIndex(curIndex);
                 return true;
             }
             return false;
-        }                
+        }
 
         public bool SetSelectorTogglesOnChange(int index, UnityAction<int> action)
         {
@@ -1670,13 +1844,13 @@ namespace GameFramework
 
         private static bool setSelectorTogglesOnChange(SelectorToggles ui, UnityAction<int> action)
         {
-            if(null != ui)
+            if (null != ui)
             {
-                ui.SetOnIndexChange (action);
+                ui.SetOnIndexChange(action);
                 return true;
             }
             return false;
-        }                      
+        }
 
         public bool SetSelectorTogglesOnChange(int index, LuaFunction function)
         {
@@ -1692,14 +1866,14 @@ namespace GameFramework
 
         private static bool setSelectorTogglesOnChange(SelectorToggles ui, LuaFunction function)
         {
-            if(null != ui)
+            if (null != ui)
             {
-                
-                ui.SetOnIndexChange (function);
+
+                ui.SetOnIndexChange(function);
                 return true;
             }
             return false;
-        }                
+        }
         #endregion SelectorToggle
 
         #region Slider
@@ -1953,7 +2127,7 @@ namespace GameFramework
         {
             if (null != ui)
             {
-                if(num < 3)
+                if (num < 3)
                 {
                     LogFile.Warn("Scrollbar numberOfSteps 至少应该大于2，跳过设置。");
                     return false;
@@ -2043,7 +2217,7 @@ namespace GameFramework
             if (null != btn)
             {
                 btn.onClick.RemoveAllListeners();
-                btn.onClick.AddListener(()=>call(btn.name));
+                btn.onClick.AddListener(() => call(btn.name));
                 return true;
             }
             return false;
@@ -2051,10 +2225,13 @@ namespace GameFramework
 
         private static bool addBtnClick(Button btn, LuaFunction call)
         {
-            if (null != btn) {
-                btn.onClick.RemoveAllListeners ();
-                btn.onClick.AddListener (() => {
-                    if (null != call) {
+            if (null != btn)
+            {
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() =>
+                {
+                    if (null != call)
+                    {
                         //TODO:想办法在Destroy时释放call（调用Dispose方法）
                         call.Call(btn.name);
                     }
@@ -2076,7 +2253,7 @@ namespace GameFramework
 
         private static bool addOnSliderValueChanged(Slider slider, UnityAction<float> call)
         {
-            if(null != slider)
+            if (null != slider)
             {
                 slider.onValueChanged.AddListener(call);
             }
@@ -2087,9 +2264,9 @@ namespace GameFramework
         {
             if (null != slider)
             {
-                slider.onValueChanged.AddListener((float value) => 
+                slider.onValueChanged.AddListener((float value) =>
                 {
-                    if(null != call)
+                    if (null != call)
                     {
                         //TODO:释放
                         call.Call<float>(value);
@@ -2275,44 +2452,95 @@ namespace GameFramework
         {
             return GetCompByName<ScrollRect>(cName);
         }
+
+        private bool modifyRectTransform(RectTransform rect, LuaTable table)
+        {
+            return modifyRectTransform(rect, Tools.LuaTable2Dict(table));
+        }
+
+        private bool modifyRectTransform(RectTransform rect, Dictionary<string, System.Object> dict)
+        {
+            if(null != rect)
+            {
+                Tools.ModifyRectTransform(rect, dict);
+                return true;
+            }
+            return false;
+        }
+
+        private RectTransform getRectTransform(int index)
+        {
+            if (index >= 0 && index < RTCount)
+            {
+                return RTArray[index];
+            }
+            else
+            {
+                LogFile.Warn("{0}的RTArray找不到index为{1}的RectTransform", name, index);
+            }
+            return null;
+        }
+
+        private RectTransform getRectTransform(string path)
+        {
+            RectTransform rt = null;
+            if (!string.IsNullOrEmpty(path) && null != mSubNames)
+            {
+                int index = mSubNames.IndexOf(path);
+                if (index < 0)
+                {
+                    LogFile.Warn("{0}的找不到path为{1}的RectTransform", name, path);
+                }
+                else
+                {
+                    rt = getRectTransform(index);
+                }
+            }
+            return rt;
+        }
         #endregion =====UI 获取，私有
 
     }
 }
 
-        //// 正则
-        //public bool \1\2\3(int index, \4 \5)
-        //{
-        //    \2 ui = GetCompByIndex<\2>(index);
-        //    return \6\2\3(ui, \5);
-        //}
+/**
+        // 正则
+        // \8
+        public bool \1\2\3(int index, \4 \5)
+        {
+            \2 ui = GetCompByIndex<\2>(index);
+            return \6\2\3(ui, \5);
+        }
 
-        //public bool \1\2\3(string cName, \4 \5)
-        //{
-        //    \2 ui = GetCompByName<\2>(cName);
-        //    return \6\2\3(ui, \5);
-        //}
+        // \8
+        public bool \1\2\3(string cName, \4 \5)
+        {
+            \2 ui = GetCompByName<\2>(cName);
+            return \6\2\3(ui, \5);
+        }
 
-        //private static bool \6\2\3(\2 ui, \4 \5)
-        //{
-        //    if(null != ui)
-        //    {
-        //        //
-        //        return true;
-        //    }
-        //    return false;
-        //}
+        // \8
+        private static bool \6\2\3(\2 ui, \4 \5)
+        {
+            if(null != ui)
+            {
+                \7
+                return true;
+            }
+            return false;
+        }
 
-                ////case "\1\2\3":
-                    ////if (uiIndex != -1)
-                    ////{
-                    ////    return \1\2\3(uiIndex, (\4) data.Content);
-                    ////}
-                    ////else
-                    ////{
-                    ////    return \1\2\3(uiName, (\4) data.Content);
-                    ////}
-                    //////break;
+                case "\1\2\3":
+                    if (uiIndex != -1)
+                    {
+                        return \1\2\3(uiIndex, (\4) data.Content);
+                    }
+                    else
+                    {
+                        return \1\2\3(uiName, (\4) data.Content);
+                    }
+                    //break;
 
-//Set,Image,Sprite,Sprite,sprite,set
-//(\S+),(\S+),(\S+),(\S+),(\S+),(\S+)
+Set;Image;Sprite;Sprite;sprite;set;call(ui)//--注释
+//^(.+);(.+);(.+);(.+);(.+);(.+);(.*)//--(.*)$
+**/

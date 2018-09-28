@@ -81,6 +81,10 @@ function TestMainView:onItemClick( index )
                 if progress >= 1 then
                 end
             end)
+        elseif nil ~= data.view then
+            -- TODO:addLuaBundle
+            local v = require(data.view).new()
+            v:show()
         end
     end
 end

@@ -44,7 +44,7 @@ namespace GameFramework
 
         public static string GetReadOnlyPath(string suPath = "")
         {
-            if(string.IsNullOrEmpty(suPath))
+            if (string.IsNullOrEmpty(suPath))
             {
                 return Application.streamingAssetsPath;
             }
@@ -203,12 +203,12 @@ namespace GameFramework
             }
 
             string pre = "file://";
-//#if UNITY_ANDROID
+            //#if UNITY_ANDROID
             if (Application.platform == RuntimePlatform.Android)
             {
                 pre = "";
             }
-//#endif
+            //#endif
             return pre + path;
         }
 
@@ -362,7 +362,7 @@ namespace GameFramework
         public static Rect GenRect(float[] array)
         {
             Rect rect = Rect.zero;
-            if(array.Length == 4)
+            if (array.Length == 4)
             {
                 rect = new Rect(array[0], array[1], array[2], array[3]);
             }
@@ -393,7 +393,7 @@ namespace GameFramework
         public static Color GenColor(float[] array)
         {
             Color color = Color.white;
-            if(array.Length == 3)
+            if (array.Length == 3)
             {
                 color = new Color(array[0], array[1], array[2]);
             }
@@ -413,15 +413,15 @@ namespace GameFramework
                 float[] rgba = new float[array.Length];
                 for (int i = 0; i < array.Length; i++)
                 {
-                    if(!float.TryParse(array[i], out rgba[i]))
+                    if (!float.TryParse(array[i], out rgba[i]))
                     {
-                        LogFile.Warn("GenColorByStr error -> colorStr:"+colorStr);
+                        LogFile.Warn("GenColorByStr error -> colorStr:" + colorStr);
                         return color;
                     }
                 }
                 return GenColor(rgba);
             }
-            switch(colorStr.ToLower())
+            switch (colorStr.ToLower())
             {
                 case "black":
                     color = Color.black;
@@ -463,11 +463,11 @@ namespace GameFramework
         public static Vector3 GenVector3(float[] array)
         {
             Vector3 pos = Vector3.zero;
-            if(array.Length == 3)
+            if (array.Length >= 3)
             {
                 pos = new Vector3(array[0], array[1], array[2]);
             }
-            else if(array.Length == 2)
+            else if (array.Length == 2)
             {
                 pos = new Vector3(array[0], array[1]);
             }
@@ -517,7 +517,65 @@ namespace GameFramework
                     break;
                 case "zero":
                     pos = Vector3.zero;
-                    break;   
+                    break;
+            }
+            return pos;
+        }
+
+        public static Vector2 GenVector2(float[] array)
+        {
+            Vector2 pos = Vector2.zero;
+            if (array.Length >= 2)
+            {
+                pos = new Vector2(array[0], array[1]);
+            }
+            return pos;
+        }
+
+        public static Vector2 GenVector2ByStr(string vecStr)
+        {
+            Vector3 pos = Vector3.zero;
+            string[] array = vecStr.Split(',');
+            if (array.Length >= 2)
+            {
+                float[] _array = new float[array.Length];
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if (!float.TryParse(array[i], out _array[i]))
+                    {
+                        LogFile.Warn("GenVector3ByStr error -> vecStr:" + vecStr);
+                        return pos;
+                    }
+                }
+                return GenVector2(_array);
+            }
+
+            switch (vecStr.ToLower())
+            {
+                //case "back":
+                //pos = Vector2.back;
+                //break;
+                case "down":
+                    pos = Vector2.down;
+                    break;
+                //case "forward":
+                //pos = Vector2.forward;
+                //break;
+                case "left":
+                    pos = Vector2.left;
+                    break;
+                case "one":
+                    pos = Vector2.one;
+                    break;
+                case "right":
+                    pos = Vector2.right;
+                    break;
+                case "up":
+                    pos = Vector2.up;
+                    break;
+                case "zero":
+                    pos = Vector2.zero;
+                    break;
             }
             return pos;
         }
@@ -525,7 +583,7 @@ namespace GameFramework
         public static List<UIItemData> GenUIIemDataList(LuaTable table)
         {
             List<UIItemData> list = new List<UIItemData>();
-            if(null != table)
+            if (null != table)
             {
                 int count = table.RawGet<string, int>("count");
                 if (count > 0)
@@ -539,7 +597,242 @@ namespace GameFramework
             }
             return list;
         }
+
+        public static void ModifyRectTransform(RectTransform rectTransform, Dictionary<string, System.Object> dict)
+        {
+            if (null != rectTransform && null != dict)
+            {
+                #region
+                //rectTransform.anchoredPosition = Vector2.zero;
+                //rectTransform.anchoredPosition3D = Vector3.zero;
+                //rectTransform.anchorMax = Vector2.zero;
+                //rectTransform.anchorMin = Vector2.zero;
+                //rectTransform.localEulerAngles = Vector3.zero;
+                //rectTransform.localScale = Vector3.zero;
+                //rectTransform.localPosition = Vector3.zero;
+                ////rectTransform.localRotation = Vector3.zero; 
+                //rectTransform.offsetMax = Vector2.zero;
+                //rectTransform.offsetMin = Vector2.zero;
+                //rectTransform.pivot = Vector2.zero;
+                //rectTransform.position = Vector3.zero;
+                //rectTransform.sizeDelta = Vector2.zero;
+                ////rectTransform.rect
+                System.Object obj = null;
+                foreach (var item in dict)
+                {
+                    Debug.LogFormat("key:{0}, value:{1}", item.Key, item.Value);
+                }
+
+                if (dict.TryGetValue("anchoredPosition", out obj))
+                {
+                    Vector2 value = rectTransform.anchoredPosition;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector2ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector2)obj;
+                        LogFile.Warn("修改{0}的rectTransform.anchoredPosition失败", rectTransform.name);
+                    }
+                    rectTransform.anchoredPosition = value;
+                }
+
+                if (dict.TryGetValue("anchoredPosition3D", out obj))
+                {
+                    Vector3 value = rectTransform.anchoredPosition3D;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector3ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector3)obj;
+                        LogFile.Warn("修改{0}的rectTransform.anchoredPosition3D失败", rectTransform.name);
+                    }
+                    rectTransform.anchoredPosition3D = value;
+                }
+
+                if (dict.TryGetValue("anchorMax", out obj))
+                {
+                    Vector2 value = rectTransform.anchorMax;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector2ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector2)obj;
+                        LogFile.Warn("修改{0}的rectTransform.anchorMax失败", rectTransform.name);
+                    }
+                    rectTransform.anchorMax = value;
+                }
+
+                if (dict.TryGetValue("anchorMin", out obj))
+                {
+                    Vector2 value = rectTransform.anchorMin;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector2ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector2)obj;
+                        LogFile.Warn("修改{0}的rectTransform.anchorMin失败", rectTransform.name);
+                    }
+                    rectTransform.anchorMin = value;
+                }
+
+                if (dict.TryGetValue("localEulerAngles", out obj))
+                {
+                    Vector3 value = rectTransform.localEulerAngles;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector3ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector3)obj;
+                        LogFile.Warn("修改{0}的rectTransform.localEulerAngles失败", rectTransform.name);
+                    }
+                    rectTransform.localEulerAngles = value;
+                }
+
+                if (dict.TryGetValue("localScale", out obj))
+                {
+                    Vector3 value = rectTransform.localScale;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector3ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector3)obj;
+                        LogFile.Warn("修改{0}的rectTransform.localScale失败", rectTransform.name);
+                    }
+                    rectTransform.localScale = value;
+                }
+
+                if (dict.TryGetValue("localPosition", out obj))
+                {
+                    Vector3 value = rectTransform.localPosition;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector3ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector3)obj;
+                        LogFile.Warn("修改{0}的rectTransform.localPosition失败", rectTransform.name);
+                    }
+                    rectTransform.localPosition = value;
+                }
+
+                if (dict.TryGetValue("offsetMax", out obj))
+                {
+                    Vector2 value = rectTransform.offsetMax;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector2ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector2)obj;
+                        LogFile.Warn("修改{0}的rectTransform.offsetMax失败", rectTransform.name);
+                    }
+                    rectTransform.offsetMax = value;
+                }
+
+                if (dict.TryGetValue("offsetMin", out obj))
+                {
+                    Vector2 value = rectTransform.offsetMin;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector2ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector2)obj;
+                        LogFile.Warn("修改{0}的rectTransform.offsetMin失败", rectTransform.name);
+                    }
+                    rectTransform.offsetMin = value;
+                }
+
+                if (dict.TryGetValue("pivot", out obj))
+                {
+                    Vector2 value = rectTransform.pivot;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector2ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector2)obj;
+                        LogFile.Warn("修改{0}的rectTransform.pivot失败", rectTransform.name);
+                    }
+                    rectTransform.pivot = value;
+                }
+
+                if (dict.TryGetValue("position", out obj))
+                {
+                    Vector3 value = rectTransform.position;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector3ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector3)obj;
+                        LogFile.Warn("修改{0}的rectTransform.position失败", rectTransform.name);
+                    }
+                    rectTransform.position = value;
+                }
+
+                if (dict.TryGetValue("sizeDelta", out obj))
+                {
+                    Vector2 value = rectTransform.sizeDelta;
+                    string str = obj as string;
+                    if (null != str)
+                    {
+                        value = GenVector2ByStr(str);
+                    }
+                    else
+                    {
+                        // value = (Vector2)obj;
+                        LogFile.Warn("修改{0}的rectTransform.sizeDelta失败", rectTransform.name);
+                    }
+                    rectTransform.sizeDelta = value;
+                }
+                #endregion
+            }
+        }
         #endregion U3D常用类型转换相关
+
+        #region Lua相关
+        public static Dictionary<string, System.Object> LuaTable2Dict(LuaTable table)
+        {
+            if (null == table)
+            {
+                return null;
+            }
+            Dictionary<string, System.Object> dictionary = table.ToDictTable<string, System.Object>().ToDictionary();
+            table.Dispose();
+            table = null;
+            return dictionary;
+
+        }
+        #endregion Lua相关
     }
 }
 

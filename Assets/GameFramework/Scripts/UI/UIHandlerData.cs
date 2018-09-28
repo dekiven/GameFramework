@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using LuaInterface;
+using System.Collections.Generic;
 
 namespace GameFramework
 {
@@ -29,11 +30,15 @@ namespace GameFramework
 
         public UIHandlerData(LuaTable luaTable)
         {
+            if(null == luaTable)
+            {
+                return;
+            }
             int i = 0;
-            FuncStr = luaTable.RawGetIndex<string>(++i);
+            FuncStr = luaTable.RawGetIndex<string>(++i).ToLower();
             UIName = string.Empty;
             UIIndex = luaTable.RawGetIndex<int>(++i);
-            if (FuncStr.EndsWith("Sprite"))
+            if (FuncStr.EndsWith("sprite"))
             {
                 string spriteStr = luaTable.RawGetIndex<string>(++i);
                 string[] _params = spriteStr.Split(',');
@@ -50,18 +55,25 @@ namespace GameFramework
                     LogFile.Warn("UIHandlerData error => can't get sprite:" + spriteStr);
                 }
             }
-            else if (FuncStr.EndsWith("Color"))
+            else if (FuncStr.EndsWith("color"))
             {
                 Content = Tools.GenColorByStr(luaTable.RawGetIndex<string>(++i));
             }
-            else if (FuncStr.EndsWith("Rect"))
+            else if (FuncStr.EndsWith("rect"))
             {
                 Content = Tools.GenRectByStr(luaTable.RawGetIndex<string>(++i));
+            }
+            else if (FuncStr.EndsWith("recttransform"))
+            {
+                Dictionary<string, System.Object> dictionary = new Dictionary<string, System.Object>();
+
             }
             else
             {
                 Content = luaTable.RawGetIndex<System.Object>(++i);
             }
+            luaTable.Dispose();
+            luaTable = null;
         }
 
         public UIHandlerData()
@@ -75,6 +87,12 @@ namespace GameFramework
             {
                 lua.Dispose();
                 Content = null;
+            }
+            Dictionary<string, System.Object> dictionary = Content as Dictionary<string, System.Object>;
+            if (null != dictionary)
+            {
+                dictionary.Clear();
+                dictionary = null;
             }
         }
     }
