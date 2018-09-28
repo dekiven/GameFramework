@@ -791,6 +791,86 @@ namespace GameFramework
                         }
                     }
                     //break;
+
+
+
+                case "modifyurecttransfrom":
+                    if (uiIndex != -1)
+                    {
+                        LuaTable lua = (LuaTable)data.Content;
+                        if (null != lua)
+                        {
+                            return ModifyURectTransfrom(uiIndex, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return ModifyURectTransfrom(uiIndex, (LuaTable)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = (LuaTable)data.Content;
+                        if (null != lua)
+                        {
+                            return ModifyURectTransfrom(uiName, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return ModifyURectTransfrom(uiName, (LuaTable)data.Content);
+                        }
+                    }
+                //break;
+                case "modifysrecttransfrom":
+                    if (uiIndex != -1)
+                    {
+                        LuaTable lua = (LuaTable)data.Content;
+                        if (null != lua)
+                        {
+                            return ModifySRectTransfrom(uiIndex, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return ModifySRectTransfrom(uiIndex, (LuaTable)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = (LuaTable)data.Content;
+                        if (null != lua)
+                        {
+                            return ModifySRectTransfrom(uiName, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return ModifySRectTransfrom(uiName, (LuaTable)data.Content);
+                        }
+                    }
+                //break;
+                case "modifyrrecttransfrom":
+                    if (uiIndex != -1)
+                    {
+                        LuaTable lua = (LuaTable)data.Content;
+                        if (null != lua)
+                        {
+                            return ModifyRRectTransfrom(uiIndex, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return ModifyRRectTransfrom(uiIndex, (LuaTable)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = (LuaTable)data.Content;
+                        if (null != lua)
+                        {
+                            return ModifyRRectTransfrom(uiName, (LuaTable)data.Content);
+                        }
+                        else
+                        {
+                            return ModifyRRectTransfrom(uiName, (LuaTable)data.Content);
+                        }
+                    }
             }
             return false;
         }
@@ -2543,4 +2623,31 @@ namespace GameFramework
 
 Set;Image;Sprite;Sprite;sprite;set;call(ui)//--注释
 //^(.+);(.+);(.+);(.+);(.+);(.+);(.*)//--(.*)$
+**/
+
+/**
+                    case "ModifyURectTransfrom":
+                    if (uiIndex != -1)
+                    {
+                        return ModifyURectTransfrom(uiIndex, (LuaTable) data.Content);
+                        return ModifyURectTransfrom(uiIndex, (Dictionary<string, System.Object>) data.Content);
+                    }
+                    else
+                    {
+                        return ModifyURectTransfrom(uiName, (LuaTable) data.Content);
+                        return ModifyURectTransfrom(uiName, (Dictionary<string, System.Object>) data.Content);
+                    }
+                    //break;
+
+                    ^.*return(.*)$\n(.*)return(.*)
+
+                    LuaTable lua == (LuaTable) data.Content;
+                    if (null != lua)
+                    {
+                        return \1
+                    }
+                    else
+                    {
+                        return \1
+                    }
 **/

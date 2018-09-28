@@ -75,8 +75,15 @@ function TransformTestView:onBtnClick( name )
             localPosition = {0, 0, 100}
         }
         t = getCsTable(t)
-        printTable(t)
         self.uiHandler:ModifyURectTransfrom(0, t)
+    else
+        local t = 
+        {
+            sizeDelta = {100, 200},
+        }
+        local data = {'ModifyURectTransfrom', 0, t}
+        data = getUIData(data)
+        self.uiHandler:ChangeUILua(data)
     end
 end
 

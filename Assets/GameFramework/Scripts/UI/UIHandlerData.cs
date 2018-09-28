@@ -42,11 +42,11 @@ namespace GameFramework
             {
                 string spriteStr = luaTable.RawGetIndex<string>(++i);
                 string[] _params = spriteStr.Split(',');
-                if(_params.Length == 3)
+                if (_params.Length == 3)
                 {
-                    GameSpriteAtlasManager.Instance.GetSpriteSync(_params[0], _params[1], _params[2], (Sprite s) => 
+                    GameSpriteAtlasManager.Instance.GetSpriteSync(_params[0], _params[1], _params[2], (Sprite s) =>
                     {
-                        Content = s;   
+                        Content = s;
                     });
                 }
                 else
@@ -62,11 +62,6 @@ namespace GameFramework
             else if (FuncStr.EndsWith("rect"))
             {
                 Content = Tools.GenRectByStr(luaTable.RawGetIndex<string>(++i));
-            }
-            else if (FuncStr.EndsWith("recttransform"))
-            {
-                Dictionary<string, System.Object> dictionary = new Dictionary<string, System.Object>();
-
             }
             else
             {
@@ -87,12 +82,6 @@ namespace GameFramework
             {
                 lua.Dispose();
                 Content = null;
-            }
-            Dictionary<string, System.Object> dictionary = Content as Dictionary<string, System.Object>;
-            if (null != dictionary)
-            {
-                dictionary.Clear();
-                dictionary = null;
             }
         }
     }

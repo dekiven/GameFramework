@@ -7,29 +7,38 @@
         ScrollView SetDatas 相关LuaTable封装
 --]]
 
+-- 根据{'funcName', index, value,...}获取changeUI的table
+function getUIData( dataTable )
+    -- 当v = {'funcStr', intIndex, content,...}时加入data
+    if type(dataTable) == 'table' and #dataTable >= 3 then
+        -- 如果v[3]是table，需要转换
+        if type(dataTable[3]) == 'table' then
+            -- dataTable[3]暂时不支持 index和key混用，
+            local _v = clone(dataTable)
+            if #dataTable[3] > 0 then
+                -- 使用index表示是vector或者color，直接转化为string
+                _v[3] = getVecColStr(dataTable[3], ',')
+            else
+                -- 使用key主要是修改RectTransform等需要再c#将table转化为Dictionary
+                _v[3] = getCsTable(dataTable[3])
+            end
+            return _v
+        else
+            return dataTable
+        end
+    end
+    return nil
+end
 
+-- 获取ChangeItem的table
 function getUIItemData( dataTable )
     local data = {}
     local count = 0
     if type(dataTable) == 'table' then
-        for i,v in ipairs(dataTable) do
-            -- 当v = {'funcStr', intIndex, content}时加入data
-            if type(v) == 'table' and #v >= 3 then
-                -- 如果v[3]是table，需要转换
-                if type(v[3]) == 'table' then
-                    -- v[3]暂时不支持 index和key混用，
-                    local _v = clone(v)
-                    if #v[3] > 0 then
-                        -- 使用index表示是vector或者color，直接转化为string
-                        _v[3] = getVecColStr(v[3], ',')
-                    else
-                        -- 使用key主要是修改RectTransform等需要再c#将table转化为Dictionary
-                        _v[3] = getCsTable(v[3])
-                    end
-                    table.insert(data, _v)
-                else
-                    table.insert(data, v)
-                end
+        for i, v in ipairs(dataTable) do
+            local d = getUIData(v)
+            if nil ~= d then
+                table.insert(data, d)
                 count = count + 1
             end
         end
@@ -44,6 +53,7 @@ function getUIItemDataWithIndex( dataTable, intIndex )
     return data
 end
 
+-- 获取ScrollView、ScrollSelecltor 等修改多个Handler的table
 function getScrollViewData( dataTable )
     local data = {}
     local count = 0
