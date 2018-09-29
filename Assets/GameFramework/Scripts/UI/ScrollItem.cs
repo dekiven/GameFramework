@@ -17,12 +17,16 @@ namespace GameFramework
         public RectTransform rectTransform { get { return transform as RectTransform; }}
 
         #region MonoBehaviour
-        void Start()
+        void Awake()
         {
-            if(null == UIHandler)
+            if (null == UIHandler)
             {
                 UIHandler = GetComponent<UIHandler>();
             }
+        }
+
+        void Start()
+        {
             if(null != ItemClickBg)
             {
                 ItemClickBg.onClick.AddListener(() => 

@@ -115,13 +115,13 @@ namespace GameFramework
             {
                 mRTNames = new List<string>();
             }
-            if (SubCount > 0)
+            if (RTCount > 0)
             {
                 for (int i = 0; i < SubCount; ++i)
                 {
-                    if (null != UIArray[i])
+                    if (null != RTArray[i])
                     {
-                        mRTNames.Add(Tools.GetTransformName(RTArray[i].transform, RootTransform));
+                        mRTNames.Add(Tools.GetTransformName(RTArray[i], RootTransform));
                     }
                     else
                     {
@@ -134,9 +134,9 @@ namespace GameFramework
         #endregion
 
         #region 通用方法
-        public int Count { get { return UIArray.Count; } }
-        public int SubCount { get { return SubHandlers.Count; } }
-        public int RTCount { get { return RTArray.Count; } }
+        public int Count { get { if (null != UIArray) {return UIArray.Count;} else { return 0; } } }
+        public int SubCount { get { if (null != SubHandlers) {return SubHandlers.Count;} else { return 0; } } }
+        public int RTCount { get { if (null != RTArray) {return RTArray.Count;} else { return 0; } } }
 
         public string[] CompNames { get { return mUINames.ToArray(); } }
 
@@ -2564,9 +2564,9 @@ namespace GameFramework
         private RectTransform getRectTransform(string path)
         {
             RectTransform rt = null;
-            if (!string.IsNullOrEmpty(path) && null != mSubNames)
+            if (!string.IsNullOrEmpty(path) && null != mRTNames)
             {
-                int index = mSubNames.IndexOf(path);
+                int index = mRTNames.IndexOf(path);
                 if (index < 0)
                 {
                     LogFile.Warn("{0}的找不到path为{1}的RectTransform", name, path);
