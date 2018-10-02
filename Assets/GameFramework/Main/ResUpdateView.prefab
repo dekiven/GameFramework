@@ -38,7 +38,8 @@ GameObject:
   - component: {fileID: 224859527603231132}
   - component: {fileID: 222692522931864618}
   - component: {fileID: 114967944773118018}
-  - component: {fileID: 114307911909790390}
+  - component: {fileID: 114427223622738072}
+  - component: {fileID: 114753737562572324}
   m_Layer: 5
   m_Name: ResUpdateView
   m_TagString: Untagged
@@ -241,7 +242,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: app:1.0
---- !u!114 &114307911909790390
+--- !u!114 &114427223622738072
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -249,13 +250,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1082583151539494}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c060621bd3d7454faab6c8723ef3459, type: 3}
+  m_Script: {fileID: 11500000, guid: ff8acb5a1dfe12845aacf1f5ddd1b506, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Components:
-  - {fileID: 224848237628649572}
-  - {fileID: 224087487551048810}
-  - {fileID: 224382664381281766}
+  UIArray:
+  - {fileID: 114144227833201752}
+  - {fileID: 114500831829624922}
+  - {fileID: 114000299757318922}
+  SubHandlers: []
+  RTArray:
+  - {fileID: 0}
   RootTransform: {fileID: 0}
 --- !u!114 &114500831829624922
 MonoBehaviour:
@@ -290,6 +294,17 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: info
+--- !u!114 &114753737562572324
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1082583151539494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bad3f9ffd9bbb42f58788427843d7ee8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114835104507209326
 MonoBehaviour:
   m_ObjectHideFlags: 1

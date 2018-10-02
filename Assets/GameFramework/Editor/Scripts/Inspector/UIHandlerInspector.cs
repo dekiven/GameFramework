@@ -10,16 +10,18 @@ namespace GameFramework
     public class UIHandlerInspector : Editor
     {
         UIHandler mTarget;
-		SerializedProperty mListProperty;
-		SerializedProperty mSubProperty;
+        SerializedProperty mListProperty;
+        SerializedProperty mSubProperty;
+        SerializedProperty mRTProperty;
         bool mIsSelecting = false;
         int mSelectingIndex = -1;
 
         void OnEnable()
         {
             mTarget = target as UIHandler;
-			mListProperty = serializedObject.FindProperty("UIArray");
+            mListProperty = serializedObject.FindProperty("UIArray");
             mSubProperty = serializedObject.FindProperty("SubHandlers");
+            mRTProperty = serializedObject.FindProperty("RTArray");
             CustomListInspector.OnElementAdd.AddListener(onListAdd);
             UIHandlerHierarchy.CurUIHandler = mTarget;
         }
@@ -33,8 +35,9 @@ namespace GameFramework
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-			CustomListInspector.Show(mListProperty);
-			CustomListInspector.Show(mSubProperty);
+            CustomListInspector.Show(mListProperty);
+            CustomListInspector.Show(mSubProperty);
+            CustomListInspector.Show(mRTProperty);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("RootTransform"));
             serializedObject.ApplyModifiedProperties();
 
@@ -51,20 +54,7 @@ namespace GameFramework
             }
             if (GUILayout.Button(new GUIContent("拷贝Index信息到剪贴板")))
             {
-                string s = "local uiIndex =\n{";
-                for (int i = 0; i < mTarget.UIArray.Count; i++)
-                {
-                    UIBehaviour ui = mTarget.UIArray[i];
-                    s = s + getComponentInfo(ui, i);
-                }
-                s = s + "\n}\nlocal subIndex =\n{";
-                for (int i = 0; i < mTarget.SubHandlers.Count; i++)
-                {
-                    UIHandler uih = mTarget.SubHandlers[i];
-                    s = s + getComponentInfo(uih, i);
-                }
-                s = s + "\n}";
-                GUIUtility.systemCopyBuffer = s;
+                copyIndex2ClipbordLua();
             }
         }
 
@@ -99,7 +89,7 @@ namespace GameFramework
                                     SeclectWindow.ShowWithOptions(options.ToArray(), (int index) =>
                                     {
                                         //Debug.Log("Selceted:" + index + ",mTarget.UIArray.Count:" + mTarget.UIArray.Count + "ui index:" + mSelectingIndex);
-                                        if(-1 == index)
+                                        if (-1 == index)
                                         {
                                             mTarget.UIArray.RemoveAt(mSelectingIndex);
                                         }
@@ -135,7 +125,7 @@ namespace GameFramework
 
         private void onListAdd(SerializedProperty list, int index)
         {
-            if(!list.Equals(mListProperty))
+            if (!list.Equals(mListProperty))
             {
                 return;
             }
@@ -146,12 +136,38 @@ namespace GameFramework
             mSelectingIndex = index + 1;
         }
 
-        private string getComponentInfo(Component com, int index)
+        private void copyIndex2ClipbordLua()
+        {
+            string s = string.Empty;
+            s = s + getLitsInfoLua(mTarget.UIArray, "uiIdx", "UIArray index");
+            s = s + getLitsInfoLua(mTarget.SubHandlers, "subIdx", "SubHandlers index");
+            s = s + getLitsInfoLua(mTarget.RTArray, "rtIdx", "RTArray index");
+            GUIUtility.systemCopyBuffer = s;
+        }
+
+        private string getLitsInfoLua<T>(List<T> list, string tname, string notes) where T : Component
+        {
+            string s = string.Empty;
+            if (null != list && list.Count > 0)
+            {
+                s = "-- " + notes + "\nlocal " + tname + " = \n{";
+                for (int i = 0; i < list.Count; i++)
+                {
+                    T t = list[i];
+                    if (null != t)
+                    {
+                        s = s + getComponentInfoLua(t, i);
+                    }
+                }
+                s = s + "\n}\n\n";
+            }
+            return s;
+        }
+
+        private string getComponentInfoLua(Component com, int index)
         {
             string transName = Tools.GetTransformName(com.transform, null == mTarget.RootTransform ? mTarget.transform : mTarget.RootTransform);
-            string s = "\n\t-- " + transName + " (" + com.GetType().ToString() + ")";
-            s = s + "\n\t" + com.name + " = " + index + ",";
-            return s;
+            return "\n\t" + com.name + " = " + index + ",  -- " + transName + " (" + com.GetType() + ")";
         }
     }
 }

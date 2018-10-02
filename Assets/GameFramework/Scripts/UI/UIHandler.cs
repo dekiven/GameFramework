@@ -44,7 +44,7 @@ namespace GameFramework
             {
                 RootTransform = transform;
             }
-            GetUI2RootNames();
+            UpdateUI2RootNames();
         }
 
         void OnDestroy()
@@ -57,86 +57,19 @@ namespace GameFramework
             mSubNames.Clear();
             mRTNames.Clear();
         }
-
-        private void GetUI2RootNames()
-        {
-            if (null != mUINames)
-            {
-                mUINames.Clear();
-            }
-            else
-            {
-                mUINames = new List<string>();
-            }
-            if (Count > 0)
-            {
-                for (int i = 0; i < Count; ++i)
-                {
-                    if (null != UIArray[i])
-                    {
-                        mUINames.Add(Tools.GetTransformName(UIArray[i].transform, RootTransform));
-                    }
-                    else
-                    {
-                        mUINames.Add(string.Empty);
-                        // LogFile.Warn("UIHandler.UIArry[{0}] is null", i);
-                    }
-                }
-            }
-            if (null != mSubNames)
-            {
-                mSubNames.Clear();
-            }
-            else
-            {
-                mSubNames = new List<string>();
-            }
-            if (SubCount > 0)
-            {
-                for (int i = 0; i < SubCount; ++i)
-                {
-                    if (null != UIArray[i])
-                    {
-                        mSubNames.Add(Tools.GetTransformName(SubHandlers[i].transform, RootTransform));
-                    }
-                    else
-                    {
-                        mSubNames.Add(string.Empty);
-                        // LogFile.Warn("UIHandler.UIArry[{0}] is null", i);
-                    }
-                }
-            }
-            //mRTNames
-            if (null != mRTNames)
-            {
-                mRTNames.Clear();
-            }
-            else
-            {
-                mRTNames = new List<string>();
-            }
-            if (RTCount > 0)
-            {
-                for (int i = 0; i < SubCount; ++i)
-                {
-                    if (null != RTArray[i])
-                    {
-                        mRTNames.Add(Tools.GetTransformName(RTArray[i], RootTransform));
-                    }
-                    else
-                    {
-                        mRTNames.Add(string.Empty);
-                        // LogFile.Warn("UIHandler.UIArry[{0}] is null", i);
-                    }
-                }
-            }
-        }
         #endregion
 
         #region 通用方法
         public int Count { get { if (null != UIArray) {return UIArray.Count;} else { return 0; } } }
         public int SubCount { get { if (null != SubHandlers) {return SubHandlers.Count;} else { return 0; } } }
         public int RTCount { get { if (null != RTArray) {return RTArray.Count;} else { return 0; } } }
+
+        public void UpdateUI2RootNames()
+        {
+            getListNames(ref mUINames, ref UIArray);
+            getListNames(ref mSubNames, ref SubHandlers);
+            getListNames(ref mRTNames, ref RTArray);
+        }
 
         public string[] CompNames { get { return mUINames.ToArray(); } }
 
@@ -2390,6 +2323,52 @@ namespace GameFramework
             }
             return false;
         }
+
+        private bool modifyRectTransform(RectTransform rect, LuaTable table)
+        {
+            return modifyRectTransform(rect, Tools.LuaTable2Dict(table));
+        }
+
+        private bool modifyRectTransform(RectTransform rect, Dictionary<string, System.Object> dict)
+        {
+            if (null != rect)
+            {
+                Tools.ModifyRectTransform(rect, dict);
+                return true;
+            }
+            return false;
+        }
+
+        private void getListNames<T>(ref List<string> listName, ref List<T> listObj) where T : Component
+        {
+            if (null != listName)
+            {
+                listName.Clear();
+            }
+            else
+            {
+                listName = new List<string>();
+            }
+
+            if (null == listObj)
+            {
+                listObj = new List<T>();
+            }
+            int c = listObj.Count;
+            for (int i = 0; i < c; ++i)
+            {
+                if (null != listObj[i])
+                {
+                    listName.Add(Tools.GetTransformName(listObj[i].transform, RootTransform));
+                }
+                else
+                {
+                    listName.Add(string.Empty);
+                    // LogFile.Warn("UIHandler.UIArry[{0}] is null", i);
+                }
+            }
+
+        }
         #endregion private 方法
 
         #region =====UI 获取，私有
@@ -2531,21 +2510,6 @@ namespace GameFramework
         private ScrollRect getScrollRect(string cName)
         {
             return GetCompByName<ScrollRect>(cName);
-        }
-
-        private bool modifyRectTransform(RectTransform rect, LuaTable table)
-        {
-            return modifyRectTransform(rect, Tools.LuaTable2Dict(table));
-        }
-
-        private bool modifyRectTransform(RectTransform rect, Dictionary<string, System.Object> dict)
-        {
-            if(null != rect)
-            {
-                Tools.ModifyRectTransform(rect, dict);
-                return true;
-            }
-            return false;
         }
 
         private RectTransform getRectTransform(int index)
