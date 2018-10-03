@@ -194,7 +194,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsBillboard: 0
   UIObjs: {fileID: 114056807728405468}
-  IsInStack: 0
+  IsInStack: 1
   HideBefor: 1
   IsStatic: 0
   AnimTime: 0.3
@@ -243,6 +243,7 @@ MonoBehaviour:
   UIArray:
   - {fileID: 114250551053696956}
   SubHandlers: []
+  RTArray: []
   RootTransform: {fileID: 0}
 --- !u!114 &114129326581979252
 MonoBehaviour:
