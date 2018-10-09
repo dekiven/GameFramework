@@ -10,6 +10,7 @@ local tests =
     {name='SpriteAtlas', dir='Tests/SpriteAtlasTest', scene='TestSpriteAtlas'},
     {name='LoadPrefab', dir='Tests/LoadPrefabTest',},
     {name='Transform', dir='Tests/RectTransformLuaTest', view='test/TransformTestView'},
+    {name='PluginTest', dir='Tests/PluginTest', view='test/PluginTestView'},
 }
 
 function TestClass:ctor( ... )

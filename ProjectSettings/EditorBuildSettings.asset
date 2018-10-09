@@ -8,15 +8,3 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/GameFramework/Main/GameMain.unity
     guid: e6acab6bad7e14c1fb8c32534a119d15
-  - enabled: 1
-    path: Assets/BundleRes/Tests/Scenes/ScrollViewTest.unity
-    guid: 67b75e69041084b878a505965b64b731
-  - enabled: 1
-    path: Assets/BundleRes/Tests/Scenes/TestScene.unity
-    guid: d4113a683e2a0464fbeb05c4f8d19e0d
-  - enabled: 1
-    path: Assets/BundleRes/Tests/Scenes/TestSpriteAtlas.unity
-    guid: f9f85b2d5c1c744e48ae827c7d2e91ee
-  - enabled: 1
-    path: Assets/BundleRes/Tests/Scenes/TestUIManager.unity
-    guid: 4e2f1b87f5cab4a4b8ef6dcaac095c3d

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
 namespace GameFramework
@@ -20,22 +21,14 @@ namespace GameFramework
         #region MonoBehaviour
         void Awake()
         {
+            initLogFile();
+            //初始化Platform，主要是插件相关
+            initGamePlatform();
+
             mResMgr = GameResManager.Instance;
             mLuaMgr = GameLuaManager.Instance;
             //mUpMgr = GameUpdateManager.Instance;
             mUiMgr = GameUIManager.Instance;
-            if(
-                RuntimePlatform.WindowsPlayer == Application.platform
-                || RuntimePlatform.WindowsEditor == Application.platform
-                || RuntimePlatform.OSXEditor == Application.platform
-            )
-            {
-                LogFile.Init(Tools.PathCombine(Application.dataPath, "../Log/game_log.log"));
-            }else
-            {
-                LogFile.Init(Tools.GetWriteableDataPath("game_log.log"));
-            }
-
         }
 
         void Start()
@@ -111,7 +104,7 @@ namespace GameFramework
 
         public void StartGameLogic()
         {
-            LogFile.Log("TestLoadRes");
+            LogFile.Log("TestLoadRes:"+mLuaMgr);
             mLuaMgr.InitStart();
             //mLuaMgr.CallGlobalFunc("TestLoadRes");
 
@@ -130,9 +123,62 @@ namespace GameFramework
             }
 
         }
+
+        public void OnMessage(string msg)
+        {
+            List<string> par = new List<string>(Regex.Split(msg, "__;__", RegexOptions.IgnoreCase));
+            if(par.Count >= 2)
+            {
+                string eventName = par[0];
+                par.RemoveAt(0);
+                EventManager.noticeToAll(par[0], par.ToArray());
+                //test
+                LogFile.Warn("OnMessage(msg:\"{0}\"", msg);
+            }
+        }
         #endregion
 
         #region private
+        private static void initLogFile()
+        {
+            if (
+                RuntimePlatform.WindowsPlayer == Application.platform
+                || RuntimePlatform.WindowsEditor == Application.platform
+                || RuntimePlatform.OSXEditor == Application.platform
+            )
+            {
+                LogFile.Init(Tools.PathCombine(Application.dataPath, "../Log/game_log.log"));
+            }
+            else
+            {
+                LogFile.Init(Tools.GetWriteableDataPath("game_log.log"));
+            }
+        }
+
+        private void initGamePlatform()
+        {
+            LogFile.Warn("initGamePlatform 开始");
+            switch (Application.platform)
+            {
+                case RuntimePlatform.Android:
+                    LogFile.Warn("initGamePlatform android");
+                    Platform.SetPlatformInstance(new PlatformAnd());
+                    break;
+                case RuntimePlatform.IPhonePlayer:
+                    Platform.SetPlatformInstance(new PlatformIOS());
+                    break;
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.WindowsEditor:
+                    Platform.SetPlatformInstance(new PlatformEditor());
+                    break;
+                default:
+                    Platform.SetPlatformInstance(new PlatformBase());
+                    break;
+            }
+            LogFile.Warn("initGamePlatform 结束");
+
+        }
+
         void init()
         {
             ScreenSleepTime = SleepTimeout.NeverSleep;

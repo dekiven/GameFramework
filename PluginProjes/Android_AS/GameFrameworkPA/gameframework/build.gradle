@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 26
     buildToolsVersion "28.0.3"
 
 
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
@@ -26,41 +26,41 @@ android {
 }
 
 dependencies {
-//    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly files('./libs/classes.jar')
+    // Avoid redundant Unity Player in final application APK
+    //    compileOnly 'com.android.support:support-v4:28.0.0'
+    //android权限申请类库，见：https://github.com/jokermonn/permissions4m
+    implementation 'com.github.jokermonn:permissions4m:2.1.2-lib'
+    annotationProcessor 'com.github.jokermonn:permissions4m:2.1.2-processor'
+//    implementation 'com.android.support:appcompat-v7:25.3.1'
+}
+
+//android.libraryVariants.all { variant ->
 //
-//    implementation 'com.android.support:appcompat-v7:28.0.0'
-//    testImplementation 'junit:junit:4.12'
-//    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-//    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    provided files('./libs/classes.jar') // Avoid redundant Unity Player in final application APK
-}
-
-android.libraryVariants.all { variant ->
-
-    // Task names.
-    String variantName = "${variant.name.capitalize()}";
-    String deployTaskGroup = "plugin";
-    String deployTaskName = "deploy${variantName}PluginArchive";
-    String dependencyTaskName = "assemble${variantName}";
-
-    // Source.
-    String sourceAARFolder = "${buildDir.getPath()}/outputs/aar/";
-    String sourceAARName = "${project.name}-${variant.name}.aar";
-
-    // Target.
-    String targetAssetFolder = "Assets/Plugins/eppz! Alert";
-    String targetAARFolder = "${rootDir.getPath()}/../../${targetAssetFolder}";
-    String targetAARName = "eppz! Alert Android.aar";
-
-    // Create task.
-    task(deployTaskName, dependsOn: dependencyTaskName, type: Copy) {
-        logger.lifecycle("${variant.name.capitalize()} AAR Folder: ${sourceAARFolder}")
-        logger.lifecycle("${variant.name.capitalize()} Target AAR Folder: ${targetAARFolder}")
-        logger.lifecycle("${variant.name.capitalize()} Target AAR name: ${targetAARName}")
-
-        from(sourceAARFolder)
-        into(targetAARFolder)
-        include(sourceAARName)
-        rename(sourceAARName, targetAARName)
-    }.group = deployTaskGroup;
-}
+//    // Task names.
+//    String variantName = "${variant.name.capitalize()}";
+//    String deployTaskGroup = "plugin";
+//    String deployTaskName = "deploy${variantName}PluginArchive";
+//    String dependencyTaskName = "assemble${variantName}";
+//
+//    // Source.
+//    String sourceAARFolder = "${buildDir.getPath()}/outputs/aar/";
+//    String sourceAARName = "${project.name}-${variant.name}.aar";
+//
+//    // Target.
+//    String targetAssetFolder = "Assets/Plugins/eppz! Alert";
+//    String targetAARFolder = "${rootDir.getPath()}/../../${targetAssetFolder}";
+//    String targetAARName = "eppz! Alert Android.aar";
+//
+//    // Create task.
+//    task(deployTaskName, dependsOn: dependencyTaskName, type: Copy) {
+//        logger.lifecycle("${variant.name.capitalize()} AAR Folder: ${sourceAARFolder}")
+//        logger.lifecycle("${variant.name.capitalize()} Target AAR Folder: ${targetAARFolder}")
+//        logger.lifecycle("${variant.name.capitalize()} Target AAR name: ${targetAARName}")
+//
+//        from(sourceAARFolder)
+//        into(targetAARFolder)
+//        include(sourceAARName)
+//        rename(sourceAARName, targetAARName)
+//    }.group = deployTaskGroup;
+//}

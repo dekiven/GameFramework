@@ -10,6 +10,7 @@
 require('common.functions')
 require('common.u3dFuncs')
 require('common.gameFramework')
+require('common.Platform')
 
 AddLuaBundle('lua_common_ui')
 -- common.ui

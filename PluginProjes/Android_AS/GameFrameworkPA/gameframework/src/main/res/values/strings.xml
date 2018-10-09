@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">GameFramework</string>
+    <string name="dialog_confirm">确定</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="p_msg_contacts">"应用需要获取联系人相关权限\n该权限仅用于提供服务，未授权将导致部分功能无法正常使用。"</string>
+    <string name="p_msg_phone">"应用需要获取通话相关权限\n该权限仅用于提供服务，未授权将导致部分功能无法正常使用。"</string>
+    <string name="p_msg_calendar">"应用需要获取日历相关权限\n该权限仅用于提供服务，未授权将导致部分功能无法正常使用。"</string>
+    <string name="p_msg_camera">"应用需要获取摄像头相关权限\n该权限仅用于提供服务，未授权将导致部分功能无法正常使用。"</string>
+    <string name="p_msg_sensors">"应用需要获取传感器相关权限\n该权限仅用于提供服务，未授权将导致部分功能无法正常使用。"</string>
+    <string name="p_msg_location">"应用需要获取位置相关权限\n该权限仅用于提供服务，未授权将导致部分功能无法正常使用。"</string>
+    <string name="p_msg_storage">"应用需要获取存储相关权限\n该权限仅用于提供服务，未授权将导致部分功能无法正常使用。"</string>
+    <string name="p_msg_microphone">"应用需要获取麦克风相关权限\n该权限仅用于提供服务，未授权将导致部分功能无法正常使用。"</string>
+    <string name="p_msg_sms">"应用需要获取短信相关权限\n该权限仅用于提供服务，未授权将导致部分功能无法正常使用。"</string>
 </resources>

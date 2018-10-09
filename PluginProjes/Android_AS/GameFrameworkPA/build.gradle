@@ -19,6 +19,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        //android权限申请类库，见：https://github.com/jokermonn/permissions4m
+        maven { url 'https://jitpack.io' }
     }
 }
 

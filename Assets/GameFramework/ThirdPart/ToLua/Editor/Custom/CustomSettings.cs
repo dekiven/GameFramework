@@ -169,6 +169,7 @@ public static class CustomSettings
         _GT(typeof(GameFramework.UIBase)),
         _GT(typeof(GameFramework.UIView)),
         _GT(typeof(GameFramework.UIWorld)),
+        _GT(typeof(GameFramework.Platform)),
         //---------------customRigister end=================
 
     };

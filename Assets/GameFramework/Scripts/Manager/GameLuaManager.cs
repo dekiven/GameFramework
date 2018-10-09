@@ -22,14 +22,25 @@ namespace GameFramework
         // Use this for initialization
         void Awake()
         {
+            LogFile.Log("GameLuaManager Awake 1");
             loader = new GameLuaLoader();
+            LogFile.Log("GameLuaManager 1");
             lua = new LuaState();
+            LogFile.Log("GameLuaManager 2");
             this.OpenLibs();
+            LogFile.Log("GameLuaManager 3");
             lua.LuaSetTop(0);
 
+            LogFile.Log("GameLuaManager 4");
+            LogFile.Log("lua = " + (lua == null ? "null" : lua.ToString()));
+
+            LogFile.Log("GameLuaManager 5");
             LuaBinder.Bind(lua);
+            LogFile.Log("GameLuaManager 6");
             DelegateFactory.Init();
+            LogFile.Log("GameLuaManager 7");
             LuaCoroutine.Register(lua, this);
+            LogFile.Log("GameLuaManager Awake 2");
         }
 
         /// <summary>
@@ -37,13 +48,20 @@ namespace GameFramework
         /// </summary>
         public void InitStart()
         {
+            LogFile.Log("InitStart");
             InitLuaPath();
+            LogFile.Log("InitStart 2");
             InitBaseLuaBundle();
             //TODO:发布的游戏会在资源更新之后再调用这个方法，甚至可以动态读取Bundle
+            LogFile.Log("InitStart 3");
             InitGameLuaBundle();
-            this.lua.Start();    //启动LUAVM
-            this.StartMain();  //在资源更新后调用
-            this.StartLooper();
+            LogFile.Log("lua = " + (lua == null ? "null" : lua.ToString()));
+            LogFile.Log("InitStart 4:"+lua);
+            lua.Start();    //启动LUAVM
+            LogFile.Log("InitStart 5");
+            StartMain();  //在资源更新后调用
+            LogFile.Log("InitStart 6");
+            StartLooper();
         }
 
         void StartLooper()
@@ -225,6 +243,8 @@ namespace GameFramework
 
         public void Close()
         {
+            //GameFramework.LogFile.Log("Close");
+
             if (loop != null)
             {
                 loop.Destroy();

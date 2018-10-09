@@ -153,23 +153,23 @@ namespace GameFramework
             return true;
         }
 
-        public static bool noticeToMain(string eventName, object obj, object[] args)
+        public static bool noticeToMain(string eventName, object[] args)
         {
-            return _noticeEvent(sDicToMain, sListToMainWait, eventName, obj, args);
+            return _noticeEvent(sDicToMain, sListToMainWait, eventName, args);
         }
 
-        public static bool noticeToThread(string eventName, object obj, object[] args)
+        public static bool noticeToThread(string eventName, object[] args)
         {
-            return _noticeEvent(sDicToThread, sListToThreadWait, eventName, obj, args);
+            return _noticeEvent(sDicToThread, sListToThreadWait, eventName, args);
         }
 
-        public static void noticeToAll(string eventName, object obj, object[] args)
+        public static void noticeToAll(string eventName, object[] args)
         {
-            noticeToMain(eventName, obj, args);
-            noticeToThread(eventName, obj, args);
+            noticeToMain(eventName, args);
+            noticeToThread(eventName, args);
         }
 
-        protected static bool _noticeEvent(EventPairDic dic, EventObjList list, string eventName, object obj, object[] args)
+        protected static bool _noticeEvent(EventPairDic dic, EventObjList list, string eventName, object[] args)
         {
             monitorEnter(dic);
 

@@ -2,17 +2,7 @@
     package="com.dekiven.gameframework" >
     <application>
         <activity android:name=".ImageTakeActivity"/>
-        <activity android:name=".PermissionGenActivity"/>
-
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.dekiven.gf_plugin.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_provider_paths"/>
-        </provider>
+        <service android:name=".RestartService"/>
     </application>
 
     <!-- 从SDCard读取数据权限-->

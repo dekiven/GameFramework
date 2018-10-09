@@ -11,11 +11,12 @@ namespace GameFramework
 
         public PlatformAnd()
         {
-            AndroidJavaClass _class = new AndroidJavaClass("com.dekiven.gf_plugin.GF_PluginAndroid");
+            LogFile.Warn("PlatformAnd 开始");
+            AndroidJavaClass _class = new AndroidJavaClass("com.dekiven.gameframework.GF_PluginAndroid");
             if(null != _class)
             {
-                _class.CallStatic("start");
-                mPluginObj = _class.GetStatic<AndroidJavaObject>("instance");
+                //_class.CallStatic("start");
+                mPluginObj = _class.CallStatic<AndroidJavaObject>("getInstance");
             }
             if (null == mPluginObj)
             {
@@ -23,23 +24,35 @@ namespace GameFramework
             }
         }
 
+        public override void SetNoticeObFunc(string gameobjName, string funcName)
+        {
+            if (null != mPluginObj)
+            {
+                mPluginObj.Call("setNoticeObFunc", gameobjName, funcName);
+            }
+        }
+
         public override void TakeAlbum()
         {
-            LogFile.Log("TakeAlbum");
             if(null != mPluginObj)
             {
-                LogFile.Log("TakeAlbum 1 ");
                 mPluginObj.Call("takeFromAlbum");
             }
         }
 
         public override void TakePhoto()
         {
-            LogFile.Log("TakePhoto");
             if (null != mPluginObj)
             {
-                LogFile.Log("TakePhoto 1 ");
                 mPluginObj.Call("takeFromPhoto");
+            }
+        }
+
+        public override void Restart(float delaySec)
+        {
+            if (null != mPluginObj)
+            {
+                mPluginObj.Call("restart", delaySec);
             }
         }
     }

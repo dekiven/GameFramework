@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 467ccc84ecb224132818b4146a421099
-timeCreated: 1538105286
+guid: f7a851d434b1f4f0086cb29c07e68816
+timeCreated: 1539052231
 licenseType: Free
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 100100000
   userData: 
-  assetBundleName: tests/recttransformluatest.unity3d
+  assetBundleName: tests/plugintest.unity3d
   assetBundleVariant: 

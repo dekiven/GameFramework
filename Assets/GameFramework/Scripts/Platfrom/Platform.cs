@@ -10,6 +10,11 @@ namespace GameFramework
             mPlatform = platform;
         }
 
+        public static void SetNoticeObjFunc(string gameobjName, string funcName)
+        {
+            mPlatform.SetNoticeObFunc(gameobjName, funcName);
+        }
+
         public static void TakePhoto()
         {
             if(null != mPlatform)
@@ -24,6 +29,11 @@ namespace GameFramework
             {
                 mPlatform.TakeAlbum();
             }
+        }
+
+        public static void Restart(float delaySec)
+        {
+            mPlatform.Restart(delaySec);
         }
     }
 }

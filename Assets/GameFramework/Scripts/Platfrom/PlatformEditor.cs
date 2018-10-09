@@ -1,4 +1,7 @@
 ﻿using System;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 namespace GameFramework
 {
 #if UNITY_EDITOR
@@ -7,21 +10,18 @@ namespace GameFramework
         public override void TakeAlbum()
         {
             LogFile.Log("TakeAlbum");
-            //if (null != mPluginObj)
-            {
-                LogFile.Log("TakeAlbum 1 ");
-                //mPluginObj.Call("takeFromPhoto");
-            }
         }
 
         public override void TakePhoto()
         {
             LogFile.Log("TakePhoto");
-            //if (null != mPluginObj)
-            {
-                LogFile.Log("TakePhoto 1 ");
-                //mPluginObj.Call("takeFromAlbum");
-            }
+        }
+
+        public override void Restart(float delaySec)
+        {
+            EditorApplication.isPlaying = false;
+            //TODO:延时实现
+            //EditorApplication.isPlaying = true;
         }
     }
 #else

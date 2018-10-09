@@ -128,6 +128,7 @@ public static class LuaBinder
 		GameFramework_UIBaseWrap.Register(L);
 		GameFramework_UIViewWrap.Register(L);
 		GameFramework_UIWorldWrap.Register(L);
+		GameFramework_PlatformWrap.Register(L);
 		L.BeginModule("UIBase");
 		L.RegFunction("UIAnimResult", GameFramework_UIBase_UIAnimResult);
 		L.EndModule();
