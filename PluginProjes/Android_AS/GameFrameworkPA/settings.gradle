@@ -1,1 +1,1 @@
-include ':gameframework'
+include ':gameframework', ':test'

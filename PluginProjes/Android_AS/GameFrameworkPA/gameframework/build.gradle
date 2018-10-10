@@ -4,16 +4,17 @@ android {
     compileSdkVersion 26
     buildToolsVersion "28.0.3"
 
-
-
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-
-//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath = true
+            }
+        }
     }
 
     buildTypes {
@@ -22,17 +23,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
     compileOnly files('./libs/classes.jar')
-    // Avoid redundant Unity Player in final application APK
-    //    compileOnly 'com.android.support:support-v4:28.0.0'
-    //android权限申请类库，见：https://github.com/jokermonn/permissions4m
-    implementation 'com.github.jokermonn:permissions4m:2.1.2-lib'
-    annotationProcessor 'com.github.jokermonn:permissions4m:2.1.2-processor'
-//    implementation 'com.android.support:appcompat-v7:25.3.1'
+
+//    **
+//    //android权限申请类库，见：https://github.com/jokermonn/permissions4m
+//    compile 'com.github.jokermonn:permissions4m:2.1.2-lib'
+//    annotationProcessor 'com.github.jokermonn:permissions4m:2.1.2-processor'
+//    **
+
+    //android权限申请类库，见： https://github.com/yewei02538/HiPermission
+    implementation 'me.weyye.hipermission:library:1.0.7'
 }
 
 //android.libraryVariants.all { variant ->

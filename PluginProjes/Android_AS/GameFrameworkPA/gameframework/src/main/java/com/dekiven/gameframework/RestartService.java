@@ -23,8 +23,8 @@ public class RestartService extends Service {
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
 
-        mDelaySec = intent.getFloatExtra(STR_PACKAGE_NAME, mDelayDef);
-        mPackageName = intent.getStringExtra(STR_DELAY_TIME_SEC);
+        mDelaySec = intent.getFloatExtra(STR_DELAY_TIME_SEC, mDelayDef);
+        mPackageName = intent.getStringExtra(STR_PACKAGE_NAME);
         if(null == mPackageName || mPackageName.isEmpty())
         {
             if(null != GF_PluginAndroid.getInstance())

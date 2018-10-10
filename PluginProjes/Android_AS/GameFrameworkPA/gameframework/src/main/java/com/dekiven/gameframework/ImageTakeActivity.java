@@ -1,5 +1,6 @@
 package com.dekiven.gameframework;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -40,16 +41,23 @@ public class ImageTakeActivity extends Activity {
     public void takeFromPhoto() {
 
 //        Toast.makeText(this, "调用相机", Toast.LENGTH_SHORT).show();
-        GF_PluginAndroid.getInstance().requestPermission(GF_PluginAndroid.P_CAMERA, true, new IPermissionRequestCallback() {
-            @Override
-            public void onRequestFinished(ArrayList<Integer> permissionsDenied) {
-                if (permissionsDenied.size() == 0) {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp.jpg")));
-                    startActivityForResult(intent, PHOTOHRAPH);
+
+        try {
+            GF_PluginAndroid.getInstance().requestPermission(ImageTakeActivity.this, Manifest.permission.CAMERA, new IPermissionRequestCallback() {
+                @Override
+                public void onRequestFinished(boolean result) {
+                    if (result) {
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp.jpg")));
+                        startActivityForResult(intent, PHOTOHRAPH);
+                    }
                 }
-            }
-        });
+            });
+        }
+        catch (Exception e)
+        {
+            GF_PluginAndroid.notifyUnity("LogEvent", e.toString());
+        }
     }
 
     //调用相册
@@ -78,10 +86,10 @@ public class ImageTakeActivity extends Activity {
             Uri uri = data.getData();
             try {
                 savePng(uri, outPath);
-                GF_PluginAndroid.noticeUnity("TakeAlbum", "temp.jpg");
+                GF_PluginAndroid.notifyUnity("TakeAlbum", "temp.jpg");
             } catch (IOException e) {
                 e.printStackTrace();
-                GF_PluginAndroid.noticeUnity("TakeAlbum", "");
+                GF_PluginAndroid.notifyUnity("TakeAlbum", "");
             }
         }
 
@@ -89,10 +97,10 @@ public class ImageTakeActivity extends Activity {
             //            调用相机
             try {
                 savePng("", outPath);
-                GF_PluginAndroid.noticeUnity("TakePhoto", "temp.jpg");
+                GF_PluginAndroid.notifyUnity("TakePhoto", "temp.jpg");
             } catch (IOException e) {
                 e.printStackTrace();
-                GF_PluginAndroid.noticeUnity("TakePhoto", "");
+                GF_PluginAndroid.notifyUnity("TakePhoto", "");
             }
         }
         finish();

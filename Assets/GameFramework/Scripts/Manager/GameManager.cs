@@ -116,10 +116,8 @@ namespace GameFramework
                         Thread.Sleep(20);
                         EventManager.progressThreadEvents();
                     }
-
                 });
             }
-
         }
 
         public void OnMessage(string msg)
@@ -129,7 +127,7 @@ namespace GameFramework
             {
                 string eventName = par[0];
                 par.RemoveAt(0);
-                EventManager.noticeToAll(par[0], par.ToArray());
+                EventManager.notifyAll(par[0], par.ToArray());
                 //test
                 LogFile.Warn("OnMessage(msg:\"{0}\"", msg);
             }
@@ -180,6 +178,9 @@ namespace GameFramework
         void init()
         {
             ScreenSleepTime = SleepTimeout.NeverSleep;
+
+            //注册LogFile事件
+            EventManager.registerToMain("LogEvent", this, "LogEvent");
         }
 
         void checkResUpdate()
@@ -212,5 +213,10 @@ namespace GameFramework
             }
         }
         #endregion
+
+        public void LogEvent(string msg)
+        {
+            LogFile.WriteLine(LogFile.LogLevel.L_Warning, "msg form logEvent: " + msg);
+        }
     }
 }

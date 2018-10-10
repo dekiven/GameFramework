@@ -82,7 +82,7 @@ namespace GameFramework
             }
 
             list.Add(pair);
-            dic.Add(eventName, list);
+            dic[eventName] = list;
 
             monitorExit(dic);
             return true;
@@ -153,23 +153,23 @@ namespace GameFramework
             return true;
         }
 
-        public static bool noticeToMain(string eventName, object[] args)
+        public static bool notifyMain(string eventName, object[] args)
         {
-            return _noticeEvent(sDicToMain, sListToMainWait, eventName, args);
+            return _notifyEvent(sDicToMain, sListToMainWait, eventName, args);
         }
 
-        public static bool noticeToThread(string eventName, object[] args)
+        public static bool notifyThread(string eventName, object[] args)
         {
-            return _noticeEvent(sDicToThread, sListToThreadWait, eventName, args);
+            return _notifyEvent(sDicToThread, sListToThreadWait, eventName, args);
         }
 
-        public static void noticeToAll(string eventName, object[] args)
+        public static void notifyAll(string eventName, object[] args)
         {
-            noticeToMain(eventName, args);
-            noticeToThread(eventName, args);
+            notifyMain(eventName, args);
+            notifyThread(eventName, args);
         }
 
-        protected static bool _noticeEvent(EventPairDic dic, EventObjList list, string eventName, object[] args)
+        protected static bool _notifyEvent(EventPairDic dic, EventObjList list, string eventName, object[] args)
         {
             monitorEnter(dic);
 
