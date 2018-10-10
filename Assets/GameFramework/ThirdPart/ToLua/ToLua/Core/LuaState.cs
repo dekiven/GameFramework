@@ -102,41 +102,23 @@ namespace LuaInterface
         public LuaState()            
         {
             int i = 0;
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             if (mainState == null)
             {
-                GameFramework.LogFile.Log("LuaState------>" + i++);
                 mainState = this;
                 // MULTI_STATE Not Support
                 injectionState = mainState;
             }
-            //test
-            else
-            {
-                i++;
-            }
 
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             float time = Time.realtimeSinceStartup;
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             InitTypeTraits();
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             InitStackTraits();
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             L = LuaNewState();            
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             LuaException.Init(L);
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             stateMap.Add(L, this);                        
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             OpenToLuaLibs();            
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             ToLua.OpenLibs(L);
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             OpenBaseLibs();
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             LuaSetTop(0);
-            GameFramework.LogFile.Log("LuaState------>" + i++);
             InitLuaPath();
             Debugger.Log("Init lua state cost: {0}", Time.realtimeSinceStartup - time);
         }        
@@ -232,40 +214,30 @@ namespace LuaInterface
 
         public void Start()
         {
-            GameFramework.LogFile.Log("Start 1");
 #if UNITY_EDITOR
             beStart = true;
 #endif
             Debugger.Log("LuaState start");
             OpenBaseLuaLibs();
 #if ENABLE_LUA_INJECTION
-            GameFramework.LogFile.Log("Start 2");
             Push(LuaDLL.tolua_tag());
             LuaSetGlobal("tolua_tag");
 #if UNITY_EDITOR
             if (UnityEditor.EditorPrefs.GetInt(Application.dataPath + "InjectStatus") == 1)
             { 
 #endif
-                GameFramework.LogFile.Log("Start 3");
                 DoFile("System/Injection/LuaInjectionStation.lua");
                 bInjectionInited = true;
 #if UNITY_EDITOR
             }
 #endif
 #endif
-        GameFramework.LogFile.Log("Start 4");
             PackBounds = GetFuncRef("Bounds.New");
-        GameFramework.LogFile.Log("Start 5");
             UnpackBounds = GetFuncRef("Bounds.Get");
-        GameFramework.LogFile.Log("Start 6");
             PackRay = GetFuncRef("Ray.New");
-        GameFramework.LogFile.Log("Start 7");
             UnpackRay = GetFuncRef("Ray.Get");
-        GameFramework.LogFile.Log("Start 8");
             PackRaycastHit = GetFuncRef("RaycastHit.New");
-        GameFramework.LogFile.Log("Start 9");
             PackTouch = GetFuncRef("Touch.New");
-        GameFramework.LogFile.Log("Start 10");
         }
 
         public int OpenLibs(LuaCSFunction open)

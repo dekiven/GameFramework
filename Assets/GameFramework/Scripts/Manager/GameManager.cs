@@ -35,8 +35,6 @@ namespace GameFramework
         {
             //初始化部分信息
             init();
-            //开始监听游戏异常并输出到日志文件
-            registerExceptionHandler();
             if (GameConfig.checkUpdate)
             {
                 //检测资源更新
@@ -212,23 +210,6 @@ namespace GameFramework
                     }
                 });
             }
-        }
-
-        void handleLogCallback(string condition, string stackTrace, LogType type)
-        {
-            if (LogType.Exception == type)
-            {
-                LogFile.Error("Excptions:\n\tmsg:----->\n{0}\n\tstack:----->\n{1}", condition, stackTrace);
-            }
-        }
-
-        /// <summary>
-        /// 监听游戏异常并输出到日志文件
-        /// </summary>
-        void registerExceptionHandler()
-        {
-            //Application.RegisterLogCallback(HandleLogCallback;);
-            Application.logMessageReceived += handleLogCallback;
         }
         #endregion
     }

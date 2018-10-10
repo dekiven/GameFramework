@@ -66,7 +66,7 @@ namespace GameFramework
             }
             else
             {
-                Debug.LogError("单例组件清理失败");
+                LogFile.Warn("单例组件清理失败");
             }
 
         }
@@ -76,7 +76,7 @@ namespace GameFramework
         /// </summary>
         public virtual bool Dispose()
         {
-            Debug.Log("clearComp:" + typeof(T));
+            LogFile.Warn("clearComp:" + typeof(T));
             return true;
         }
         //单例模式组件 end================================================

@@ -19,6 +19,8 @@ namespace GameFramework
             L_Log = 1,
             L_Warning = 2,
             L_Error = 3,
+            L_Assert = 4,
+            L_Exception = 5,
         }
 
         public static LogLevel MinLevel { set { mMinLevel = value; } get { return mMinLevel; } }
@@ -27,6 +29,8 @@ namespace GameFramework
         {
             mPath = filePath;
             mMinLevel = minLevel;
+
+            Application.logMessageReceived += handleLogCallback;
         }
 
         public static void CloseLog()
@@ -37,6 +41,8 @@ namespace GameFramework
                 {
                     mSWriter.Close();
                     mSWriter = null;
+                    mPath = null;
+                    mMinLevel = LogLevel.L_Log;
                 }
             }
         }
@@ -44,79 +50,91 @@ namespace GameFramework
         public static void Log(string msg)
         {
             Debug.Log(msg);
-            writeLine((int)LogLevel.L_Log, msg);
         }
 
         public static void Log(string format, params object[] args)
         {
-            //return;
             Debug.LogFormat(format, args);
-            writeLine((int)LogLevel.L_Log, format, args);
         }
 
         public static void Warn(string msg)
         {
             Debug.LogWarning(msg);
-            writeLine((int)LogLevel.L_Warning, msg);
         }
 
         public static void Warn(string format, params object[] args)
         {
             Debug.LogWarningFormat(format, args);
-            writeLine((int)LogLevel.L_Warning, format, args);
         }
 
         public static void Error(string msg)
         {
             Debug.LogError(msg);
-            writeLine((int)LogLevel.L_Error, msg);
         }
 
         public static void Error(string format, params object[] args)
         {
             Debug.LogErrorFormat(format, args);
-            writeLine((int)LogLevel.L_Error, format, args);
+            WriteLine((int)LogLevel.L_Error, format, args);
         }
 
         public static void WriteLine(string str)
         {
-            lock (locker)
-            {
-                mSWriter.WriteLine(str);
-                mSWriter.Flush();
-            }
-        }
-
-        private static void writeLine(int level, string format, params object[] args)
-        {
-            writeLine(level, string.Format(format, args));
-        }
-
-        private static void writeLine(int level, string msg)
-        {
             if (null == mSWriter)
             {
-                lock(locker)
+                lock (locker)
                 {
                     checkeHasWriter();
                 }
             }
-            if (null != mSWriter && level >= (int)mMinLevel)
+            if (null != mSWriter)
             {
-                string l = "log";
+                lock (locker)
+                {
+                    mSWriter.WriteLine(str);
+                    mSWriter.Flush();
+                }
+            }
+        }
+
+        public static void WriteLine(LogLevel level, string format, params object[] args)
+        {
+            WriteLine((int)level, format, args);
+        }
+
+        public static void WriteLine(LogLevel level, string msg)
+        {
+            WriteLine((int)level, msg);
+        }
+
+        public static void WriteLine(int level, string format, params object[] args)
+        {
+            WriteLine(level, string.Format(format, args));
+        }
+
+        public static void WriteLine(int level, string msg)
+        {
+            if (level >= (int)mMinLevel)
+            {
+                string l = "   log   ";
                 switch (level)
                 {
                     case 1:
                         break;
                     case 2:
-                        l = "warning";
+                        l = " warning ";
                         break;
                     case 3:
-                        l = "error";
+                        l = "  error  ";
+                        break;
+                    case 4:
+                        l = " assert  ";
+                        break;
+                    case 5:
+                        l = "exception";
                         break;
                 }
-                string str = string.Format("{0} [{1}] ---> {2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ffff"), l, msg);
-                WriteLine(str);
+                WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ffff") + " [" + l + "] ===> " + msg);
             }
         }
 
@@ -134,6 +152,28 @@ namespace GameFramework
             Tools.CheckFileExists(mPath, true);
             FileStream stream = new FileStream(mPath, FileMode.Create);
             mSWriter = new StreamWriter(stream);
+        }
+
+        private static void handleLogCallback(string condition, string stackTrace, LogType type)
+        {
+            switch(type)
+            {
+                case LogType.Log :
+                    WriteLine(LogLevel.L_Log, condition);
+                    break;
+                case LogType.Warning :
+                    WriteLine(LogLevel.L_Warning, condition);
+                    break;
+                case LogType.Error :
+                    WriteLine(LogLevel.L_Error, condition+"\n\nstackTrace: --> "+stackTrace);
+                    break;
+                case LogType.Exception :
+                    WriteLine(LogLevel.L_Exception, condition + "\n\nstackTrace: --> " + stackTrace);
+                    break;
+                case LogType.Assert :
+                    WriteLine(LogLevel.L_Assert, condition + "\n\nstackTrace: --> " + stackTrace);
+                    break;
+            }
         }
     }
 
