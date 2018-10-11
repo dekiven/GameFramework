@@ -50,10 +50,30 @@ namespace GameFramework
 
         public override void Restart(float delaySec)
         {
+            //if (null != mPluginObj)
+            //{
+            //    if(delaySec < 1)
+            //    {
+            //        delaySec = 1;
+            //    }
+            //    mPluginObj.Call("restart", delaySec);
+            //    Application.Quit();
+            //}
+
+            //test
+            mPluginObj.Call("takeFromPhotoTest");
+
+        }
+
+        public override void InstallNewApp(string path)
+        {
             if (null != mPluginObj)
             {
-                mPluginObj.Call("restart", delaySec);
+                mPluginObj.Call("installApk", Tools.GetWriteableDataPath(path));
             }
+
+            //test
+            //mPluginObj.Call("testPermmission");
         }
     }
 #else

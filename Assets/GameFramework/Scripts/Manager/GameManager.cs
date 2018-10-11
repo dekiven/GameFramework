@@ -127,9 +127,7 @@ namespace GameFramework
             {
                 string eventName = par[0];
                 par.RemoveAt(0);
-                EventManager.notifyAll(par[0], par.ToArray());
-                //test
-                LogFile.Warn("OnMessage(msg:\"{0}\"", msg);
+                EventManager.notifyAll(eventName, par.ToArray());
             }
         }
         #endregion
@@ -206,7 +204,8 @@ namespace GameFramework
                         {
                             LogFile.Error("更新资源失败，关闭程序");
                             //TODO:包体资源拷贝失败，进行相应操作
-                            Application.Quit();
+                            //Application.Quit();
+                            StartGameLogic();
                         }
                     }
                 });
@@ -216,7 +215,7 @@ namespace GameFramework
 
         public void LogEvent(string msg)
         {
-            LogFile.WriteLine(LogFile.LogLevel.L_Warning, "msg form logEvent: " + msg);
+            LogFile.Warn("msg form logEvent: " + msg);
         }
     }
 }

@@ -16,4 +16,5 @@ Platform.takePhoto = gfPlatform.TakePhoto
 Platform.takeAlbum = gfPlatform.TakeAlbum
 -- restart 仅android有效，ios待实现
 Platform.restart = gfPlatform.Restart
+Platform.installNewApp = gfPlatform.InstallNewApp
 

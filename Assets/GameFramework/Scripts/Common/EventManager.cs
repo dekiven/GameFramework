@@ -105,7 +105,7 @@ namespace GameFramework
             EventPairList list = null;
             if (!dic.TryGetValue(eventName, out list))
             {
-                LogFile.Log("do not have event named\"" + eventName + "\"");
+                LogFile.Log("_deregisterEvent do not have event named\"" + eventName + "\"");
                 return false;
             }
 
@@ -178,11 +178,11 @@ namespace GameFramework
             {
                 if (dic == sDicToMain)
                 {
-                    LogFile.Warn("sDicToView do not have event named \"" + eventName + "\"");
+                    LogFile.Warn("sDicToMain do not have event named \"" + eventName + "\"");
                 }
                 else
                 {
-                    LogFile.Warn("sDicToModel do not have event named \"" + eventName + "\"");
+                    LogFile.Warn("sDicToThread do not have event named \"" + eventName + "\"");
                 }
 
                 monitorExit(dic);
@@ -205,18 +205,74 @@ namespace GameFramework
 
         public static void progressMainEvents()
         {
-            monitorEnter(sDicToMain);
+            //monitorEnter(sDicToMain);
 
-            foreach (EventObj item in sListToMainWait)
+            //foreach (EventObj item in sListToMainWait)
+            //{
+            //    sListToMainDoing.AddLast(item);
+            //}
+            //sListToMainWait.Clear();
+
+            //monitorExit(sDicToMain);
+
+            //for (int i = 0; i < sListToMainDoing.Count; i++)
+            //{
+            //    var item = sListToMainDoing.First.Value;
+            //    try
+            //    {
+            //        item.info.method.Invoke(item.info.obj, item.args);
+            //    }
+            //    catch (System.Exception e)
+            //    {
+            //        LogFile.Error("progress view event error: func[" + item.info.funcName + "]; msg: " + e.ToString());
+            //    }
+            //    sListToMainDoing.RemoveFirst();
+            //}
+            _progressMainEvents(sDicToMain, sListToMainWait, sListToMainDoing);
+        }
+
+        public static void progressThreadEvents()
+        {
+            //monitorEnter(sDicToThread);
+
+            //foreach (EventObj item in sListToThreadWait)
+            //{
+            //    sListToThreadDoing.AddLast(item);
+            //}
+            //sListToThreadWait.Clear();
+
+            //monitorExit(sDicToThread);
+
+            //foreach (EventObj item in sListToThreadDoing)
+            //{
+            //    try
+            //    {
+            //        item.info.method.Invoke(item.info.obj, item.args);
+            //    }
+            //    catch (System.Exception e)
+            //    {
+            //        LogFile.Error("progress Model event error: func[" + item.info.funcName + "]; msg: " + e.ToString());
+            //    }
+            //    sListToThreadDoing.Remove(item);
+            //}
+            _progressMainEvents(sDicToThread, sListToThreadWait, sListToThreadDoing);
+        }
+
+        private static void _progressMainEvents(EventPairDic dic, EventObjList listWait, EventObjList listDo)
+        {
+            monitorEnter(dic);
+
+            foreach (EventObj item in listWait)
             {
-                sListToMainDoing.AddLast(item);
+                listDo.AddLast(item);
             }
-            sListToMainWait.Clear();
+            listWait.Clear();
 
-            monitorExit(sDicToMain);
+            monitorExit(dic);
 
-            foreach (EventObj item in sListToMainDoing)
+            for (int i = 0; i < listDo.Count; i++)
             {
+                var item = listDo.First.Value;
                 try
                 {
                     item.info.method.Invoke(item.info.obj, item.args);
@@ -225,34 +281,9 @@ namespace GameFramework
                 {
                     LogFile.Error("progress view event error: func[" + item.info.funcName + "]; msg: " + e.ToString());
                 }
-                sListToMainDoing.Remove(item);
+                listDo.RemoveFirst();
             }
-        }
 
-        public static void progressThreadEvents()
-        {
-            monitorEnter(sDicToThread);
-
-            foreach (EventObj item in sListToThreadWait)
-            {
-                sListToThreadDoing.AddLast(item);
-            }
-            sListToThreadWait.Clear();
-
-            monitorExit(sDicToThread);
-
-            foreach (EventObj item in sListToThreadDoing)
-            {
-                try
-                {
-                    item.info.method.Invoke(item.info.obj, item.args);
-                }
-                catch (System.Exception e)
-                {
-                    LogFile.Error("progress Model event error: func[" + item.info.funcName + "]; msg: " + e.ToString());
-                }
-                sListToThreadDoing.Remove(item);
-            }
         }
     }
 }

@@ -30,7 +30,7 @@ public class GF_PluginAndroid extends Fragment {
     private static GF_PluginAndroid instance;
 
     public static final String STR_PLUGIN_TAG = "GameFrameworkAnd";
-    public static String sNoticeGameobjName = "GameManager";
+    public static String sNoticeGameobjName = "GameFramework.GameManager";
     public static String sNoticeFuncName = "OnMessage";
     public static String sPackageName = "";
 
@@ -78,12 +78,6 @@ public class GF_PluginAndroid extends Fragment {
         sNoticeFuncName = funcName;
     }
 
-    public void takeFromPhoto() {
-        Intent intent = new Intent(mContext, ImageTakeActivity.class);
-        intent.putExtra("method", "takeFromPhoto");
-        mContext.startActivity(intent);
-    }
-
     public void takeFromAlbum() {
         Intent intent = new Intent(mContext, ImageTakeActivity.class);
         intent.putExtra("method", "takeFromAlbum");
@@ -95,23 +89,49 @@ public class GF_PluginAndroid extends Fragment {
         intent.putExtra(RestartService.STR_PACKAGE_NAME, sPackageName);
         intent.putExtra(RestartService.STR_DELAY_TIME_SEC, delaySec);
         mContext.startService(intent);
+        // TODO
+        // mContext.finish();
     }
 
-    public void showToast(String msg) {
-        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-    }
+    public void takeFromPhoto() {
+        LogEvent("请求拍照");
+        try{
+            instance.requestPermission(mContext, Manifest.permission.CAMERA, new IPermissionRequestCallback() {
+                @Override
+                public void onRequestFinished(boolean result) {
+                    notifyUnity("LogEvent", "权限请求返回："+result);
+                    if (result) {
+                        Intent intent = new Intent(mContext, ImageTakeActivity.class);
+                        intent.putExtra("method", "takeFromPhoto");
+                        mContext.startActivity(intent);
+                    } else {
+                        notifyUnity("takeFromPhoto", "");
+                    }
+                }
+            });
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            LogEvent("拍照异常："+e.toString());
+            Intent intent = new Intent(mContext, ImageTakeActivity.class);
+            intent.putExtra("method", "takeFromPhoto");
+            mContext.startActivity(intent);
+        }
 
-    public void showToast(Context context, String msg) {
-        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
     public void installApk(String apkPath) {
         File file = new File(apkPath);
+        if(!file.exists())
+        {
+            LogEvent("installApk apk不存在："+apkPath);
+            return;
+        }
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (Build.VERSION.SDK_INT >= 24) { //Android 7.0及以上
+        if (Build.VERSION.SDK_INT >= 24) {
             // 参数2 清单文件中provider节点里面的authorities ; 参数3  共享的文件,即apk包的file类
-            Uri apkUri = FileProvider.getUriForFile(mContext, sPackageName + ".fileprovider", file);
+            Uri apkUri = getUri(mContext, file);
             //对目标应用临时授权该Uri所代表的文件
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
@@ -121,21 +141,45 @@ public class GF_PluginAndroid extends Fragment {
         mContext.startActivity(intent);
     }
 
+    public void showToast(String msg) {
+        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void showToast(Context context, String msg) {
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    //通过发送消息将消息打印到Unity日志
+    public static void LogEvent(String msg)
+    {
+        notifyUnity("LogEvent", msg);
+        Log.w("LogEvent", msg);
+    }
+
+    public static Uri getUri(Context context, File path) {
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= 24) {
+            //Android 7.0及以上
+            uri = FileProvider.getUriForFile(context,sPackageName+".fileprovider", path);
+        } else {
+            uri = Uri.fromFile(path);
+        }
+        return uri;
+    }
+
     public static void notifyUnity(String eventName, String msg) {
         UnityPlayer.UnitySendMessage(sNoticeGameobjName, sNoticeFuncName, eventName + "__;__" + msg);
     }
 
-    public void requestPermission(Context context, String permission , IPermissionRequestCallback callback)
-    {
+    private void requestPermission(Context context, String permission, IPermissionRequestCallback callback) {
         requestPermission(context, new String[]{permission,}, callback);
     }
 
-    public void requestPermission(Context context, String[] permissions, final IPermissionRequestCallback callback)
-    {
+    private void requestPermission(Context context, String[] permissions, final IPermissionRequestCallback callback) {
+        LogEvent("开始申请权限");
         List<PermissionItem> permissionItems = new ArrayList<PermissionItem>();
-        for (String p : permissions)
-        {
-            permissionItems.add(new PermissionItem(p));
+        for (String p : permissions) {
+            permissionItems.add(new PermissionItem(p, "权限申请", R.drawable.permission_ic_camera));
         }
         final boolean[] hasCallback = {false};
         HiPermission.create(context)
@@ -143,10 +187,8 @@ public class GF_PluginAndroid extends Fragment {
                 .checkMutiPermission(new PermissionCallback() {
                     @Override
                     public void onClose() {
-
-                        showToast("They cancelled our request");
-                        if(null != callback && hasCallback[0])
-                        {
+                        LogEvent("关闭申请界面，取消申请");
+                        if (null != callback && hasCallback[0]) {
                             hasCallback[0] = true;
                             callback.onRequestFinished(false);
                         }
@@ -154,9 +196,8 @@ public class GF_PluginAndroid extends Fragment {
 
                     @Override
                     public void onFinish() {
-                        showToast("All permissions requested completed");
-                        if(null != callback && hasCallback[0])
-                        {
+                        LogEvent("所有权限均已授权");
+                        if (null != callback && hasCallback[0]) {
                             hasCallback[0] = true;
                             callback.onRequestFinished(true);
                         }
@@ -164,9 +205,8 @@ public class GF_PluginAndroid extends Fragment {
 
                     @Override
                     public void onDeny(String permission, int position) {
-                        showToast("All permissions requested completed");
-                        if(null != callback && hasCallback[0])
-                        {
+                        LogEvent("有权限被拒绝授权(Deny)，position:"+position);
+                        if (null != callback && hasCallback[0]) {
                             hasCallback[0] = true;
                             callback.onRequestFinished(false);
                         }
@@ -174,9 +214,8 @@ public class GF_PluginAndroid extends Fragment {
 
                     @Override
                     public void onGuarantee(String permission, int position) {
-                        showToast("All permissions requested completed");
-                        if(null != callback && hasCallback[0])
-                        {
+                        LogEvent("有权限被拒绝授权(Guarantee)，position:"+position);
+                        if (null != callback && hasCallback[0]) {
                             hasCallback[0] = true;
                             callback.onRequestFinished(false);
                         }
@@ -502,4 +541,22 @@ public class GF_PluginAndroid extends Fragment {
 //        return str;
 //    }
 ////endregion 权限申请相关
+
+    // test
+    public void takeFromPhotoTest() {
+        LogEvent("请求拍照 测试");
+        Intent intent = new Intent(mContext, ImageTakeActivity.class);
+        intent.putExtra("method", "takeFromPhoto");
+        mContext.startActivity(intent);
+    }
+
+    public void testPermmission()
+    {
+        requestPermission(mContext, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new IPermissionRequestCallback() {
+            @Override
+            public void onRequestFinished(boolean result) {
+                LogEvent("testPermmission 权限申请结果："+result);
+            }
+        });
+    }
 }

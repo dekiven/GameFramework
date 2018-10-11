@@ -35,5 +35,14 @@ namespace GameFramework
         {
             mPlatform.Restart(delaySec);
         }
+
+        /// <summary>
+        /// Installs the new app.安卓安装apk，ios跳转到商店
+        /// </summary>
+        /// <param name="path">Path.</param>
+        public static void InstallNewApp(string path)
+        {
+            mPlatform.InstallNewApp(path);
+        }
     }
 }

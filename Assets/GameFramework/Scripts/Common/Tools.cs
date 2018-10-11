@@ -88,7 +88,7 @@ namespace GameFramework
             {
                 if (CheckDirExists(Directory.GetParent(path).FullName, true))
                 {
-                    File.Create(path).Close();
+                    File.Create(path).Dispose();
                     exists = true;
                 }
             }

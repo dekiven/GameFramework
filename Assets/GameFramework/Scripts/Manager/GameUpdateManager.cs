@@ -231,6 +231,8 @@ namespace GameFramework
         /// </summary>
         private bool isTimeOut;
 
+        public float TimeOutSec = 5f;
+
         //Android、ios需要将StreamingAssets文件夹下的资源拷贝到可读写文件夹下
         public void CheckLocalCopy(Action<float, string> callback = null, LuaFunction luaCallback = null)
         {
@@ -272,7 +274,7 @@ namespace GameFramework
                     WWW www = new WWW(confUrl);
                     LogFile.Log("检查服务器资源配置文件:" + confUrl);
                     updateMsgInfo(string.Format("检查服务器{0}资源...", ++idx));
-                    yield return checkWWWTimeOut(www, 15f);
+                    yield return checkWWWTimeOut(www, TimeOutSec);
                     if(isTimeOut)
                     {
                         www.Dispose();

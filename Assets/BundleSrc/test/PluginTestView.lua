@@ -77,6 +77,7 @@ function PluginTestView:onItemClick( index )
     elseif index == 2 then
         Platform.restart(1.1)
     elseif index == 3 then
+        Platform.installNewApp("test.apk")
     end
 
 end

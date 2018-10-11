@@ -25,12 +25,8 @@ public class RestartService extends Service {
 
         mDelaySec = intent.getFloatExtra(STR_DELAY_TIME_SEC, mDelayDef);
         mPackageName = intent.getStringExtra(STR_PACKAGE_NAME);
-        if(null == mPackageName || mPackageName.isEmpty())
-        {
-            if(null != GF_PluginAndroid.getInstance())
-            {
-                GF_PluginAndroid.getInstance().showToast("重启应用失败，包名为空");
-            }
+        if (null == mPackageName || mPackageName.isEmpty()) {
+            GF_PluginAndroid.LogEvent("重启应用失败，包名为空");
             killSelf();
             return super.onStartCommand(intent, flags, startId);
         }
@@ -38,11 +34,13 @@ public class RestartService extends Service {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                GF_PluginAndroid.LogEvent("delay:" + mDelaySec + "秒, 准备重启");
                 Intent _intent = getPackageManager().getLaunchIntentForPackage(mPackageName);
+                GF_PluginAndroid.LogEvent("重启 intent:"+intent);
                 startActivity(_intent);
                 killSelf();
             }
-        }, (long)(mDelaySec * 1000));
+        }, (long) (mDelaySec * 1000));
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -52,8 +50,7 @@ public class RestartService extends Service {
         return null;
     }
 
-    private void killSelf()
-    {
+    private void killSelf() {
         RestartService.this.stopSelf();
     }
 }

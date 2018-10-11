@@ -27,6 +27,8 @@ namespace GameFramework
 
         public static void Init(string filePath, LogLevel minLevel = LogLevel.L_Log)
         {
+            CloseLog();
+
             mPath = filePath;
             mMinLevel = minLevel;
 
@@ -148,6 +150,20 @@ namespace GameFramework
                     mHasShowInitErr = true;
                 }
                 return;
+            }
+            //TODO:IOException：Sharing Violation on Path 解决
+            if(Tools.CheckFileExists(mPath))
+            {
+                try
+                {
+                    String fileName = mPath;
+                    fileName = fileName.Insert(mPath.LastIndexOf('/') + 1, "old_");
+                    Tools.RenameFile(mPath, fileName);
+                }
+                catch
+                {
+                    Debug.Log("重命名文件引起Sharing Violation on Path异常");
+                }
             }
             Tools.CheckFileExists(mPath, true);
             FileStream stream = new FileStream(mPath, FileMode.Create);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
 <!--    <external-path path="Android/data/cn.bingoogolapple.update.demo/" name="files_root" />-->
-    <external-path path="download" name="download" />
+    <external-files-path path="" name="writable_root" />
+    <external-files-path path="download" name="download" />
 </paths>
