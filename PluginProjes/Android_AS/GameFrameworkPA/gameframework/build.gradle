@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion 26
@@ -7,14 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
-        multiDexEnabled true
-        javaCompileOptions {
-            annotationProcessorOptions {
-                includeCompileClasspath = true
-            }
-        }
+        versionCode rootProject.ext.version_code
+        versionName rootProject.ext.version_name
     }
 
     buildTypes {
@@ -25,45 +20,44 @@ android {
     }
 }
 
+
 dependencies {
     compileOnly files('./libs/classes.jar')
-
-//    **
-//    //android权限申请类库，见：https://github.com/jokermonn/permissions4m
-//    compile 'com.github.jokermonn:permissions4m:2.1.2-lib'
-//    annotationProcessor 'com.github.jokermonn:permissions4m:2.1.2-processor'
-//    **
-
-    //android权限申请类库，见： https://github.com/yewei02538/HiPermission
-    implementation 'me.weyye.hipermission:library:1.0.7'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
 }
 
-//android.libraryVariants.all { variant ->
+//在开发过程中,有的时候引入了多个三方库.在调用的时候会出现版本对应不上的原因,需要强制版本号统一
+//解决办法，在app和Module: Library的build.gradle添加如下代码
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion "${rootProject.ext.supportVersion}"
+            }
+        }
+    }
+}
+
+////---------------------
+//// 将arr打包到仓库repository
+////作者：Freetofly白
+////来源：CSDN
+////原文：https://blog.csdn.net/u011840744/article/details/50608677?utm_source=copy
+////apply plugin: 'maven'
 //
-//    // Task names.
-//    String variantName = "${variant.name.capitalize()}";
-//    String deployTaskGroup = "plugin";
-//    String deployTaskName = "deploy${variantName}PluginArchive";
-//    String dependencyTaskName = "assemble${variantName}";
-//
-//    // Source.
-//    String sourceAARFolder = "${buildDir.getPath()}/outputs/aar/";
-//    String sourceAARName = "${project.name}-${variant.name}.aar";
-//
-//    // Target.
-//    String targetAssetFolder = "Assets/Plugins/eppz! Alert";
-//    String targetAARFolder = "${rootDir.getPath()}/../../${targetAssetFolder}";
-//    String targetAARName = "eppz! Alert Android.aar";
-//
-//    // Create task.
-//    task(deployTaskName, dependsOn: dependencyTaskName, type: Copy) {
-//        logger.lifecycle("${variant.name.capitalize()} AAR Folder: ${sourceAARFolder}")
-//        logger.lifecycle("${variant.name.capitalize()} Target AAR Folder: ${targetAARFolder}")
-//        logger.lifecycle("${variant.name.capitalize()} Target AAR name: ${targetAARName}")
-//
-//        from(sourceAARFolder)
-//        into(targetAARFolder)
-//        include(sourceAARName)
-//        rename(sourceAARName, targetAARName)
-//    }.group = deployTaskGroup;
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+////            repository(url: "file://localhost/" + System.getenv("ANDROID_HOME")
+////                    + "/extras/android/m2repository/")
+////            repository(url: "file://localhost/" + rootProject.ext.outDependencies+ "/")
+//            repository(url: "file://localhost/" + "/Users/sjytyf3/Desktop/libs/")
+////            pom.version = rootProject.ext.version_name + '-SNAPSHOT'
+//            pom.version = rootProject.ext.version_name
+//            pom.groupId = 'com.dekiven'
+//            pom.artifactId = 'gameframwork'
+//        }
+//    }
 //}
+

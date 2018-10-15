@@ -34,12 +34,15 @@ namespace GameFramework
 
         //配置是否在Assetbundle情况下使用luajit编译lua代码再打包
         public static bool encodeLua = false;
+
+
+        //是否开启线程处理EventManager线程上的消息,TODO:使用线程有bug，先不使用Thread 通知
+        public static bool progressThreadEvent = false;
 #if UNITY_EDITOR
         //配置是否使用Assetbundle
         public static bool useAsb = false;
         // 检查更新
         public static bool checkUpdate = false;
-
 #else
     // 注意，非编辑器模式下 useAsb只能为true，请勿修改，要在编辑器模式下不使用asb请修改上面的useAsb值
     public static bool useAsb = true;

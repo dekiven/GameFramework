@@ -107,8 +107,9 @@ namespace GameFramework
                 {
                     CheckDirExists(Directory.GetParent(newPath).FullName, true);
                 }
-                FileInfo fi = new FileInfo(oriPath);
-                fi.MoveTo(newPath);
+                //FileInfo fi = new FileInfo(oriPath);
+                //fi.MoveTo(newPath);
+                File.Move(oriPath, newPath);
                 Debug.LogFormat("Rename file: {0} ---> {1}", oriPath, newPath);
             }
         }

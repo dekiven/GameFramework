@@ -2,7 +2,6 @@ package com.dekiven.gameframework;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +33,6 @@ public class ImageTakeActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         String method = this.getIntent().getStringExtra("method");
-        Toast.makeText(this, "method：" + method, Toast.LENGTH_SHORT).show();
         if ("takeFromPhoto".equals(method)) {
             takeFromPhoto();
         } else if ("takeFromAlbum".equals(method)) {
@@ -47,21 +45,21 @@ public class ImageTakeActivity extends Activity {
     public void takeFromPhoto() {
         //创建一个file，用来存储拍照后的照片
         Context context = ImageTakeActivity.this;
-        File outputfile = new File(context.getExternalFilesDir(null), "temp.jpg");
-        GF_PluginAndroid.showToast(context, "outputfile:\n" + outputfile);
+        File outputFile = new File(context.getExternalFilesDir(null), "temp.jpg");
+        //GF_PluginAndroid.showToast(context, "outputFile:\n" + outputFile);
         try {
-            if (outputfile.exists()) {
-                outputfile.delete();//删除
+            if (outputFile.exists()) {
+                outputFile.delete();//删除
             }
-            outputfile.createNewFile();
+            outputFile.createNewFile();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Uri imageuri = GF_PluginAndroid.getUri(context, outputfile);
+        Uri imageUri = GF_PluginAndroid.getUri(context, outputFile);
 
         //启动相机程序
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageuri);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         //对目标应用临时授权该Uri所代表的文件,7.0后必须
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(intent, PHOTOHRAPH);
@@ -81,7 +79,7 @@ public class ImageTakeActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == NONE) {
             GF_PluginAndroid.LogEvent("拍照或选取图片 取消");
-            GF_PluginAndroid.notifyUnity("TakeAlbum", "");
+            GF_PluginAndroid.notifyUnity("TakeImageAlbum", "");
             finish();
             return;
         }
@@ -95,17 +93,17 @@ public class ImageTakeActivity extends Activity {
             }
             try {
                 boolean rst = saveJpg(data.getData(), outPath);
-                GF_PluginAndroid.notifyUnity("TakeAlbum", rst ? "temp.jpg" : "");
+                GF_PluginAndroid.notifyUnity("TakeImageAlbum", rst ? "temp.jpg" : "");
             } catch (IOException e) {
                 e.printStackTrace();
-                GF_PluginAndroid.notifyUnity("TakeAlbum", "");
+                GF_PluginAndroid.notifyUnity("TakeImageAlbum", "");
                 GF_PluginAndroid.LogEvent("调用相册, 失败：" + e.toString());
             }
         }
 
         if (requestCode == PHOTOHRAPH) {
             //调用相机,如果成功结果已经保存到 xx.xx.xx/files/temp.jpg
-            GF_PluginAndroid.notifyUnity("TakePhoto", "temp.jpg");
+            GF_PluginAndroid.notifyUnity("TakeImagePhoto", "temp.jpg");
         }
         finish();
     }
@@ -123,9 +121,10 @@ public class ImageTakeActivity extends Activity {
 
         f = new File(outPath);
         GF_PluginAndroid.LogEvent("保存 :" + oriPath + "\n到："+outPath);
-        if (!f.exists()) {
-            f.createNewFile();
+        if (f.exists()) {
+            f.delete();
         }
+        f.createNewFile();
         FileOutputStream fout = new FileOutputStream(f);
         Bitmap bm = BitmapFactory.decodeFile(oriPath);
         bm.compress(Bitmap.CompressFormat.JPEG, 100, fout);
@@ -143,29 +142,6 @@ public class ImageTakeActivity extends Activity {
         }
         return saveJpg(path, outPath);
     }
-
-//    private String getImagePath(Uri uri) {
-//        if (null == uri) {
-//            return null;
-//        }
-//        String path = null;
-//        final String scheme = uri.getScheme();
-//        if (null == scheme) {
-//            path = uri.getPath();
-//        } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-//            path = uri.getPath();
-//        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-//            String[] proj = {MediaStore.Images.Media.DATA};
-//            Cursor cursor = getContentResolver().query(uri, proj, null, null, null);
-//            int nPhotoColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-//            if (null != cursor) {
-//                cursor.moveToFirst();
-//                path = cursor.getString(nPhotoColumn);
-//            }
-//            cursor.close();
-//        }
-//        return path;
-//    }
 
     //--------------------
     @TargetApi(19)

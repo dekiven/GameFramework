@@ -75,9 +75,11 @@ function PluginTestView:onItemClick( index )
     elseif index == 1 then
         Platform.takeAlbum()
     elseif index == 2 then
-        Platform.restart(1.1)
+        -- Platform.restart(1.1)
+        Platform.test1()
     elseif index == 3 then
-        Platform.installNewApp("test.apk")
+        -- Platform.installNewApp("test.apk")
+        Platform.test2()
     end
 
 end

@@ -8,12 +8,12 @@ namespace GameFramework
             LogFile.Log("Platform方法 SetNoticeObFunc(string gameobjName, string funcName) 待实现,请重载该方法!");
         }
 
-        public virtual void TakePhoto()
+        public virtual void TakeImagePhoto()
         {
             LogFile.Log("Platform方法 TakePhoto() 待实现,请重载该方法!");
         }
 
-        public virtual void TakeAlbum()
+        public virtual void TakeImageAlbum()
         {
             LogFile.Log("Platform方法 TakeAlbum() 待实现,请重载该方法!");
         }
@@ -27,5 +27,18 @@ namespace GameFramework
         {
             LogFile.Log("Platform方法 InstallNewApp(string path) 待实现,请重载该方法!");
         }
+
+        //=====================================test--------------------------------------
+        public virtual void test1()
+        {
+            LogFile.Log("Platform方法 test1() 待实现,请重载该方法!");
+        }
+
+        public virtual void test2()
+        {
+            LogFile.Log("Platform方法 test2() 待实现,请重载该方法!");
+        }
+
+        //--------------------------------------test=====================================
     }
 }

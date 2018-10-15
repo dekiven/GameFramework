@@ -14,8 +14,8 @@ namespace GameFramework
 
         ResUpdateView mUpdateView;
 
-        bool progressThreadEvent = false;
-
+        //是否开启线程处理EventManager线程上的消息
+        private bool progressThreadEvent = GameConfig.progressThreadEvent;
         public int ScreenSleepTime { get { return Screen.sleepTimeout; } set { Screen.sleepTimeout = value; }}
 
         #region MonoBehaviour
@@ -102,22 +102,16 @@ namespace GameFramework
 
         public void StartGameLogic()
         {
-            LogFile.Log("TestLoadRes:"+mLuaMgr);
-            mLuaMgr.InitStart();
-            //mLuaMgr.CallGlobalFunc("TestLoadRes");
-
-            //根据progressThreadEvent判定是否启用线程处理线程上的事件
-            if (progressThreadEvent)
+            //在资源更新完毕后再次初始化GameResMranager(正常的游戏逻辑会初始化两次GameResMranager)
+            GameResManager.Instance.Initialize(delegate ()
             {
-                Loom.RunAsync(delegate ()
-                {
-                    while (progressThreadEvent)
-                    {
-                        Thread.Sleep(20);
-                        EventManager.progressThreadEvents();
-                    }
-                });
-            }
+                LogFile.Log("启动Lua虚拟机:" + mLuaMgr);
+                mLuaMgr.InitStart();
+                //mLuaMgr.CallGlobalFunc("TestLoadRes");
+
+                //test
+                EventManager.notifyAll("LogEvent", new string[] { "test LogEvent" });
+            });
         }
 
         public void OnMessage(string msg)
@@ -151,11 +145,9 @@ namespace GameFramework
 
         private void initGamePlatform()
         {
-            LogFile.Warn("initGamePlatform 开始");
             switch (Application.platform)
             {
                 case RuntimePlatform.Android:
-                    LogFile.Warn("initGamePlatform android");
                     Platform.SetPlatformInstance(new PlatformAnd());
                     break;
                 case RuntimePlatform.IPhonePlayer:
@@ -169,13 +161,24 @@ namespace GameFramework
                     Platform.SetPlatformInstance(new PlatformBase());
                     break;
             }
-            LogFile.Warn("initGamePlatform 结束");
-
         }
 
         void init()
         {
             ScreenSleepTime = SleepTimeout.NeverSleep;
+
+            //根据progressThreadEvent判定是否启用线程处理线程上的事件
+            if (progressThreadEvent)
+            {
+                Loom.RunAsync(delegate ()
+                {
+                    while (progressThreadEvent)
+                    {
+                        Thread.Sleep(20);
+                        EventManager.progressThreadEvents();
+                    }
+                });
+            }
 
             //注册LogFile事件
             EventManager.registerToMain("LogEvent", this, "LogEvent");
@@ -194,15 +197,11 @@ namespace GameFramework
                         LogFile.Log("callback of copy file:{0},{1}", percent, msg);
                         if (Equals(1f, percent))
                         {
-                            //在资源更新完毕后再次初始化GameResMranager(正常的游戏逻辑会初始化两次GameResMranager)
-                            GameResManager.Instance.Initialize(delegate ()
-                            {
-                                StartGameLogic();
-                            });
+                            StartGameLogic();
                         }
                         else
                         {
-                            LogFile.Error("更新资源失败，关闭程序");
+                            LogFile.Error("更新资源失败，启动游戏逻辑，如果资源不完整可能引起bug");
                             //TODO:包体资源拷贝失败，进行相应操作
                             //Application.Quit();
                             StartGameLogic();
@@ -215,7 +214,7 @@ namespace GameFramework
 
         public void LogEvent(string msg)
         {
-            LogFile.Warn("msg form logEvent: " + msg);
+            LogFile.WriteLine(LogFile.LogLevel.L_Warning, "LogEvent: " + msg);
         }
     }
 }

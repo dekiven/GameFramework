@@ -32,7 +32,7 @@ namespace GameFramework
             }
         }
 
-        public override void TakeAlbum()
+        public override void TakeImageAlbum()
         {
             if(null != mPluginObj)
             {
@@ -40,7 +40,7 @@ namespace GameFramework
             }
         }
 
-        public override void TakePhoto()
+        public override void TakeImagePhoto()
         {
             if (null != mPluginObj)
             {
@@ -50,19 +50,15 @@ namespace GameFramework
 
         public override void Restart(float delaySec)
         {
-            //if (null != mPluginObj)
-            //{
-            //    if(delaySec < 1)
-            //    {
-            //        delaySec = 1;
-            //    }
-            //    mPluginObj.Call("restart", delaySec);
-            //    Application.Quit();
-            //}
-
-            //test
-            mPluginObj.Call("takeFromPhotoTest");
-
+            if (null != mPluginObj)
+            {
+                if(delaySec < 1)
+                {
+                    delaySec = 1;
+                }
+                mPluginObj.Call("restart", delaySec);
+                Application.Quit();
+            }
         }
 
         public override void InstallNewApp(string path)
@@ -71,10 +67,26 @@ namespace GameFramework
             {
                 mPluginObj.Call("installApk", Tools.GetWriteableDataPath(path));
             }
-
-            //test
-            //mPluginObj.Call("testPermmission");
         }
+
+
+        //=====================================test--------------------------------------
+        public override void test1()
+        {
+            if (null != mPluginObj)
+            {
+                mPluginObj.Call("test1");
+            }
+        }
+
+        public override void test2()
+        {
+            if (null != mPluginObj)
+            {
+                mPluginObj.Call("test2");
+            }
+        }
+        //--------------------------------------test=====================================
     }
 #else
     #region 空实现

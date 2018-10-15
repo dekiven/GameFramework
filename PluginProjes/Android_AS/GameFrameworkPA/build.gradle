@@ -8,7 +8,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.0'
-        
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -26,4 +25,25 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    // 获取   ANDROID_HOME 环境变量赋值给outDependencies
+    outDependencies = System.getenv("ANDROID_HOME")
+    version_code = 1
+    version_name = '1.0.0'
+    supportVersion = '26.0.0-alpha1'
+}
+
+//在开发过程中,有的时候引入了多个三方库.在调用的时候会出现版本对应不上的原因,需要强制版本号统一
+//解决办法，在app和Module: Library的build.gradle添加如下代码
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion "${rootProject.ext.supportVersion}"
+            }
+        }
+    }
 }

@@ -154,16 +154,13 @@ namespace GameFramework
             //TODO:IOException：Sharing Violation on Path 解决
             if(Tools.CheckFileExists(mPath))
             {
-                try
-                {
-                    String fileName = mPath;
-                    fileName = fileName.Insert(mPath.LastIndexOf('/') + 1, "old_");
-                    Tools.RenameFile(mPath, fileName);
-                }
-                catch
-                {
-                    Debug.Log("重命名文件引起Sharing Violation on Path异常");
-                }
+                String fileName = mPath;
+                fileName = fileName.Insert(mPath.LastIndexOf('/') + 1, "old_");
+                Tools.RenameFile(mPath, fileName);
+            }
+            if (Tools.CheckFileExists(mPath))
+            {
+                File.Delete(mPath);
             }
             Tools.CheckFileExists(mPath, true);
             FileStream stream = new FileStream(mPath, FileMode.Create);

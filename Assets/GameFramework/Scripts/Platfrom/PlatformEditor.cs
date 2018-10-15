@@ -7,12 +7,12 @@ namespace GameFramework
 #if UNITY_EDITOR
     public class PlatformEditor : PlatformBase
     {
-        public override void TakeAlbum()
+        public override void TakeImageAlbum()
         {
             LogFile.Log("TakeAlbum");
         }
 
-        public override void TakePhoto()
+        public override void TakeImagePhoto()
         {
             LogFile.Log("TakePhoto");
         }

@@ -3,7 +3,7 @@ namespace GameFramework
 {
     public static class Platform
     {
-        private static PlatformBase mPlatform;
+        private static PlatformBase mPlatform = new PlatformBase();
 
         public static void SetPlatformInstance(PlatformBase platform)
         {
@@ -15,19 +15,19 @@ namespace GameFramework
             mPlatform.SetNoticeObFunc(gameobjName, funcName);
         }
 
-        public static void TakePhoto()
+        public static void TakeImagePhoto()
         {
             if(null != mPlatform)
             {
-                mPlatform.TakePhoto();
+                mPlatform.TakeImagePhoto();
             }
         }
 
-        public static void TakeAlbum()
+        public static void TakeImageAlbum()
         {
             if (null != mPlatform)
             {
-                mPlatform.TakeAlbum();
+                mPlatform.TakeImageAlbum();
             }
         }
 
@@ -44,5 +44,17 @@ namespace GameFramework
         {
             mPlatform.InstallNewApp(path);
         }
+
+        //=====================================test--------------------------------------
+        public static void test1()
+        {
+            mPlatform.test1();
+        }
+
+        public static void test2()
+        {
+            mPlatform.test2();
+        }
+        //--------------------------------------test=====================================
     }
 }

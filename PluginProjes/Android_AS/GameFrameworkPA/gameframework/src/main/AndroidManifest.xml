@@ -1,14 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dekiven.gameframework" >
-    <application>
-        <activity android:name=".ImageTakeActivity"/>
-        <service android:name=".RestartService"/>
-    </application>
+    package="com.dekiven.gameframework">
 
     <!-- 从SDCard读取数据权限-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!-- 往SDCard写入数据权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!--请求访问使用照相设备-->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <application>
+        <activity android:name=".ImageTakeActivity" />
+        <service android:name=".RestartService" />
+    </application>
+
 </manifest>
