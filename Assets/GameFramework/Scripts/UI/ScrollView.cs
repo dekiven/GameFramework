@@ -255,23 +255,39 @@ namespace GameFramework
             mOnItemClickLua = call;
         }
 
+        /// <summary>
+        /// 设置Scrolview Item上按钮回调按钮名
+        /// </summary>
+        /// <param name="del"></param>
         public void SetOnBtnClick_S(DelBtnClickedStr del)
         {
             mBtnClickPassStr = true;
             mOnBtnClickedS = del;
         }
 
+        /// <summary>
+        /// 设置Scrolview Item上按钮回调按钮 Index
+        /// </summary>
+        /// <param name="del"></param>
         public void SetOnBtnClick_I(DelBtnClickedIndex del)
         {
             mBtnClickPassStr = false;
             mOnBtnClickedI = del;
         }
 
+        /// <summary>
+        /// 设置Scrolview Item上按钮回调按钮名
+        /// </summary>
+        /// <param name="call"></param>
         public void SetOnBtnClickLua_S(LuaFunction call)
         {
             setOnBtnClickLua(call, true);
         }
 
+        /// <summary>
+        /// 设置Scrolview Item上按钮回调按钮 Index
+        /// </summary>
+        /// <param name="call"></param>
         public void SetOnBtnClickLua_I(LuaFunction call)
         {
             setOnBtnClickLua(call, false);

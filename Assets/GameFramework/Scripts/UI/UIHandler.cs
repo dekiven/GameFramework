@@ -60,9 +60,9 @@ namespace GameFramework
         #endregion
 
         #region 通用方法
-        public int Count { get { if (null != UIArray) {return UIArray.Count;} else { return 0; } } }
-        public int SubCount { get { if (null != SubHandlers) {return SubHandlers.Count;} else { return 0; } } }
-        public int RTCount { get { if (null != RTArray) {return RTArray.Count;} else { return 0; } } }
+        public int Count { get { if (null != UIArray) { return UIArray.Count; } else { return 0; } } }
+        public int SubCount { get { if (null != SubHandlers) { return SubHandlers.Count; } else { return 0; } } }
+        public int RTCount { get { if (null != RTArray) { return RTArray.Count; } else { return 0; } } }
 
         public void UpdateUI2RootNames()
         {
@@ -203,6 +203,16 @@ namespace GameFramework
                     else
                     {
                         return SetUIEnable(uiName, (bool)data.Content);
+                    }
+                //break;
+                case "setuinativesize":
+                    if (uiIndex != -1)
+                    {
+                        return SetUINativeSize(uiIndex);
+                    }
+                    else
+                    {
+                        return SetUINativeSize(uiName);
                     }
                 //break;
                 case "settextstring":
@@ -419,9 +429,9 @@ namespace GameFramework
                 case "setscrollviewdatas":
                     if (uiIndex != -1)
                     {
-                        if (null != (LuaTable)data.Content)
+                        if (null != data.Content as LuaTable)
                         {
-                            return SetScrollViewDatas(uiIndex, (LuaTable)data.Content);
+                            return SetScrollViewDatas(uiIndex, data.Content as LuaTable);
                         }
                         else
                         {
@@ -430,9 +440,9 @@ namespace GameFramework
                     }
                     else
                     {
-                        if (null != (LuaTable)data.Content)
+                        if (null != data.Content as LuaTable)
                         {
-                            return SetScrollViewDatas(uiName, (LuaTable)data.Content);
+                            return SetScrollViewDatas(uiName, data.Content as LuaTable);
                         }
                         else
                         {
@@ -443,19 +453,19 @@ namespace GameFramework
                 case "updatescrollviewdata":
                     if (uiIndex != -1)
                     {
-                        return UpdateScrollViewData(uiIndex, (LuaTable)data.Content);
+                        return UpdateScrollViewData(uiIndex, data.Content as LuaTable);
                     }
                     else
                     {
-                        return UpdateScrollViewData(uiName, (LuaTable)data.Content);
+                        return UpdateScrollViewData(uiName, data.Content as LuaTable);
                     }
                 //break;
                 case "addscrollviewdata":
                     if (uiIndex != -1)
                     {
-                        if (null != (LuaTable)data.Content)
+                        if (null != data.Content as LuaTable)
                         {
-                            return AddScrollViewData(uiIndex, (LuaTable)data.Content);
+                            return AddScrollViewData(uiIndex, data.Content as LuaTable);
                         }
                         else
                         {
@@ -464,9 +474,9 @@ namespace GameFramework
                     }
                     else
                     {
-                        if (null != (LuaTable)data.Content)
+                        if (null != data.Content as LuaTable)
                         {
-                            return AddScrollViewData(uiName, (LuaTable)data.Content);
+                            return AddScrollViewData(uiName, data.Content as LuaTable);
                         }
                         else
                         {
@@ -477,11 +487,11 @@ namespace GameFramework
                 case "insertscrollviewdata":
                     if (uiIndex != -1)
                     {
-                        return InsertScrollViewData(uiIndex, (LuaTable)data.Content);
+                        return InsertScrollViewData(uiIndex, data.Content as LuaTable);
                     }
                     else
                     {
-                        return InsertScrollViewData(uiName, (LuaTable)data.Content);
+                        return InsertScrollViewData(uiName, data.Content as LuaTable);
                     }
                 //break;
                 case "setscrollviewbtnclicklua_s":
@@ -507,9 +517,9 @@ namespace GameFramework
                 case "setscrollselectordata":
                     if (uiIndex != -1)
                     {
-                        if (null != (LuaTable)data.Content)
+                        if (null != data.Content as LuaTable)
                         {
-                            return SetScrollSelectorData(uiIndex, (LuaTable)data.Content);
+                            return SetScrollSelectorData(uiIndex, data.Content as LuaTable);
                         }
                         else
                         {
@@ -518,9 +528,9 @@ namespace GameFramework
                     }
                     else
                     {
-                        if (null != (LuaTable)data.Content)
+                        if (null != data.Content as LuaTable)
                         {
-                            return SetScrollSelectorData(uiName, (LuaTable)data.Content);
+                            return SetScrollSelectorData(uiName, data.Content as LuaTable);
                         }
                         else
                         {
@@ -669,9 +679,9 @@ namespace GameFramework
                 case "setselectortogglesdata":
                     if (uiIndex != -1)
                     {
-                        if (null != (LuaTable)data.Content)
+                        if (null != data.Content as LuaTable)
                         {
-                            return SetSelectorTogglesData(uiIndex, (LuaTable)data.Content);
+                            return SetSelectorTogglesData(uiIndex, data.Content as LuaTable);
                         }
                         else
                         {
@@ -680,9 +690,9 @@ namespace GameFramework
                     }
                     else
                     {
-                        if (null != (LuaTable)data.Content)
+                        if (null != data.Content as LuaTable)
                         {
-                            return SetSelectorTogglesData(uiName, (LuaTable)data.Content);
+                            return SetSelectorTogglesData(uiName, data.Content as LuaTable);
                         }
                         else
                         {
@@ -723,92 +733,142 @@ namespace GameFramework
                             return SetSelectorTogglesOnChange(uiName, (LuaFunction)data.Content);
                         }
                     }
+                //break;
+                case "modifyrecttransfrom_u":
+                    if (uiIndex != -1)
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ModifyRectTransfrom_U(uiIndex, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ModifyRectTransfrom_U(uiName, data.Content as Dictionary<string, System.Object>);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ModifyRectTransfrom_U(uiName, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ModifyRectTransfrom_U(uiName, data.Content as Dictionary<string, System.Object>);
+                        }
+                    }
+                //break;
+                case "modifyrecttransfrom_s":
+                    if (uiIndex != -1)
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ModifyRectTransfrom_S(uiIndex, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ModifyRectTransfrom_S(uiIndex, data.Content as Dictionary<string, System.Object>);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ModifyRectTransfrom_S(uiName, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ModifyRectTransfrom_S(uiName, data.Content as Dictionary<string, System.Object>);
+                        }
+                    }
+                //break;
+                case "modifyrecttransfrom_r":
+                    if (uiIndex != -1)
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ModifyRectTransfrom_R(uiIndex, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ModifyRectTransfrom_R(uiIndex, data.Content as Dictionary<string, System.Object>);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ModifyRectTransfrom_R(uiName, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ModifyRectTransfrom_R(uiName, data.Content as Dictionary<string, System.Object>);
+                        }
+                    }
+                //break;
+                case "changesubhandleritem":
+                    if (uiIndex != -1)
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ChangeSubHandlerItem(uiIndex, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ChangeSubHandlerItem(uiIndex, (UIItemData)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ChangeSubHandlerItem(uiName, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ChangeSubHandlerItem(uiName, (UIItemData)data.Content);
+                        }
+                    }
+                //break;
+                case "changesubhandlerui":
+                    if (uiIndex != -1)
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ChangeSubHandlerUI(uiIndex, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ChangeSubHandlerUI(uiIndex, (UIHandlerData)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return ChangeSubHandlerUI(uiName, data.Content as LuaTable);
+                        }
+                        else
+                        {
+                            return ChangeSubHandlerUI(uiName, (UIHandlerData)data.Content);
+                        }
+                    }
                     //break;
-
-
-
-                case "modifyurecttransfrom":
-                    if (uiIndex != -1)
-                    {
-                        LuaTable lua = (LuaTable)data.Content;
-                        if (null != lua)
-                        {
-                            return ModifyURectTransfrom(uiIndex, (LuaTable)data.Content);
-                        }
-                        else
-                        {
-                            return ModifyURectTransfrom(uiIndex, (LuaTable)data.Content);
-                        }
-                    }
-                    else
-                    {
-                        LuaTable lua = (LuaTable)data.Content;
-                        if (null != lua)
-                        {
-                            return ModifyURectTransfrom(uiName, (LuaTable)data.Content);
-                        }
-                        else
-                        {
-                            return ModifyURectTransfrom(uiName, (LuaTable)data.Content);
-                        }
-                    }
-                //break;
-                case "modifysrecttransfrom":
-                    if (uiIndex != -1)
-                    {
-                        LuaTable lua = (LuaTable)data.Content;
-                        if (null != lua)
-                        {
-                            return ModifySRectTransfrom(uiIndex, (LuaTable)data.Content);
-                        }
-                        else
-                        {
-                            return ModifySRectTransfrom(uiIndex, (LuaTable)data.Content);
-                        }
-                    }
-                    else
-                    {
-                        LuaTable lua = (LuaTable)data.Content;
-                        if (null != lua)
-                        {
-                            return ModifySRectTransfrom(uiName, (LuaTable)data.Content);
-                        }
-                        else
-                        {
-                            return ModifySRectTransfrom(uiName, (LuaTable)data.Content);
-                        }
-                    }
-                //break;
-                case "modifyrrecttransfrom":
-                    if (uiIndex != -1)
-                    {
-                        LuaTable lua = (LuaTable)data.Content;
-                        if (null != lua)
-                        {
-                            return ModifyRRectTransfrom(uiIndex, (LuaTable)data.Content);
-                        }
-                        else
-                        {
-                            return ModifyRRectTransfrom(uiIndex, (LuaTable)data.Content);
-                        }
-                    }
-                    else
-                    {
-                        LuaTable lua = (LuaTable)data.Content;
-                        if (null != lua)
-                        {
-                            return ModifyRRectTransfrom(uiName, (LuaTable)data.Content);
-                        }
-                        else
-                        {
-                            return ModifyRRectTransfrom(uiName, (LuaTable)data.Content);
-                        }
-                    }
             }
             return false;
         }
 
-        public bool ChangeUILua(LuaTable luaTable)
+        public bool ChangeUI(LuaTable luaTable)
         {
             UIHandlerData data = new UIHandlerData(luaTable);
             return ChangeUI(data);
@@ -826,7 +886,7 @@ namespace GameFramework
             return ret;
         }
 
-        public bool ChangeItemLua(LuaTable luaTable)
+        public bool ChangeItem(LuaTable luaTable)
         {
             UIItemData data = new UIItemData(luaTable);
             return ChangeItem(data);
@@ -892,13 +952,38 @@ namespace GameFramework
             UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
             return setUIEnable(ui, value);
         }
+
+        // 调用Graphic（Image、RawImage）的SetNativeSize方法
+        public bool SetUINativeSize(int index)
+        {
+            Graphic ui = GetCompByIndex<Graphic>(index);
+            return setUINativeSize(ui);
+        }
+
+        // 调用Graphic（Image、RawImage）的SetNativeSize方法
+        public bool SetUINativeSize(string cName)
+        {
+            Graphic ui = GetCompByName<Graphic>(cName);
+            return setUINativeSize(ui);
+        }
+
+        // 调用Graphic（Image、RawImage）的SetNativeSize方法
+        private static bool setUINativeSize(Graphic ui)
+        {
+            if (null != ui)
+            {
+                ui.SetNativeSize();
+                return true;
+            }
+            return false;
+        }
         #endregion UI 通用
 
         #region RectTransform
         public RectTransform GetRectTrans_U(int index)
         {
             UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
-            if(null != ui)
+            if (null != ui)
             {
                 return ui.transform as RectTransform;
             }
@@ -946,42 +1031,42 @@ namespace GameFramework
         }
 
         // 修改UIArray中的RectTransform
-        public bool ModifyURectTransfrom(int index, LuaTable table)
+        public bool ModifyRectTransfrom_U(int index, LuaTable table)
         {
             RectTransform ui = GetRectTrans_U(index);
             return modifyRectTransform(ui, table);
         }
 
         // 修改UIArray中的RectTransform
-        public bool ModifyURectTransfrom(string cName, LuaTable table)
+        public bool ModifyRectTransfrom_U(string cName, LuaTable table)
         {
             RectTransform ui = GetRectTrans_U(cName);
             return modifyRectTransform(ui, table);
         }
 
         // 修改SubHandlers中的RectTransform
-        public bool ModifySRectTransfrom(int index, LuaTable table)
+        public bool ModifyRectTransfrom_S(int index, LuaTable table)
         {
             RectTransform ui = GetRectTrans_S(index);
             return modifyRectTransform(ui, table);
         }
 
         // 修改SubHandlers中的RectTransform
-        public bool ModifySRectTransfrom(string cName, LuaTable table)
+        public bool ModifyRectTransfrom_S(string cName, LuaTable table)
         {
             RectTransform ui = GetRectTrans_S(cName);
             return modifyRectTransform(ui, table);
         }
 
         // 修改RTArray中的RectTransform
-        public bool ModifyRRectTransfrom(int index, LuaTable table)
+        public bool ModifyRectTransfrom_R(int index, LuaTable table)
         {
             RectTransform ui = GetRectTrans_R(index);
             return modifyRectTransform(ui, table);
         }
 
         // 修改RTArray中的RectTransform
-        public bool ModifyRRectTransfrom(string cName, LuaTable table)
+        public bool ModifyRectTransfrom_R(string cName, LuaTable table)
         {
             RectTransform ui = GetRectTrans_R(cName);
             return modifyRectTransform(ui, table);
@@ -989,14 +1074,14 @@ namespace GameFramework
 
 
         // 修改UIArray中的RectTransform
-        public bool ModifyURectTransfrom(int index, Dictionary<string, System.Object> dict)
+        public bool ModifyRectTransfrom_U(int index, Dictionary<string, System.Object> dict)
         {
             RectTransform ui = GetRectTrans_U(index);
             return modifyRectTransform(ui, dict);
         }
 
         // 修改UIArray中的RectTransform
-        public bool ModifyURectTransfrom(string cName, Dictionary<string, System.Object> dict)
+        public bool ModifyRectTransfrom_U(string cName, Dictionary<string, System.Object> dict)
         {
             RectTransform ui = GetRectTrans_U(cName);
             return modifyRectTransform(ui, dict);
@@ -1004,28 +1089,28 @@ namespace GameFramework
 
 
         // 修改SubHandlers中的RectTransform
-        public bool ModifySRectTransfrom(int index, Dictionary<string, System.Object> dict)
+        public bool ModifyRectTransfrom_S(int index, Dictionary<string, System.Object> dict)
         {
             RectTransform ui = GetRectTrans_S(index);
             return modifyRectTransform(ui, dict);
         }
 
         // 修改SubHandlers中的RectTransform
-        public bool ModifySRectTransfrom(string cName, Dictionary<string, System.Object> dict)
+        public bool ModifyRectTransfrom_S(string cName, Dictionary<string, System.Object> dict)
         {
             RectTransform ui = GetRectTrans_S(cName);
             return modifyRectTransform(ui, dict);
         }
 
         // 修改RTArray中的RectTransform
-        public bool ModifyRRectTransfrom(int index, Dictionary<string, System.Object> dict)
+        public bool ModifyRectTransfrom_R(int index, Dictionary<string, System.Object> dict)
         {
             RectTransform ui = GetRectTrans_R(index);
             return modifyRectTransform(ui, dict);
         }
 
         // 修改RTArray中的RectTransform
-        public bool ModifyRRectTransfrom(string cName, Dictionary<string, System.Object> dict)
+        public bool ModifyRectTransfrom_R(string cName, Dictionary<string, System.Object> dict)
         {
             RectTransform ui = GetRectTrans_R(cName);
             return modifyRectTransform(ui, dict);
@@ -1586,6 +1671,12 @@ namespace GameFramework
             return setScrollViewBtnClickLua_S(ui, call);
         }
 
+        /// <summary>
+        /// 设置Scrolview Item上按钮回调按钮名
+        /// </summary>
+        /// <param name="ui"></param>
+        /// <param name="call"></param>
+        /// <returns></returns>
         private static bool setScrollViewBtnClickLua_S(ScrollView ui, LuaFunction call)
         {
             if (null != ui)
@@ -1608,6 +1699,12 @@ namespace GameFramework
             return setScrollViewBtnClickLua_I(ui, call);
         }
 
+        /// <summary>
+        /// 设置Scrolview Item上按钮回调按钮 Index
+        /// </summary>
+        /// <param name="ui"></param>
+        /// <param name="call"></param>
+        /// <returns></returns>
         private static bool setScrollViewBtnClickLua_I(ScrollView ui, LuaFunction call)
         {
             if (null != ui)
@@ -2042,6 +2139,97 @@ namespace GameFramework
             return false;
         }
         #endregion Toggle
+
+        #region SubHandler 相关
+        // 调用SubHandler的ChangeItem方法
+        public bool ChangeSubHandlerItem(int index, UIItemData data)
+        {
+            UIHandler handler = GetSubHandler(index);
+            if (null != handler)
+            {
+                return handler.ChangeItem(data);
+            }
+            return false;
+        }
+
+        // 调用SubHandler的ChangeItem方法
+        public bool ChangeSubHandlerItem(string cName, UIItemData data)
+        {
+            UIHandler handler = GetSubHandler(cName);
+            if (null != handler)
+            {
+                return handler.ChangeItem(data);
+            }
+            return false;
+        }
+
+        // 调用SubHandler的ChangeItem方法
+        public bool ChangeSubHandlerItem(int index, LuaTable data)
+        {
+            UIHandler handler = GetSubHandler(index);
+            if (null != handler)
+            {
+                return handler.ChangeItem(data);
+            }
+            return false;
+        }
+
+        // 调用SubHandler的ChangeItem方法
+        public bool ChangeSubHandlerItem(string cName, LuaTable data)
+        {
+            UIHandler handler = GetSubHandler(cName);
+            if (null != handler)
+            {
+                return handler.ChangeItem(data);
+            }
+            return false;
+        }
+
+
+        // 调用SubHandler的ChangeUI方法
+        public bool ChangeSubHandlerUI(int index, UIHandlerData data)
+        {
+            UIHandler handler = GetSubHandler(index);
+            if (null != handler)
+            {
+                return handler.ChangeUI(data);
+            }
+            return false;
+        }
+
+        // 调用SubHandler的ChangeUI方法
+        public bool ChangeSubHandlerUI(string cName, UIHandlerData data)
+        {
+            UIHandler handler = GetSubHandler(cName);
+            if (null != handler)
+            {
+                return handler.ChangeUI(data);
+            }
+            return false;
+        }
+
+        // 调用SubHandler的ChangeUI方法
+        public bool ChangeSubHandlerUI(int index, LuaTable data)
+        {
+            UIHandler handler = GetSubHandler(index);
+            if (null != handler)
+            {
+                return handler.ChangeUI(data);
+            }
+            return false;
+        }
+
+        // 调用SubHandler的ChangeUI方法
+        public bool ChangeSubHandlerUI(string cName, LuaTable data)
+        {
+            UIHandler handler = GetSubHandler(cName);
+            if (null != handler)
+            {
+                return handler.ChangeUI(data);
+            }
+            return false;
+        }
+        #endregion SubHandler 相关
         //TODO:ToggleGroup 以后有需要实现
 
         #region Scrollbar
@@ -2585,33 +2773,33 @@ namespace GameFramework
                     }
                     //break;
 
-Set;Image;Sprite;Sprite;sprite;set;call(ui)//--注释
-//^(.+);(.+);(.+);(.+);(.+);(.+);(.*)//--(.*)$
+Set~Image~Sprite~Sprite~sprite~set~call(ui)//--注释
+^(.+)~(.+)~(.+)~(.+)~(.+)~(.+)~(.*)//--(.*)$
 **/
 
 /**
                     case "ModifyURectTransfrom":
                     if (uiIndex != -1)
                     {
-                        return ModifyURectTransfrom(uiIndex, (LuaTable) data.Content);
-                        return ModifyURectTransfrom(uiIndex, (Dictionary<string, System.Object>) data.Content);
+                        return ModifyURectTransfrom(uiIndex, data.Content as LuaTable);
+                        return ModifyURectTransfrom(uiIndex, (__TYPE___) data.Content);
                     }
                     else
                     {
-                        return ModifyURectTransfrom(uiName, (LuaTable) data.Content);
-                        return ModifyURectTransfrom(uiName, (Dictionary<string, System.Object>) data.Content);
+                        return ModifyURectTransfrom(uiName, data.Content as LuaTable);
+                        return ModifyURectTransfrom(uiName, (__TYPE___) data.Content);
                     }
                     //break;
 
                     ^.*return(.*)$\n(.*)return(.*)
 
-                    LuaTable lua == (LuaTable) data.Content;
-                    if (null != lua)
-                    {
-                        return \1
-                    }
-                    else
-                    {
-                        return \1
-                    }
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return \1
+                        }
+                        else
+                        {
+                            return \3
+                        }
 **/

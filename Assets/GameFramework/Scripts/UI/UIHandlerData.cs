@@ -63,6 +63,16 @@ namespace GameFramework
             {
                 Content = Tools.GenRectByStr(luaTable.RawGetIndex<string>(++i));
             }
+            else if (FuncStr.Equals("changesubhandlerui"))
+            {
+                LuaTable lua = luaTable.RawGetIndex<LuaTable>(++i);
+                Content = new UIHandlerData(lua);
+            }
+            else if (FuncStr.Equals("changesubhandleritem"))
+            {
+                LuaTable lua = luaTable.RawGetIndex<LuaTable>(++i);
+                Content = new UIItemData(lua);
+            }
             else
             {
                 Content = luaTable.RawGetIndex<System.Object>(++i);

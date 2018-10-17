@@ -10,9 +10,11 @@
 -- 根据{'funcName', index, value,...}获取changeUI的table
 function getUIData( dataTable )
     -- 当v = {'funcStr', intIndex, content,...}时加入data
-    if type(dataTable) == 'table' and #dataTable >= 3 then
+    if type(dataTable) == 'table' and #dataTable >= 2 then
+        dataTable.count = #dataTable
+        dataTable._cs_data_ = 1
         -- 如果v[3]是table，需要转换
-        if type(dataTable[3]) == 'table' then
+        if type(dataTable[3]) == 'table' and (not dataTable._cs_data_) then
             -- dataTable[3]暂时不支持 index和key混用，
             local _v = clone(dataTable)
             if #dataTable[3] > 0 then
@@ -44,6 +46,7 @@ function getUIItemData( dataTable )
         end
     end
     data.count = count
+    data._cs_data_ = 2
     return data
 end
 
@@ -70,10 +73,11 @@ function getScrollViewData( dataTable )
         end
     end
     data.count = count
+    data._cs_data_ = 3
     return data
 end
 
--- 将Vector2(3)、Color的table转换为string,以逗号分隔,供C#使用，详见Tools。GenxxxByStr方法
+-- 将Vector2(3)、Color的table转换为string,以逗号分隔,供C#使用，详见Tools.GenxxxByStr方法
 function getVecColStr( t )
     if type(t) == 'table' then
         return table.concat( t, ',' )

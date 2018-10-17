@@ -83,7 +83,7 @@ function TransformTestView:onBtnClick( name )
         }
         local data = {'ModifyURectTransfrom', 0, t}
         data = getUIData(data)
-        self.uiHandler:ChangeUILua(data)
+        self.uiHandler:ChangeUI(data)
     end
 end
 
