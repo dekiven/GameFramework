@@ -34,6 +34,10 @@ namespace GameFramework
         public float PaddingBottom;
         [HideInInspector]
         public int ItemNumPerStep = 1;
+        [HideInInspector]
+        public bool ShowItemIntegers = true;
+        [HideInInspector]
+        public float LineOffset = 2f; 
 
         #region 私有属性
         private ObjPool<ScrollItem> mItemPool;
@@ -193,14 +197,22 @@ namespace GameFramework
                     PaddingRight += space / 2;
                 }
                 space = useSize.y - mLinePerPage * ItemSize.y;
-                if (mLinePerPage > 1)
+                if(ShowItemIntegers)
                 {
-                    mContntSpace.y = space / (mLinePerPage - 1);
+                    if (mLinePerPage > 1)
+                    {
+                        mContntSpace.y = space / (mLinePerPage - 1);
+                    }
+                    else if (mLinePerPage == 1)
+                    {
+                        mContntSpace.y = mContntSpace.x;
+                    }
                 }
-                else if (mLinePerPage == 1)
+                else
                 {
-                    mContntSpace.y = mContntSpace.x;
+                    mContntSpace.y = LineOffset;
                 }
+
                 mTotalLines = Mathf.CeilToInt(dataCount / (float)mNumPerLine);
                 float height = PaddingTop + PaddingBottom + mTotalLines * ItemSize.y + (mTotalLines - 1) * mContntSpace.y;
                 content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
@@ -225,14 +237,22 @@ namespace GameFramework
                     PaddingBottom += space / 2;
                 }
                 space = useSize.x - mLinePerPage * ItemSize.x;
-                if (mLinePerPage > 1)
+                if(ShowItemIntegers)
                 {
-                    mContntSpace.x = space / (mLinePerPage - 1);
+                    if (mLinePerPage > 1)
+                    {
+                        mContntSpace.x = space / (mLinePerPage - 1);
+                    }
+                    else if (mLinePerPage == 1)
+                    {
+                        mContntSpace.x = mContntSpace.y;
+                    }
                 }
-                else if (mLinePerPage == 1)
+                else
                 {
-                    mContntSpace.x = mContntSpace.y;
+                    mContntSpace.x = LineOffset;
                 }
+
 
                 mTotalLines = Mathf.CeilToInt(dataCount / (float)mNumPerLine);
                 float width = PaddingLeft + PaddingRight + mTotalLines * ItemSize.x + (mTotalLines - 1) * mContntSpace.x;

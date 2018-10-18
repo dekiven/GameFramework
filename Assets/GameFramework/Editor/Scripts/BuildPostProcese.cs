@@ -3,7 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-#if UNITY_EDITOR_OSX
+#if UNITY_EDITOR_OSX && UNITY_IPHONE
 using UnityEditor.iOS.Xcode;
 
 //xcode导出项目修改参考：

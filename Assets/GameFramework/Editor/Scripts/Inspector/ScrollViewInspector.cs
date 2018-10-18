@@ -64,6 +64,7 @@ namespace GameFramework
             {
                 return;
             }
+            serializedObject.Update();
 
             #region 显示ScrollRect的属性
             // target控制动画开始播放
@@ -101,6 +102,15 @@ namespace GameFramework
             GUILayout.Space(5);
 
             mTarget.ItemNumPerStep = EditorGUILayout.IntField("ItemNumPerSte", mTarget.ItemNumPerStep);
+
+            string str = mTarget.ScrollType == ScrollViewType.Vertical ? "行" : "列";
+            SerializedProperty showItemIntegersProperty = serializedObject.FindProperty("ShowItemIntegers");
+            EditorGUILayout.PropertyField(showItemIntegersProperty, new GUIContent("显示整数" + str));
+            if (!showItemIntegersProperty.boolValue)
+            {
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("LineOffset"), new GUIContent(str + "间距"));
+            }
+            serializedObject.ApplyModifiedProperties();
         }
 
 
