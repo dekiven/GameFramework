@@ -553,6 +553,10 @@ namespace GameFramework
             //LogFile.Log("des:" + des);
             //LogFile.Log("src:" + src);
             WWW www = new WWW(src);
+            while(!www.isDone)
+            {
+                yield return null;
+            }
             yield return www;
             if (!string.IsNullOrEmpty(www.error))
             {
