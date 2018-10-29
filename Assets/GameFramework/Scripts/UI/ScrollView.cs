@@ -615,6 +615,10 @@ namespace GameFramework
 
         private void recoverAll()
         {
+            if(null == mCurItems)
+            {
+                return;
+            }
             //LogFile.Log("recoverAll 1 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
             for (int i = mCurItems.Count - 1; i > -1; --i)
             {

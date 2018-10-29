@@ -34,6 +34,7 @@ namespace GameFramework
                 UIHandlerData data = mList[i];
                 data.Dispose();
             }
+            mList.Clear();
         }
 
         private void convertLuaTable2Data(LuaTable luaTable)

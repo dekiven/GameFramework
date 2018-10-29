@@ -363,7 +363,7 @@ namespace GameFramework
             }
             LogFile.Error("不能连接资源服务器，关闭程序");
             yield return null;
-            Application.Quit();
+            //Application.Quit();
         }
 
         /// <summary>
