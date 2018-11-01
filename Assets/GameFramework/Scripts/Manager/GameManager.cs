@@ -216,5 +216,9 @@ namespace GameFramework
         {
             LogFile.WriteLine(LogFile.LogLevel.L_Warning, "LogEvent: " + msg);
         }
+
+        public void HandleWWWRstDel(string noticeKey, double progress, int index, string msg)
+        {
+        }
     }
 }

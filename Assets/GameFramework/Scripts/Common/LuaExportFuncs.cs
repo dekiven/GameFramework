@@ -133,6 +133,34 @@ namespace GameFramework
         }
         #endregion Res 释放相关
 
+        #region TimeOutWWW 相关
+        public static void DownloadFile(string noticeKey, LuaTable info, float timeoutSec=1f) 
+        {
+            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
+            t.DownloadFile(noticeKey, new WWWInfo(info), timeoutSec, GameManager.Instance.HandleWWWRstDel, null);
+        }
+        public static void DownloadFiles(string noticeKey, LuaTable infos, float timeoutSec= 1f) 
+        {
+            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
+            t.DownloadFiles(noticeKey, WWWInfo.GetListByLua(infos), timeoutSec, GameManager.Instance.HandleWWWRstDel, null);
+        }
+        public static void UploadFile(string noticeKey, LuaTable info, float timeoutSec= 1f) 
+        {
+            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
+            t.UploadFile(noticeKey, new WWWInfo(info), timeoutSec, GameManager.Instance.HandleWWWRstDel, null);
+        }
+        public static void UploadFiles(string noticeKey, LuaTable infos, float timeoutSec= 1f) 
+        {
+            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
+            t.UploadFiles(noticeKey, WWWUploadInfo.GetListByLua(infos), timeoutSec, GameManager.Instance.HandleWWWRstDel, null);
+        }
+        public static void RequestUrl(string noticeKey, string url, LuaFunction lua, float timeoutSec= 1f) 
+        {
+            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
+            t.RequestUrl(noticeKey, url, timeoutSec, null, lua);
+        }
+        #endregion TimeOutWWW 相关
+
         #region Test
         public static void TestDelegate(System.Action<float> action)
         {

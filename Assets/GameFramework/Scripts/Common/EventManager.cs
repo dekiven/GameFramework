@@ -176,15 +176,14 @@ namespace GameFramework
             EventPairList _list = null;
             if (!dic.TryGetValue(eventName, out _list))
             {
-                if (dic == sDicToMain)
-                {
-                    LogFile.Warn("sDicToMain do not have event named \"" + eventName + "\"");
-                }
-                else
-                {
-                    LogFile.Warn("sDicToThread do not have event named \"" + eventName + "\"");
-                }
-
+                //if (dic == sDicToMain)
+                //{
+                //    LogFile.Warn("sDicToMain do not have event named \"" + eventName + "\"");
+                //}
+                //else
+                //{
+                //    LogFile.Warn("sDicToThread do not have event named \"" + eventName + "\"");
+                //}
                 monitorExit(dic);
 
                 return false;
