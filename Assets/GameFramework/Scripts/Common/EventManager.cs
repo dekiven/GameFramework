@@ -14,7 +14,7 @@ namespace GameFramework
         public struct Pair
         {
             public object obj;
-            public string funcName;
+            public string eventName;
             public System.Reflection.MethodInfo method;
         };
 
@@ -24,6 +24,7 @@ namespace GameFramework
             public object[] args;
         };
 
+        //public delegate void ExternalNotifyDel(string eventName, object[] args);
 
         //----------------------------------- properties ------------------------------------------
         static EventPairDic sDicToMain = new EventPairDic();
@@ -35,6 +36,8 @@ namespace GameFramework
         static EventObjList sListToMainDoing = new EventObjList();
         static EventObjList sListToThreadDoing = new EventObjList();
 
+        //public static ExternalNotifyDel MainExternalDel;
+        //public static ExternalNotifyDel ThreadExternalDel;
 
         //-----------------------------------  methods --------------------------------------------
         public static void monitorEnter(object obj)
@@ -59,11 +62,11 @@ namespace GameFramework
 
         protected static bool _registerEvent(EventPairDic dic, string eventName, object obj, string funcName)
         {
-            _deregisterEvent(dic, eventName, obj, funcName);
+            _deregisterEvent(dic, eventName, obj);
 
             Pair pair = new Pair();
             pair.obj = obj;
-            pair.funcName = funcName;
+            pair.eventName = eventName;
             pair.method = obj.GetType().GetMethod(funcName);
             if (null == pair.method)
             {
@@ -88,17 +91,17 @@ namespace GameFramework
             return true;
         }
 
-        public static bool deregisterFromMain(string eventName, object obj, string funcName)
+        public static bool deregisterFromMain(string eventName, object obj)
         {
-            return _deregisterEvent(sDicToMain, eventName, obj, funcName);
+            return _deregisterEvent(sDicToMain, eventName, obj);
         }
 
-        public static bool deregisterFromThread(string eventName, object obj, string funcName)
+        public static bool deregisterFromThread(string eventName, object obj)
         {
-            return _deregisterEvent(sDicToThread, eventName, obj, funcName);
+            return _deregisterEvent(sDicToThread, eventName, obj);
         }
 
-        protected static bool _deregisterEvent(EventPairDic dic, string eventName, object obj, string funcName)
+        protected static bool _deregisterEvent(EventPairDic dic, string eventName, object obj)
         {
             monitorEnter(dic);
 
@@ -111,7 +114,7 @@ namespace GameFramework
 
             foreach (EventManager.Pair item in list)
             {
-                if (item.obj == obj && item.funcName == funcName)
+                if (item.obj == obj)
                 {
                     list.Remove(item);
                     break;
@@ -227,7 +230,7 @@ namespace GameFramework
             //    }
             //    sListToMainDoing.RemoveFirst();
             //}
-            _progressMainEvents(sDicToMain, sListToMainWait, sListToMainDoing);
+            _progressMainEvents(sDicToMain, sListToMainWait, sListToMainDoing, true);
         }
 
         public static void progressThreadEvents()
@@ -257,7 +260,7 @@ namespace GameFramework
             _progressMainEvents(sDicToThread, sListToThreadWait, sListToThreadDoing);
         }
 
-        private static void _progressMainEvents(EventPairDic dic, EventObjList listWait, EventObjList listDo)
+        private static void _progressMainEvents(EventPairDic dic, EventObjList listWait, EventObjList listDo, bool isMainThread=false)
         {
             monitorEnter(dic);
 
@@ -278,7 +281,7 @@ namespace GameFramework
                 }
                 catch (System.Exception e)
                 {
-                    LogFile.Error("progress view event error: func[" + item.info.funcName + "]; msg: " + e.ToString());
+                    LogFile.Error("progress "+ (isMainThread ? "main" : "thread") +" event error: event[" + item.info.eventName + "]; msg: " + e.ToString());
                 }
                 listDo.RemoveFirst();
             }

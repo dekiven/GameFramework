@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace GameFramework
 {
@@ -78,7 +79,7 @@ namespace GameFramework
         public void CallGlobalFunc(string funcName)
         {
             LuaFunction func = GetFunction(funcName);
-            if(null != func)
+            if (null != func)
             {
                 func.Call();
                 func.Dispose();
@@ -165,7 +166,7 @@ namespace GameFramework
         /// <param name="asbName">Asb name.</param>
         public void AddLuaBundle(string asbName)
         {
-            if(loader.beZip)
+            if (loader.beZip)
             {
                 if (!asbName.EndsWith(GameConfig.STR_ASB_EXT))
                 {
@@ -197,7 +198,61 @@ namespace GameFramework
             return lua.GetFunction(funcName);
         }
 
-        //public object[] CallFunction(string funcName, params object[] args)
+        public void CallFunction(string funcName, params object[] args)
+        {
+            LuaFunction func = GetFunction(funcName);
+            CallWithFunction(func, args);
+            if (null != func)
+            {
+                func.Dispose();
+                func = null;
+            }
+        }
+
+        public void CallWithFunction(LuaFunction func, object[] args)
+        {
+            if (null != func)
+            {
+                int len = 0;
+                if (null != args)
+                {
+                    len = args.Length;
+                }
+                switch (len)
+                {
+                    case 0:
+                        func.Call();
+                        break;
+                    case 1:
+                        func.Call(args[0]);
+                        break;
+                    case 2:
+                        func.Call(args[0], args[1]);
+                        break;
+                    case 3:
+                        func.Call(args[0], args[1], args[2]);
+                        break;
+                    case 4:
+                        func.Call(args[0], args[1], args[2], args[3]);
+                        break;
+                    case 5:
+                        func.Call(args[0], args[1], args[2], args[3], args[4]);
+                        break;
+                    case 6:
+                        func.Call(args[0], args[1], args[2], args[3], args[4], args[5]);
+                        break;
+                    case 7:
+                        func.Call(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+                        break;
+                    case 8:
+                        func.Call(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+                        break;
+                    case 9:
+                        func.Call(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+                        break;
+                }
+            }
+        }
         //{
         //    LuaFunction func = lua.GetFunction(funcName);
         //    if (func != null)

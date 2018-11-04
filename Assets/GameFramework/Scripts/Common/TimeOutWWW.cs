@@ -13,6 +13,11 @@ namespace GameFramework
 
         public static string STR_SUCCEEDED = "succeeded";
         public static string STR_FAILED = "failed";
+        /// <summary>
+        /// www 回调的间隔时间
+        /// </summary>
+        public float NotifyIterval = 0.5f;
+
 
         private WWW mWWW = null;
         private WWWRstDel mRstDel = null;
@@ -27,6 +32,7 @@ namespace GameFramework
         private int mDoneCount = 0;
         private WWWType mType = WWWType.download;
         private string mNoticeKey;
+        private float lastCallTime = 0;
 
 
         #region MonoBehaviour
@@ -65,6 +71,17 @@ namespace GameFramework
         }
         #endregion MonoBehaviour
 
+        /// <summary>
+        /// 下载一个文件
+        /// </summary>
+        /// <param name="noticeKey">下载的key，用于多个下载组件时区分</param>
+        /// <param name="info">下载的信息</param>
+        /// <param name="timeoutSec">超时时间（秒）</param>
+        /// <param name="del">下载进度回调
+        /// (string noticeKey, double progress, int index, string msg)
+        /// 下载key,下载进度（-1代表有错，1代表完成）,当前下载的文件index,msg信息（当progress==1且msg=="succeeded"才表示全部下载完成）
+        /// </param>
+        /// <param name="lua">lua回调,参数跟del相同</param>
         public void DownloadFile(string noticeKey, WWWInfo info, float timeoutSec, WWWRstDel del, LuaFunction lua)
         {
             mType = WWWType.download;
@@ -78,6 +95,17 @@ namespace GameFramework
             mList.Add(info);
         }
 
+        /// <summary>
+        /// 下载多个文件
+        /// </summary>
+        /// <param name="noticeKey">下载的key，用于多个下载组件时区分</param>
+        /// <param name="infos">下载的信息</param>
+        /// <param name="timeoutSec">超时时间（秒）</param>
+        /// <param name="del">下载进度回调
+        /// (string noticeKey, double progress, int index, string msg)
+        /// 下载key,下载进度（-1代表有错；1代表全部下载过[可能完成或部分失败]）,当前下载的文件index,msg信息（当progress==1且msg=="succeeded"才表示全部下载成功）
+        /// </param>
+        /// <param name="lua">lua回调,参数跟del相同</param>
         public void DownloadFiles(string noticeKey, List<WWWInfo> infos, float timeoutSec, WWWRstDel del, LuaFunction lua)
         {
             mType = WWWType.download;
@@ -100,6 +128,17 @@ namespace GameFramework
             mFialedList.Clear();
         }
 
+        /// <summary>
+        /// 上传一个文件
+        /// </summary>
+        /// <param name="noticeKey">下载的key，用于多个上传组件时区分</param>
+        /// <param name="info">上传的信息</param>
+        /// <param name="timeoutSec">超时时间（秒）</param>
+        /// <param name="del">上传进度回调
+        /// (string noticeKey, double progress, int index, string msg);
+        /// 上传key,上传进度（-1代表有错；1代表全部上传过[可能完成或部分失败]）,当前上传的文件index,msg信息（当progress==1且msg=="succeeded"才表示上传成功）
+        /// </param>
+        /// <param name="lua">lua回调,参数跟del相同</param>
         public void UploadFile(string noticeKey, WWWInfo info, float timeoutSec, WWWRstDel del, LuaFunction lua)
         {
             mType = WWWType.upload;
@@ -113,6 +152,17 @@ namespace GameFramework
             mList.Add(info);
         }
 
+        /// <summary>
+        /// 上传多个文件
+        /// </summary>
+        /// <param name="noticeKey">上传的key，用于多个上传组件时区分</param>
+        /// <param name="infos">上传的信息</param>
+        /// <param name="timeoutSec">超时时间（秒）</param>
+        /// <param name="del">上传进度回调
+        /// (string noticeKey, double progress, int index, string msg)
+        /// 上传key,下载进度（-1代表有错；1代表全部上传过[可能完成或部分失败]）,index当前上传的文件index（0开始）,msg信息（当progress==1且msg=="succeeded"才表示上传成功）
+        /// </param>
+        /// <param name="lua">lua回调,参数跟del相同</param>
         public void UploadFiles(string noticeKey, List<WWWInfo> infos, float timeoutSec, WWWRstDel del, LuaFunction lua)
         {
             mType = WWWType.upload;
@@ -135,6 +185,17 @@ namespace GameFramework
             mFialedList.Clear();
         }
 
+        /// <summary>
+        /// 请求某个链接，并获取其返回值或错误信息
+        /// </summary>
+        /// <param name="noticeKey">请求的key，当有多个组件时区分</param>
+        /// <param name="url">请求地址</param>
+        /// <param name="timeoutSec">超时时间（秒）</param>
+        /// <param name="del">请求回调:
+        /// (string noticeKey, double progress, int index, string msg)
+        /// 请求key,请求进度（-1代表有错；1代表成功）,index无意义,msg信息（成返回结果，失败返回错误信息）
+        /// </param>
+        /// <param name="lua">lua回调,参数跟del相同</param>
         public void RequestUrl(string noticeKey, string url, float timeoutSec, WWWRstDel del, LuaFunction lua)
         {
             mType = WWWType.request;
@@ -158,18 +219,22 @@ namespace GameFramework
 
         private void callback(double progress, string msg)
         {
-            if (null != mRstDel)
+            if (lastCallTime+NotifyIterval >= Time.time || Math.Abs(progress).Equals(1d))
             {
-                mRstDel(mNoticeKey, progress, mDoneCount, msg);
-            }
-            if (null != mLuaFunc)
-            {
-                mLuaFunc.Call(mNoticeKey, progress, mDoneCount, msg);
-            }
-            if (progress >= 1)
-            {
-                clear();
-            }
+                if (null != mRstDel)
+                {
+                    mRstDel(mNoticeKey, progress, mDoneCount, msg);
+                }
+                if (null != mLuaFunc)
+                {
+                    mLuaFunc.Call(mNoticeKey, progress, mDoneCount, msg);
+                }
+                if (progress >= 1)
+                {
+                    clear();
+                }
+                lastCallTime = Time.time;
+            }            
         }
 
         private void clear()
@@ -264,10 +329,12 @@ namespace GameFramework
                         }
                         if (string.IsNullOrEmpty(file.error))
                         {
-                            WWWForm form = new WWWForm();                                       //WWWForm是一个辅助类，该类用于生成表单数据，                                                                           //然后WWW类就可以将该表单数据post到web服务器上了
-                            form.AddBinaryData(uploadInfo.FieldName, file.bytes, uploadInfo.SaveName, uploadInfo.MimeType);         //添加二进制文件到表单，使用该函数可以上传文件或者图片到Web服务器     
+                            //WWWForm是一个辅助类，该类用于生成表单数据，
+                            //然后WWW类就可以将该表单数据post到web服务器上了
+                            WWWForm form = new WWWForm();
+                            //添加二进制文件到表单，使用该函数可以上传文件或者图片到Web服务器     
+                            form.AddBinaryData(uploadInfo.FieldName, file.bytes, uploadInfo.SaveName, uploadInfo.MimeType);
                             mWWW = new WWW(uploadInfo.Url, form);
-
                         }
                     }
                 }
@@ -289,7 +356,7 @@ namespace GameFramework
                 {
                     if (mWWW.isDone)
                     {
-                        if (string.IsNullOrEmpty(mWWW.error))
+                        if (!string.IsNullOrEmpty(mWWW.error))
                         {
                             //WWW上传或下载失败
                             mWWW.Dispose();
@@ -318,7 +385,7 @@ namespace GameFramework
                                     fsDes.Close();
                                 }
                             }
-                                
+
                             callback(getProgress(0), "done");
                         }
                     }
@@ -364,15 +431,15 @@ namespace GameFramework
                 yield return checkWWWTimeout(mTimeoutSec);
                 if (mWWW.isDone)
                 {
-                    if (string.IsNullOrEmpty(mWWW.error))
+                    if (!string.IsNullOrEmpty(mWWW.error))
                     {
                         //请求失败
-                        callback(1, STR_FAILED);
+                        callback(1, mWWW.error);
                     }
                     else
                     {
                         //请求完成
-                        callback(1, STR_SUCCEEDED);
+                        callback(1, mWWW.text);
                     }
                 }
             }
@@ -392,7 +459,7 @@ namespace GameFramework
 
         }
 
-        public WWWInfo(string url, string targetPath, long size=0, Dictionary<string, string> headers = null)
+        public WWWInfo(string url, string targetPath, long size = 0, Dictionary<string, string> headers = null)
         {
             Url = url;
             TargetPath = targetPath;
@@ -408,7 +475,7 @@ namespace GameFramework
                 TargetPath = table.RawGet<string, string>("targetPath");
                 Size = table.RawGet<string, long>("size");
                 LuaTable ht = table.RawGet<string, LuaTable>("headers");
-                if(null != ht)
+                if (null != ht)
                 {
                     Headers = ht.ToDictTable<string, string>().ToDictionary();
                     ht.Dispose();
@@ -456,14 +523,14 @@ namespace GameFramework
         {
         }
 
-        public WWWUploadInfo(string url, string targetPath, string fieldName, string saveName="", string mimeType = "", long size = 0, Dictionary<string, string> headers = null) : base(url, targetPath, size, headers)
+        public WWWUploadInfo(string url, string targetPath, string fieldName, string saveName = "", string mimeType = "", long size = 0, Dictionary<string, string> headers = null) : base(url, targetPath, size, headers)
         {
             FieldName = fieldName;
             SaveName = saveName;
-            if(string.IsNullOrEmpty(SaveName))
+            if (string.IsNullOrEmpty(SaveName))
             {
                 SaveName = Tools.FormatPathStr(targetPath);
-                SaveName = SaveName.Substring(SaveName.LastIndexOf("/", StringComparison.Ordinal)+1);
+                SaveName = SaveName.Substring(SaveName.LastIndexOf("/", StringComparison.Ordinal) + 1);
             }
             MimeType = mimeType;
             if (string.IsNullOrEmpty(MimeType))
@@ -520,7 +587,7 @@ namespace GameFramework
             #region GetMimeTypeByName
             string type = "application/octet-stream";
             string extension = Path.GetExtension(saveName);
-            switch(extension)
+            switch (extension)
             {
                 case ".swf":
                     return "application/x-shockwave-flash";

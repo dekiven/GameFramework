@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LuaInterface;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -16,7 +17,9 @@ namespace GameFramework
 
         //是否开启线程处理EventManager线程上的消息
         private bool progressThreadEvent = GameConfig.progressThreadEvent;
-        public int ScreenSleepTime { get { return Screen.sleepTimeout; } set { Screen.sleepTimeout = value; }}
+        private LuaFunction mLuaNotifyFunc;
+
+        public int ScreenSleepTime { get { return Screen.sleepTimeout; } set { Screen.sleepTimeout = value; } }
 
         #region MonoBehaviour
         void Awake()
@@ -44,13 +47,22 @@ namespace GameFramework
             {
                 StartGameLogic();
             }
-            
+
         }
 
         void Update()
         {
             //处理事件管理器在主线程的消息,暂时没有处理其他线程的事件分发
             EventManager.progressMainEvents();
+        }
+
+        void OnDestroy()
+        {
+            if(null != mLuaNotifyFunc)
+            {
+                mLuaNotifyFunc.Dispose();
+                mLuaNotifyFunc = null;
+            }
         }
 
         /// <summary>
@@ -107,21 +119,18 @@ namespace GameFramework
             {
                 LogFile.Log("启动Lua虚拟机:" + mLuaMgr);
                 mLuaMgr.InitStart();
-                //mLuaMgr.CallGlobalFunc("TestLoadRes");
-
-                //test
-                EventManager.notifyAll("LogEvent", new string[] { "test LogEvent" });
+                mLuaNotifyFunc = mLuaMgr.GetFunction("OnNotice");
             });
         }
 
         public void OnMessage(string msg)
         {
             List<string> par = new List<string>(Regex.Split(msg, "__;__", RegexOptions.IgnoreCase));
-            if(par.Count >= 2)
+            if (par.Count >= 2)
             {
                 string eventName = par[0];
                 par.RemoveAt(0);
-                EventManager.notifyAll(eventName, par.ToArray());
+                NotifyLua(eventName, par.ToArray());
             }
         }
         #endregion
@@ -219,6 +228,15 @@ namespace GameFramework
 
         public void HandleWWWRstDel(string noticeKey, double progress, int index, string msg)
         {
+            NotifyLua("www", new object[] { noticeKey , progress, index, msg});
+        }
+
+        public void NotifyLua(string eventName, object[] args)
+        {
+            if (null != mLuaNotifyFunc)
+            {
+                mLuaMgr.CallWithFunction(mLuaNotifyFunc, args);
+            }
         }
     }
 }
