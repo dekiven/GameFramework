@@ -30,7 +30,7 @@ namespace GameFramework
 
         public UIHandlerData(LuaTable luaTable)
         {
-            if(null == luaTable)
+            if (null == luaTable)
             {
                 return;
             }
@@ -38,28 +38,13 @@ namespace GameFramework
             FuncStr = luaTable.RawGetIndex<string>(++i).ToLower();
             UIName = string.Empty;
             UIIndex = luaTable.RawGetIndex<int>(++i);
-            if (FuncStr.EndsWith("sprite"))
-            {
-                string spriteStr = luaTable.RawGetIndex<string>(++i);
-                string[] _params = spriteStr.Split(',');
-                if (_params.Length == 3)
-                {
-                    GameSpriteAtlasManager.Instance.GetSpriteSync(_params[0], _params[1], _params[2], (Sprite s) =>
-                    {
-                        Content = s;
-                    });
-                }
-                else
-                {
 
-                    LogFile.Warn("UIHandlerData error => can't get sprite:" + spriteStr);
-                }
-            }
-            else if (FuncStr.EndsWith("color"))
+            //else
+            if (FuncStr.EndsWith("color", StringComparison.Ordinal))
             {
                 Content = Tools.GenColorByStr(luaTable.RawGetIndex<string>(++i));
             }
-            else if (FuncStr.EndsWith("rect"))
+            else if (FuncStr.EndsWith("rect", StringComparison.Ordinal))
             {
                 Content = Tools.GenRectByStr(luaTable.RawGetIndex<string>(++i));
             }
@@ -94,5 +79,53 @@ namespace GameFramework
                 Content = null;
             }
         }
+
+        #region 静态方法
+        public static UIHandlerData GetData(string funcStr, string uiName, System.Object content)
+        {
+            UIHandlerData data = new UIHandlerData(funcStr, uiName, content);
+            checkSyncData(ref data);
+            return data;
+        }
+
+        public static UIHandlerData GetData(string funcStr, int uiIndex, System.Object content)
+        {
+            UIHandlerData data = new UIHandlerData(funcStr, uiIndex, content);
+            checkSyncData(ref data);
+            return data;
+        }
+
+        public static UIHandlerData GetData(LuaTable luaTable)
+        {
+            UIHandlerData data = new UIHandlerData(luaTable);
+            checkSyncData(ref data);
+            return data;
+        }
+
+        static void checkSyncData(ref UIHandlerData data)
+        {
+            if (data.FuncStr.EndsWith("sprite", StringComparison.Ordinal))
+            {
+                Sprite sprite = data.Content as Sprite;
+                if (null != sprite)
+                {
+                    return;
+                }
+                else
+                {
+                    string spriteStr = data.Content as string;
+                    if(string.IsNullOrEmpty(spriteStr))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        data = new UIHandlerDataSync(data);
+                    }
+
+                }
+            }
+        }
+        #endregion
     }
 }

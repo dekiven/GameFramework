@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Collections;
 using System.Text;
+using System;
 
 namespace LuaInterface
 {
@@ -125,7 +126,7 @@ namespace LuaInterface
 
             if (Path.IsPathRooted(fileName))
             {
-                if (!fileName.EndsWith(".lua"))
+                if (!fileName.EndsWith(".lua", StringComparison.Ordinal))
                 {
                     fileName += ".lua";
                 }
@@ -133,7 +134,7 @@ namespace LuaInterface
                 return fileName;
             }
 
-            if (fileName.EndsWith(".lua"))
+            if (fileName.EndsWith(".lua", StringComparison.Ordinal))
             {
                 fileName = fileName.Substring(0, fileName.Length - 4);
             }
@@ -184,7 +185,7 @@ namespace LuaInterface
                 return fileName;
             }
 
-            if (fileName.EndsWith(".lua"))
+            if (fileName.EndsWith(".lua", StringComparison.Ordinal))
             {
                 fileName = fileName.Substring(0, fileName.Length - 4);
             }
@@ -240,7 +241,7 @@ namespace LuaInterface
                     fileName = fileName.Substring(pos + 1);
                 }
 
-                if (!fileName.EndsWith(".lua"))
+                if (!fileName.EndsWith(".lua", StringComparison.Ordinal))
                 {
                     fileName += ".lua";
                 }

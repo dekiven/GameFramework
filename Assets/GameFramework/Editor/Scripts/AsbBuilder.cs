@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System;
 
 namespace GameFramework
 {
@@ -16,7 +17,7 @@ namespace GameFramework
         public static void BuildAsb(string path, BuildAssetBundleOptions opt = BuildAssetBundleOptions.None, BuildTarget target = BuildTarget.StandaloneWindows)
         {
             string absFolder = GetAsbFolderByTarget(target);
-            if (!path.EndsWith("/" + absFolder))
+            if (!path.EndsWith("/" + absFolder, StringComparison.Ordinal))
             {
                 path = Tools.PathCombine(path, absFolder);
             }
@@ -26,7 +27,7 @@ namespace GameFramework
                 return;
             }
             Tools.CheckDirExists(path, true);
-            BuildPipeline.BuildAssetBundles(path, BuildAssetBundleOptions.None, target);
+            BuildPipeline.BuildAssetBundles(path, opt, target);
 
             renameFiles();
 
@@ -36,7 +37,7 @@ namespace GameFramework
         public static void BuildAsb(string path, AssetBundleBuild[] builds, BuildAssetBundleOptions opt = BuildAssetBundleOptions.None, BuildTarget target = BuildTarget.StandaloneWindows)
         {
             string absFolder = GetAsbFolderByTarget(target);
-            if (!path.EndsWith("/" + absFolder))
+            if (!path.EndsWith("/" + absFolder, StringComparison.Ordinal))
             {
                 path = Tools.PathCombine(path, absFolder);
             }
@@ -46,7 +47,7 @@ namespace GameFramework
                 return;
             }
             Tools.CheckDirExists(path, true);
-            BuildPipeline.BuildAssetBundles(path, builds, BuildAssetBundleOptions.None, target);
+            BuildPipeline.BuildAssetBundles(path, builds, opt, target);
 
             renameFiles();
 
@@ -101,7 +102,7 @@ namespace GameFramework
         /// <summary>
         /// 按平台打包所有资源代码
         /// </summary>
-        /// <param name="t"></param>
+        /// <param name="config"></param>
         public static void BuildAllRes(BuilderConfig config)
         {
             mConfig = config;
@@ -232,7 +233,7 @@ namespace GameFramework
 
         public static void EncodeLuaFile(string srcFile, string outFile, BuilderConfig config)
         {
-            if (!srcFile.ToLower().EndsWith(".lua"))
+            if (!srcFile.ToLower().EndsWith(".lua", StringComparison.Ordinal))
             {
                 File.Copy(srcFile, outFile, true);
                 return;

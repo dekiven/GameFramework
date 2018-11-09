@@ -25,6 +25,7 @@ using UnityEngine;
 using LuaInterface;
 using System.IO;
 using System.Text;
+using System;
 
 public class LuaResLoader : LuaFileUtils
 {
@@ -97,7 +98,7 @@ public class LuaResLoader : LuaFileUtils
 
     byte[] ReadResourceFile(string fileName)
     {
-        if (!fileName.EndsWith(".lua"))
+        if (!fileName.EndsWith(".lua", StringComparison.Ordinal))
         {
             fileName += ".lua";
         }
@@ -117,7 +118,7 @@ public class LuaResLoader : LuaFileUtils
 
     byte[] ReadDownLoadFile(string fileName)
     {
-        if (!fileName.EndsWith(".lua"))
+        if (!fileName.EndsWith(".lua", StringComparison.Ordinal))
         {
             fileName += ".lua";
         }

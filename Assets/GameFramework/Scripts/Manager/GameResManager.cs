@@ -185,6 +185,10 @@ namespace GameFramework
             LoadRes<UObj>(asbName, string.Empty
             , delegate (UObj obj)
             {
+                if (obj != null)
+                {
+                    LogFile.Log(obj.ToString());
+                }
                 AssetBundleInfo info = GetLoadedAssetBundle(Tools.GetAsbName(asbName));
                 bool rst = false;
                 string loadName = "";
@@ -290,7 +294,7 @@ namespace GameFramework
             string path = abName;
             // manifest Assetbundle文件没有后缀，文件名跟release的Assetbundle根目录同名
             bool isManifest = string.Equals(GameConfig.STR_ASB_MANIFIST, path);
-            if (path.EndsWith(GameConfig.STR_ASB_EXT))
+            if (path.EndsWith(GameConfig.STR_ASB_EXT, StringComparison.Ordinal))
             {
                 //isManifest = false;
                 path = path.Substring(0, path.Length - GameConfig.STR_ASB_EXT.Length);

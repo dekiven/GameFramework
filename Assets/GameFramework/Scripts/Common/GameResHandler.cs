@@ -287,7 +287,7 @@ namespace GameFramework
 
         public string FixResName(string name)
         {
-            if (null != Suffix && !name.EndsWith(Suffix))
+            if (null != Suffix && !name.EndsWith(Suffix, StringComparison.Ordinal))
             {
                 name = name + Suffix;
             }

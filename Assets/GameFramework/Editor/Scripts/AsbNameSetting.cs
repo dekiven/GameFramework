@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System;
 
 namespace GameFramework
 {
@@ -53,7 +54,7 @@ namespace GameFramework
         private static void SetBundleNameByPath(string path)
         {
             string fullPath = path;
-            if (!Path.IsPathRooted(path) && !path.StartsWith(Application.dataPath))
+            if (!Path.IsPathRooted(path) && !path.StartsWith(Application.dataPath, StringComparison.Ordinal))
             {
                 fullPath = Application.dataPath.Replace("Assets", path);
             }
@@ -116,7 +117,7 @@ namespace GameFramework
         private static void clearBundleNameByPath(string path)
         {
             string fullPath = path;
-            if (!Path.IsPathRooted(path) && !path.StartsWith(Application.dataPath))
+            if (!Path.IsPathRooted(path) && !path.StartsWith(Application.dataPath, StringComparison.Ordinal))
             {
                 fullPath = Application.dataPath.Replace("Assets", path);
             }
@@ -127,7 +128,7 @@ namespace GameFramework
 
             if (File.Exists(fullPath))
             {
-                if (!path.EndsWith(".meta"))
+                if (!path.EndsWith(".meta", StringComparison.Ordinal))
                 {
                     SetBundleName(path, null);
                 }
@@ -137,7 +138,7 @@ namespace GameFramework
                 string[] files = Directory.GetFiles(fullPath, "*.*", SearchOption.AllDirectories);
                 foreach (var f in files)
                 {
-                    if (!path.EndsWith(".meta"))
+                    if (!path.EndsWith(".meta", StringComparison.Ordinal))
                     {
                         string assetPath = Tools.RelativeTo(f, Application.dataPath, true);
                         SetBundleName(assetPath, null);

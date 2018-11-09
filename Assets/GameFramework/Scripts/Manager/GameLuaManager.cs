@@ -168,7 +168,7 @@ namespace GameFramework
         {
             if (loader.beZip)
             {
-                if (!asbName.EndsWith(GameConfig.STR_ASB_EXT))
+                if (!asbName.EndsWith(GameConfig.STR_ASB_EXT, StringComparison.Ordinal))
                 {
                     asbName = asbName + GameConfig.STR_ASB_EXT;
                 }

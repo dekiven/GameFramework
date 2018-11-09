@@ -37,6 +37,21 @@ namespace GameFramework
             mList.Clear();
         }
 
+        public void ClearSyncRst()
+        {
+            if (null != mList)
+            {
+                for (int i = 0; i < mList.Count; ++i)
+                {
+                    UIHandlerDataSync ds = mList[i] as UIHandlerDataSync;
+                    if (null != ds)
+                    {
+                        ds.OnSyncRst = null;
+                    }
+                }
+            }
+        }
+
         private void convertLuaTable2Data(LuaTable luaTable)
         {
             if(null != luaTable)
@@ -46,7 +61,7 @@ namespace GameFramework
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        mList.Add(new UIHandlerData(luaTable.RawGetIndex<LuaTable>(i+1)));
+                        mList.Add(UIHandlerData.GetData(luaTable.RawGetIndex<LuaTable>(i+1)));
                     }
                 }
                 luaTable.Dispose();

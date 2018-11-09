@@ -246,13 +246,26 @@ namespace GameFramework
                     }
                 //break;
                 case "setimagesprite":
+                    Sprite s = data.Content as Sprite;
+                    if (null == s)
+                    {
+                        UIHandlerDataSync ds = data as UIHandlerDataSync;
+                        if (null != ds && null != ds.ContentBefor)
+                        {
+                            ds.OnSyncRst = (obj) =>
+                            {
+                                ChangeUI(ds);
+                            };
+                            return true;
+                        }
+                    }
                     if (uiIndex != -1)
                     {
-                        return SetImageSprite(uiIndex, (Sprite)data.Content);
+                        return SetImageSprite(uiIndex, s);
                     }
                     else
                     {
-                        return SetImageSprite(uiName, (Sprite)data.Content);
+                        return SetImageSprite(uiName, s);
                     }
                 //break;
                 case "setrawimagetexture":
@@ -1177,6 +1190,16 @@ namespace GameFramework
         #endregion
 
         #region Image
+        public bool SetImageSprite(int index, string sprite)
+        {
+            return ChangeUI(UIHandlerData.GetData("setimagesprite", index, sprite));
+        }
+
+        public bool SetImageSprite(string cName, string sprite)
+        {
+            return ChangeUI(UIHandlerData.GetData("setimagesprite", cName, sprite));
+        }
+
         public bool SetImageSprite(int index, Sprite sprite)
         {
             Image ui = GetCompByIndex<Image>(index);

@@ -16,6 +16,8 @@ namespace GameFramework
         public DelBtnClickedIndex OnBtnClickedIndex;
         public RectTransform rectTransform { get { return transform as RectTransform; }}
 
+        UIItemData mItemData = null;
+
         #region MonoBehaviour
         void Awake()
         {
@@ -77,12 +79,15 @@ namespace GameFramework
         {
             if(null != UIHandler)
             {
-                //test
-                //UIHandler.SetTextString(0, scrollItemData.Info);
+                if(null != mItemData)
+                {
+                    mItemData.ClearSyncRst();
+                }
                 for (int i = 0; i < scrollItemData.DataList.Count; i++)
                 {
                     UIHandler.ChangeUI(scrollItemData.DataList[i]);
                 }
+                mItemData = scrollItemData;
             }
         }
     }

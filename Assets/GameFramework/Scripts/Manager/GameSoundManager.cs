@@ -20,7 +20,10 @@ namespace GameFramework
             { 
                 mPlayBgm = value;
                 GameConfig.IsPlayBgm = value;
-
+                if(!value)
+                {
+                    StopBgm();
+                }
             } 
         }
         public bool IsPlaySound 
@@ -204,6 +207,19 @@ namespace GameFramework
 
         }
 
+        public void PauseBgm()
+        {
+            mBgmSource.Pause();
+        }
+
+        public void ResumeBgm()
+        {
+            if(mPlayBgm && null != mBgmSource.clip)
+            {
+                mBgmSource.Play();
+            }
+        }
+
         public void PlaySound(string asbName, string audioName)
         {
             if(!mPlaySound)
@@ -221,6 +237,15 @@ namespace GameFramework
                 mAudios.Load(asbName, audioName, STR_SOUND, true);
             }
 
+        }
+
+        public void StopAllSound()
+        {
+            for (int i = 0; i < mPlayingSources.Count; ++i)
+            {
+                AudioSource audioSource = mPlayingSources[i];
+                audioSource.Stop();
+            }
         }
 
         public void SetCurGroup(string group)
@@ -296,7 +321,7 @@ namespace GameFramework
             source.clip = audioClip;
             source.Play();
             source.volume = mSoundVolume;
-            //TODO:sound AudioSource的回收
+            //lateupdate检测到停止播放则回收
             mPlayingSources.Add(source);
             return true;
         }

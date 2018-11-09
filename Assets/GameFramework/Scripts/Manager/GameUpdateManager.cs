@@ -331,6 +331,10 @@ namespace GameFramework
                                         //StartCoroutine(CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback));
                                         updateMsgInfo("下载中...");
                                         updateSlider(0f);
+                                        //当有资源更新时，清空缓存
+                                        //TODO:优化，针对更新清理缓存(当前清理所有assetbundle缓存)
+                                        Caching.ClearCache();
+                                        //Caching.ClearAllCachedVersions(asbName);
                                         yield return CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback);
                                     }
                                     yield break;
