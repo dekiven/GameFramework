@@ -246,6 +246,17 @@ namespace GameFramework
                     }
                 //break;
                 case "setimagesprite":
+                    if (string.IsNullOrEmpty(data.Content as string))
+                    {
+                        if (uiIndex != -1)
+                        {
+                            return SetImageSprite(uiIndex, data.Content as string);
+                        }
+                        else
+                        {
+                            return SetImageSprite(uiName, data.Content as string);
+                        }
+                    }
                     Sprite s = data.Content as Sprite;
                     if (null == s)
                     {

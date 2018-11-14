@@ -14,7 +14,7 @@ namespace GameFramework
 
         public UIHandlerData(string funcStr, string uiName, System.Object content)
         {
-            FuncStr = funcStr;
+            FuncStr = funcStr.ToLower();
             UIName = uiName;
             UIIndex = -1;
             Content = content;
@@ -22,7 +22,7 @@ namespace GameFramework
 
         public UIHandlerData(string funcStr, int uiIndex, System.Object content)
         {
-            FuncStr = funcStr;
+            FuncStr = funcStr.ToLower();
             UIName = string.Empty;
             UIIndex = uiIndex;
             Content = content;
