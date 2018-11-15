@@ -25,8 +25,7 @@ namespace GameFramework
         Dictionary<string, AssetBundleInfo> m_LoadedAssetBundles = new Dictionary<string, AssetBundleInfo>();
         Dictionary<string, List<LoadAssetRequest>> m_LoadRequests = new Dictionary<string, List<LoadAssetRequest>>();
 
-        Dictionary<string, Dictionary<string, int>> mGroups
- = new Dictionary<string, Dictionary<string, int>>();
+        Dictionary<string, Dictionary<string, int>> mGroups = new Dictionary<string, Dictionary<string, int>>();
 
         //string mResPath = "";
 

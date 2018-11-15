@@ -9,17 +9,42 @@ namespace  GameFramework {
     /// </summary>
     public class GameCoroutineManager : SingletonComp<GameCoroutineManager>
     {
-        //TODO:
-        public new int StartCoroutine(IEnumerator routine)
+        Dictionary<int, Coroutine> sMap;
+
+        void Awake()
         {
-            base.StartCoroutine(routine);
-            return -1;
+            sMap = new Dictionary<int, Coroutine>();
         }
 
-        //void test()
-        //{
-        //    StartCoroutine
-        //}
+        public int StartCor(IEnumerator routine)
+        {
+            Coroutine coroutine = StartCoroutine(routine);
+            if(null != coroutine)
+            {
+                int hashcode = coroutine.GetHashCode();
+                sMap[hashcode] = coroutine;
+                return hashcode;
+            }
+            return 0;
+        }
+
+        public bool StopCor(int hashCode)
+        {
+            Coroutine coroutine;
+            if(sMap.TryGetValue(hashCode, out coroutine))
+            {
+                base.StopCoroutine(coroutine);
+                sMap.Remove(hashCode);
+                return true;
+            }
+            return false;
+        }
+
+        public void StopAllCors()
+        {
+            base.StopAllCoroutines();
+            sMap.Clear();
+        }
     }
 }
 
