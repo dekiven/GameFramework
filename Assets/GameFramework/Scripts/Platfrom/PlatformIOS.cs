@@ -22,12 +22,12 @@ namespace GameFramework
             GFSetNoticeObFunc(gameobjName, funcName);
         }
 
-        public override void TakeAlbum()
+        public override void TakeImageAlbum()
         {
             GFTakePhoto();
         }
 
-        public override void TakePhoto()
+        public override void TakeImagePhoto()
         {
             GFTakeAlbum();
         }

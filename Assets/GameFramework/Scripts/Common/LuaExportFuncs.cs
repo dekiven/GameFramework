@@ -154,10 +154,10 @@ namespace GameFramework
             TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
             t.UploadFiles(noticeKey, WWWUploadInfo.GetListByLua(infos), timeoutSec, GameManager.Instance.HandleWWWRstDel, null);
         }
-        public static void RequestUrl(string noticeKey, string url, LuaFunction lua, float timeoutSec= 1f) 
+        public static void RequestUrl(string url, LuaFunction lua, float timeoutSec= 1f) 
         {
             TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.RequestUrl(noticeKey, url, timeoutSec, null, lua);
+            t.RequestUrl(url, timeoutSec, null, lua);
         }
         #endregion TimeOutWWW 相关
 

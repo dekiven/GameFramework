@@ -10,6 +10,7 @@ namespace GameFramework
     public class TimeOutWWW : MonoBehaviour
     {
         public delegate void WWWRstDel(string noticeKey, double progress, int index, string msg);
+        public delegate void WWWUrlRstDel(bool rst, string msg);
 
         public static string STR_SUCCEEDED = "succeeded";
         public static string STR_FAILED = "failed";
@@ -21,6 +22,7 @@ namespace GameFramework
 
         private WWW mWWW = null;
         private WWWRstDel mRstDel = null;
+        private WWWUrlRstDel mUrlRstDel = null;
         private LuaFunction mLuaFunc = null;
         private float mTimeoutSec = 1f;
         private Coroutine mCoroutine = null;
@@ -44,9 +46,15 @@ namespace GameFramework
 
         void Start()
         {
-            if (null != mList && mList.Count > 0)
+            if (mList.Count > 0)
             {
-                startNewWWW();
+                if (mType == WWWType.request)
+                {
+                    startUrlWWW();
+                }else
+                {
+                    startNewWWW();
+                }
             }
         }
 
@@ -188,23 +196,24 @@ namespace GameFramework
         /// <summary>
         /// 请求某个链接，并获取其返回值或错误信息
         /// </summary>
-        /// <param name="noticeKey">请求的key，当有多个组件时区分</param>
         /// <param name="url">请求地址</param>
         /// <param name="timeoutSec">超时时间（秒）</param>
         /// <param name="del">请求回调:
-        /// (string noticeKey, double progress, int index, string msg)
-        /// 请求key,请求进度（-1代表有错；1代表成功）,index无意义,msg信息（成返回结果，失败返回错误信息）
+        /// (bool rst, string msg)
+        /// rst 表示请求是否成功,msg信息（成返回结果，失败返回错误信息）
         /// </param>
         /// <param name="lua">lua回调,参数跟del相同</param>
-        public void RequestUrl(string noticeKey, string url, float timeoutSec, WWWRstDel del, LuaFunction lua)
+        public void RequestUrl(string url, float timeoutSec, WWWUrlRstDel del, LuaFunction lua)
         {
             mType = WWWType.request;
-            mRstDel = del;
+            mUrlRstDel = del;
             setLuaCallback(lua);
             mTimeoutSec = timeoutSec;
-            mNoticeKey = noticeKey;
 
-            mWWW = new WWW(url);
+            mList.Add(new WWWInfo()
+            {
+                Url = url,
+            });
         }
         #region 私有方法
         private void setLuaCallback(LuaFunction lua)
@@ -235,6 +244,18 @@ namespace GameFramework
                 }
                 lastCallTime = Time.time;
             }            
+        }
+
+        private void callback(bool rst, string msg)
+        {
+            if (null != mUrlRstDel)
+            {
+                mUrlRstDel(rst, msg);
+            }
+            if (null != mLuaFunc)
+            {
+                mLuaFunc.Call(rst, mDoneCount, msg);
+            }
         }
 
         private void clear()
@@ -294,11 +315,11 @@ namespace GameFramework
             }
         }
 
-        private void startWithWWW()
+        private void startUrlWWW()
         {
-            if (null == mCoroutine && null == mWWW)
+            if (null == mCoroutine)
             {
-                mCoroutine = StartCoroutine(withWww());
+                mCoroutine = StartCoroutine(withUrlWww());
             }
         }
 
@@ -424,8 +445,9 @@ namespace GameFramework
             return progress;
         }
 
-        private IEnumerator withWww()
+        private IEnumerator withUrlWww()
         {
+            mWWW = new WWW(mList[0].Url);
             if (null != mWWW)
             {
                 yield return checkWWWTimeout(mTimeoutSec);
@@ -434,15 +456,16 @@ namespace GameFramework
                     if (!string.IsNullOrEmpty(mWWW.error))
                     {
                         //请求失败
-                        callback(1, mWWW.error);
+                        callback(false, mWWW.error);
                     }
                     else
                     {
                         //请求完成
-                        callback(1, mWWW.text);
+                        callback(true, mWWW.text);
                     }
                 }
             }
+            yield return null;
         }
         #endregion 私有方法
     }

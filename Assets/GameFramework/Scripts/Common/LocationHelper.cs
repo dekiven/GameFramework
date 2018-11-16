@@ -45,9 +45,13 @@ namespace GameFramework
             sGpsOn = false;
         }
 
+        public static LocationInfo LastData()
+        {
+            return Input.location.lastData;
+        }
+
         private static IEnumerator startGPS()
         {
-            yield return null;
             // Input.location 用于访问设备的位置属性（手持设备）, 静态的LocationService位置
             // LocationService.isEnabledByUser 用户设置里的定位服务是否启用
             if (!Input.location.isEnabledByUser)
@@ -72,13 +76,12 @@ namespace GameFramework
             {
                 callback(false, "Init GPS service time out");
                 stopCoroutine();
-                //yield break;
+                yield break;
             }
 
             if (Input.location.status == LocationServiceStatus.Failed)
             {
                 callback(false, "Unable to determine device location");
-
             }
             else
             {

@@ -42,7 +42,7 @@ namespace GameFramework
 
             proj.ReadFromString(File.ReadAllText(projPath));
             string target = proj.TargetGuidByName("Unity-iPhone");
-
+            Debug.Log(target);
             //执行修改操作
 
             ////修改 SEARCH_PATHS
