@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		16290B6C21650B7500E75C96 /* GameFrameworkIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 16290B6821650B7500E75C96 /* GameFrameworkIOS.mm */; };
 		16290B6D21650B7500E75C96 /* PhotoViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 16290B6A21650B7500E75C96 /* PhotoViewController.mm */; };
+		167EC19121A3A42B003A4C4A /* STRIAPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 167EC19021A3A42B003A4C4A /* STRIAPManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,6 +30,8 @@
 		16290B6921650B7500E75C96 /* CommonDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonDefines.h; sourceTree = "<group>"; };
 		16290B6A21650B7500E75C96 /* PhotoViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PhotoViewController.mm; sourceTree = "<group>"; };
 		16290B6B21650B7500E75C96 /* GameFrameworkIOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameFrameworkIOS.h; sourceTree = "<group>"; };
+		167EC19021A3A42B003A4C4A /* STRIAPManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STRIAPManager.m; sourceTree = "<group>"; };
+		167EC19221A3A47B003A4C4A /* STRIAPManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STRIAPManager.h; sourceTree = "<group>"; };
 		167ECAE12163BFDC00AD85C2 /* libGameFrameworkPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGameFrameworkPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -51,6 +54,8 @@
 				16290B6921650B7500E75C96 /* CommonDefines.h */,
 				16290B6A21650B7500E75C96 /* PhotoViewController.mm */,
 				16290B6B21650B7500E75C96 /* GameFrameworkIOS.h */,
+				167EC19021A3A42B003A4C4A /* STRIAPManager.m */,
+				167EC19221A3A47B003A4C4A /* STRIAPManager.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -127,6 +132,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				167EC19121A3A42B003A4C4A /* STRIAPManager.m in Sources */,
 				16290B6D21650B7500E75C96 /* PhotoViewController.mm in Sources */,
 				16290B6C21650B7500E75C96 /* GameFrameworkIOS.mm in Sources */,
 			);

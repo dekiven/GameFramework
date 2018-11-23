@@ -16,38 +16,22 @@
 
 @implementation PhotoViewController
 
+const char* eventName = NULL;
 // ========================================方法---------------------------------------
 // 拍照获取 TODO:多次拍照会有崩溃风险Message from debugger: Terminated due to memory issue
 -(void) takePhoto
 {
+    eventName = STR_EVENT_TAKE_PHOTO;
     UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
     [self openImageView: sourceType AllowsEditing:NO];
-//    if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera])
-//    {
-//        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-//        picker.delegate = self;
-//        //设置拍照后的图片可被编辑
-//        picker.allowsEditing = NO;
-//        picker.sourceType = sourceType;
-//        // [picker release];
-//        [self presentViewController:picker animated:YES completion:^{}];
-//    }else
-//    {
-//        NSLog(@"模拟其中无法打开照相机,请在真机中使用");
-//    }
 }
 
 //从相册获取
 -(void) takeAlbum
 {
-//    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    
+    eventName = STR_EVENT_TAKE_ALBUM;
     UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     [self openImageView: sourceType AllowsEditing:NO];
-//    picker.delegate = self;
-//    //设置选择后的图片可被编辑
-//    picker.allowsEditing = NO;
-//    [self presentViewController:picker animated:YES completion:^{}];
 }
 
 // 保存image到沙盒
@@ -92,15 +76,17 @@
         
         // 保存图片到沙盒/Temp.png
         NSString *fullPath = [PhotoViewController saveImage2Sandbox:image Name:@"Temp.png"];
-        if (nil != fullPath)
+        if(eventName)
         {
-            NoticeUnity( "__,__Temp.png");
+            if (nil != fullPath)
+            {
+                NoticeUnity( eventName, @"true", @"Temp.png");
+            }
+            else
+            {
+                NoticeUnity( eventName, @"false", @"");
+            }
         }
-        else
-        {
-            UnitySendMessage("GameObject", "Message", "");
-        }
-        
     }
     //关闭界面
     [picker dismissViewControllerAnimated:YES completion:^{}];

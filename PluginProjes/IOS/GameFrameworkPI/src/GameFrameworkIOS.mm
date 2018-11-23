@@ -7,6 +7,14 @@
 
 #import "GameFrameworkIOS.h"
 #import "PhotoViewController.h"
+#import "STRIAPManager.h"
+
+//加载dll时初始化
+STRIAPManager *_sharedIAPMgr = [STRIAPManager shareSIAPManager];
+
+extern const char* GFNoticeGameobjName;
+extern const char* GFNoticeFuncName;
+extern const char* GFNoticeSplitStr;
 
 #if defined(__cplusplus)
 extern "C" {
@@ -16,6 +24,11 @@ extern "C" {
     {
         GFNoticeGameobjName = gameobjName;
         GFNoticeFuncName = funcName;
+    }
+    
+    void GFSetNotifySplitStr(const char* splitStr)
+    {
+        GFNoticeSplitStr = splitStr;
     }
     
     void GFTakePhoto()
@@ -34,10 +47,28 @@ extern "C" {
         [app takeAlbum];
     }
     
-//    void GFRestart(float delaySec)
-//    {
-//        // TODO
-//    }
+    void GFRestart(float delaySec)
+    {
+        // TODO
+    }
+    
+    void GFStartPurchase(const char* pid, const char* externalData)
+    {
+        if(!_sharedIAPMgr)
+        {
+            _sharedIAPMgr = [STRIAPManager shareSIAPManager];
+        }
+        [_sharedIAPMgr startPurchWithID:NSStringFromUnityString(pid) completeHandle:^(SIAPPurchType type, NSData *data) {
+            if(type == SIAPPurchVerSuccess)
+            {
+                NoticeUnity(STR_EVENT_START_PURCHASE, @"true",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            }
+            else
+            {
+                NoticeUnity(STR_EVENT_START_PURCHASE, @"false", enumToString(type));
+            }
+        }];
+    }
     //---------------------------------------导出接口实现===================================
 #if defined(__cplusplus)
 }

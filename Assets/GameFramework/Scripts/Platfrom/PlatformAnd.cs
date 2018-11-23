@@ -11,16 +11,19 @@ namespace GameFramework
 
         public PlatformAnd()
         {
-            LogFile.Warn("PlatformAnd 开始");
-            AndroidJavaClass _class = new AndroidJavaClass("com.dekiven.gameframework.GF_PluginAndroid");
-            if(null != _class)
+            if(Application.platform == RuntimePlatform.Android)
             {
-                //_class.CallStatic("start");
-                mPluginObj = _class.CallStatic<AndroidJavaObject>("getInstance");
-            }
-            if (null == mPluginObj)
-            {
-                LogFile.Error("GameFramework Android插件加载失败,请检查arr文件是否存在。");
+                LogFile.Warn("PlatformAnd 开始");
+                AndroidJavaClass _class = new AndroidJavaClass("com.dekiven.gameframework.GF_PluginAndroid");
+                if(null != _class)
+                {
+                    //_class.CallStatic("start");
+                    mPluginObj = _class.CallStatic<AndroidJavaObject>("getInstance");
+                }
+                if (null == mPluginObj)
+                {
+                    LogFile.Error("GameFramework Android插件加载失败,请检查arr文件是否存在。");
+                }
             }
         }
 
@@ -29,6 +32,14 @@ namespace GameFramework
             if (null != mPluginObj)
             {
                 mPluginObj.Call("setNoticeObFunc", gameobjName, funcName);
+            }
+        }
+
+        public override void SetNotifySplitStr(string s)
+        {
+            if (null != mPluginObj)
+            {
+                mPluginObj.Call("setNoticeSplitStr", s);
             }
         }
 
@@ -46,6 +57,23 @@ namespace GameFramework
             {
                 mPluginObj.Call("takeFromPhoto");
             }
+        }
+
+        public override void StartPurchase(string pid, string externalData)
+        {
+            if (null != mPluginObj)
+            {
+                mPluginObj.Call("startPurchase", pid, externalData);
+            }
+        }
+
+        public override bool HasAngentExitDialog()
+        {
+            if (null != mPluginObj)
+            {
+                return mPluginObj.Call<bool>("hasAngentExitDialog");
+            }
+            return false;
         }
 
         public override void Restart(float delaySec)

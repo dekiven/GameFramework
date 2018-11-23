@@ -122,12 +122,12 @@ namespace GameFramework
             {
                 relative2 = FormatPathStr(Directory.GetParent(relative2).FullName);
             }
-            if (!relative2.EndsWith("/"))
+            if (!relative2.EndsWith("/", StringComparison.Ordinal))
             {
                 relative2 = relative2 + '/';
             }
 
-            if (Path.IsPathRooted(fullPath) && fullPath.StartsWith(relative2))
+            if (Path.IsPathRooted(fullPath) && fullPath.StartsWith(relative2, StringComparison.Ordinal))
             {
                 fullPath = fullPath.Replace(relative2, "");
 
@@ -145,10 +145,10 @@ namespace GameFramework
             path = FormatPathStr(path).Trim('/');
             if (getParent)
             {
-                path = path.Substring(0, path.LastIndexOf("/"));
+                path = path.Substring(0, path.LastIndexOf("/", StringComparison.Ordinal));
             }
             //如果以asb后缀结尾，认为是正确的路径，直接返回
-            if (path.EndsWith(GameConfig.STR_ASB_EXT))
+            if (path.EndsWith(GameConfig.STR_ASB_EXT, StringComparison.Ordinal))
             {
                 return path;
             }

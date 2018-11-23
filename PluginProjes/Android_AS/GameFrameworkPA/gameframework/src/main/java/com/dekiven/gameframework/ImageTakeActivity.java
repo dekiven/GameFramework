@@ -93,17 +93,17 @@ public class ImageTakeActivity extends Activity {
             }
             try {
                 boolean rst = saveJpg(data.getData(), outPath);
-                GF_PluginAndroid.notifyUnity("TakeImageAlbum", rst ? "temp.jpg" : "");
+                GF_PluginAndroid.notifyUnity(GF_PluginAndroid.STR_EVENT_TAKE_ALBUM, rst+"", rst ? "temp.jpg" : "");
             } catch (IOException e) {
                 e.printStackTrace();
-                GF_PluginAndroid.notifyUnity("TakeImageAlbum", "");
+                GF_PluginAndroid.notifyUnity(GF_PluginAndroid.STR_EVENT_TAKE_ALBUM, "false","");
                 GF_PluginAndroid.LogEvent("调用相册, 失败：" + e.toString());
             }
         }
 
         if (requestCode == PHOTOHRAPH) {
             //调用相机,如果成功结果已经保存到 xx.xx.xx/files/temp.jpg
-            GF_PluginAndroid.notifyUnity("TakeImagePhoto", "temp.jpg");
+            GF_PluginAndroid.notifyUnity(GF_PluginAndroid.STR_EVENT_TAKE_PHOTO, "true","temp.jpg");
         }
         finish();
     }

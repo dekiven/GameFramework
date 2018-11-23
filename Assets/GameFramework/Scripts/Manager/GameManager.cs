@@ -125,7 +125,7 @@ namespace GameFramework
 
         public void OnMessage(string msg)
         {
-            List<string> par = new List<string>(Regex.Split(msg, "__;__", RegexOptions.IgnoreCase));
+            List<string> par = new List<string>(Regex.Split(msg, Platform.STR_SPLIT, RegexOptions.IgnoreCase));
             if (par.Count >= 2)
             {
                 string eventName = par[0];

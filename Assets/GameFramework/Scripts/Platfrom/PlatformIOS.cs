@@ -15,11 +15,22 @@ namespace GameFramework
 
         [DllImport("__Internal")]
         private static extern void GFSetNoticeObFunc(string gameobjName, string funcName);
+
+        [DllImport("__Internal")]
+        private static extern void GFSetNotifySplitStr(string s);
+
+        [DllImport("__Internal")]
+        private static extern void GFStartPurchase(string pid, string externalData);
     #endregion
 
         public override void SetNoticeObFunc(string gameobjName, string funcName)
         {
             GFSetNoticeObFunc(gameobjName, funcName);
+        }
+
+        public override void SetNotifySplitStr(string s)
+        {
+            GFSetNotifySplitStr(s);
         }
 
         public override void TakeImageAlbum()
@@ -36,6 +47,11 @@ namespace GameFramework
         //{
         //    //TODO:
         //}
+
+        public override void StartPurchase(string pid, string externalData)
+        {
+            GFStartPurchase(pid, externalData);
+        }
     }
 #else
     #region 空实现

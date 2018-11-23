@@ -198,6 +198,11 @@ namespace GameFramework
             return lua.GetFunction(funcName);
         }
 
+        /// <summary>
+        /// 调用全局LuaFunction
+        /// </summary>
+        /// <param name="funcName">函数名</param>
+        /// <param name="args">参数列表</param>
         public void CallFunction(string funcName, params object[] args)
         {
             LuaFunction func = GetFunction(funcName);
@@ -209,6 +214,11 @@ namespace GameFramework
             }
         }
 
+        /// <summary>
+        /// 调用Lua函数，最大支持9个参数
+        /// </summary>
+        /// <param name="func">LuaFunction</param>
+        /// <param name="args">函数参数列表</param>
         public void CallWithFunction(LuaFunction func, object[] args)
         {
             if (null != func)

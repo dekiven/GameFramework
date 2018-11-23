@@ -23,7 +23,16 @@ public class GF_PluginAndroid extends Fragment {
     public static final String STR_PLUGIN_TAG = "GameFrameworkAnd";
     public static String sNoticeGameobjName = "GameFramework.GameManager";
     public static String sNoticeFuncName = "OnMessage";
+    public static String sNoticeSplitStr = "__;__";
     public static String sPackageName = "";
+
+    //渠道实例对象
+    public static BaseAngent sAngent;
+
+    //event名称
+    public static final String STR_EVENT_TAKE_PHOTO = "TakeImagePhoto";
+    public static final String STR_EVENT_TAKE_ALBUM = "TakeImageAlbum";
+    public static final String STR_EVENT_START_PURCHASE = "StartPurchase";
 
     private static Activity mContext;
 
@@ -37,6 +46,11 @@ public class GF_PluginAndroid extends Fragment {
     public void setNoticeObFunc(String gameobjName, String funcName) {
         sNoticeGameobjName = gameobjName;
         sNoticeFuncName = funcName;
+    }
+
+    public void setNoticeSplitStr(String str)
+    {
+        sNoticeSplitStr = str;
     }
 
     public void takeFromAlbum() {
@@ -67,6 +81,31 @@ public class GF_PluginAndroid extends Fragment {
                 }
             }
         });
+    }
+
+    public void startPurchase(String pid, String externalData)
+    {
+        //TODO:
+        if(null != sAngent)
+        {
+            sAngent.startPurchase(pid, externalData);
+        }
+        else
+        {
+            GF_PluginAndroid.notifyUnity(STR_EVENT_START_PURCHASE, "false", "没有渠道实例");
+        }
+    }
+
+    public boolean hasAngentExitDialog()
+    {
+        if(null != sAngent)
+        {
+            return sAngent.hasAngentExitDialog();
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void installApk(String apkPath) {
@@ -128,7 +167,15 @@ public class GF_PluginAndroid extends Fragment {
     }
 
     public static void notifyUnity(String eventName, String msg) {
-        UnityPlayer.UnitySendMessage(sNoticeGameobjName, sNoticeFuncName, eventName + "__;__" + msg);
+        UnityPlayer.UnitySendMessage(sNoticeGameobjName, sNoticeFuncName, eventName + sNoticeSplitStr + msg);
+    }
+
+    public static void notifyUnity(String eventName, String msg, String msg2) {
+        UnityPlayer.UnitySendMessage(sNoticeGameobjName, sNoticeFuncName, eventName + sNoticeSplitStr + msg + sNoticeSplitStr + msg2);
+    }
+
+    public static void notifyUnity(String eventName, String msg, String msg2, String msg3) {
+        UnityPlayer.UnitySendMessage(sNoticeGameobjName, sNoticeFuncName, eventName + sNoticeSplitStr + msg + sNoticeSplitStr + msg2 + sNoticeSplitStr + msg3);
     }
 
     public static boolean hasExternalStorage() {
