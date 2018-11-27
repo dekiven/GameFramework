@@ -565,7 +565,7 @@ namespace GameFramework
             if (mShowStart != startIndex || mShowEnd != endIndex || forceUpdate)
             {
                 //只有首尾的行变动，只处理相应的行,只在一帧处理完
-                if (Math.Abs(mShowStart - startIndex) <= 1 && Math.Abs(endIndex - mShowEnd) <= 1 && startIndex != endIndex)
+                if (Math.Abs(mShowStart - startIndex) <= 1 && Math.Abs(endIndex - mShowEnd) <= 1 && startIndex != endIndex && !forceUpdate)
                 {
                     //减少Item
                     //如果开始的行数比当前的大1，证明现在在开头少显示了一行

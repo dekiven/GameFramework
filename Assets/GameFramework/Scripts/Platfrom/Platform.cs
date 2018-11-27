@@ -47,6 +47,20 @@ namespace GameFramework
         }
 
         /// <summary>
+        /// 获取渠道名称，方便区分处
+        /// TODO：待实现
+        /// </summary>
+        /// <returns>The angent name.</returns>
+        public static string GetAngentName()
+        {
+            if (null != mPlatform)
+            {
+                return mPlatform.GetAngentName();
+            }
+            return ""; 
+        }
+
+        /// <summary>
         /// 是否有渠道规定的退出窗口
         /// </summary>
         /// <returns><c>true</c>, if angent exit dialog was hased, <c>false</c> otherwise.</returns>

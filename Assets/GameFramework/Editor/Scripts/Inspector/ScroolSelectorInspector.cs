@@ -8,6 +8,7 @@ namespace GameFramework
     public class ScroolSelectorInspector : Editor
     {
         ScrollSelector mTarget;
+        private int showCount = 5;
 
         void OnEnable()
         {
@@ -30,6 +31,24 @@ namespace GameFramework
             }
             GUILayout.Space(5);
             base.OnInspectorGUI();
+
+            //测试相关，显示给定数量的item
+            if (Application.isPlaying)
+            {
+                GUILayout.Space(10);
+                GUILayout.BeginHorizontal();
+                showCount = EditorGUILayout.IntField("测试显示数量", showCount);
+                if (GUILayout.Button("显示items"))
+                {
+                    System.Collections.Generic.List<UIItemData> data = new System.Collections.Generic.List<UIItemData>();
+                    for (int i = 0; i < showCount; i++)
+                    {
+                        data.Add(new UIItemData());
+                    }
+                    mTarget.SetData(data);
+                }
+                GUILayout.EndHorizontal();
+            }
         }
 
         public GameObject Prefab

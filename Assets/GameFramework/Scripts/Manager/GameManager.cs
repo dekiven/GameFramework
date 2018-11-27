@@ -129,8 +129,9 @@ namespace GameFramework
             if (par.Count >= 2)
             {
                 string eventName = par[0];
+                NotifyLua(par.ToArray());
                 par.RemoveAt(0);
-                NotifyLua(eventName, par.ToArray());
+                EventManager.notifyAll(eventName, par.ToArray());
             }
         }
         #endregion
@@ -226,12 +227,27 @@ namespace GameFramework
             LogFile.WriteLine(LogFile.LogLevel.L_Warning, "LogEvent: " + msg);
         }
 
-        public void HandleWWWRstDel(string noticeKey, double progress, int index, string msg)
+        public void HandleWWWRst(string noticeKey, double progress, int index, string msg)
         {
-            NotifyLua("www", new object[] { noticeKey , progress, index, msg});
+            NotifyLua("HandleWWWRst", new object[] { noticeKey , progress, index, msg});
         }
 
         public void NotifyLua(string eventName, object[] args)
+        {
+            if (null != mLuaNotifyFunc)
+            {
+                List<object> list = new List<object>(args);
+                list.Insert(0, eventName);
+                mLuaMgr.CallWithFunction(mLuaNotifyFunc, list.ToArray());
+                list.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 通知Lua层事件消息，args[0]为事件id
+        /// </summary>
+        /// <param name="args">Arguments.</param>
+        public void NotifyLua(object[] args)
         {
             if (null != mLuaNotifyFunc)
             {

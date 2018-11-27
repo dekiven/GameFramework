@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace GameFramework
 {
@@ -51,6 +52,13 @@ namespace GameFramework
         public override void StartPurchase(string pid, string externalData)
         {
             GFStartPurchase(pid, externalData);
+        }
+
+        public override void InstallNewApp(string path)
+        {
+            //path为appid，一般是一串数字
+            var url = string.Format("itms-apps://itunes.apple.com/cn/app/id{0}?mt=8", path);
+            Application.OpenURL(url);
         }
     }
 #else

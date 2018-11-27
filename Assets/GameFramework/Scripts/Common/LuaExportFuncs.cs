@@ -137,22 +137,22 @@ namespace GameFramework
         public static void DownloadFile(string noticeKey, LuaTable info, float timeoutSec=1f) 
         {
             TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.DownloadFile(noticeKey, new WWWInfo(info), timeoutSec, GameManager.Instance.HandleWWWRstDel, null);
+            t.DownloadFile(noticeKey, new WWWInfo(info), timeoutSec, GameManager.Instance.HandleWWWRst, null);
         }
         public static void DownloadFiles(string noticeKey, LuaTable infos, float timeoutSec= 1f) 
         {
             TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.DownloadFiles(noticeKey, WWWInfo.GetListByLua(infos), timeoutSec, GameManager.Instance.HandleWWWRstDel, null);
+            t.DownloadFiles(noticeKey, WWWInfo.GetListByLua(infos), timeoutSec, GameManager.Instance.HandleWWWRst, null);
         }
         public static void UploadFile(string noticeKey, LuaTable info, float timeoutSec= 1f) 
         {
             TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.UploadFile(noticeKey, new WWWInfo(info), timeoutSec, GameManager.Instance.HandleWWWRstDel, null);
+            t.UploadFile(noticeKey, new WWWInfo(info), timeoutSec, GameManager.Instance.HandleWWWRst, null);
         }
         public static void UploadFiles(string noticeKey, LuaTable infos, float timeoutSec= 1f) 
         {
             TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.UploadFiles(noticeKey, WWWUploadInfo.GetListByLua(infos), timeoutSec, GameManager.Instance.HandleWWWRstDel, null);
+            t.UploadFiles(noticeKey, WWWUploadInfo.GetListByLua(infos), timeoutSec, GameManager.Instance.HandleWWWRst, null);
         }
         public static void RequestUrl(string url, LuaFunction lua, float timeoutSec= 1f) 
         {

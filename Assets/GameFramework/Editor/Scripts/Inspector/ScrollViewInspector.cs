@@ -11,6 +11,7 @@ namespace GameFramework
     public class ScrollViewInspector : Editor
     {
         #region private 属性相关
+        private int showCount = 30;
         private ScrollView mTarget;
         private AnimBool fadeGroup;
         private ScrollViewType mScrollType;
@@ -111,6 +112,24 @@ namespace GameFramework
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("LineOffset"), new GUIContent(str + "间距"));
             }
             serializedObject.ApplyModifiedProperties();
+
+            //测试相关，显示给定数量的item
+            if(Application.isPlaying)
+            {
+                GUILayout.Space(10);
+                GUILayout.BeginHorizontal();
+                showCount = EditorGUILayout.IntField("测试显示数量", showCount);
+                if (GUILayout.Button("显示items"))
+                {
+                    System.Collections.Generic.List<UIItemData> data = new System.Collections.Generic.List<UIItemData>();
+                    for (int i = 0; i < showCount; i++)
+                    {
+                        data.Add(new UIItemData());
+                    }
+                    mTarget.SetData(data);
+                }
+                GUILayout.EndHorizontal();   
+            }
         }
 
 

@@ -39,7 +39,7 @@ namespace GameFramework
                     }
                 });
             }
-            if (UIHandler.Count > 0)
+            if (null != UIHandler && UIHandler.Count > 0)
             {
                 for (int i = 0; i < UIHandler.Count; i++)
                 {

@@ -51,6 +51,11 @@ namespace GameFramework
             LogFile.Log("Platform方法 StartPurchase(string pid, string externalJsonData) 待实现,请重载该方法!\npid:{0}, ejd:{1}", pid, externalData);
         }
 
+        public virtual string GetAngentName()
+        {
+            return "";
+        }
+
         /// <summary>
         /// 渠道是否有规定的退出对话框
         /// </summary>
