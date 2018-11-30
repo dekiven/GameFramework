@@ -215,6 +215,50 @@ namespace GameFramework
                         return SetUINativeSize(uiName);
                     }
                 //break;
+                case "setuimaterial":
+                    if (!string.IsNullOrEmpty(data.Content as string))
+                    {
+                        if (uiIndex != -1)
+                        {
+                            return SetUIMaterial(uiIndex, (String)data.Content);
+                        }
+                        else
+                        {
+                            return SetUIMaterial(uiName, (String)data.Content);
+                        }
+                    }
+                    Material material = data.Content as Material;
+                    if (null == material)
+                    {
+                        UIHandlerDataSync ds = data as UIHandlerDataSync;
+                        if (null != ds && null != ds.ContentBefor)
+                        {
+                            ds.OnSyncRst = (obj) =>
+                            {
+                                ChangeUI(ds);
+                            };
+                            return true;
+                        }
+                    }
+                    if (uiIndex != -1)
+                    {
+                        return SetUIMaterial(uiIndex, data.Content as Material);
+                    }
+                    else
+                    {
+                        return SetUIMaterial(uiName, data.Content as Material);
+                    }
+                //break;
+                case "setuiraycasttarget":
+                    if (uiIndex != -1)
+                    {
+                        return SetUIRaycastTarget(uiIndex, (bool)data.Content);
+                    }
+                    else
+                    {
+                        return SetUIRaycastTarget(uiName, (bool)data.Content);
+                    }
+                //break;
                 case "settextstring":
                     if (uiIndex != -1)
                     {
@@ -246,7 +290,7 @@ namespace GameFramework
                     }
                 //break;
                 case "setimagesprite":
-                    if (string.IsNullOrEmpty(data.Content as string))
+                    if (!string.IsNullOrEmpty(data.Content as string))
                     {
                         if (uiIndex != -1)
                         {
@@ -278,6 +322,42 @@ namespace GameFramework
                     {
                         return SetImageSprite(uiName, s);
                     }
+                //break;
+                case "setimagensizesprite":
+                    {
+                        if (!string.IsNullOrEmpty(data.Content as string))
+                        {
+                            if (uiIndex != -1)
+                            {
+                                return SetImageNSizeSprite(uiIndex, data.Content as string);
+                            }
+                            else
+                            {
+                                return SetImageNSizeSprite(uiName, data.Content as string);
+                            }
+                        }
+                        if (null == data.Content as Sprite)
+                        {
+                            UIHandlerDataSync ds = data as UIHandlerDataSync;
+                            if (null != ds && null != ds.ContentBefor)
+                            {
+                                ds.OnSyncRst = (obj) =>
+                                {
+                                    ChangeUI(ds);
+                                };
+                                return true;
+                            }
+                        }
+                        if (uiIndex != -1)
+                        {
+                            return SetImageNSizeSprite(uiIndex, data.Content as Sprite);
+                        }
+                        else
+                        {
+                            return SetImageNSizeSprite(uiName, data.Content as Sprite);
+                        }
+                    }
+
                 //break;
                 case "setrawimagetexture":
                     //TODO:
@@ -1001,6 +1081,72 @@ namespace GameFramework
             }
             return false;
         }
+
+        // 设置Graphic子类的material
+        public bool SetUIMaterial(int index, Material material)
+        {
+            Graphic ui = GetCompByIndex<Graphic>(index);
+            return setUIMaterial(ui, material);
+        }
+
+        // 设置Graphic子类的material
+        public bool SetUIMaterial(string cName, Material material)
+        {
+            Graphic ui = GetCompByName<Graphic>(cName);
+            return setUIMaterial(ui, material);
+        }
+
+        // 设置Graphic子类的material
+        private static bool setUIMaterial(Graphic ui, Material material)
+        {
+            if (null != ui)
+            {
+                ui.material = material;
+                return true;
+            }
+            return false;
+        }
+
+
+        // 设置Graphic子类的material
+        public bool SetUIMaterial(int index, String material)
+        {
+            ChangeUI(new UIHandlerDataSync("setuimaterial", index, material));
+            return true;
+        }
+
+        // 设置Graphic子类的material
+        public bool SetUIMaterial(string cName, String material)
+        {
+            ChangeUI(new UIHandlerDataSync("setuimaterial", cName, material));
+            return true;
+        }
+
+
+        // 设置Graphic子类的raycastTarget
+        public bool SetUIRaycastTarget(int index, bool enabled)
+        {
+            Graphic ui = GetCompByIndex<Graphic>(index);
+            return setUIRaycastTarget(ui, enabled);
+        }
+
+        // 设置Graphic子类的raycastTarget
+        public bool SetUIRaycastTarget(string cName, bool enabled)
+        {
+            Graphic ui = GetCompByName<Graphic>(cName);
+            return setUIRaycastTarget(ui, enabled);
+        }
+
+        // 设置Graphic子类的raycastTarget
+        private static bool setUIRaycastTarget(Graphic ui, bool enabled)
+        {
+            if (null != ui)
+            {
+                ui.raycastTarget = enabled;
+                return true;
+            }
+            return false;
+        }
         #endregion UI 通用
 
         #region RectTransform
@@ -1203,12 +1349,12 @@ namespace GameFramework
         #region Image
         public bool SetImageSprite(int index, string sprite)
         {
-            return ChangeUI(UIHandlerData.GetData("setimagesprite", index, sprite));
+            return ChangeUI(new UIHandlerDataSync("setimagesprite", index, sprite));
         }
 
         public bool SetImageSprite(string cName, string sprite)
         {
-            return ChangeUI(UIHandlerData.GetData("setimagesprite", cName, sprite));
+            return ChangeUI(new UIHandlerDataSync("setimagesprite", cName, sprite));
         }
 
         public bool SetImageSprite(int index, Sprite sprite)
@@ -1231,6 +1377,46 @@ namespace GameFramework
                 return true;
             }
             return false;
+        }
+
+        // 设置Image Sprite,完成后调用SetNativeSize
+        public bool SetImageNSizeSprite(int index, Sprite sprite)
+        {
+            Image ui = GetCompByIndex<Image>(index);
+            return setImageNSizeSprite(ui, sprite);
+        }
+
+        // 设置Image Sprite,完成后调用SetNativeSize
+        public bool SetImageNSizeSprite(string cName, Sprite sprite)
+        {
+            Image ui = GetCompByName<Image>(cName);
+            return setImageNSizeSprite(ui, sprite);
+        }
+
+        // 设置Image Sprite,完成后调用SetNativeSize
+        private static bool setImageNSizeSprite(Image ui, Sprite sprite)
+        {
+            if (null != ui)
+            {
+                ui.sprite = sprite; 
+                ui.SetNativeSize();
+                return true;
+            }
+            return false;
+        }
+
+        // 设置Image Sprite,完成后调用SetNativeSize
+        public bool SetImageNSizeSprite(int index, string sprite)
+        {
+            ChangeUI(new UIHandlerDataSync("setimagensizesprite", index, sprite));
+            return true;
+        }
+
+        // 设置Image Sprite,完成后调用SetNativeSize
+        public bool SetImageNSizeSprite(string cName, string sprite)
+        {
+            ChangeUI(new UIHandlerDataSync("setimagensizesprite", cName, sprite));
+            return true;
         }
         #endregion Image
 

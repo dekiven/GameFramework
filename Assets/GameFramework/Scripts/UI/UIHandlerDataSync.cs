@@ -78,9 +78,32 @@ namespace GameFramework
                 }
                 else
                 {
-                    LogFile.Warn("UIHandlerData error => can't get sprite:" + spriteStr);
+                    LogFile.Warn("UIHandlerDataSync error => can't get sprite:" + spriteStr);
                 }
+                return;
             }
+            if (FuncStr.EndsWith("material", StringComparison.Ordinal))
+            {
+                string str = ContentBefor as String;
+                string[] _params = str.Split(',');
+                if (_params.Length == 2)
+                {
+                    GameResManager.Instance.LoadRes<Material>(_params[0], _params[1], (UnityEngine.Object material) =>
+                    {
+                        Content = material;
+                        if (null != mOnSyncRst)
+                        {
+                            mOnSyncRst(material);
+                            mOnSyncRst = null;
+                        }
+                    });
+                }
+                else
+                {
+                    LogFile.Warn("UIHandlerDataSync error => can't get Material:" + str);
+                }
+                return;
+            } 
         }
     }
 }

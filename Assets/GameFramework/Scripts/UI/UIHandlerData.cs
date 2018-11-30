@@ -104,25 +104,28 @@ namespace GameFramework
 
         static void checkSyncData(ref UIHandlerData data)
         {
+            UnityEngine.Object obj = null;
+            bool needSync = false;
             if (data.FuncStr.EndsWith("sprite", StringComparison.Ordinal))
             {
-                Sprite sprite = data.Content as Sprite;
-                if (null != sprite)
+                obj = data.Content as Sprite;
+                needSync = false;
+            }
+            if (data.FuncStr.EndsWith("material", StringComparison.Ordinal))
+            {
+                obj = data.Content as Material;
+                needSync = false;
+            }
+            if(null == obj && needSync)
+            {
+                string spriteStr = data.Content as string;
+                if (string.IsNullOrEmpty(spriteStr))
                 {
                     return;
                 }
                 else
                 {
-                    string spriteStr = data.Content as string;
-                    if(string.IsNullOrEmpty(spriteStr))
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        data = new UIHandlerDataSync(data);
-                    }
-
+                    data = new UIHandlerDataSync(data);
                 }
             }
         }

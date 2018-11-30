@@ -469,6 +469,8 @@ namespace GameFramework
 
         private IEnumerator updateAllItem(int startLine, int endLine, bool forceUpdate = false)
         {
+            //修复异步加载图片可能失败的问题
+            yield return null;
             if (mShowStart != startLine || mShowEnd != endLine || forceUpdate)
             {
                 //只有首尾的行变动，只处理相应的行,只在一帧处理完
