@@ -34,6 +34,10 @@ char* UnityStringFromNSString(NSString* string);
 
 NSString* NSStringFromUnityString(const char* unityString_);
 
+NSString * convertToJsonData(NSDictionary * dict);
+
+NSDictionary * dictionaryWithJsonString(NSString * jsonString);
+
 void NoticeUnity(const char * msg);
 
 void NoticeUnity(const char* eventName, NSString* msg);

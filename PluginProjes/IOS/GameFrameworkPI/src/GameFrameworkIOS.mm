@@ -17,6 +17,15 @@ STRIAPManager *_sharedIAPMgr = [STRIAPManager shareSIAPManager];
 //extern const char* GFNoticeFuncName;
 //extern const char* GFNoticeSplitStr;
 
+const NSString * SIAPPurchTypeMap[] = {
+    [SIAPPurchSuccess] = @"购买成功(SIAPPurchSuccess)",
+    [SIAPPurchFailed] = @"购买失败(SIAPPurchFailed)",
+    [SIAPPurchCancle] = @"取消购买(SIAPPurchCancle)",
+    [SIAPPurchVerFailed] = @"订单校验失败(SIAPPurchVerFailed)",
+    [SIAPPurchVerSuccess] = @"订单校验成功(SIAPPurchVerSuccess)",
+    [SIAPPurchNotArrow] = @"不允许内购(SIAPPurchNotArrow)",
+};
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -59,14 +68,14 @@ extern "C" {
         {
             _sharedIAPMgr = [STRIAPManager shareSIAPManager];
         }
-        [_sharedIAPMgr startPurchWithID:NSStringFromUnityString(pid) completeHandle:^(SIAPPurchType type, NSData *data) {
+        [_sharedIAPMgr startPurchWithID:NSStringFromUnityString(pid) completeHandle:^(SIAPPurchType type, NSDictionary *data) {
             if(type == SIAPPurchSuccess)
             {
-                NoticeUnity(GFDefine::STR_EVENT_START_PURCHASE, @"true", [data base64EncodedStringWithOptions:0]);
+                NoticeUnity(GFDefine::STR_EVENT_START_PURCHASE, @"true", convertToJsonData(data));
             }
             else
             {
-                NoticeUnity(GFDefine::STR_EVENT_START_PURCHASE, @"false", enumToString(type));
+                NoticeUnity(GFDefine::STR_EVENT_START_PURCHASE, @"false", (NSString*)SIAPPurchTypeMap[type]);
             }
         }];
     }

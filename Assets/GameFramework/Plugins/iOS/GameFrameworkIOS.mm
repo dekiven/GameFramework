@@ -17,19 +17,28 @@ STRIAPManager *_sharedIAPMgr = [STRIAPManager shareSIAPManager];
 //extern const char* GFNoticeFuncName;
 //extern const char* GFNoticeSplitStr;
 
+const NSString * SIAPPurchTypeMap[] = {
+    [SIAPPurchSuccess] = @"购买成功(SIAPPurchSuccess)",
+    [SIAPPurchFailed] = @"购买失败(SIAPPurchFailed)",
+    [SIAPPurchCancle] = @"取消购买(SIAPPurchCancle)",
+    [SIAPPurchVerFailed] = @"订单校验失败(SIAPPurchVerFailed)",
+    [SIAPPurchVerSuccess] = @"订单校验成功(SIAPPurchVerSuccess)",
+    [SIAPPurchNotArrow] = @"不允许内购(SIAPPurchNotArrow)",
+};
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
     //===================================导出接口实现---------------------------------------
     void GFSetNoticeObFunc(const char* gameobjName, const char* funcName)
     {
-        GFNoticeGameobjName = gameobjName;
-        GFNoticeFuncName = funcName;
+        GFDefine::GFNoticeGameobjName = gameobjName;
+        GFDefine::GFNoticeFuncName = funcName;
     }
     
     void GFSetNotifySplitStr(const char* splitStr)
     {
-        GFNoticeSplitStr = splitStr;
+        GFDefine::GFNoticeSplitStr = splitStr;
     }
     
     void GFTakePhoto()
@@ -59,14 +68,14 @@ extern "C" {
         {
             _sharedIAPMgr = [STRIAPManager shareSIAPManager];
         }
-        [_sharedIAPMgr startPurchWithID:NSStringFromUnityString(pid) completeHandle:^(SIAPPurchType type, NSData *data) {
-            if(type == SIAPPurchVerSuccess)
+        [_sharedIAPMgr startPurchWithID:NSStringFromUnityString(pid) completeHandle:^(SIAPPurchType type, NSDictionary *data) {
+            if(type == SIAPPurchSuccess)
             {
-                NoticeUnity(STR_EVENT_START_PURCHASE, @"true",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+                NoticeUnity(GFDefine::STR_EVENT_START_PURCHASE, @"true", convertToJsonData(data));
             }
             else
             {
-                NoticeUnity(STR_EVENT_START_PURCHASE, @"false", enumToString(type));
+                NoticeUnity(GFDefine::STR_EVENT_START_PURCHASE, @"false", (NSString*)SIAPPurchTypeMap[type]);
             }
         }];
     }

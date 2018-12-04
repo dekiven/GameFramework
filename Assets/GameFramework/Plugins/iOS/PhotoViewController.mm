@@ -21,7 +21,7 @@ const char* eventName = NULL;
 // 拍照获取 TODO:多次拍照会有崩溃风险Message from debugger: Terminated due to memory issue
 -(void) takePhoto
 {
-    eventName = STR_EVENT_TAKE_PHOTO;
+    eventName = GFDefine::STR_EVENT_TAKE_PHOTO;
     UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
     [self openImageView: sourceType AllowsEditing:NO];
 }
@@ -29,7 +29,7 @@ const char* eventName = NULL;
 //从相册获取
 -(void) takeAlbum
 {
-    eventName = STR_EVENT_TAKE_ALBUM;
+    eventName = GFDefine::STR_EVENT_TAKE_ALBUM;
     UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     [self openImageView: sourceType AllowsEditing:NO];
 }

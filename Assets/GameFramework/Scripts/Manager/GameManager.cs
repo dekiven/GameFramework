@@ -226,7 +226,7 @@ namespace GameFramework
                 {
                     if (Equals(-1f, percent) || Equals(1f, percent))
                     {
-                        LogFile.Log("callback of copy file:{0},{1}", percent, msg);
+                        LogFile.Log("GameManager callback of copy file:{0},{1}", percent, msg);
                         if (Equals(1f, percent))
                         {
                             StartGameLogic();
@@ -256,7 +256,7 @@ namespace GameFramework
                 par.RemoveAt(0);
                 EventManager.notifyAll(eventName, par.ToArray());
             }
-            LogFile.Log("OnMessage:   " + msg);
+            //LogFile.Log("OnMessage:   " + msg);
         }
 
         /// <summary>

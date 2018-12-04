@@ -49,7 +49,7 @@
     }
 }
 #pragma mark - 🔒private
-- (void)handleActionWithType:(SIAPPurchType)type data:(NSData *)data{
+- (void)handleActionWithType:(SIAPPurchType)type data:(NSDictionary *)data{
 #if DEBUG
     switch (type) {
         case SIAPPurchSuccess:
@@ -81,13 +81,12 @@
 #pragma mark - 🍐delegate
 // 交易结束
 - (void)completeTransaction:(SKPaymentTransaction *)transaction{
-    // Your application should implement these two methods.
-    NSString * productIdentifier = transaction.payment.productIdentifier;
-    NSString * receipt = [transaction.transactionReceipt base64EncodedStringWithOptions:0];
-    if ([productIdentifier length] > 0) {
-        // 向自己的服务器验证购买凭证
-    }
-    
+//    // Your application should implement these two methods.
+//    NSString * productIdentifier = transaction.payment.productIdentifier;
+//    NSString * receipt = [transaction.transactionReceipt base64EncodedStringWithOptions:0];
+//    if ([productIdentifier length] > 0) {
+//        // 向自己的服务器验证购买凭证
+//    }
     [self verifyPurchaseWithPaymentTransaction:transaction isTestServer:NO];
     
 }
@@ -103,22 +102,8 @@
     [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }
 
-//交易验证
-- (void)verifyPurchaseWithPaymentTransaction:(SKPaymentTransaction *)transaction isTestServer:(BOOL)flag{
-    //交易验证
-    NSURL *recepitURL = [[NSBundle mainBundle] appStoreReceiptURL];
-    NSData *receipt = [NSData dataWithContentsOfURL:recepitURL];
-    
-    if(!receipt){
-        // 交易凭证为空验证失败
-        [self handleActionWithType:SIAPPurchVerFailed data:nil];
-        return;
-    }
-    // 购买成功将交易凭证发送给服务端进行再次校验
-    [self handleActionWithType:SIAPPurchSuccess data:receipt];
-    
-    //以下内容转到服务器校验
-    /**
+//本地校验交易
+- (void)checkLocal:(BOOL)flag receipt:(NSData *)receipt transaction:(SKPaymentTransaction *)transaction {
     NSError *error;
     NSDictionary *requestContents = @{
                                       @"receipt-data": [receipt base64EncodedStringWithOptions:0]
@@ -170,8 +155,34 @@
 #endif
                                }
                            }];
+}
+
+//交易验证
+- (void)verifyPurchaseWithPaymentTransaction:(SKPaymentTransaction *)transaction isTestServer:(BOOL)flag{
+    //交易验证
+    NSURL *recepitURL = [[NSBundle mainBundle] appStoreReceiptURL];
+    NSData *receipt = [NSData dataWithContentsOfURL:recepitURL];
     
-    **/
+    if(!receipt){
+        // 交易凭证为空验证失败
+        [self handleActionWithType:SIAPPurchVerFailed data:nil];
+        return;
+    }
+    
+    NSDictionary* dic =
+  @{
+        @"receipt":[receipt base64EncodedStringWithOptions:0],
+        @"ransactionId":transaction.transactionIdentifier,
+        @"productId":transaction.payment.productIdentifier,
+    };
+    
+    // 购买成功将交易凭证发送给服务端进行再次校验
+    [self handleActionWithType:SIAPPurchSuccess data:dic];
+    
+    
+//    //本地校验交易
+//    [self checkLocal:flag receipt:receipt transaction:transaction];
+    
     // 验证成功与否都注销交易,否则会出现虚假凭证信息一直验证不通过,每次进程序都得输入苹果账号
     [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }

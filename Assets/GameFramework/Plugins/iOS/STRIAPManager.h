@@ -34,7 +34,7 @@ typedef NS_ENUM(NSInteger, SIAPPurchType) {
     SIAPPurchNotArrow = 5,      // 不允许内购
 };
 
-typedef void (^IAPCompletionHandle)(SIAPPurchType type,NSData *data);
+typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *data);
 
 
 @interface STRIAPManager : NSObject

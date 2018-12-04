@@ -45,6 +45,9 @@ namespace GameFramework
             Debug.Log(target);
             //执行修改操作
 
+            // ENABLE_BITCODE=False
+            proj.SetBuildProperty(target, "ENABLE_BITCODE", "false");
+
             ////修改 SEARCH_PATHS
             //proj.SetBuildProperty(target, "LIBRARY_SEARCH_PATHS", "$(inherited)");
             //proj.AddBuildProperty(target, "LIBRARY_SEARCH_PATHS", "$(SRCROOT)");
@@ -54,6 +57,7 @@ namespace GameFramework
             //bool 参数 true 表示框架是 optional，false 表示框架是 required。
             //苹果内购
             proj.AddFrameworkToProject(target, "StoreKit.framework", false);
+
 
             ////添加 OTHER_LDFLAGS
             //proj.AddBuildProperty(target, "OTHER_LDFLAGS", "-ObjC");
