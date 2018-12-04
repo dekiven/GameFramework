@@ -52,8 +52,8 @@ namespace GameFramework
 
             //添加.framework /.tbd
             //bool 参数 true 表示框架是 optional，false 表示框架是 required。
-            ////苹果内购
-            //proj.AddFrameworkToProject(target, "StoreKit.framework", false);
+            //苹果内购
+            proj.AddFrameworkToProject(target, "StoreKit.framework", false);
 
             ////添加 OTHER_LDFLAGS
             //proj.AddBuildProperty(target, "OTHER_LDFLAGS", "-ObjC");
@@ -81,7 +81,7 @@ namespace GameFramework
             //摄像机权限
             rootDict.SetString("NSPhotoLibraryUsageDescription", "App需要您的同意,才能访问相册");
             ////定位权限
-            //rootDict.SetString("NSLocationWhenInUseUsageDescription", "LBS");
+            rootDict.SetString("NSLocationWhenInUseUsageDescription", "App需要您的同意,才能获取位置信息");
             ////录音权限
             //rootDict.SetString("NSMicrophoneUsageDescription", "VoiceChat");
 

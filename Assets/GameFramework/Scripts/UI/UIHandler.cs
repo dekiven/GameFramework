@@ -530,12 +530,12 @@ namespace GameFramework
                         return SetScrollViewOnItemClick(uiName, (LuaFunction)data.Content);
                     }
                 //break;
-                case "setscrollviewdatas":
+                case "setscrollviewdata":
                     if (uiIndex != -1)
                     {
                         if (null != data.Content as LuaTable)
                         {
-                            return SetScrollViewDatas(uiIndex, data.Content as LuaTable);
+                            return SetScrollViewData(uiIndex, data.Content as LuaTable);
                         }
                         else
                         {
@@ -546,7 +546,7 @@ namespace GameFramework
                     {
                         if (null != data.Content as LuaTable)
                         {
-                            return SetScrollViewDatas(uiName, data.Content as LuaTable);
+                            return SetScrollViewData(uiName, data.Content as LuaTable);
                         }
                         else
                         {
@@ -1731,19 +1731,19 @@ namespace GameFramework
             return false;
         }
 
-        public bool SetScrollViewDatas(int index, LuaTable table)
+        public bool SetScrollViewData(int index, LuaTable table)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewDatas(ui, table);
+            return setScrollViewData(ui, table);
         }
 
-        public bool SetScrollViewDatas(string cName, LuaTable table)
+        public bool SetScrollViewData(string cName, LuaTable table)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewDatas(ui, table);
+            return setScrollViewData(ui, table);
         }
 
-        private static bool setScrollViewDatas(ScrollView ui, LuaTable table)
+        private static bool setScrollViewData(ScrollView ui, LuaTable table)
         {
             if (null != ui)
             {

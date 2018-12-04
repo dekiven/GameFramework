@@ -6,20 +6,23 @@
 --[[
         
 --]]
+local gf = GameFramework.Platform
 
-local gfPlatform = GameFramework.Platform
+module "Platform"
 
-Platform = {}
+setNoticeObFunc = gf.SetNoticeObjFunc
+takePhoto = gf.TakeImagePhoto
+takeAlbum = gf.TakeImageAlbum
 
-Platform.setNoticeObFunc = gfPlatform.SetNoticeObjFunc
-Platform.takePhoto = gfPlatform.TakeImagePhoto
-Platform.takeAlbum = gfPlatform.TakeImageAlbum
--- restart 仅android有效，ios待实现
-Platform.restart = gfPlatform.Restart
-Platform.installNewApp = gfPlatform.InstallNewApp
+-- restart 待实现
+restart = gf.Restart
+-- android传递相对于可读写文件夹的apk路径，ios传appid，跳转到商店
+installNewApp = gf.InstallNewApp
+
+startPurchase = gf.StartPurchase
 
 -- 测试
-Platform.test1 = gfPlatform.test1
-Platform.test2 = gfPlatform.test2
+test1 = gf.test1
+test2 = gf.test2
 
 

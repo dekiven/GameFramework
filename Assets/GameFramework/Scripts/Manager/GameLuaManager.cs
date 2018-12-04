@@ -121,6 +121,11 @@ namespace GameFramework
             }
         }
 
+        internal LuaFunction GetFunction(object sTR_LUA_EVENT_FUNC)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 初始化LuaBundle
         /// </summary>

@@ -119,11 +119,7 @@ namespace GameFramework
             if(null == obj && needSync)
             {
                 string spriteStr = data.Content as string;
-                if (string.IsNullOrEmpty(spriteStr))
-                {
-                    return;
-                }
-                else
+                if (!string.IsNullOrEmpty(spriteStr))
                 {
                     data = new UIHandlerDataSync(data);
                 }

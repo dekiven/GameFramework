@@ -34,12 +34,37 @@ namespace GameFramework
         }
     }
 
-
+    /// <summary>
+    /// 游戏资源配置
+    /// 游戏资源版本号为aaa.bbb.ccc.ddd[.base]格式
+    /// 版本号每段最大999,最小0,
+    /// .base是包内资源版本号
+    /// </summary>
     public class ResConf{
+        private string STR_BASE = "base";
+
         public string version;
         public bool server;
         public Dictionary<string, ResInfo> files;
 
+        public uint VersionCode
+        {
+            get
+            {
+                uint code = 0;
+                string[] vs = getVersionNums(version);
+                int l = vs.Length;
+                if (vs.Length > 0 && !string.Equals(vs[l - 1], STR_BASE))
+                {
+                    for (int i = 0; i < l; ++i)
+                    {
+                        code += uint.Parse(vs[vs.Length - 1 + i]) * (uint)Math.Pow(10, 3 * i );
+                    }
+                }
+                return code;
+            }
+
+        }
         public ResConf(string text)
         {
             //LogFile.Log("res text:" + text);
@@ -166,10 +191,10 @@ namespace GameFramework
             //如果前面的版本号相同则默认服务器的版本号大
             if(0 == rst && 1 == Math.Abs(sc - oc))
             {
-                if(sc > oc && Equals(selfVn[sc - 1], "base"))
+                if(sc > oc && Equals(selfVn[sc - 1], STR_BASE))
                 {
                     rst = -1;
-                }else if(sc < oc && Equals(otherVn[oc - 1], "base")) 
+                }else if(sc < oc && Equals(otherVn[oc - 1], STR_BASE)) 
                 {
                     rst = 1;
                 }
@@ -393,7 +418,8 @@ namespace GameFramework
                 }
                 yield break;
             }
-            else{
+            else
+            {
                 sConf = new ResConf(wwwS.text);
                 streamConf = sConf;
                 WWW wwwP = new WWW(pUrl);
@@ -505,6 +531,9 @@ namespace GameFramework
                     {
                         curConf.version = streamConf.version;
                         curConf.SaveToFile(Tools.GetWriteableDataPath(GetConfigPath()));
+
+                        //保存新的资源版本号
+                        GameConfig.SetInt(GameDefine.STR_CONF_KEY_RES_VER_I, (int)curConf.VersionCode);
 
                         updateVersionInfo();
                     }else if( Equals(rate, -1f))

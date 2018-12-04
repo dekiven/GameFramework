@@ -7,11 +7,11 @@ PlayerSettings:
   productGUID: e5f7738e89ea843acafa1923ed2cf696
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
-  defaultScreenOrientation: 4
+  defaultScreenOrientation: 3
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: dekiven
   productName: GameFramework
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -178,13 +178,13 @@ PlayerSettings:
   VertexChannelCompressionMask:
     serializedVersion: 2
     m_Bits: 238
-  iPhoneSdkVersion: 989
+  iPhoneSdkVersion: 988
   iOSTargetOSVersionString: 7.0
   tvOSSdkVersion: 0
   tvOSRequireExtendedGameController: 0
   tvOSTargetOSVersionString: 9.0
   uIPrerenderedIcon: 0
-  uIRequiresPersistentWiFi: 0
+  uIRequiresPersistentWiFi: 1
   uIRequiresFullScreen: 1
   uIStatusBarHidden: 1
   uIExitOnSuspend: 0

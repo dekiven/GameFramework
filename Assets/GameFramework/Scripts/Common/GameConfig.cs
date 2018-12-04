@@ -16,20 +16,13 @@ namespace GameFramework
         /// 在获取assetbundle的文件名必须为小写，后缀大写可能造成不能读取资源
         /// </summary>
         public const string STR_ASB_EXT = ".unity3d";
-
-        #region 私有常量
-        private const string STR_KEY_IS_BGM = "IsPlayBgm";
-        private const string STR_KEY_IS_SOUND = "IsPlaySound";
-        private const string STR_KEY_BGM_V = "BgmVolume";
-        private const string STR_KEY_SOUND_V = "SoundVolume";
-        #endregion
         //静态常量 end==============================================================
 
         //业务逻辑 begin--------------------------------------------------------------
-        public static bool IsPlayBgm { get { return GetBool(STR_KEY_IS_BGM); } internal set {SetBool(STR_KEY_IS_BGM, value);} }
-        public static bool IsPlaySound { get { return GetBool(STR_KEY_IS_SOUND); } internal set { SetBool(STR_KEY_IS_SOUND, value); } }
-        public static float BGMVolume { get { return GetFloat(STR_KEY_BGM_V); } internal set { SetFloat(STR_KEY_BGM_V, value); } }
-        public static float SoundVolume { get { return GetFloat(STR_KEY_SOUND_V); } internal set { SetFloat(STR_KEY_SOUND_V, value); } }
+        public static bool IsPlayBgm { get { return GetBool(GameDefine.STR_CONF_KEY_IS_BGM_PLAY); } internal set {SetBool(GameDefine.STR_CONF_KEY_IS_BGM_PLAY, value);} }
+        public static bool IsPlaySound { get { return GetBool(GameDefine.STR_CONF_KEY_IS_SOUND_PLAY); } internal set { SetBool(GameDefine.STR_CONF_KEY_IS_SOUND_PLAY, value); } }
+        public static float BGMVolume { get { return GetFloat(GameDefine.STR_CONF_KEY_BGM_V); } internal set { SetFloat(GameDefine.STR_CONF_KEY_BGM_V, value); } }
+        public static float SoundVolume { get { return GetFloat(GameDefine.STR_CONF_KEY_SOUND_V); } internal set { SetFloat(GameDefine.STR_CONF_KEY_SOUND_V, value); } }
 
 
         //配置是否在Assetbundle情况下使用luajit编译lua代码再打包

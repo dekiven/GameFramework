@@ -71,20 +71,23 @@ namespace GameFramework
         void OnApplicationQuit()
         {
             ScreenSleepTime = SleepTimeout.SystemSetting;
-            LogFile.Log("OnApplicationQuit");
+            //LogFile.Log("OnApplicationQuit");
+            OnMessage(GameDefine.STR_EVENT_APP_QUIT);
             DestroyComp();
         }
 
         void OnApplicationFocus(bool focus)
         {
             ScreenSleepTime = focus ? SleepTimeout.NeverSleep : SleepTimeout.SystemSetting;
-            LogFile.Log("OnApplicationFocus:" + focus);
+            //LogFile.Log("OnApplicationFocus:" + focus);
+            OnMessage(GameDefine.STR_EVENT_APP_FOCUS);
         }
 
         void OnApplicationPause(bool pause)
         {
             ScreenSleepTime = pause ? SleepTimeout.SystemSetting : SleepTimeout.NeverSleep;
-            LogFile.Log("OnApplicationPause");
+            //LogFile.Log("OnApplicationPause");
+            OnMessage(GameDefine.STR_EVENT_APP_PAUSE);
         }
 
         #endregion
@@ -119,19 +122,38 @@ namespace GameFramework
             {
                 LogFile.Log("启动Lua虚拟机:" + mLuaMgr);
                 mLuaMgr.InitStart();
-                mLuaNotifyFunc = mLuaMgr.GetFunction("OnNotice");
+                mLuaNotifyFunc = mLuaMgr.GetFunction(GameDefine.STR_LUA_EVENT_FUNC);
             });
         }
 
-        public void OnMessage(string msg)
+        public void LogEvent(string msg)
         {
-            List<string> par = new List<string>(Regex.Split(msg, Platform.STR_SPLIT, RegexOptions.IgnoreCase));
-            if (par.Count >= 2)
+            LogFile.WriteLine(LogFile.LogLevel.L_Warning, "LogEvent: " + msg);
+        }
+
+        /// <summary>
+        /// 通知Lua层事件消息
+        /// </summary>
+        public void NotifyLua(string eventName, object[] args)
+        {
+            if (null != mLuaNotifyFunc)
             {
-                string eventName = par[0];
-                NotifyLua(par.ToArray());
-                par.RemoveAt(0);
-                EventManager.notifyAll(eventName, par.ToArray());
+                List<object> list = new List<object>(args);
+                list.Insert(0, eventName);
+                mLuaMgr.CallWithFunction(mLuaNotifyFunc, list.ToArray());
+                list.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 通知Lua层事件消息，args[0]为事件名称
+        /// </summary>
+        /// <param name="args">Arguments.</param>
+        public void NotifyLua(object[] args)
+        {
+            if (null != mLuaNotifyFunc)
+            {
+                mLuaMgr.CallWithFunction(mLuaNotifyFunc, args);
             }
         }
         #endregion
@@ -191,7 +213,7 @@ namespace GameFramework
             }
 
             //注册LogFile事件
-            EventManager.registerToMain("LogEvent", this, "LogEvent");
+            EventManager.registerToMain(GameDefine.STR_EVENT_LOG_EVENT, this, "LogEvent");
         }
 
         void checkResUpdate()
@@ -222,37 +244,32 @@ namespace GameFramework
         }
         #endregion
 
-        public void LogEvent(string msg)
-        {
-            LogFile.WriteLine(LogFile.LogLevel.L_Warning, "LogEvent: " + msg);
-        }
 
-        public void HandleWWWRst(string noticeKey, double progress, int index, string msg)
+        #region 通知相关
+        public void OnMessage(string msg)
         {
-            NotifyLua("HandleWWWRst", new object[] { noticeKey , progress, index, msg});
-        }
-
-        public void NotifyLua(string eventName, object[] args)
-        {
-            if (null != mLuaNotifyFunc)
+            List<string> par = new List<string>(Regex.Split(msg, Platform.STR_SPLIT, RegexOptions.IgnoreCase));
+            if (par.Count >= 1)
             {
-                List<object> list = new List<object>(args);
-                list.Insert(0, eventName);
-                mLuaMgr.CallWithFunction(mLuaNotifyFunc, list.ToArray());
-                list.Clear();
+                NotifyLua(par.ToArray());
+                string eventName = par[0];
+                par.RemoveAt(0);
+                EventManager.notifyAll(eventName, par.ToArray());
             }
+            LogFile.Log("OnMessage:   " + msg);
         }
 
         /// <summary>
-        /// 通知Lua层事件消息，args[0]为事件id
+        /// lua创建的TimeOutWWW回调函数
         /// </summary>
-        /// <param name="args">Arguments.</param>
-        public void NotifyLua(object[] args)
+        /// <param name="noticeKey">Notice key.</param>
+        /// <param name="progress">Progress.</param>
+        /// <param name="index">Index.</param>
+        /// <param name="msg">Message.</param>
+        public void OnLuaWWWRst(string noticeKey, double progress, int index, string msg)
         {
-            if (null != mLuaNotifyFunc)
-            {
-                mLuaMgr.CallWithFunction(mLuaNotifyFunc, args);
-            }
+            NotifyLua(GameDefine.STR_EVENT_LUA_WWW_RST, new object[] { noticeKey, progress, index, msg });
         }
+        #endregion 通知相关
     }
 }

@@ -43,7 +43,7 @@ function ViewBase:hide()
     end
 end
 
-function ViewBase:closeView()
+function ViewBase:close()
     if nil ~= self.uiBase then
         self.uiBase:Close()
     end

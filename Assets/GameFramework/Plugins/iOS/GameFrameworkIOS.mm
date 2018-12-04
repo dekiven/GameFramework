@@ -23,13 +23,13 @@ extern "C" {
     //===================================导出接口实现---------------------------------------
     void GFSetNoticeObFunc(const char* gameobjName, const char* funcName)
     {
-        GFDefine::GFNoticeGameobjName = gameobjName;
-        GFDefine::GFNoticeFuncName = funcName;
+        GFNoticeGameobjName = gameobjName;
+        GFNoticeFuncName = funcName;
     }
     
     void GFSetNotifySplitStr(const char* splitStr)
     {
-        GFDefine::GFNoticeSplitStr = splitStr;
+        GFNoticeSplitStr = splitStr;
     }
     
     void GFTakePhoto()
@@ -60,13 +60,13 @@ extern "C" {
             _sharedIAPMgr = [STRIAPManager shareSIAPManager];
         }
         [_sharedIAPMgr startPurchWithID:NSStringFromUnityString(pid) completeHandle:^(SIAPPurchType type, NSData *data) {
-            if(type == SIAPPurchSuccess)
+            if(type == SIAPPurchVerSuccess)
             {
-                NoticeUnity(GFDefine::STR_EVENT_START_PURCHASE, @"true", [data base64EncodedStringWithOptions:0]);
+                NoticeUnity(STR_EVENT_START_PURCHASE, @"true",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
             }
             else
             {
-                NoticeUnity(GFDefine::STR_EVENT_START_PURCHASE, @"false", enumToString(type));
+                NoticeUnity(STR_EVENT_START_PURCHASE, @"false", enumToString(type));
             }
         }];
     }

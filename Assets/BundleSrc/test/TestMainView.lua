@@ -46,7 +46,7 @@ end
 function TestMainView:onEnable()
     if not self.hasInit then
         self.hasInit = true
-        self:setScrollViewDatas();
+        self:SetScrollViewData();
     end
 end
 
@@ -60,7 +60,7 @@ function TestMainView:setTestDatas( data )
     self.testDatas = data
 end
 
-function TestMainView:setScrollViewDatas()
+function TestMainView:SetScrollViewData()
     local scrollData = {}
     for i,v in ipairs(self.testDatas) do
         if nil ~= v.name then
@@ -68,7 +68,7 @@ function TestMainView:setScrollViewDatas()
         end
     end
     scrollData = getScrollViewData(scrollData)
-    self.uiHandler:SetScrollViewDatas(uiIndex.ScrollView, scrollData)
+    self.uiHandler:SetScrollViewData(uiIndex.ScrollView, scrollData)
 end
 
 function TestMainView:onItemClick( index )

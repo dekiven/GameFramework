@@ -26,14 +26,17 @@ namespace GameFramework
         Dictionary<string, List<LoadAssetRequest>> m_LoadRequests = new Dictionary<string, List<LoadAssetRequest>>();
 
         Dictionary<string, Dictionary<string, int>> mGroups = new Dictionary<string, Dictionary<string, int>>();
+        //资源版本号
+        public uint ResVersion = 0;
 
         //string mResPath = "";
 
-        public void Initialize(Action initOK, string manifestName = GameConfig.STR_ASB_MANIFIST)
+        public void Initialize(Action initOK, string manifestName=GameConfig.STR_ASB_MANIFIST)
         {
             //mResPath = Tools.GetResPath();
             if (GameConfig.useAsb)
             {
+                ResVersion = (uint)GameConfig.GetInt(GameDefine.STR_CONF_KEY_RES_VER_I, 0);
                 //这里由于manifest所在的bundle没有后缀名，所以直接走LoadAsset
                 LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate (UObj[] objs)
                 {
@@ -422,7 +425,7 @@ namespace GameFramework
                         }
                     }
                 }
-                download = WWW.LoadFromCacheOrDownload(url, m_AssetBundleManifest.GetAssetBundleHash(abName), 0);
+                download = WWW.LoadFromCacheOrDownload(url, m_AssetBundleManifest.GetAssetBundleHash(abName), ResVersion);
             }
             yield return download;
 

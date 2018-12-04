@@ -58,7 +58,7 @@ function PluginTestView:onEnable()
     printTable(scrollData, 'scrollData 1')
     scrollData = getScrollViewData(scrollData)
     printTable(scrollData, 'scrollData 2')
-    self.uiHandler:SetScrollViewDatas(uiIdx.ScrollView, scrollData)
+    self.uiHandler:SetScrollViewData(uiIdx.ScrollView, scrollData)
     end
 
 end

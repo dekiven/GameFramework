@@ -27,12 +27,15 @@ namespace GameFramework
 
         public static void Init(string filePath, LogLevel minLevel = LogLevel.L_Log)
         {
-            CloseLog();
+            lock (locker)
+            {
+                CloseLog();
 
-            mPath = filePath;
-            mMinLevel = minLevel;
+                mPath = filePath;
+                mMinLevel = minLevel;
 
-            Application.logMessageReceived += handleLogCallback;
+                Application.logMessageReceived += handleLogCallback;
+            }
         }
 
         public static void CloseLog()
@@ -152,19 +155,23 @@ namespace GameFramework
                 return;
             }
             //TODO:IOException：Sharing Violation on Path 解决
-            if(Tools.CheckFileExists(mPath))
+
+            lock (locker)
             {
-                String fileName = mPath;
-                fileName = fileName.Insert(mPath.LastIndexOf('/') + 1, "old_");
-                Tools.RenameFile(mPath, fileName);
+                if (Tools.CheckFileExists(mPath))
+                {
+                    String fileName = mPath;
+                    fileName = fileName.Insert(mPath.LastIndexOf('/') + 1, "old_");
+                    Tools.RenameFile(mPath, fileName);
+                }
+                if (Tools.CheckFileExists(mPath))
+                {
+                    File.Delete(mPath);
+                }
+                Tools.CheckFileExists(mPath, true);
+                FileStream stream = new FileStream(mPath, FileMode.Create);
+                mSWriter = new StreamWriter(stream);
             }
-            if (Tools.CheckFileExists(mPath))
-            {
-                File.Delete(mPath);
-            }
-            Tools.CheckFileExists(mPath, true);
-            FileStream stream = new FileStream(mPath, FileMode.Create);
-            mSWriter = new StreamWriter(stream);
         }
 
         private static void handleLogCallback(string condition, string stackTrace, LogType type)

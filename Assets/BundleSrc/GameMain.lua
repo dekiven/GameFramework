@@ -4,8 +4,8 @@ require('common.requireCommon')
 function GameMain()					
 	print("logic start")
 
-    listner = UpdateBeat:CreateListener(MainUpdate, 0)
-    UpdateBeat:AddListener(listner)
+    -- listner = UpdateBeat:CreateListener(MainUpdate, 0)
+    -- UpdateBeat:AddListener(listner)
     
     -- print(tostring(test))
     StartTest();
@@ -22,6 +22,11 @@ end
 
 function MainUpdate()
     -- print("MainUpdate")
+end
+
+function OnEvent( eventName, ... )
+    printLog('OnEvent :'..tostring(eventName))
+    EventManager.notifyEvent(eventName, ...)
 end
 
 function StartTest()

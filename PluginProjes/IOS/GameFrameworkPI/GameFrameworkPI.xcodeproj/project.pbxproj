@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		160BF14121B61F4D002400D8 /* CommonDefines.mm in Sources */ = {isa = PBXBuildFile; fileRef = 160BF14021B61F4D002400D8 /* CommonDefines.mm */; };
 		16290B6C21650B7500E75C96 /* GameFrameworkIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 16290B6821650B7500E75C96 /* GameFrameworkIOS.mm */; };
 		16290B6D21650B7500E75C96 /* PhotoViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 16290B6A21650B7500E75C96 /* PhotoViewController.mm */; };
 		167EC19121A3A42B003A4C4A /* STRIAPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 167EC19021A3A42B003A4C4A /* STRIAPManager.m */; };
@@ -25,6 +26,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		160BF14021B61F4D002400D8 /* CommonDefines.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CommonDefines.mm; sourceTree = "<group>"; };
 		16290B6721650B7500E75C96 /* PhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoViewController.h; sourceTree = "<group>"; };
 		16290B6821650B7500E75C96 /* GameFrameworkIOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GameFrameworkIOS.mm; sourceTree = "<group>"; };
 		16290B6921650B7500E75C96 /* CommonDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonDefines.h; sourceTree = "<group>"; };
@@ -49,13 +51,14 @@
 		16290B6621650B7500E75C96 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				16290B6721650B7500E75C96 /* PhotoViewController.h */,
-				16290B6821650B7500E75C96 /* GameFrameworkIOS.mm */,
 				16290B6921650B7500E75C96 /* CommonDefines.h */,
-				16290B6A21650B7500E75C96 /* PhotoViewController.mm */,
+				160BF14021B61F4D002400D8 /* CommonDefines.mm */,
 				16290B6B21650B7500E75C96 /* GameFrameworkIOS.h */,
-				167EC19021A3A42B003A4C4A /* STRIAPManager.m */,
+				16290B6821650B7500E75C96 /* GameFrameworkIOS.mm */,
+				16290B6721650B7500E75C96 /* PhotoViewController.h */,
+				16290B6A21650B7500E75C96 /* PhotoViewController.mm */,
 				167EC19221A3A47B003A4C4A /* STRIAPManager.h */,
+				167EC19021A3A42B003A4C4A /* STRIAPManager.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -135,6 +138,7 @@
 				167EC19121A3A42B003A4C4A /* STRIAPManager.m in Sources */,
 				16290B6D21650B7500E75C96 /* PhotoViewController.mm in Sources */,
 				16290B6C21650B7500E75C96 /* GameFrameworkIOS.mm in Sources */,
+				160BF14121B61F4D002400D8 /* CommonDefines.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

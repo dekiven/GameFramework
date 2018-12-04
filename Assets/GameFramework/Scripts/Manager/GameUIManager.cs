@@ -488,7 +488,13 @@ namespace GameFramework
 
         private void setMaskOrderByView(UIBase view)
         {
-            mDarkMask.rectTransform.SetSiblingIndex(view.transform.GetSiblingIndex() - 1);
+            view.transform.SetSiblingIndex(GetCanvasByMode(view.RenderMode).transform.childCount);
+            int idx = view.transform.GetSiblingIndex() - 1;
+            if (idx < 0)
+            {
+                idx = 0;
+            }
+            mDarkMask.rectTransform.SetSiblingIndex(idx);
         }
 
         private void setMaskVisble(bool showMask)

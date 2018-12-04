@@ -91,10 +91,10 @@ namespace GameFramework
         /// 请求支付订单
         /// </summary>
         /// <param name="pid">支付id</param>
-        /// <param name="externalJsonData">额外数据</param>
-        public static void StartPurchase(string pid, string externalJsonData)
+        /// <param name="externalData">额外数据</param>
+        public static void StartPurchase(string pid, string externalData)
         {
-            mPlatform.StartPurchase(pid, externalJsonData);
+            mPlatform.StartPurchase(pid, externalData);
         }
 
         //=====================================test--------------------------------------

@@ -11,6 +11,7 @@ local tests =
     {name='LoadPrefab', dir='Tests/LoadPrefabTest',},
     {name='Transform', dir='Tests/RectTransformLuaTest', view='test/TransformTestView'},
     {name='PluginTest', dir='Tests/PluginTest', view='test/PluginTestView'},
+    {name='PurchaseTest', dir='Tests/PurchaseTest', view='test/PurchaseTestView'},
 }
 
 function TestClass:ctor( ... )
