@@ -566,7 +566,7 @@ namespace GameFramework
                     rst = 0f;
                     AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, mode);
                     operation.allowSceneActivation = false;
-                    StartCoroutine(onLoadingSceneSync(operation, callback, luaFunc));
+                    StartCoroutine(onLoadingSceneAsync(operation, callback, luaFunc));
                     return;
                 }
 
@@ -583,7 +583,7 @@ namespace GameFramework
             return;
         }
 
-        IEnumerator onLoadingSceneSync(AsyncOperation operation, Action<float> calback, LuaFunction luaCall)
+        IEnumerator onLoadingSceneAsync(AsyncOperation operation, Action<float> calback, LuaFunction luaCall)
         {
             if (null == operation)
             {

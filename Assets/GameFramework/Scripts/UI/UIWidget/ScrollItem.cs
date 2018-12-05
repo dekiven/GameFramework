@@ -81,7 +81,7 @@ namespace GameFramework
             {
                 if(null != mItemData)
                 {
-                    mItemData.ClearSyncRst();
+                    mItemData.ClearAsyncRst();
                 }
                 for (int i = 0; i < scrollItemData.DataList.Count; i++)
                 {

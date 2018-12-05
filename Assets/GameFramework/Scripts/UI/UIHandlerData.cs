@@ -84,44 +84,44 @@ namespace GameFramework
         public static UIHandlerData GetData(string funcStr, string uiName, System.Object content)
         {
             UIHandlerData data = new UIHandlerData(funcStr, uiName, content);
-            checkSyncData(ref data);
+            checkAsyncData(ref data);
             return data;
         }
 
         public static UIHandlerData GetData(string funcStr, int uiIndex, System.Object content)
         {
             UIHandlerData data = new UIHandlerData(funcStr, uiIndex, content);
-            checkSyncData(ref data);
+            checkAsyncData(ref data);
             return data;
         }
 
         public static UIHandlerData GetData(LuaTable luaTable)
         {
             UIHandlerData data = new UIHandlerData(luaTable);
-            checkSyncData(ref data);
+            checkAsyncData(ref data);
             return data;
         }
 
-        static void checkSyncData(ref UIHandlerData data)
+        static void checkAsyncData(ref UIHandlerData data)
         {
             UnityEngine.Object obj = null;
-            bool needSync = false;
+            bool needAsync = false;
             if (data.FuncStr.EndsWith("sprite", StringComparison.Ordinal))
             {
                 obj = data.Content as Sprite;
-                needSync = false;
+                needAsync = false;
             }
             if (data.FuncStr.EndsWith("material", StringComparison.Ordinal))
             {
                 obj = data.Content as Material;
-                needSync = false;
+                needAsync = false;
             }
-            if(null == obj && needSync)
+            if(null == obj && needAsync)
             {
                 string spriteStr = data.Content as string;
                 if (!string.IsNullOrEmpty(spriteStr))
                 {
-                    data = new UIHandlerDataSync(data);
+                    data = new UIHandlerDataAsync(data);
                 }
             }
         }

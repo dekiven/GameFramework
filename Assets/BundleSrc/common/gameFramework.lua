@@ -218,10 +218,10 @@ AddLuaBundles = luaExp.AddLuaBundles
 ShowView = luaExp.ShowView
 -- void PopView ()
 PopView = luaExp.PopView
--- void GetAtlasSync (string asbName, string atlasName, LuaFunction luaCall)
-GetAtlasSync = luaExp.GetAtlasSync
--- void GetSpriteSync (string asbName, string atlasName, string spriteName, LuaFunction luaCall)
-GetSpriteSync = luaExp.GetSpriteSync
+-- void GetAtlasAsync (string asbName, string atlasName, LuaFunction luaCall)
+GetAtlasAsync = luaExp.GetAtlasAsync
+-- void GetSpriteAsync (string asbName, string atlasName, string spriteName, LuaFunction luaCall)
+GetSpriteAsync = luaExp.GetSpriteAsync
 -- void SetCurGroup (EnumResGroup e, string group)
 SetCurGroup = luaExp.SetCurGroup
 -- void ClearGroup (EnumResGroup e, string group)

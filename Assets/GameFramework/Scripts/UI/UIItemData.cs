@@ -37,16 +37,16 @@ namespace GameFramework
             mList.Clear();
         }
 
-        public void ClearSyncRst()
+        public void ClearAsyncRst()
         {
             if (null != mList)
             {
                 for (int i = 0; i < mList.Count; ++i)
                 {
-                    UIHandlerDataSync ds = mList[i] as UIHandlerDataSync;
+                    UIHandlerDataAsync ds = mList[i] as UIHandlerDataAsync;
                     if (null != ds)
                     {
-                        ds.OnSyncRst = null;
+                        ds.OnAsyncRst = null;
                     }
                 }
             }

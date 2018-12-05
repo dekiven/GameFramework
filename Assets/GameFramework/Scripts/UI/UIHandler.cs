@@ -230,10 +230,10 @@ namespace GameFramework
                     Material material = data.Content as Material;
                     if (null == material)
                     {
-                        UIHandlerDataSync ds = data as UIHandlerDataSync;
+                        UIHandlerDataAsync ds = data as UIHandlerDataAsync;
                         if (null != ds && null != ds.ContentBefor)
                         {
-                            ds.OnSyncRst = (obj) =>
+                            ds.OnAsyncRst = (obj) =>
                             {
                                 ChangeUI(ds);
                             };
@@ -304,10 +304,10 @@ namespace GameFramework
                     Sprite s = data.Content as Sprite;
                     if (null == s)
                     {
-                        UIHandlerDataSync ds = data as UIHandlerDataSync;
+                        UIHandlerDataAsync ds = data as UIHandlerDataAsync;
                         if (null != ds && null != ds.ContentBefor)
                         {
-                            ds.OnSyncRst = (obj) =>
+                            ds.OnAsyncRst = (obj) =>
                             {
                                 ChangeUI(ds);
                             };
@@ -338,10 +338,10 @@ namespace GameFramework
                         }
                         if (null == data.Content as Sprite)
                         {
-                            UIHandlerDataSync ds = data as UIHandlerDataSync;
+                            UIHandlerDataAsync ds = data as UIHandlerDataAsync;
                             if (null != ds && null != ds.ContentBefor)
                             {
-                                ds.OnSyncRst = (obj) =>
+                                ds.OnAsyncRst = (obj) =>
                                 {
                                     ChangeUI(ds);
                                 };
@@ -1111,14 +1111,14 @@ namespace GameFramework
         // 设置Graphic子类的material
         public bool SetUIMaterial(int index, String material)
         {
-            ChangeUI(new UIHandlerDataSync("setuimaterial", index, material));
+            ChangeUI(new UIHandlerDataAsync("setuimaterial", index, material));
             return true;
         }
 
         // 设置Graphic子类的material
         public bool SetUIMaterial(string cName, String material)
         {
-            ChangeUI(new UIHandlerDataSync("setuimaterial", cName, material));
+            ChangeUI(new UIHandlerDataAsync("setuimaterial", cName, material));
             return true;
         }
 
@@ -1349,12 +1349,12 @@ namespace GameFramework
         #region Image
         public bool SetImageSprite(int index, string sprite)
         {
-            return ChangeUI(new UIHandlerDataSync("setimagesprite", index, sprite));
+            return ChangeUI(new UIHandlerDataAsync("setimagesprite", index, sprite));
         }
 
         public bool SetImageSprite(string cName, string sprite)
         {
-            return ChangeUI(new UIHandlerDataSync("setimagesprite", cName, sprite));
+            return ChangeUI(new UIHandlerDataAsync("setimagesprite", cName, sprite));
         }
 
         public bool SetImageSprite(int index, Sprite sprite)
@@ -1408,14 +1408,14 @@ namespace GameFramework
         // 设置Image Sprite,完成后调用SetNativeSize
         public bool SetImageNSizeSprite(int index, string sprite)
         {
-            ChangeUI(new UIHandlerDataSync("setimagensizesprite", index, sprite));
+            ChangeUI(new UIHandlerDataAsync("setimagensizesprite", index, sprite));
             return true;
         }
 
         // 设置Image Sprite,完成后调用SetNativeSize
         public bool SetImageNSizeSprite(string cName, string sprite)
         {
-            ChangeUI(new UIHandlerDataSync("setimagensizesprite", cName, sprite));
+            ChangeUI(new UIHandlerDataAsync("setimagensizesprite", cName, sprite));
             return true;
         }
         #endregion Image

@@ -68,7 +68,7 @@ extern "C" {
         {
             _sharedIAPMgr = [STRIAPManager shareSIAPManager];
         }
-        [_sharedIAPMgr startPurchWithID:NSStringFromUnityString(pid) completeHandle:^(SIAPPurchType type, NSDictionary *data) {
+        [_sharedIAPMgr startPurchWithID:NSStringFromUnityString(pid) externalData:NSStringFromUnityString(externalData) completeHandle:^(SIAPPurchType type, NSDictionary *data) {
             if(type == SIAPPurchSuccess)
             {
                 NoticeUnity(GFDefine::STR_EVENT_START_PURCHASE, @"true", convertToJsonData(data));

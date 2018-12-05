@@ -3,6 +3,7 @@
 
 @interface STRIAPManager()<SKPaymentTransactionObserver,SKProductsRequestDelegate>{
     NSString           *_purchID;
+    NSString           *_externalData;
     IAPCompletionHandle _handle;
 }
 @end
@@ -33,11 +34,12 @@
 
 
 #pragma mark - 🚪public
-- (void)startPurchWithID:(NSString *)purchID completeHandle:(IAPCompletionHandle)handle{
+- (void)startPurchWithID:(NSString *)purchID externalData:(NSString *)data completeHandle:(IAPCompletionHandle)handle{
     if (purchID) {
         if ([SKPaymentQueue canMakePayments]) {
             // 开始购买服务
             _purchID = purchID;
+            _externalData = data;
             _handle = handle;
             NSSet *nsset = [NSSet setWithArray:@[purchID]];
             SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:nsset];
@@ -174,6 +176,7 @@
         @"receipt":[receipt base64EncodedStringWithOptions:0],
         @"ransactionId":transaction.transactionIdentifier,
         @"productId":transaction.payment.productIdentifier,
+        @"externalData":_externalData,
     };
     
     // 购买成功将交易凭证发送给服务端进行再次校验

@@ -87,14 +87,14 @@ namespace GameFramework
         #endregion GameUIManager
 
         #region GameSpriteAtlasManager
-        public static void GetAtlasSync(string asbName, string atlasName, LuaFunction luaCall)
+        public static void GetAtlasAsync(string asbName, string atlasName, LuaFunction luaCall)
         {
-            GameSpriteAtlasManager.Instance.GetAtlasSync(asbName, atlasName, null, luaCall);
+            GameSpriteAtlasManager.Instance.GetAtlasAsync(asbName, atlasName, null, luaCall);
         }
 
-        public static void GetSpriteSync(string asbName, string atlasName, string spriteName, LuaFunction luaCall)
+        public static void GetSpriteAsync(string asbName, string atlasName, string spriteName, LuaFunction luaCall)
         {
-            GameSpriteAtlasManager.Instance.GetSpriteSync(asbName, atlasName, spriteName, null, luaCall);
+            GameSpriteAtlasManager.Instance.GetSpriteAsync(asbName, atlasName, spriteName, null, luaCall);
         }
 
         #endregion GameSpriteAtlasManager

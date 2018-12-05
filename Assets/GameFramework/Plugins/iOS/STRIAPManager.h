@@ -40,6 +40,6 @@ typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *data);
 @interface STRIAPManager : NSObject
 + (instancetype)shareSIAPManager;
 //开始内购
-- (void)startPurchWithID:(NSString *)purchID completeHandle:(IAPCompletionHandle)handle;
+- (void)startPurchWithID:(NSString *)purchID externalData:(NSString *)data completeHandle:(IAPCompletionHandle)handle;
 @end
 #endif

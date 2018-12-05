@@ -121,7 +121,7 @@ namespace GameFramework
             return mDict.GetObj(asbName, assetName);
         }
 
-        public void GetSync(string asbName, string assetName, Action<T> callback=null, LuaFunction luaFunction=null)
+        public void GetAsync(string asbName, string assetName, Action<T> callback=null, LuaFunction luaFunction=null)
         {
             assetName = FixResName(assetName);
             T t = Get(asbName, assetName);
@@ -146,7 +146,7 @@ namespace GameFramework
                     }
                     else
                     {
-                        LogFile.Warn("GetSync load:({0},{1})error.", asbName, assetName);
+                        LogFile.Warn("GetAsync load:({0},{1})error.", asbName, assetName);
                     }
                     mResMgr.CountAsbGroup(asbName, groupName);
                     addAsb2Group(asbName, groupName);
