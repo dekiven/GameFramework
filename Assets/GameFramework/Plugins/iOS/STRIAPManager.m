@@ -24,6 +24,7 @@
     if (self) {
         // 购买监听写在程序入口,程序挂起时移除监听,这样如果有未完成的订单将会自动执行并回调 paymentQueue:updatedTransactions:方法
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+        _externalData = @"";
     }
     return self;
 }

@@ -20,15 +20,18 @@ extern UIViewController *UnityGetGLViewController();
 class GFDefine
 {
     public :
-        static const char* GFNoticeGameobjName;
-        static const char* GFNoticeFuncName;
-        static const char* GFNoticeSplitStr;
+//        static const char* GFNoticeGameobjName;
+//        static const char* GFNoticeFuncName;
+//        static const char* GFNoticeSplitStr;
 
         //事件名
         static const char* STR_EVENT_TAKE_PHOTO;
         static const char* STR_EVENT_TAKE_ALBUM;
         static const char* STR_EVENT_START_PURCHASE;
 };
+
+void setNoticeInfo(const char * objName, const char* funcName);
+void setSplitStr(const char* slpit);
 
 char* UnityStringFromNSString(NSString* string);
 

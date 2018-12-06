@@ -6,15 +6,31 @@
 //
 
 #include "CommonDefines.h"
+#include <string>
 
-const char* GFDefine::GFNoticeGameobjName = "GameFramework.GameManager";
-const char* GFDefine::GFNoticeFuncName = "OnMessage";
-const char* GFDefine::GFNoticeSplitStr = "__;__";
+//const char* GFDefine::GFNoticeGameobjName = ;
+//const char* GFDefine::GFNoticeFuncName = "OnMessage";
+//const char* GFDefine::GFNoticeSplitStr = "__;__";
 
 //事件名
 const char* GFDefine::STR_EVENT_TAKE_PHOTO = "TakeImagePhoto";
 const char* GFDefine::STR_EVENT_TAKE_ALBUM = "TakeImageAlbum";
 const char* GFDefine::STR_EVENT_START_PURCHASE = "StartPurchase";
+
+std::string gameObjName("GameFramework.GameManager");
+std::string funcName("OnMessage");
+std::string splitStr("__;__");
+
+void setNoticeInfo(const char * objName, const char* func)
+{
+    gameObjName = std::string(objName);
+    funcName = std::string(func);
+}
+
+void setSplitStr(const char* slpit)
+{
+    splitStr = std::string(slpit);
+}
 
 char* UnityStringFromNSString(NSString* string)
 {
@@ -73,23 +89,25 @@ NSDictionary * dictionaryWithJsonString(NSString * jsonString)
 
 void NoticeUnity(const char * msg)
 {
-    UnitySendMessage(GFDefine::GFNoticeGameobjName, GFDefine::GFNoticeFuncName, msg);
+    UnitySendMessage(gameObjName.c_str(), funcName.c_str(), msg);
 }
 
 void NoticeUnity(const char* eventName, NSString* msg)
 {
-    const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@", eventName, GFDefine::GFNoticeSplitStr, msg]);
+    const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@", eventName, funcName.c_str(), msg]);
     NoticeUnity(_msg);
 }
 
 void NoticeUnity(const char* eventName, NSString* msg1, NSString* msg2)
 {
-    const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@%s%@", eventName, GFDefine::GFNoticeSplitStr, msg1, GFDefine::GFNoticeSplitStr, msg2]);
+    const char* split = splitStr.c_str();
+    const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@%s%@", eventName, split, msg1, split, msg2]);
     NoticeUnity(_msg);
 }
 
 void NoticeUnity(const char* eventName, NSString* msg1, NSString* msg2, NSString* msg3)
 {
-    const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@%s%@%s%@", eventName, GFDefine::GFNoticeSplitStr, msg1, GFDefine::GFNoticeSplitStr, msg2, GFDefine::GFNoticeSplitStr, msg3]);
+    const char* split = splitStr.c_str();
+    const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@%s%@%s%@", eventName, split, msg1, split, msg2, split, msg3]);
     NoticeUnity(_msg);
 }

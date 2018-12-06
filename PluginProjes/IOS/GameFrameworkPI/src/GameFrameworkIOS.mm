@@ -32,13 +32,12 @@ extern "C" {
     //===================================导出接口实现---------------------------------------
     void GFSetNoticeObFunc(const char* gameobjName, const char* funcName)
     {
-        GFDefine::GFNoticeGameobjName = gameobjName;
-        GFDefine::GFNoticeFuncName = funcName;
+        setNoticeInfo(gameobjName, funcName);
     }
     
     void GFSetNotifySplitStr(const char* splitStr)
     {
-        GFDefine::GFNoticeSplitStr = splitStr;
+        setSplitStr(splitStr);
     }
     
     void GFTakePhoto()
