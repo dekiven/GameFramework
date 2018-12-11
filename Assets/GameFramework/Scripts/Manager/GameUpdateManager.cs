@@ -36,8 +36,8 @@ namespace GameFramework
 
     /// <summary>
     /// 游戏资源配置
-    /// 游戏资源版本号为aaa.bbb.ccc.ddd[.base]格式
-    /// 版本号每段最大999,最小0,
+    /// 游戏资源版本号为aa.bb.cc.dd[.base]格式
+    /// 版本号每段最大99,最小0,
     /// .base是包内资源版本号
     /// </summary>
     public class ResConf{
@@ -47,21 +47,38 @@ namespace GameFramework
         public bool server;
         public Dictionary<string, ResInfo> files;
 
-        public uint VersionCode
+        private int mVersionCode = -1;
+
+        public int VersionCode
         {
             get
             {
-                uint code = 0;
-                string[] vs = getVersionNums(version);
-                int l = vs.Length;
-                if (vs.Length > 0 && !string.Equals(vs[l - 1], STR_BASE))
+                if(-1 == mVersionCode)
                 {
-                    for (int i = 0; i < l; ++i)
-                    {
-                        code += uint.Parse(vs[vs.Length - 1 + i]) * (uint)Math.Pow(10, 3 * i );
+                    string[] vs = getVersionNums(version);
+                    int l = vs.Length;
+                    if (vs.Length > 0 ){
+                        if (!string.Equals(vs[l - 1], STR_BASE))
+                        {
+                            for (int i = 0; i < l; ++i)
+                            {
+                                mVersionCode += int.Parse(vs[vs.Length - 1 - i]) * (int)Math.Pow(10, 2 * i);
+                            }
+                            mVersionCode *= 2;
+                        }
+                        else
+                        {
+                            for (int i = 1; i < l; ++i)
+                            {
+                                mVersionCode += int.Parse(vs[vs.Length - 1 - i]) * (int)Math.Pow(10, 2 * (i - 1));
+                            }
+                            mVersionCode *= 2;
+                            mVersionCode -= 1;
+                        }
                     }
                 }
-                return code;
+
+                return mVersionCode;
             }
 
         }
@@ -356,10 +373,6 @@ namespace GameFramework
                                         //StartCoroutine(CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback));
                                         updateMsgInfo("下载中...");
                                         updateSlider(0f);
-                                        //当有资源更新时，清空缓存
-                                        //TODO:优化，针对更新清理缓存(当前清理所有assetbundle缓存)
-                                        Caching.ClearCache();
-                                        //Caching.ClearAllCachedVersions(asbName);
                                         yield return CopyWWWFiles(streamConf.GetUpdateFiles(curConf).ToArray(), url, callback, luaCallback);
                                     }
                                     yield break;
@@ -533,7 +546,7 @@ namespace GameFramework
                         curConf.SaveToFile(Tools.GetWriteableDataPath(GetConfigPath()));
 
                         //保存新的资源版本号
-                        GameConfig.SetInt(GameDefine.STR_CONF_KEY_RES_VER_I, (int)curConf.VersionCode);
+                        GameConfig.SetInt(GameDefine.STR_CONF_KEY_RES_VER_I, curConf.VersionCode);
 
                         updateVersionInfo();
                     }else if( Equals(rate, -1f))

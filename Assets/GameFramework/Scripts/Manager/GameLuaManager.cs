@@ -121,11 +121,6 @@ namespace GameFramework
             }
         }
 
-        internal LuaFunction GetFunction(object sTR_LUA_EVENT_FUNC)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// 初始化LuaBundle
         /// </summary>
@@ -204,7 +199,7 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 调用全局LuaFunction
+        /// 调用全局LuaFunction，使用后释放
         /// </summary>
         /// <param name="funcName">函数名</param>
         /// <param name="args">参数列表</param>
@@ -220,7 +215,7 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 调用Lua函数，最大支持9个参数
+        /// 调用Lua函数，最大支持9个参数，不会释放，需要手动释放
         /// </summary>
         /// <param name="func">LuaFunction</param>
         /// <param name="args">函数参数列表</param>

@@ -160,7 +160,7 @@ namespace GameFramework
             //    path = string.Format("{0}{1}{2}", groups[1].Value, groups[2].Value.ToLower(), GameConfig.STR_ASB_EXT);
             //}
             //return path;
-            return path.ToLower() + GameConfig.STR_ASB_EXT;
+            return path.ToLower().Replace("/", "_") + GameConfig.STR_ASB_EXT;
         }
 
         /// <summary>

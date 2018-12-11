@@ -285,7 +285,7 @@ namespace GameFramework
             {
                 string relative2 = sTempLuaDir;
                 string[] files = Directory.GetFiles(dir, pattern, SearchOption.TopDirectoryOnly);
-                string asbName = "lua/" + Tools.GetAsbName(Tools.RelativeTo(dir, relative2, true)).Replace("/", "_");
+                string asbName = "lua/" + Tools.GetAsbName(Tools.RelativeTo(dir, relative2, true));
 
                 for (int i = 0; i < files.Length; i++)
                 {
