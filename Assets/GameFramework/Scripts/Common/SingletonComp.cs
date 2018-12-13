@@ -53,6 +53,7 @@ namespace GameFramework
                     if (null != sInstance)
                     {
                         Destroy(sInstance.gameObject);
+                        sInstance = null;
                     }
                 }
             }

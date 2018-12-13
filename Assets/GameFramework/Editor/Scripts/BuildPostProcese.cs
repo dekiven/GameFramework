@@ -46,18 +46,35 @@ namespace GameFramework
             //执行修改操作
 
             // ENABLE_BITCODE=False
-            proj.SetBuildProperty(target, "ENABLE_BITCODE", "false");
+            proj.SetBuildProperty(target, "ENABLE_BITCODE", "NO"); //flase == NO
 
             ////修改 SEARCH_PATHS
             //proj.SetBuildProperty(target, "LIBRARY_SEARCH_PATHS", "$(inherited)");
             //proj.AddBuildProperty(target, "LIBRARY_SEARCH_PATHS", "$(SRCROOT)");
             //proj.AddBuildProperty(target, "LIBRARY_SEARCH_PATHS", "$(PROJECT_DIR)/Libraries");
 
-            //添加.framework /.tbd
-            //bool 参数 true 表示框架是 optional，false 表示框架是 required。
-            //苹果内购
-            proj.AddFrameworkToProject(target, "StoreKit.framework", false);
+            //添加.tbd 依赖库
+            proj.AddFileToBuild(target, proj.AddFile("usr/lib/libstdc++.6.0.9.tbd", "libstdc++.6.0.9.tbd", PBXSourceTree.Sdk));
+            //proj.AddFileToBuild(target, proj.AddFile("usr/lib/libsqlite3.tbd", "libsqlite3.tbd", PBXSourceTree.Sdk));
+            //proj.AddFileToBuild(target, proj.AddFile("usr/lib/libc++.tbd", "libc++.tbd", PBXSourceTree.Sdk));
+            //proj.AddFileToBuild(target, proj.AddFile("usr/lib/libz.tbd", "libz.tbd", PBXSourceTree.Sdk));
 
+            //添加.framework 依赖库
+            //bool 参数 true 表示框架是 optional，false 表示框架是 required。
+            //proj.AddFrameworkToProject(target, "Security.framework", false);
+            //proj.AddFrameworkToProject(target, "Storekit.framework", false);
+            //proj.AddFrameworkToProject(target, "SafariServices.framework", false);
+            //proj.AddFrameworkToProject(target, "CoreData.framework", true);
+            //proj.AddFrameworkToProject(target, "MobileCoreServices.framework", true);
+            //proj.AddFrameworkToProject(target, "EventKit.framework", true);
+            //proj.AddFrameworkToProject(target, "EventKitUI.framework", true);
+            //proj.AddFrameworkToProject(target, "Social.framework", true);
+            //proj.AddFrameworkToProject(target, "CoreTelephony.framework", true);
+            //proj.AddFrameworkToProject(target, "MessageUI.framework", true);
+
+            //添加Capability (xcode Capabilities开关)：
+            //开启支付能力，会默认导入Storekit.framework
+            proj.AddCapability(target, PBXCapabilityType.InAppPurchase);
 
             ////添加 OTHER_LDFLAGS
             //proj.AddBuildProperty(target, "OTHER_LDFLAGS", "-ObjC");
@@ -108,5 +125,5 @@ namespace GameFramework
             File.WriteAllText(plistPath, plist.WriteToString());
         }
     }
-}
+} 
 #endif

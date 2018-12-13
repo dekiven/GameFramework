@@ -97,6 +97,8 @@ namespace GameFramework
 
         public override bool Dispose()
         {
+            mCorMgr.StopAllCors();
+            mCorMgr.DestroyComp();
             mUiMgr.DestroyComp();
             //mUpMgr.DestroyComp();
             mLuaMgr.DestroyComp();

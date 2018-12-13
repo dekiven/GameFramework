@@ -1778,7 +1778,7 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 跟新某位置的数据
+        /// 更新某位置的数据
         /// 由于C#部分UpdateData需要两个参数，这里只导出lua相关的方法
         /// </summary>
         /// <returns><c>true</c>, if scroll view data was updataed, <c>false</c> otherwise.</returns>
@@ -1791,7 +1791,7 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 跟新某位置的数据
+        /// 更新某位置的数据
         /// 由于C#部分UpdateData需要两个参数，这里只导出lua相关的方法
         /// </summary>
         /// <returns><c>true</c>, if scroll view data was updataed, <c>false</c> otherwise.</returns>

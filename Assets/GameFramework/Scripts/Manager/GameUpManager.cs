@@ -181,8 +181,8 @@ namespace GameFramework
                                 }
                                 else
                                 {
-                                    LogFile.Log("没有检测到新版本资源，跳过跟新步骤");
-                                    callback(true, "没有检测到新版本资源，跳过跟新步骤");
+                                    LogFile.Log("没有检测到新版本资源，跳过更新步骤");
+                                    callback(true, "没有检测到新版本资源，跳过更新步骤");
                                 }
 
                             }, null);
