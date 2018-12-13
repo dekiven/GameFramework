@@ -22,13 +22,19 @@ namespace GameFramework
         public void AddBundle(string bundleName)
         {
             string url = Tools.GetLuaAsbPath(bundleName);
+            bundleName = bundleName.Replace(GameConfig.STR_ASB_EXT, "");
+
+            if(HasBundle(bundleName))
+            {
+                return;
+            }
+
             if (File.Exists(url))
             {
-                var bytes = File.ReadAllBytes(url);
-                AssetBundle bundle = AssetBundle.LoadFromMemory(bytes);
+                //var bytes = File.ReadAllBytes(url);
+                AssetBundle bundle = AssetBundle.LoadFromFile(url);
                 if (bundle != null)
                 {
-                    bundleName = bundleName.Replace(GameConfig.STR_ASB_EXT, "");
                     base.AddSearchBundle(bundleName.ToLower(), bundle);
                 }
             }

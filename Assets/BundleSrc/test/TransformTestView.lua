@@ -66,7 +66,7 @@ end
 
 function TransformTestView:onBtnClick( name )
     if name == 'btnBack' then
-        self:hide()
+        self:close()
     elseif name == 'Button' then
         local t = 
         {
@@ -75,14 +75,16 @@ function TransformTestView:onBtnClick( name )
             localPosition = {0, 0, 100}
         }
         t = getCsTable(t)
-        self.uiHandler:ModifyURectTransfrom(0, t)
+        -- printTable(t)
+        self.uiHandler:ModifyRectTransfrom_U(0, t)
     else
         local t = 
         {
             sizeDelta = {100, 200},
         }
-        local data = {'ModifyURectTransfrom', 0, t}
+        local data = {'ModifyRectTransfrom_U', 0, t}
         data = getUIData(data)
+        printTable(data)
         self.uiHandler:ChangeUI(data)
     end
 end

@@ -112,6 +112,12 @@ namespace LuaInterface
             return false;
         }
 
+        public bool HasBundle(string name)
+        {
+            return zipMap.ContainsKey(name);
+        }
+
+
         public void AddSearchBundle(string name, AssetBundle bundle)
         {
             zipMap[name] = bundle;

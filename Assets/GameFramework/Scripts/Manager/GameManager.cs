@@ -9,17 +9,18 @@ namespace GameFramework
 {
     public class GameManager : SingletonComp<GameManager>
     {
+        GameCoroutineManager mCorMgr;
         GameUIManager mUiMgr;
         GameLuaManager mLuaMgr;
         GameResManager mResMgr;
-
-        ResUpdateView mUpdateView;
 
         //是否开启线程处理EventManager线程上的消息
         private bool progressThreadEvent = GameConfig.progressThreadEvent;
         private LuaFunction mLuaNotifyFunc;
 
         public int ScreenSleepTime { get { return Screen.sleepTimeout; } set { Screen.sleepTimeout = value; } }
+
+        public string UpdateViewResPath = String.Empty;
 
         #region MonoBehaviour
         void Awake()
@@ -28,6 +29,7 @@ namespace GameFramework
             //初始化Platform，主要是插件相关
             initGamePlatform();
 
+            mCorMgr = GameCoroutineManager.Instance;
             mResMgr = GameResManager.Instance;
             mLuaMgr = GameLuaManager.Instance;
             //mUpMgr = GameUpdateManager.Instance;
@@ -38,16 +40,14 @@ namespace GameFramework
         {
             //初始化部分信息
             init();
-            if (GameConfig.checkUpdate)
+            if(!string.IsNullOrEmpty(UpdateViewResPath))
             {
-                //检测资源更新
-                checkResUpdate();
+                GameObject prefab = Resources.Load<GameObject>(UpdateViewResPath);
+                if(null != prefab)
+                {
+                    mUiMgr.ShowViewPrefab(prefab);
+                }
             }
-            else
-            {
-                StartGameLogic();
-            }
-
         }
 
         void Update()
@@ -94,14 +94,6 @@ namespace GameFramework
 
 
         #region public 
-        public void CloseUpdateView()
-        {
-            if (null != mUpdateView)
-            {
-                Destroy(mUpdateView);
-            }
-        }
-
 
         public override bool Dispose()
         {
@@ -214,33 +206,6 @@ namespace GameFramework
 
             //注册LogFile事件
             EventManager.registerToMain(GameDefine.STR_EVENT_LOG_EVENT, this, "LogEvent");
-        }
-
-        void checkResUpdate()
-        {
-            // 检查新包资源是否拷贝，检查服务器资源更新，完成后启动lua虚拟机和其他游戏逻辑
-            mUpdateView = FindObjectOfType<ResUpdateView>();
-            if (null != mUpdateView)
-            {
-                mUpdateView.CheckUpdate(delegate (float percent, string msg)
-                {
-                    if (Equals(-1f, percent) || Equals(1f, percent))
-                    {
-                        LogFile.Log("GameManager callback of copy file:{0},{1}", percent, msg);
-                        if (Equals(1f, percent))
-                        {
-                            StartGameLogic();
-                        }
-                        else
-                        {
-                            LogFile.Error("更新资源失败，启动游戏逻辑，如果资源不完整可能引起bug");
-                            //TODO:包体资源拷贝失败，进行相应操作
-                            //Application.Quit();
-                            StartGameLogic();
-                        }
-                    }
-                });
-            }
         }
         #endregion
 

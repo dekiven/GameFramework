@@ -12,6 +12,7 @@ public class GameMain : MonoBehaviour {
 	void Start () {
         //加载GameManager单例组件
         var gm = GameManager.Instance;
+        gm.UpdateViewResPath = "DownloadView";
 	}
 	
 	// Update is called once per frame

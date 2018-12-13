@@ -97,6 +97,15 @@ namespace GameFramework
             mPlatform.StartPurchase(pid, externalData);
         }
 
+        /// <summary>
+        /// 检查app版本，返回true表示是最新或者已经更新完成
+        /// </summary>
+        /// <param name="callback">Callback.</param>
+        public static void CheckAppVer(Action<bool> callback)
+        {
+            mPlatform.CheckAppVer(callback);
+        }
+
         //=====================================test--------------------------------------
         public static void test1()
         {

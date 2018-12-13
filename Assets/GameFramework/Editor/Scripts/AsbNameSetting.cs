@@ -68,14 +68,16 @@ namespace GameFramework
                 if (BuilderConfig.IsResFile(path))
                 {
                     string asbName = fullPath.Substring(0, fullPath.Length - Path.GetExtension(fullPath).Length);
-                    asbName = Tools.RelativeTo(asbName, Tools.GetResPath()) + GameConfig.STR_ASB_EXT;
+                    //asbName = Tools.RelativeTo(asbName, Tools.GetResPath()) + GameConfig.STR_ASB_EXT;
+                    asbName = Tools.GetAsbName(Tools.RelativeTo(asbName, Tools.GetResPath()));
                     SetBundleName(path, asbName.ToLower());
                 }
             }
             else if (Directory.Exists(fullPath))
             {
                 string[] files = Directory.GetFiles(fullPath, "*.*", SearchOption.AllDirectories);
-                string asbName = Tools.RelativeTo(fullPath, Tools.GetResPath()) + GameConfig.STR_ASB_EXT;
+                //string asbName = Tools.RelativeTo(fullPath, Tools.GetResPath()) + GameConfig.STR_ASB_EXT;
+                string asbName = Tools.GetAsbName(Tools.RelativeTo(fullPath, Tools.GetResPath()));
 
                 foreach (var f in files)
                 {

@@ -52,7 +52,7 @@ namespace GameFramework
             eventObj.transform.SetParent(transform);
             eventObj.name = "EventSystem";
             mEventSystem = eventObj.AddComponent<EventSystem>();
-            Debug.Log(mEventSystem.enabled);
+            //Debug.Log(mEventSystem.enabled);
             eventObj.AddComponent<StandaloneInputModule>();
         }
         #endregion
@@ -124,7 +124,7 @@ namespace GameFramework
             GameObject obj = getPrefab(asbName, prefab);
             if(null != obj)
             {
-                showViewPrefab(obj, listeners);
+                ShowViewPrefab(obj, listeners);
             }
             else
             {
@@ -190,6 +190,70 @@ namespace GameFramework
             }
         }
 
+        /// <summary>
+        /// 从prefab显示UI，慎用，建议使用ShowView
+        /// </summary>
+        /// <param name="prefab">Prefab.</param>
+        /// <param name="luaTable">Lua table.</param>
+        /// <param name="asbName">Asb name.</param>
+        /// <param name="prefabName">Prefab name.</param>
+        public void ShowViewPrefab(GameObject prefab, LuaTable luaTable = null, string asbName = null, string prefabName = null)
+        {
+            if (null != prefab)
+            {
+                GameObject uiObj = Instantiate(prefab);
+                UIBase ui = uiObj.GetComponent<UIBase>();
+                if (null != luaTable)
+                {
+                    ui.SetLuaStatusListeners(luaTable);
+                }
+                addUIObj(ui);
+                if (ui.IsStatic)
+                {
+                    if (mStaticViewInfos.Count == mStaticViews.Count)
+                    {
+                        mStaticViewInfos.Add(new AsbInfo(asbName, prefabName));
+                        mStaticViews.Add(ui);
+                    }
+                    else
+                    {
+                        LogFile.Error("GameUIManager error ==> showViewPrefab mStaticViewInfos.Count != mStaticViews.Count");
+                    }
+                }
+                //要显示UI先SetActive(true)，防止有UIprefab中没有启用，不会进入Start方法
+                uiObj.SetActive(true);
+                //UI初始化后才Show（播放显示动画）
+                ui.OnInitCallbcak = (bool hasInit) =>
+                {
+                    if (ui.IsInStack)
+                    {
+                        if (ui.HideBefor && mStackViews.Count > 0)
+                        {
+                            UIBase curView = mStackViews.Peek();
+                            if (curView.isActiveAndEnabled)
+                            {
+                                HideView(curView, (bool ret) =>
+                                {
+                                    pushUI(ui as UIView);
+                                    ShowViewObj(ui, null);
+                                });
+                                return;
+                            }
+                        }
+                        //之前的UI隐藏或者本UI被设置为不隐藏之前的UI则不隐藏之前的UI直接push
+                        {
+                            pushUI(ui as UIView);
+                            ShowViewObj(ui, null);
+                        }
+                    }
+                    else
+                    {
+                        ShowViewObj(ui, null);
+                    }
+                };
+            }
+        }
+
         public void ClearAllUI()
         {
             ClearUIByType(RenderMode.ScreenSpaceOverlay);
@@ -250,63 +314,6 @@ namespace GameFramework
                 }
             }
             return false;
-        }
-
-        private void showViewPrefab(GameObject prefab, LuaTable luaTable = null, string asbName=null, string prefabName=null)
-        {
-            if(null != prefab)
-            {
-                GameObject uiObj = Instantiate(prefab);
-                UIBase ui = uiObj.GetComponent<UIBase>();
-                if(null != luaTable)
-                {
-                    ui.SetLuaStatusListeners(luaTable);
-                }
-                addUIObj(ui);
-                if(ui.IsStatic)
-                {
-                    if(mStaticViewInfos.Count == mStaticViews.Count)
-                    {
-                        mStaticViewInfos.Add(new AsbInfo(asbName, prefabName));
-                        mStaticViews.Add(ui);
-                    }
-                    else
-                    {
-                        LogFile.Error("GameUIManager error ==> showViewPrefab mStaticViewInfos.Count != mStaticViews.Count");
-                    }
-                }
-                //要显示UI先SetActive(true)，防止有UIprefab中没有启用，不会进入Start方法
-                uiObj.SetActive(true);
-                //UI初始化后才Show（播放显示动画）
-                ui.OnInitCallbcak = (bool hasInit) =>
-                {
-                    if (ui.IsInStack)
-                    {
-                        if (ui.HideBefor && mStackViews.Count > 0)
-                        {
-                            UIBase curView = mStackViews.Peek();
-                            if (curView.isActiveAndEnabled)
-                            {
-                                HideView(curView, (bool ret) =>
-                                {
-                                    pushUI(ui as UIView);
-                                    ShowViewObj(ui, null);
-                                });
-                                return;
-                            }
-                        }
-                        //之前的UI隐藏或者本UI被设置为不隐藏之前的UI则不隐藏之前的UI直接push
-                        {
-                            pushUI(ui as UIView);
-                            ShowViewObj(ui, null);
-                        }
-                    }
-                    else
-                    {
-                        ShowViewObj(ui, null);
-                    }
-                };
-            }
         }
 
         private void load(string asbName, string prefab, LuaTable table=null)
@@ -459,7 +466,7 @@ namespace GameFramework
             {
                 mViewListeners.Remove(info.extral);
             }
-            showViewPrefab(prefab, table);
+            ShowViewPrefab(prefab, table);
         }
 
         private GameObject getPrefab(string asbName, string resName)

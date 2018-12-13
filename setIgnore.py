@@ -5,6 +5,7 @@ ignoreList = [
     '.vs/',
     'Library/',
     'Temp/',
+    'RunTimeRes/',
     'UnityPackageManager/',
     'StreamingAssets',
     'StreamingAssets.meta',

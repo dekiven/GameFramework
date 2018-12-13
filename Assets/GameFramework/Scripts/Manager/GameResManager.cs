@@ -104,13 +104,13 @@ namespace GameFramework
             }
             else
             {
-                string asbName = Tools.GetAsbName(asbPath);
+                //string asbName = Tools.GetAsbName(asbPath);
                 // if (!mAllBundles.Contains(asbName))
                 // {
                 //     asbName = Tools.GetAsbName(asbPath, true);
                 // }
                 LoadAsset<T>(
-                    asbName
+                    asbPath
                     , new string[] { resName, }
                     , delegate (UObj[] objs)
                     {
@@ -291,16 +291,10 @@ namespace GameFramework
 
         #region 私有方法
         //public void LoadAsset<T>(string abName, string[] assetNames, Action<UObj[]> action = null) where T : UObj
-        void LoadAsset<T>(string abName, string[] assetNames, Action<UObj[]> action = null, LuaFunction func = null) where T : UObj
+        void LoadAsset<T>(string abPath, string[] assetNames, Action<UObj[]> action = null, LuaFunction func = null) where T : UObj
         {
-            string path = abName;
-            // manifest Assetbundle文件没有后缀，文件名跟release的Assetbundle根目录同名
-            bool isManifest = string.Equals(GameConfig.STR_ASB_MANIFIST, path);
-            if (path.EndsWith(GameConfig.STR_ASB_EXT, StringComparison.Ordinal))
-            {
-                //isManifest = false;
-                path = path.Substring(0, path.Length - GameConfig.STR_ASB_EXT.Length);
-            }
+            bool isManifest = string.Equals(GameConfig.STR_ASB_MANIFIST, abPath);
+
             if (!isManifest)
             {
                 List<string> names = new List<string>();
@@ -308,16 +302,13 @@ namespace GameFramework
                 {
                     if(!string.IsNullOrEmpty(item))
                     {
-                        //names.Add(Tools.PathCombine("Assets/" + GameConfig.STR_RES_FOLDER, path, item));
-                        names.Add(Tools.GetResInAssetsName(path, item));
+                        names.Add(Tools.GetResInAssetsName(abPath, item));
                     }
                 }
                 assetNames = names.ToArray();
             }
-            else
-            {
-                abName = abName + GameConfig.STR_ASB_EXT;
-            }
+
+            string abName = Tools.GetAsbName(abPath);
 
             LoadAssetRequest request = new LoadAssetRequest();
             request.assetType = typeof(T);

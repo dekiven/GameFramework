@@ -14,7 +14,7 @@ namespace GameFramework
         #endregion
 
         public bool IsBillboard;
-        public UIHandler UIObjs;
+        public UIHandler Handler;
         /// <summary>
         /// 是否加入UI栈
         /// </summary>
@@ -144,6 +144,14 @@ namespace GameFramework
 
         }
 
+        protected virtual void dispose()
+        {
+            if (null != mLuaFuncs)
+            {
+                mLuaFuncs.Dispose();
+            }
+        }
+
         /// <summary>
         /// 准备显示的处理，可以在这里做打开动画,同时有lua和c#代码时执行lua
         /// </summary>
@@ -183,7 +191,7 @@ namespace GameFramework
                 {
                     if (ViewStatus.onInit == status)
                     {
-                        func.Call<UIBase, UIHandler>(this, UIObjs);
+                        func.Call<UIBase, UIHandler>(this, Handler);
                     }
                     else
                     {
@@ -237,14 +245,6 @@ namespace GameFramework
                     onShow(_callback);
                     gameObject.SetActive(true);
                     break;
-            }
-        }
-
-        private void Dispose()
-        {
-            if (null != mLuaFuncs)
-            {
-                mLuaFuncs.Dispose();
             }
         }
 
@@ -338,9 +338,9 @@ namespace GameFramework
                 LogFile.Error("mRectTransform is null");
                 return;
             }
-            if(null == UIObjs)
+            if(null == Handler)
             {
-                UIObjs = GetComponent<UIHandler>();
+                Handler = GetComponent<UIHandler>();
             }
             IsBillboard = false;
             //进入初始化之后直接隐藏UI，修复在UI切换的时候会显示该UI，等待上个UI隐藏动画完成后再播放动画修复的bug
@@ -360,7 +360,7 @@ namespace GameFramework
         void OnDestroy()
         {
             onLuaStatusChange(ViewStatus.onDestroy);
-            Dispose();
+            dispose();
         }
         #endregion
     }

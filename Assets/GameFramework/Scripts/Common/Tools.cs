@@ -16,7 +16,8 @@ namespace GameFramework
             string root = string.Empty;
 
 #if UNITY_EDITOR
-            root = Application.streamingAssetsPath;
+            //root = Application.streamingAssetsPath;
+            root = PathCombine(Application.dataPath, "../RunTimeRes");
 #elif UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN
         root = Application.streamingAssetsPath;
 #else

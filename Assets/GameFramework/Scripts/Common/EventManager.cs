@@ -112,11 +112,13 @@ namespace GameFramework
                 return false;
             }
 
-            foreach (EventManager.Pair item in list)
+            int count = list.Count;
+            for (int i = 0; i < count; i++)
             {
-                if (item.obj == obj)
+                Pair pair = list[count - i - 1];
+                if (pair.obj == obj)
                 {
-                    list.Remove(item);
+                    list.Remove(pair);
                     break;
                 }
             }
@@ -140,15 +142,28 @@ namespace GameFramework
         {
             monitorEnter(dic);
 
-            foreach (KeyValuePair<string, List<Pair>> item in dic)
+            List<string> emptyLists = new List<string>();
+            foreach (string key in dic.Keys)
             {
-                foreach (Pair pair in item.Value)
+                List<Pair> pairs = dic[key];
+                int count = pairs.Count;
+                for (int i = 0; i < count; i++)
                 {
+                    int index = count - i - 1;
+                    Pair pair = pairs[index];
                     if (pair.obj == obj)
                     {
-                        item.Value.Remove(pair);
+                        pairs.RemoveAt(index);
                     }
                 }
+                if (pairs.Count == 0)
+                {
+                    emptyLists.Add(key);
+                }
+            }
+            foreach (string key in emptyLists)
+            {
+                dic.Remove(key);
             }
 
             monitorExit(dic);
@@ -156,23 +171,23 @@ namespace GameFramework
             return true;
         }
 
-        public static bool notifyMain(string eventName, object[] args)
+        public static bool notifyMain(string eventName, params object[] args)
         {
             return _notifyEvent(sDicToMain, sListToMainWait, eventName, args);
         }
 
-        public static bool notifyThread(string eventName, object[] args)
+        public static bool notifyThread(string eventName, params object[] args)
         {
             return _notifyEvent(sDicToThread, sListToThreadWait, eventName, args);
         }
 
-        public static void notifyAll(string eventName, object[] args)
+        public static void notifyAll(string eventName, params object[] args)
         {
             notifyMain(eventName, args);
             notifyThread(eventName, args);
         }
 
-        protected static bool _notifyEvent(EventPairDic dic, EventObjList list, string eventName, object[] args)
+        protected static bool _notifyEvent(EventPairDic dic, EventObjList list, string eventName, params object[] args)
         {
             monitorEnter(dic);
 
@@ -207,56 +222,11 @@ namespace GameFramework
 
         public static void progressMainEvents()
         {
-            //monitorEnter(sDicToMain);
-
-            //foreach (EventObj item in sListToMainWait)
-            //{
-            //    sListToMainDoing.AddLast(item);
-            //}
-            //sListToMainWait.Clear();
-
-            //monitorExit(sDicToMain);
-
-            //for (int i = 0; i < sListToMainDoing.Count; i++)
-            //{
-            //    var item = sListToMainDoing.First.Value;
-            //    try
-            //    {
-            //        item.info.method.Invoke(item.info.obj, item.args);
-            //    }
-            //    catch (System.Exception e)
-            //    {
-            //        LogFile.Error("progress view event error: func[" + item.info.funcName + "]; msg: " + e.ToString());
-            //    }
-            //    sListToMainDoing.RemoveFirst();
-            //}
             _progressMainEvents(sDicToMain, sListToMainWait, sListToMainDoing, true);
         }
 
         public static void progressThreadEvents()
         {
-            //monitorEnter(sDicToThread);
-
-            //foreach (EventObj item in sListToThreadWait)
-            //{
-            //    sListToThreadDoing.AddLast(item);
-            //}
-            //sListToThreadWait.Clear();
-
-            //monitorExit(sDicToThread);
-
-            //foreach (EventObj item in sListToThreadDoing)
-            //{
-            //    try
-            //    {
-            //        item.info.method.Invoke(item.info.obj, item.args);
-            //    }
-            //    catch (System.Exception e)
-            //    {
-            //        LogFile.Error("progress Model event error: func[" + item.info.funcName + "]; msg: " + e.ToString());
-            //    }
-            //    sListToThreadDoing.Remove(item);
-            //}
             _progressMainEvents(sDicToThread, sListToThreadWait, sListToThreadDoing);
         }
 

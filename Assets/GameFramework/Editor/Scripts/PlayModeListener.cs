@@ -23,7 +23,10 @@ namespace GameFramework
                 case PlayModeStateChange.ExitingEditMode :
                     break;
                 case PlayModeStateChange.EnteredPlayMode :
-                    SceneSettingManager.setAllSceneToBuildSetting();
+                    if (!GameConfig.useAsb)
+                    {
+                        SceneSettingManager.setAllSceneToBuildSetting();
+                    }
                     break;
                 case PlayModeStateChange.ExitingPlayMode :
                     //SceneManager.setReleaseSceneToBuildSetting();

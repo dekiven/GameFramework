@@ -207,6 +207,11 @@ namespace GameFramework
                     ToLuaMenu.CopyLuaBytesFiles(dir, sTempLuaDir);
                 }
             }
+            AssetDatabase.Refresh();
+            while(EditorApplication.isUpdating)
+            {
+                
+            }
             //通过GenLuaBuildByDir配置AssetBundle name
             foreach (var luaDir in Directory.GetDirectories(sTempLuaDir, "*", SearchOption.AllDirectories))
             {
@@ -215,6 +220,11 @@ namespace GameFramework
             }
             GenLuaBuildByDir(sTempLuaDir, "*.bytes");
             //Debug.LogWarning("lua Add luaDir: lua/lua");
+            AssetDatabase.Refresh();
+            while (EditorApplication.isUpdating)
+            {
+
+            }
         }
 
         public static void BuildAbsByConfig(BuilderConfig config)

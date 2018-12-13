@@ -4,6 +4,7 @@ using System;
 using LuaInterface;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace GameFramework
 {
@@ -11,18 +12,31 @@ namespace GameFramework
     {
         public delegate void WWWRstDel(string noticeKey, double progress, int index, string msg);
         public delegate void WWWUrlRstDel(bool rst, string msg);
+        public delegate void WWWUrlRstBytesDel(bool rst, byte[] msg);
 
+        /// <summary>
+        /// 所有操作(上传或下载)全部完成
+        /// </summary>
         public static string STR_SUCCEEDED = "succeeded";
+        /// <summary>
+        /// 有操作执行失败
+        /// </summary>
         public static string STR_FAILED = "failed";
+        /// <summary>
+        /// 有一个文件上传或下载成功
+        /// </summary>
+        public static string STR_DONE = "done";
         /// <summary>
         /// www 回调的间隔时间
         /// </summary>
         public float NotifyIterval = 0.5f;
+        public string NoticeKey;
 
 
         private WWW mWWW = null;
         private WWWRstDel mRstDel = null;
         private WWWUrlRstDel mUrlRstDel = null;
+        private WWWUrlRstBytesDel mUrlRstBytesDel = null;
         private LuaFunction mLuaFunc = null;
         private float mTimeoutSec = 1f;
         private Coroutine mCoroutine = null;
@@ -33,7 +47,6 @@ namespace GameFramework
         private List<WWWInfo> mFialedList;
         private int mDoneCount = 0;
         private WWWType mType = WWWType.download;
-        private string mNoticeKey;
         private float lastCallTime = 0;
 
 
@@ -48,12 +61,21 @@ namespace GameFramework
         {
             if (mList.Count > 0)
             {
-                if (mType == WWWType.request)
+                lastCallTime = Time.time;
+                switch(mType)
                 {
-                    startUrlWWW();
-                }else
-                {
-                    startNewWWW();
+                    case WWWType.request :
+                        startUrlWWW();
+                        break;
+                    case WWWType.upload :
+                    case WWWType.download :
+                        startNewWWW();
+                        break;
+                    case WWWType.read :
+                    case WWWType.readBytes :
+                        startReadWWW();
+                        break;
+                        
                 }
             }
         }
@@ -79,6 +101,30 @@ namespace GameFramework
         }
         #endregion MonoBehaviour
 
+        public void ReadFileStr(string noticeKey, string fileUrl, float timeoutSec, WWWUrlRstDel del, LuaFunction lua)
+        {
+            mType = WWWType.read;
+            mUrlRstDel = del;
+            setLuaCallback(lua);
+            mTimeoutSec = timeoutSec;
+            NoticeKey = noticeKey;
+
+            mList.Clear();
+            mList.Add(new WWWInfo(fileUrl, ""));
+        }
+
+        public void ReadFileBytes(string noticeKey, string fileUrl, float timeoutSec, WWWUrlRstBytesDel del, LuaFunction lua)
+        {
+            mType = WWWType.readBytes;
+            mUrlRstBytesDel = del;
+            setLuaCallback(lua);
+            mTimeoutSec = timeoutSec;
+            NoticeKey = noticeKey;
+
+            mList.Clear();
+            mList.Add(new WWWInfo(fileUrl, ""));
+        }
+
         /// <summary>
         /// 下载一个文件
         /// </summary>
@@ -97,7 +143,7 @@ namespace GameFramework
             setLuaCallback(lua);
             mTimeoutSec = timeoutSec;
             mTotalSize = info.Size;
-            mNoticeKey = noticeKey;
+            NoticeKey = noticeKey;
 
             mList.Clear();
             mList.Add(info);
@@ -111,7 +157,7 @@ namespace GameFramework
         /// <param name="timeoutSec">超时时间（秒）</param>
         /// <param name="del">下载进度回调
         /// (string noticeKey, double progress, int index, string msg)
-        /// 下载key,下载进度（-1代表有错；1代表全部下载过[可能完成或部分失败]）,当前下载的文件index,msg信息（当progress==1且msg=="succeeded"才表示全部下载成功）
+        /// 下载key,下载进度（-1代表有错；1代表全部下载过[可能完成或部分失败]）,当前下载的文件index(下载完成的个数),msg信息（当progress==1且msg=="succeeded"才表示全部下载成功）
         /// </param>
         /// <param name="lua">lua回调,参数跟del相同</param>
         public void DownloadFiles(string noticeKey, List<WWWInfo> infos, float timeoutSec, WWWRstDel del, LuaFunction lua)
@@ -125,10 +171,11 @@ namespace GameFramework
             mRstDel = del;
             setLuaCallback(lua);
             mTimeoutSec = timeoutSec;
-            mNoticeKey = noticeKey;
+            NoticeKey = noticeKey;
+            mTotalSize = 0;
             for (int i = 0; i < infos.Count; i++)
             {
-                mTotalSize = infos[i].Size;
+                mTotalSize += infos[i].Size;
             }
 
             mList.Clear();
@@ -154,7 +201,7 @@ namespace GameFramework
             setLuaCallback(lua);
             mTimeoutSec = timeoutSec;
             mTotalSize = info.Size;
-            mNoticeKey = noticeKey;
+            NoticeKey = noticeKey;
 
             mList.Clear();
             mList.Add(info);
@@ -182,7 +229,7 @@ namespace GameFramework
             mRstDel = del;
             setLuaCallback(lua);
             mTimeoutSec = timeoutSec;
-            mNoticeKey = noticeKey;
+            NoticeKey = noticeKey;
             for (int i = 0; i < infos.Count; i++)
             {
                 mTotalSize = infos[i].Size;
@@ -228,21 +275,21 @@ namespace GameFramework
 
         private void callback(double progress, string msg)
         {
-            if (lastCallTime+NotifyIterval >= Time.time || Math.Abs(progress).Equals(1d))
+            if (lastCallTime+NotifyIterval >= Time.time || Math.Abs(progress).Equals(1d) || msg.Equals(STR_DONE))
             {
                 if (null != mRstDel)
                 {
-                    mRstDel(mNoticeKey, progress, mDoneCount, msg);
+                    mRstDel(NoticeKey, progress, mDoneCount, msg);
                 }
                 if (null != mLuaFunc)
                 {
-                    mLuaFunc.Call(mNoticeKey, progress, mDoneCount, msg);
+                    mLuaFunc.Call(NoticeKey, progress, mDoneCount, msg);
                 }
+                lastCallTime = Time.time;
                 if (progress >= 1)
                 {
                     clear();
                 }
-                lastCallTime = Time.time;
             }            
         }
 
@@ -255,6 +302,26 @@ namespace GameFramework
             if (null != mLuaFunc)
             {
                 mLuaFunc.Call(rst, mDoneCount, msg);
+            }
+            if (rst)
+            {
+                clear();
+            }
+        }
+
+        private void callbackBytes(bool rst, byte[] msg)
+        {
+            if (null != mUrlRstBytesDel)
+            {
+                mUrlRstBytesDel(rst, msg);
+            }
+            if (null != mLuaFunc)
+            {
+                mLuaFunc.Call(rst, mDoneCount, new LuaByteBuffer(msg));
+            }
+            if (rst)
+            {
+                clear();
             }
         }
 
@@ -274,7 +341,8 @@ namespace GameFramework
             {
                 StopCoroutine(mCoroutine);
             }
-            Destroy(this, 2);
+
+            Destroy(this);
         }
 
         /// <summary>
@@ -323,6 +391,14 @@ namespace GameFramework
             }
         }
 
+        private void startReadWWW()
+        {
+            if (null == mCoroutine)
+            {
+                mCoroutine = StartCoroutine(readWww());
+            }
+        }
+
         private IEnumerator www()
         {
             for (int i = 0; i < mList.Count; i++)
@@ -360,9 +436,9 @@ namespace GameFramework
                     }
                 }
 
-                if (null != mWWW)
+                if (null == mWWW)
                 {
-                    callback(-1f, "www is not null");
+                    callback(-1f, "www is null");
                     continue;
                 }
                 yield return checkWWWTimeout(mTimeoutSec);
@@ -401,13 +477,14 @@ namespace GameFramework
                                     }
                                     Tools.CheckDirExists(Directory.GetParent(savePath).ToString(), true);
                                     FileStream fsDes = File.Create(savePath);
+                                    //TODO:优化，拷贝大文件时适当yield return
                                     fsDes.Write(mWWW.bytes, 0, mWWW.bytes.Length);
                                     fsDes.Flush();
                                     fsDes.Close();
                                 }
                             }
 
-                            callback(getProgress(0), "done");
+                            callback(getProgress(0), STR_DONE);
                         }
                     }
                     mWWW.Dispose();
@@ -423,26 +500,6 @@ namespace GameFramework
             {
                 callback(1, STR_FAILED);
             }
-        }
-
-        private double getProgress(int curSize)
-        {
-            double progress = 0d;
-            if (mTotalSize > 0)
-            {
-                progress = (mDoneSize + curSize) / (double)mTotalSize;
-
-                return progress;
-            }
-            else
-            {
-                progress = (mDoneCount + curSize) / (double)mList.Count;
-            }
-            if (progress > 1d)
-            {
-                progress = 0.99d;
-            }
-            return progress;
         }
 
         private IEnumerator withUrlWww()
@@ -467,11 +524,69 @@ namespace GameFramework
             }
             yield return null;
         }
+
+        private IEnumerator readWww()
+        {
+            mWWW = new WWW(mList[0].Url);
+            if (null != mWWW)
+            {
+                yield return checkWWWTimeout(mTimeoutSec);
+                if (mWWW.isDone)
+                {
+                    //请求失败
+                    if (!string.IsNullOrEmpty(mWWW.error))
+                    {
+                        if (mType == WWWType.read)
+                        {
+                            callback(false, mWWW.error);
+                        }
+                        else
+                        {
+                            callbackBytes(false, Encoding.Default.GetBytes(mWWW.error));
+                        }
+
+                    }
+                    else
+                    {
+                        //请求完成
+                        if (mType == WWWType.read)
+                        {
+                            callback(true, mWWW.text);
+                        }
+                        else
+                        {
+                            callbackBytes(true, mWWW.bytes);
+                        }
+                    }
+                }
+            }
+            yield return null;
+        }
+
+        private double getProgress(int curSize)
+        {
+            double progress = 0d;
+            if (mTotalSize > 0)
+            {
+                progress = (mDoneSize + curSize) / (double)mTotalSize;
+            }
+            else
+            {
+                progress = (mDoneCount + curSize) / (double)mList.Count;
+            }
+            if (progress >= 1d)
+            {
+                progress = 0.99d;
+            }
+            return progress;
+        }
         #endregion 私有方法
     }
 
     public class WWWInfo : IDisposable
     {
+        public static WWWInfo Default = new WWWInfo ("", "");
+
         public string Url;
         public string TargetPath;
         public long Size;
@@ -678,6 +793,8 @@ namespace GameFramework
 
     public enum WWWType
     {
+        read,
+        readBytes,
         download,
         upload,
         request,

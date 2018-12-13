@@ -10,22 +10,26 @@
 -- 根据{'funcName', index, value,...}获取changeUI的table
 function getUIData( dataTable )
     -- 当v = {'funcStr', intIndex, content,...}时加入data
-    if type(dataTable) == 'table' and #dataTable >= 2 then
-        dataTable.count = #dataTable
-        dataTable._cs_data_ = 1
+    local count = #dataTable
+    dataTable.count = count
+    -- 一般count大于等于3,某些不需要参数的是2,_issv_ 表示是ScrollViewData teble，不参与转换
+    if type(dataTable) == 'table' and count >= 2 then
         -- 如果v[3]是table，需要转换
-        if type(dataTable[3]) == 'table' and (not dataTable._cs_data_) then
+        if type(dataTable[3]) == 'table' and (not dataTable._issv_) then
             -- dataTable[3]暂时不支持 index和key混用，
             local _v = clone(dataTable)
             if #dataTable[3] > 0 then
+                -- printTable(dataTable, 'getUIData.dataTable', 3)
                 -- 使用index表示是vector或者color，直接转化为string
                 _v[3] = getVecColStr(dataTable[3], ',')
             else
                 -- 使用key主要是修改RectTransform等需要再c#将table转化为Dictionary
                 _v[3] = getCsTable(dataTable[3])
             end
+            _v._issv_ = 1
             return _v
         else
+            dataTable._issv_ = 1
             return dataTable
         end
     end
@@ -46,7 +50,7 @@ function getUIItemData( dataTable )
         end
     end
     data.count = count
-    data._cs_data_ = 2
+    data._issv_ = 2
     return data
 end
 
@@ -58,6 +62,7 @@ end
 
 -- 获取ScrollView、ScrollSelecltor 等修改多个Handler的table
 function getScrollViewData( dataTable )
+    
     local data = {}
     local count = 0
     if type(dataTable) == 'table' then
@@ -73,11 +78,11 @@ function getScrollViewData( dataTable )
         end
     end
     data.count = count
-    data._cs_data_ = 3
+    data._issv_ = 3
     return data
 end
 
--- 将Vector2(3)、Color的table转换为string,以逗号分隔,供C#使用，详见Tools.GenxxxByStr方法
+-- 将Vector2(3)、Color的table转换为string,以逗号分隔,供C#使用，详见Tools。GenxxxByStr方法
 function getVecColStr( t )
     if type(t) == 'table' then
         return table.concat( t, ',' )

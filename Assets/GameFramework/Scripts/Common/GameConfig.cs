@@ -19,7 +19,7 @@ namespace GameFramework
         //静态常量 end==============================================================
 
         //业务逻辑 begin--------------------------------------------------------------
-        public static bool IsPlayBgm { get { return GetBool(GameDefine.STR_CONF_KEY_IS_BGM_PLAY); } internal set {SetBool(GameDefine.STR_CONF_KEY_IS_BGM_PLAY, value);} }
+        public static bool IsPlayBgm { get { return GetBool(GameDefine.STR_CONF_KEY_IS_BGM_PLAY); } internal set { SetBool(GameDefine.STR_CONF_KEY_IS_BGM_PLAY, value); } }
         public static bool IsPlaySound { get { return GetBool(GameDefine.STR_CONF_KEY_IS_SOUND_PLAY); } internal set { SetBool(GameDefine.STR_CONF_KEY_IS_SOUND_PLAY, value); } }
         public static float BGMVolume { get { return GetFloat(GameDefine.STR_CONF_KEY_BGM_V); } internal set { SetFloat(GameDefine.STR_CONF_KEY_BGM_V, value); } }
         public static float SoundVolume { get { return GetFloat(GameDefine.STR_CONF_KEY_SOUND_V); } internal set { SetFloat(GameDefine.STR_CONF_KEY_SOUND_V, value); } }
@@ -33,7 +33,7 @@ namespace GameFramework
         public static bool progressThreadEvent = false;
 #if UNITY_EDITOR
         //配置是否使用Assetbundle
-        public static bool useAsb = false;
+        public static bool useAsb = true;
         // 检查更新
         public static bool checkUpdate = false;
 #else
@@ -43,17 +43,17 @@ namespace GameFramework
     public static bool checkUpdate = true;
 #endif
 
-        public static bool GetBool(string key, bool def=false)
+        public static bool GetBool(string key, bool def = false)
         {
-            return PlayerPrefs.GetInt(key, def?1:0) > 0; 
+            return PlayerPrefs.GetInt(key, def ? 1 : 0) > 0;
         }
 
         public static void SetBool(string key, bool value)
         {
             PlayerPrefs.SetInt(key, value ? 1 : 0);
         }
-        
-        public static int GetInt(string key, int def=0)
+
+        public static int GetInt(string key, int def = 0)
         {
             return PlayerPrefs.GetInt(key, def);
         }
@@ -63,7 +63,7 @@ namespace GameFramework
             PlayerPrefs.SetInt(key, value);
         }
 
-        public static float GetFloat(string key, float def=0f)
+        public static float GetFloat(string key, float def = 0f)
         {
             return PlayerPrefs.GetFloat(key, def);
         }
@@ -91,7 +91,9 @@ namespace GameFramework
 
 
         public const string STR_ASB_MANIFIST =
-#if UNITY_EDITOR
+#if UNITY_EDITOR_OSX
+        "mac";
+#elif UNITY_EDITOR_WIN
         "pc";
 #elif UNITY_IOS
         "ios";

@@ -35,13 +35,13 @@ namespace GameFramework
 
             base.OnInspectorGUI();
 
-            mTarget.UIObjs = EditorGUILayout.ObjectField("UIHandler", mTarget.UIObjs, typeof(UIHandler), false) as UIHandler;
+            mTarget.Handler = EditorGUILayout.ObjectField("UIHandler", mTarget.Handler, typeof(UIHandler), false) as UIHandler;
             GUILayout.BeginHorizontal();
-            GUI.enabled = null == mTarget.UIObjs;
+            GUI.enabled = null == mTarget.Handler;
             //if (GUILayout.Button(new GUIContent("添加UIHandler"), GUILayout.ExpandWidth(false)))
             if (GUILayout.Button(new GUIContent("添加UIHandler", "推荐使用UIHandler管理UIBehaviour")))
             {
-                mTarget.UIObjs = mTarget.gameObject.AddComponent<UIHandler>();
+                mTarget.Handler = mTarget.gameObject.AddComponent<UIHandler>();
             }
             GUI.enabled = true;
             GUILayout.EndHorizontal();

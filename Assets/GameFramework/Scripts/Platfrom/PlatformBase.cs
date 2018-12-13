@@ -65,6 +65,15 @@ namespace GameFramework
             return false;
         }
 
+        public void CheckAppVer(Action<bool> callback)
+        {
+            LogFile.Log("Platform方法 CheckAppUpdate(Action<bool> callback) 待实现,请重载该方法!");
+            if(null != callback)
+            {
+                callback(true);
+            }
+        }
+
         //=====================================test--------------------------------------
         public virtual void test1()
         {
