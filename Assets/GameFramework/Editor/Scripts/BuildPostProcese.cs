@@ -54,9 +54,9 @@ namespace GameFramework
             //proj.AddBuildProperty(target, "LIBRARY_SEARCH_PATHS", "$(PROJECT_DIR)/Libraries");
 
             //添加.tbd 依赖库
-            proj.AddFileToBuild(target, proj.AddFile("usr/lib/libstdc++.6.0.9.tbd", "libstdc++.6.0.9.tbd", PBXSourceTree.Sdk));
-            //proj.AddFileToBuild(target, proj.AddFile("usr/lib/libsqlite3.tbd", "libsqlite3.tbd", PBXSourceTree.Sdk));
             //proj.AddFileToBuild(target, proj.AddFile("usr/lib/libc++.tbd", "libc++.tbd", PBXSourceTree.Sdk));
+            //proj.AddFileToBuild(target, proj.AddFile("usr/lib/libstdc++.6.0.9.tbd", "libstdc++.6.0.9.tbd", PBXSourceTree.Sdk));
+            //proj.AddFileToBuild(target, proj.AddFile("usr/lib/libsqlite3.tbd", "libsqlite3.tbd", PBXSourceTree.Sdk));
             //proj.AddFileToBuild(target, proj.AddFile("usr/lib/libz.tbd", "libz.tbd", PBXSourceTree.Sdk));
 
             //添加.framework 依赖库

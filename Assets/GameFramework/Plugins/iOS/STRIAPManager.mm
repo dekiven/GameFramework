@@ -1,4 +1,4 @@
-#import "STRIAPManager.h"
+#include "STRIAPManager.h"
 #import <StoreKit/StoreKit.h>
 
 @interface STRIAPManager()<SKPaymentTransactionObserver,SKProductsRequestDelegate>{
@@ -151,7 +151,7 @@
                                    if (status && [status isEqualToString:@"21007"]) {
                                        [self verifyPurchaseWithPaymentTransaction:transaction isTestServer:YES];
                                    }else if(status && [status isEqualToString:@"0"]){
-                                       [self handleActionWithType:SIAPPurchVerSuccess data:data];
+                                       [self handleActionWithType:SIAPPurchVerSuccess data:nil];
                                    }
 #if DEBUG
                                    NSLog(@"----验证结果 %@",jsonResponse);
