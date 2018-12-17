@@ -36,12 +36,12 @@ namespace GameFramework
 
         public override void TakeImageAlbum()
         {
-            GFTakePhoto();
+            GFTakeAlbum();
         }
 
         public override void TakeImagePhoto()
         {
-            GFTakeAlbum();
+            GFTakePhoto();
         }
 
         //public override void Restart(float delaySec)

@@ -14,8 +14,14 @@
 //Enum转字符串
 #define enumToString(value)  @#value
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void UnitySendMessage(const char *, const char *, const char *);
 extern UIViewController *UnityGetGLViewController();
+#if defined(__cplusplus)
+}
+#endif
 
 class GFDefine
 {

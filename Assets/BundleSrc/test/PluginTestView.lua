@@ -10,7 +10,10 @@
 local uiIdx = 
 {
     ScrollView = 0,  -- ScrollView (GameFramework.ScrollView)
+    Button = 1,  -- Button (UnityEngine.UI.Button)
 }
+
+
 
 -- UIArray index
 local itemIndex = 
@@ -33,6 +36,9 @@ function PluginTestView:onInit(uiBase, uiHandler)
     self.super.onInit(self, uiBase, uiHandler)
 
     self.uiHandler:SetScrollViewOnItemClick(uiIdx.ScrollView, handler(self, self.onItemClick))
+    self.uiHandler:AddBtnClick(uiIdx.Button, function ( )
+        self:close()
+    end)
 
     self.uiBase:OnLuaInitResult(true)
 end
@@ -55,9 +61,9 @@ function PluginTestView:onEnable()
         table.insert(scrollData, {{'SetTextString', itemIndex.Text, v},})
         -- end
     end
-    printTable(scrollData, 'scrollData 1')
+    -- printTable(scrollData, 'scrollData 1')
     scrollData = getScrollViewData(scrollData)
-    printTable(scrollData, 'scrollData 2')
+    -- printTable(scrollData, 'scrollData 2')
     self.uiHandler:SetScrollViewData(uiIdx.ScrollView, scrollData)
     end
 
@@ -79,7 +85,8 @@ function PluginTestView:onItemClick( index )
         Platform.test1()
     elseif index == 3 then
         -- Platform.installNewApp("test.apk")
-        Platform.test2()
+        -- Platform.test2()
+        Platform.setNoticeObFunc("GameFramework.GameManager", "OnMessage")
     end
 
 end

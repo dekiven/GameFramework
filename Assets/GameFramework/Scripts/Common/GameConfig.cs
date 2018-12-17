@@ -33,7 +33,7 @@ namespace GameFramework
         public static bool progressThreadEvent = false;
 #if UNITY_EDITOR
         //配置是否使用Assetbundle
-        public static bool useAsb = true;
+        public static bool useAsb = false;
         // 检查更新
         public static bool checkUpdate = false;
 #else

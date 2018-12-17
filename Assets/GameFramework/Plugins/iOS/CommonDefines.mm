@@ -17,19 +17,19 @@ const char* GFDefine::STR_EVENT_TAKE_PHOTO = "TakeImagePhoto";
 const char* GFDefine::STR_EVENT_TAKE_ALBUM = "TakeImageAlbum";
 const char* GFDefine::STR_EVENT_START_PURCHASE = "StartPurchase";
 
-std::string gameObjName("GameFramework.GameManager");
-std::string funcName("OnMessage");
-std::string splitStr("__;__");
+const char* gameObjName = "GameFramework.GameManager";
+const char* funcName = "OnMessage";
+const char* splitStr = "__;__";
 
 void setNoticeInfo(const char * objName, const char* func)
 {
-    gameObjName = std::string(objName);
-    funcName = std::string(func);
+    gameObjName = strdup(objName);
+    funcName = strdup(func);
 }
 
 void setSplitStr(const char* slpit)
 {
-    splitStr = std::string(slpit);
+    splitStr = strdup(slpit);
 }
 
 char* UnityStringFromNSString(NSString* string)
@@ -89,25 +89,25 @@ NSDictionary * dictionaryWithJsonString(NSString * jsonString)
 
 void NoticeUnity(const char * msg)
 {
-    UnitySendMessage(gameObjName.c_str(), funcName.c_str(), msg);
+    UnitySendMessage(gameObjName, funcName, msg);
 }
 
 void NoticeUnity(const char* eventName, NSString* msg)
 {
-    const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@", eventName, funcName.c_str(), msg]);
+    const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@", eventName, funcName, msg]);
     NoticeUnity(_msg);
 }
 
 void NoticeUnity(const char* eventName, NSString* msg1, NSString* msg2)
 {
-    const char* split = splitStr.c_str();
+    const char* split = splitStr;
     const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@%s%@", eventName, split, msg1, split, msg2]);
     NoticeUnity(_msg);
 }
 
 void NoticeUnity(const char* eventName, NSString* msg1, NSString* msg2, NSString* msg3)
 {
-    const char* split = splitStr.c_str();
+    const char* split = splitStr;
     const char* _msg = UnityStringFromNSString([NSString stringWithFormat:@"%s%s%@%s%@%s%@", eventName, split, msg1, split, msg2, split, msg3]);
     NoticeUnity(_msg);
 }

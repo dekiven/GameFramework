@@ -80,14 +80,14 @@ namespace GameFramework
         {
             ScreenSleepTime = focus ? SleepTimeout.NeverSleep : SleepTimeout.SystemSetting;
             //LogFile.Log("OnApplicationFocus:" + focus);
-            OnMessage(GameDefine.STR_EVENT_APP_FOCUS);
+            OnMessageArr(GameDefine.STR_EVENT_APP_FOCUS, focus);
         }
 
         void OnApplicationPause(bool pause)
         {
             ScreenSleepTime = pause ? SleepTimeout.SystemSetting : SleepTimeout.NeverSleep;
             //LogFile.Log("OnApplicationPause");
-            OnMessage(GameDefine.STR_EVENT_APP_PAUSE);
+            OnMessageArr(GameDefine.STR_EVENT_APP_PAUSE, pause);
         }
 
         #endregion
@@ -224,6 +224,12 @@ namespace GameFramework
                 EventManager.notifyAll(eventName, par.ToArray());
             }
             //LogFile.Log("OnMessage:   " + msg);
+        }
+
+        public void OnMessageArr(string eventName, params object[] msg)
+        {
+            NotifyLua(eventName, msg);
+            EventManager.notifyAll(eventName, msg);
         }
 
         /// <summary>
