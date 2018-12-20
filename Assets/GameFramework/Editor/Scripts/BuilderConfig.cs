@@ -37,7 +37,7 @@ namespace GameFramework
             set
             {
                 setConfig("LoadPath", value);
-                saveConfig();
+                SaveConfig();
             }
         }
 
@@ -56,7 +56,7 @@ namespace GameFramework
             set
             {
                 setConfig("ExportPath", value);
-                saveConfig();
+                SaveConfig();
             }
         }
 
@@ -76,7 +76,7 @@ namespace GameFramework
             set
             {
                 setConfig("BuildAssetBundleOptions", value.ToString());
-                saveConfig();
+                SaveConfig();
             }
         }
 
@@ -97,7 +97,15 @@ namespace GameFramework
             set
             {
                 setConfig("BuildTarget", value.ToString());
-                saveConfig();
+                SaveConfig();
+            }
+        }
+
+        public void DeletConfig()
+        {
+            if (File.Exists(configPath))
+            {
+                File.Delete(configPath);
             }
         }
 
@@ -123,7 +131,7 @@ namespace GameFramework
             }
         }
 
-        private void saveConfig()
+        public void SaveConfig()
         {
             List<string> lines = new List<string>();
             foreach (var item in mConfDic)

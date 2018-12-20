@@ -136,6 +136,13 @@ namespace GameFramework
                 AsbBuilder.BuildAll(_config);
                 Close();
             }
+
+            if (GUILayout.Button("重置设置"))
+            {
+                _config.DeletConfig();
+
+                _config = new BuilderConfig();
+            }
         }
 
         private List<string> optionsList = new List<string>()
