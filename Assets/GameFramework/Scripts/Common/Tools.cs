@@ -170,7 +170,7 @@ namespace GameFramework
         /// <returns>The URL path pars.</returns>
         /// <param name="path">Path.</param>
         /// <param name="subPath">Sub path.</param>
-        public static string GetUrlPathWritebble(string path, string subPath = "")
+        public static string GetUrlPathWriteabble(string path, string subPath = "")
         {
             if (!string.IsNullOrEmpty(subPath))
             {
@@ -215,22 +215,54 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 获取运行时的assetbundle所在根目录
-        /// </summary>
-        /// <returns></returns>
-        public static string GetAsbPath()
-        {
-            return GetWriteableDataPath(GameConfig.STR_ASB_MANIFIST);
-        }
-        /// <summary>
         /// 获取某assetbundle的url
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
         public static string GetAsbUrl(string name)
         {
-            return GetUrlPathWritebble(GetAsbPath(), name);
+            string url = string.Empty;
+            if (GetAsbPath(name, out url))
+            {
+                url = GetUrlPathWriteabble(url);
+            }
+            else
+            {
+                url = GetUrlPathStream(url);
+            }
+            return url;
         }
+
+        /// <summary>
+        /// 获取运行时的assetbundle所在根目录, 
+        /// 如果可读写文件夹存在返回可读写文件夹下路径，
+        /// 不存在返回Streaming文件夹下路径(该路径下文件不一定存在)
+        /// </summary>
+        /// <returns><c>true</c>, if asb path was gotten, <c>false</c> otherwise.</returns>
+        /// <param name="name">Name.</param>
+        /// <param name="path">Path.</param>
+        /// <param name="isLua">是否是luaAsb</param>
+        public static bool GetAsbPath(string name, out string path, bool isLua = false)
+        {
+            bool ret = false;
+            if (isLua)
+            {
+                name = GameConfig.STR_ASB_MANIFIST + "/lua/" + GetAsbName(name);
+            }
+            else
+            {
+                name = GameConfig.STR_ASB_MANIFIST + "/" + GetAsbName(name);
+            }
+            path = GetWriteableDataPath(name);
+            ret = File.Exists(path);
+            if (!ret)
+            {
+                path = PathCombine(Application.streamingAssetsPath, name);
+            }
+
+            return ret;
+        }
+
         /// <summary>
         /// 获取原始资源的根目录，在Assets/BundleRes,一般情况下只有编辑器会使用本函数
         /// </summary>
@@ -255,7 +287,7 @@ namespace GameFramework
         /// <returns></returns>
         public static string GetResUrl(string name)
         {
-            return GetUrlPathWritebble(GetResPath(), name);
+            return GetUrlPathWriteabble(GetResPath(), name);
         }
 
         //test
@@ -267,7 +299,9 @@ namespace GameFramework
 
         public static string GetLuaAsbPath(string bundleName)
         {
-            return PathCombine(GetAsbPath(), "lua/" + bundleName.ToLower());
+            string path = string.Empty;
+            GetAsbPath(bundleName, out path, true);
+            return path;
         }
 
 
@@ -604,7 +638,7 @@ namespace GameFramework
         {
             if (null != rectTransform && null != dict)
             {
-                #region
+                #region ModifyRectTransform实现
                 //rectTransform.anchoredPosition = Vector2.zero;
                 //rectTransform.anchoredPosition3D = Vector3.zero;
                 //rectTransform.anchorMax = Vector2.zero;
@@ -835,6 +869,26 @@ namespace GameFramework
 
         }
         #endregion Lua相关
+
+        #region 基本的工具函数
+        public static string FormatMeroySize(long size)
+        {
+            string ret = string.Empty;
+            string[] unitStrs = { "Byte", "K", "M", "G" };
+            long unit = 1;
+            for (int i = 0; i < unitStrs.Length; i++)
+            {
+                long last = unit;
+                unit *= 1024;
+                if (size < unit)
+                {
+                    return (size / (double)last).ToString(i==0? "F0" : "F2") + unitStrs[i];
+                }
+            }
+
+            return size.ToString();
+        }
+        #endregion 基本的工具函数
     }
 }
 

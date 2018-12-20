@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace GameFramework
@@ -32,9 +33,11 @@ namespace GameFramework
 
         public void CheckLocalRes(Action<bool, string> callback)
         {
+            mInfoStr = "Loading...";
+            freshUI(0f);
             string srcUrl = Tools.GetUrlPathStream(Application.streamingAssetsPath, GameConfig.STR_ASB_MANIFIST);
-            string tarUrl = Tools.GetUrlPathWritebble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
-            checkResConf(srcUrl, tarUrl, callback, true);
+            string tarUrl = Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
+            delOldWriteableRes(srcUrl, tarUrl, callback);
         }
 
         /// <summary>
@@ -48,7 +51,7 @@ namespace GameFramework
 
         public void CheckServerRes(Action<bool, string> callback)
         {
-            GameResManager.Instance.Initialize(() => 
+            GameResManager.Instance.Initialize(() =>
             {
                 GameResManager.Instance.LoadRes<TextAsset>("UpdateServer", ".bytes", (obj) =>
                 {
@@ -59,32 +62,53 @@ namespace GameFramework
                         ResInfo[] arr = new ResInfo[servers.files.Values.Count];
                         servers.files.Values.CopyTo(arr, 0);
                         List<ResInfo> list = new List<ResInfo>(arr);
-                        list.Sort(delegate (ResInfo a, ResInfo b)
+                        list.Sort((ResInfo a, ResInfo b) =>
                         {
                             return a.size < b.size ? -1 : 1;
                         });
-
-                        string tarUrl = Tools.GetUrlPathWritebble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
-                        checkService(list, 0, tarUrl, callback);
+#if UNITY_IOS
+                        TimeOutWWW www = getTimeOutWWW();
+                        List<string> files = new List<string>();
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            files.Add(Tools.PathCombine(list[i].path, "isAudit.bytes"));
+                        }
+                        www.ReadFirstExistsStr("isIOSAudit", files, 0.5f, (bool rst, string msg) => 
+                        {
+                            if (!rst || msg.Trim().Equals("1"))
+                            {
+                                //当资源服找不到配置文件或者配置文件内容为“1”时，表示是审核版本，跳过更新流程
+                                callback(true, "");
+                                return;
+                            }
+                                
+#endif
+                                string tarUrl = Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
+                                checkService(list, 0, tarUrl, callback);
+#if UNITY_IOS
+                                
+                        }, null);
+#endif
                     }
 
                 });
             });
         }
 
-        #region private
+#region private
         TimeOutWWW getTimeOutWWW()
         {
             return GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
         }
 
         /// <summary>
-        /// 对比resConf.bytes文件，根据需要进行拷贝或下载
+        /// 加载asb可以从streaming路径加载，不需要将资源拷贝到可读写文件夹
+        /// 当包体资源有更新时，删除老的资源包
         /// </summary>
         /// <param name="srcUrl">Source URL.</param>
         /// <param name="tarUrl">Tar URL.</param>
         /// <param name="callback">Callback.</param>
-        private void checkResConf(string srcUrl, string tarUrl, Action<bool, string> callback, bool isLocal=false)
+        private void delOldWriteableRes(string srcUrl, string tarUrl, Action<bool, string> callback)
         {
             string confPath = STR_RES_CONF;
 
@@ -117,7 +141,7 @@ namespace GameFramework
                                 {
                                     tarConf = new ResConf("");
                                 }
-                                
+
                                 curConf = tarConf;
 
                                 if (srcConf.CompareVer(tarConf) > 0)
@@ -125,18 +149,96 @@ namespace GameFramework
                                     List<ResInfo> list = srcConf.GetUpdateFiles(tarConf);
                                     if (list.Count > 0)
                                     {
-                                        string format = isLocal ? "正在解压资源,已完成[ {0} / {1} ] ..." : "正在下载资源,已完成[ {0} / {1} ] ...";
-                                        mInfoStr = string.Format(format, 0, list.Count);
+                                        //将可读写文件夹下的老版本资源删除
+                                        for (int i = 0; i < list.Count; i++)
+                                        {
+                                            ResInfo ri = list[i];
+                                            string savePath = Tools.GetWriteableDataPath(GameConfig.STR_ASB_MANIFIST + "/" + ri.path);
+                                            if(File.Exists(savePath))
+                                            {
+                                                File.Delete(savePath);
+                                                LogFile.Log("删除已下载的老资源："+savePath);
+                                            }
+                                            curConf.files[ri.path] = srcConf.files[ri.path];
+                                        }
+                                    }
+                                    curConf.version = srcConf.version;
+                                    //保存新的资源版本号
+                                    GameConfig.SetInt(GameDefine.STR_CONF_KEY_RES_VER_I, curConf.VersionCode);
+                                    curConf.SaveToFile(Tools.GetWriteableDataPath(GameConfig.STR_ASB_MANIFIST + "/" + STR_RES_CONF));
+                                }
+                            }, null);
+                        }
+                    }, null);
+                }
+                callback(true, "");
+            }
+        }
+
+        /// <summary>
+        /// 对比resConf.bytes文件，根据需要进行拷贝或下载
+        /// </summary>
+        /// <param name="srcUrl">Source URL.</param>
+        /// <param name="tarUrl">Tar URL.</param>
+        /// <param name="callback">Callback.</param>
+        private void checkResConf(string srcUrl, string tarUrl, Action<bool, string> callback)
+        {
+            string confPath = STR_RES_CONF;
+
+            if (null != callback)
+            {
+                ResConf srcConf = null;
+                ResConf tarConf = null;
+
+                if (GameConfig.useAsb)
+                {
+                    string sUrl = Tools.PathCombine(srcUrl, confPath);
+                    string pUrl = Tools.PathCombine(tarUrl, confPath);
+
+                    TimeOutWWW streamWWW = getTimeOutWWW();
+                    streamWWW.ReadFileStr("localResCOnf", sUrl, 1f, (rst, msg) =>
+                    {
+                        if (rst)
+                        {
+                            srcConf = new ResConf(msg);
+
+                            TimeOutWWW writableWWW = getTimeOutWWW();
+                            writableWWW.ReadFileStr("externalResConf", pUrl, 1f, (_rst, _msg) =>
+                            {
+                                if (_rst)
+                                {
+                                    //之前已经拷贝过资源
+                                    tarConf = new ResConf(_msg);
+                                }
+                                else
+                                {
+                                    tarConf = new ResConf("");
+                                }
+
+                                curConf = tarConf;
+                                float last = Time.time;
+                                long lastSize = 0;
+
+                                if (srcConf.CompareVer(tarConf) > 0)
+                                {
+                                    List<ResInfo> list = srcConf.GetUpdateFiles(tarConf);
+                                    if (list.Count > 0)
+                                    {
+                                        string format = "正在下载资源,已完成[ {0} / {1} ],下载速度：{2} ...";
+                                        mInfoStr = string.Format(format, 0, list.Count, "0Byte/s");
                                         //需要拷贝资源到可读写文件夹
                                         TimeOutWWW copyLocal = getTimeOutWWW();
                                         List<WWWInfo> infos = new List<WWWInfo>();
+                                        long totalSize = 0;
                                         for (int i = 0; i < list.Count; ++i)
                                         {
                                             ResInfo ri = list[i];
                                             string url = Tools.PathCombine(srcUrl, ri.path);
                                             string savePath = Tools.GetWriteableDataPath(GameConfig.STR_ASB_MANIFIST + "/" + ri.path);
+                                            totalSize += ri.size;
                                             infos.Add(new WWWInfo(url, savePath, ri.size));
                                         }
+                                        string totalSizeStr = Tools.FormatMeroySize(totalSize);
                                         copyLocal.DownloadFiles("copyLocal", infos, 2f, (string noticeKey, double progress, int index, string __msg) =>
                                         {
                                             //LogFile.Log("progress:{0}; index:{1}; msg:{2};", progress, index, __msg);
@@ -149,11 +251,11 @@ namespace GameFramework
                                                     //保存新的资源版本号
                                                     GameConfig.SetInt(GameDefine.STR_CONF_KEY_RES_VER_I, curConf.VersionCode);
                                                     //拷贝完成
-                                                    callback(true, "包内资源拷贝完成");
+                                                    callback(true, "资源更新完成");
                                                 }
                                                 else
                                                 {
-                                                    callback(false, "部分资源拷贝失败");
+                                                    callback(false, "部分资源更新失败");
                                                 }
                                                 curConf.SaveToFile(Tools.GetWriteableDataPath(GameConfig.STR_ASB_MANIFIST+"/"+STR_RES_CONF));
 
@@ -171,10 +273,20 @@ namespace GameFramework
                                                     //有文件下载成功
                                                     curConf.files[list[index-1].path] = srcConf.files[list[index-1].path];
 
-                                                    mInfoStr = string.Format(format, index, list.Count);
+                                                    //mInfoStr = string.Format(format, index, list.Count);
                                                 }
-
-                                                freshUI((float)progress);
+                                                float now = Time.time;
+                                                float dt = last - now;
+                                                long doneSize = (long)(totalSize * progress);
+                                                long siezPerSec = doneSize - lastSize;
+                                                if(siezPerSec > 0)
+                                                {
+                                                    mInfoStr = string.Format(format, Tools.FormatMeroySize(doneSize), totalSizeStr, Tools.FormatMeroySize(siezPerSec) + "/s");
+                                                    //LogFile.Log(mInfoStr);
+                                                    freshUI((float)progress);
+                                                }
+                                                last = now;
+                                                lastSize = doneSize;
                                             }
                                         }, null);
                                     }
@@ -253,6 +365,6 @@ namespace GameFramework
             }
 
         }
-        #endregion private
+#endregion private
     }
 }

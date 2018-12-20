@@ -125,6 +125,38 @@ namespace GameFramework
             mList.Add(new WWWInfo(fileUrl, ""));
         }
 
+        public void ReadFirstExistsStr(string noticeKey, List<string> files, float timeoutSec, WWWUrlRstDel del, LuaFunction lua)
+        {
+            mType = WWWType.read;
+            mUrlRstDel = del;
+            setLuaCallback(lua);
+            mTimeoutSec = timeoutSec;
+            NoticeKey = noticeKey;
+
+            mList.Clear();
+            for (int i = 0; i < files.Count; i++)
+            {
+                string fileUrl = files[i];
+                mList.Add(new WWWInfo(fileUrl, ""));
+            }
+        }
+
+        public void ReadFirstExistsBytes(string noticeKey, List<string> files, float timeoutSec, WWWUrlRstBytesDel del, LuaFunction lua)
+        {
+            mType = WWWType.readBytes;
+            mUrlRstBytesDel = del;
+            setLuaCallback(lua);
+            mTimeoutSec = timeoutSec;
+            NoticeKey = noticeKey;
+
+            mList.Clear();
+            for (int i = 0; i < files.Count; i++)
+            {
+                string fileUrl = files[i];
+                mList.Add(new WWWInfo(fileUrl, ""));
+            }
+        }
+
         /// <summary>
         /// 下载一个文件
         /// </summary>
@@ -419,7 +451,7 @@ namespace GameFramework
                     string path = uploadInfo.TargetPath;
                     if (!string.IsNullOrEmpty(path) && Tools.CheckFileExists(path))
                     {
-                        WWW file = new WWW(Tools.GetUrlPathWritebble(path));
+                        WWW file = new WWW(Tools.GetUrlPathWriteabble(path));
                         while (!file.isDone)
                         {
                             yield return null;
@@ -508,18 +540,28 @@ namespace GameFramework
             if (null != mWWW)
             {
                 yield return checkWWWTimeout(mTimeoutSec);
-                if (mWWW.isDone)
+                if (mIsTimeOut)
                 {
-                    if (!string.IsNullOrEmpty(mWWW.error))
+                    mWWW.Dispose();
+                    mWWW = null;
+                    //请求失败
+                    callback(false, mWWW.error);
+                }
+                else
+                {
+                    if (mWWW.isDone)
                     {
-                        //请求失败
-                        callback(false, mWWW.error);
-                    }
-                    else
-                    {
-                        //请求完成
-                        callback(true, mWWW.text);
-                    }
+                        if (!string.IsNullOrEmpty(mWWW.error))
+                        {
+                            //请求失败
+                            callback(false, mWWW.error);
+                        }
+                        else
+                        {
+                            //请求完成
+                            callback(true, mWWW.text);
+                        }
+                    }   
                 }
             }
             yield return null;
@@ -527,38 +569,53 @@ namespace GameFramework
 
         private IEnumerator readWww()
         {
-            mWWW = new WWW(mList[0].Url);
-            if (null != mWWW)
+            string error = string.Empty;
+            for (int i = 0; i < mList.Count; i++)
             {
-                yield return checkWWWTimeout(mTimeoutSec);
-                if (mWWW.isDone)
+                mWWW = new WWW(mList[i].Url);
+                if (null != mWWW)
                 {
-                    //请求失败
-                    if (!string.IsNullOrEmpty(mWWW.error))
+                    yield return checkWWWTimeout(mTimeoutSec);
+                    if (mIsTimeOut)
                     {
-                        if (mType == WWWType.read)
-                        {
-                            callback(false, mWWW.error);
-                        }
-                        else
-                        {
-                            callbackBytes(false, Encoding.Default.GetBytes(mWWW.error));
-                        }
-
+                        error = "读取 {"+mWWW.url+"} 超时";
                     }
                     else
                     {
-                        //请求完成
-                        if (mType == WWWType.read)
+                        if (mWWW.isDone)
                         {
-                            callback(true, mWWW.text);
-                        }
-                        else
-                        {
-                            callbackBytes(true, mWWW.bytes);
+                            //请求失败
+                            if (!string.IsNullOrEmpty(mWWW.error))
+                            {
+                                error = mWWW.error;
+                            }
+                            else
+                            {
+                                //请求完成
+                                if (mType == WWWType.read)
+                                {
+                                    callback(true, mWWW.text);
+                                }
+                                else
+                                {
+                                    callbackBytes(true, mWWW.bytes);
+                                }
+                                yield break;
+                            }
                         }
                     }
+                    mWWW.Dispose();
+                    mWWW = null;
                 }
+            }
+            //所有读取都超时或者有错
+            if (mType == WWWType.read)
+            {
+                callback(false, error);
+            }
+            else
+            {
+                callbackBytes(false, Encoding.Default.GetBytes(error));
             }
             yield return null;
         }

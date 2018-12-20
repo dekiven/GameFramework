@@ -22,6 +22,10 @@ namespace GameFramework
         public void AddBundle(string bundleName)
         {
             string url = Tools.GetLuaAsbPath(bundleName);
+#if UNITY_ANDROID
+            //这是个大坑，要注意，没有.Replace("!/", "!")是读不出来的，开始我以为是雨松手滑写错
+            url = url.Replace("jar:file://", "").Replace("!/", "!");
+#endif
             bundleName = bundleName.Replace(GameConfig.STR_ASB_EXT, "");
 
             if(HasBundle(bundleName))
@@ -29,18 +33,14 @@ namespace GameFramework
                 return;
             }
 
-            if (File.Exists(url))
+            AssetBundle bundle = AssetBundle.LoadFromFile(url);
+            if (bundle != null)
             {
-                //var bytes = File.ReadAllBytes(url);
-                AssetBundle bundle = AssetBundle.LoadFromFile(url);
-                if (bundle != null)
-                {
-                    base.AddSearchBundle(bundleName.ToLower(), bundle);
-                }
+                base.AddSearchBundle(bundleName.ToLower(), bundle);
             }
             else
             {
-                LogFile.Error("{0} do not exists", url);
+                LogFile.Error("AddBundle: error [" + url + "] do not exists");
             }
         }
 

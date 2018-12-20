@@ -24,6 +24,10 @@ namespace GameFramework
         public static float BGMVolume { get { return GetFloat(GameDefine.STR_CONF_KEY_BGM_V); } internal set { SetFloat(GameDefine.STR_CONF_KEY_BGM_V, value); } }
         public static float SoundVolume { get { return GetFloat(GameDefine.STR_CONF_KEY_SOUND_V); } internal set { SetFloat(GameDefine.STR_CONF_KEY_SOUND_V, value); } }
 
+        /// <summary>
+        /// 是否是审核版本，主要是ios使用
+        /// </summary>
+        public static bool IsAuditEdition = false;
 
         //配置是否在Assetbundle情况下使用luajit编译lua代码再打包
         public static bool encodeLua = false;
@@ -33,7 +37,7 @@ namespace GameFramework
         public static bool progressThreadEvent = false;
 #if UNITY_EDITOR
         //配置是否使用Assetbundle
-        public static bool useAsb = false;
+        public static bool useAsb = true;
         // 检查更新
         public static bool checkUpdate = false;
 #else
@@ -92,7 +96,8 @@ namespace GameFramework
 
         public const string STR_ASB_MANIFIST =
 #if UNITY_EDITOR_OSX
-        "mac";
+        // mac editor使用pc asb
+        "pc";
 #elif UNITY_EDITOR_WIN
         "pc";
 #elif UNITY_IOS
