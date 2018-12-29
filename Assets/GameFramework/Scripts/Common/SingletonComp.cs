@@ -77,7 +77,7 @@ namespace GameFramework
         /// </summary>
         public virtual bool Dispose()
         {
-            LogFile.Warn("clearComp:" + typeof(T));
+            LogFile.Log("clearComp:" + typeof(T));
             return true;
         }
         //单例模式组件 end================================================

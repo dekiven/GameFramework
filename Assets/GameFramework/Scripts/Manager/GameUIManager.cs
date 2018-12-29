@@ -52,7 +52,7 @@ namespace GameFramework
             eventObj.transform.SetParent(transform);
             eventObj.name = "EventSystem";
             mEventSystem = eventObj.AddComponent<EventSystem>();
-            //Debug.Log(mEventSystem.enabled);
+            Debug.Log(mEventSystem.enabled);
             eventObj.AddComponent<StandaloneInputModule>();
         }
         #endregion
@@ -478,7 +478,7 @@ namespace GameFramework
         {
             GameObject maskObj = new GameObject();
             maskObj.name = "DrakMask";
-            maskObj.transform.SetParent(c.transform);
+            maskObj.transform.SetParent(c.transform, false);
             RectTransform rect = maskObj.AddComponent<RectTransform>();
             rect.anchorMax = Vector2.one;
             rect.anchorMin = Vector2.zero;
@@ -487,7 +487,7 @@ namespace GameFramework
             maskObj.AddComponent<CanvasRenderer>();
             //maskObj.AddComponent<UIView>();
             Image darkMask = maskObj.AddComponent<Image>();
-            darkMask.color = new Color(0f, 0f, 0f, 0.5f);
+            darkMask.color = new Color(0f, 0f, 0f, 0.8f);
             darkMask.gameObject.SetActive(false);
 
             return darkMask;
@@ -495,7 +495,8 @@ namespace GameFramework
 
         private void setMaskOrderByView(UIBase view)
         {
-            view.transform.SetSiblingIndex(GetCanvasByMode(view.RenderMode).transform.childCount);
+            //view.transform.SetSiblingIndex(GetCanvasByMode(view.RenderMode).transform.childCount);
+            view.transform.SetAsLastSibling();
             int idx = view.transform.GetSiblingIndex() - 1;
             if (idx < 0)
             {

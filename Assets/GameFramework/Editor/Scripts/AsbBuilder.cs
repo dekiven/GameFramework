@@ -31,7 +31,7 @@ namespace GameFramework
 
             renameFiles();
 
-            AssetDatabase.Refresh();
+            refreshAssetDb();
         }
 
         public static void BuildAsb(string path, AssetBundleBuild[] builds, BuildAssetBundleOptions opt = BuildAssetBundleOptions.None, BuildTarget target = BuildTarget.StandaloneWindows)
@@ -51,7 +51,7 @@ namespace GameFramework
 
             renameFiles();
 
-            AssetDatabase.Refresh();
+            refreshAssetDb();
         }
 
 
@@ -207,7 +207,7 @@ namespace GameFramework
                     ToLuaMenu.CopyLuaBytesFiles(dir, sTempLuaDir);
                 }
             }
-            AssetDatabase.Refresh();
+            refreshAssetDb();
             while(EditorApplication.isUpdating)
             {
                 
@@ -220,11 +220,7 @@ namespace GameFramework
             }
             GenLuaBuildByDir(sTempLuaDir, "*.bytes");
             //Debug.LogWarning("lua Add luaDir: lua/lua");
-            AssetDatabase.Refresh();
-            while (EditorApplication.isUpdating)
-            {
-
-            }
+            refreshAssetDb();
         }
 
         public static void BuildAbsByConfig(BuilderConfig config)
@@ -367,6 +363,12 @@ namespace GameFramework
                 newPath = newPath + ".manifest";
                 Tools.RenameFile(oriPath, newPath);
             }
+        }
+
+        private static void refreshAssetDb()
+        {
+            AssetDatabase.Refresh();
+            while (EditorApplication.isUpdating){}
         }
     }
 

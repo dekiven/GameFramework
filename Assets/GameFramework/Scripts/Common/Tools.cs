@@ -873,7 +873,6 @@ namespace GameFramework
         #region 基本的工具函数
         public static string FormatMeroySize(long size)
         {
-            string ret = string.Empty;
             string[] unitStrs = { "Byte", "K", "M", "G" };
             long unit = 1;
             for (int i = 0; i < unitStrs.Length; i++)

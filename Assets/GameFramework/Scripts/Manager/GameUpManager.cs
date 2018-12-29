@@ -278,7 +278,7 @@ namespace GameFramework
                                                 float now = Time.time;
                                                 float dt = last - now;
                                                 long doneSize = (long)(totalSize * progress);
-                                                long siezPerSec = doneSize - lastSize;
+                                                long siezPerSec = (long)((doneSize - lastSize) / dt);
                                                 if(siezPerSec > 0)
                                                 {
                                                     mInfoStr = string.Format(format, Tools.FormatMeroySize(doneSize), totalSizeStr, Tools.FormatMeroySize(siezPerSec) + "/s");

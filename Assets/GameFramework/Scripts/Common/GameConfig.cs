@@ -34,10 +34,10 @@ namespace GameFramework
 
 
         //是否开启线程处理EventManager线程上的消息,TODO:使用线程有bug，先不使用Thread 通知
-        public static bool progressThreadEvent = false;
+        public static bool progressThreadEvent = true;
 #if UNITY_EDITOR
         //配置是否使用Assetbundle
-        public static bool useAsb = true;
+        public static bool useAsb = false;
         // 检查更新
         public static bool checkUpdate = false;
 #else

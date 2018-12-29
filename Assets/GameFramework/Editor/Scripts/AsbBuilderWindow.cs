@@ -77,6 +77,12 @@ namespace GameFramework
             }
             EditorGUILayout.EndHorizontal();
 
+            if (GUILayout.Button("重置设置"))
+            {
+                _config.DeletConfig();
+                _config = new BuilderConfig();
+            }
+
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("LuaBuildTest"))
             {
@@ -135,13 +141,6 @@ namespace GameFramework
             {
                 AsbBuilder.BuildAll(_config);
                 Close();
-            }
-
-            if (GUILayout.Button("重置设置"))
-            {
-                _config.DeletConfig();
-
-                _config = new BuilderConfig();
             }
         }
 

@@ -215,7 +215,8 @@ namespace GameFramework
 
                 mTotalLines = Mathf.CeilToInt(dataCount / (float)mNumPerLine);
                 float height = PaddingTop + PaddingBottom + mTotalLines * ItemSize.y + (mTotalLines - 1) * mContntSpace.y;
-                content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                //content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, viewSize.y > height ? viewSize.y : height);
                 //LogFile.Log("PaddingBottom:{0}, mTotalLines:{1},hieght:{2}, space:{3}", PaddingBottom, mTotalLines, rect.height, space);
             }
             else
@@ -256,7 +257,8 @@ namespace GameFramework
 
                 mTotalLines = Mathf.CeilToInt(dataCount / (float)mNumPerLine);
                 float width = PaddingLeft + PaddingRight + mTotalLines * ItemSize.x + (mTotalLines - 1) * mContntSpace.x;
-                content.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                content.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, viewSize.x > width ? viewSize.x : width);
+                //content.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             }
         }
 

@@ -42,8 +42,14 @@ namespace  GameFramework {
 
         public void StopAllCors()
         {
-            base.StopAllCoroutines();
+            StopAllCoroutines();
             sMap.Clear();
+        }
+
+        public override bool Dispose()
+        {
+            StopAllCors();
+            return true;
         }
     }
 }

@@ -162,15 +162,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsBillboard: 0
-  UIObjs: {fileID: 0}
+  Handler: {fileID: 0}
   IsInStack: 1
   HideBefor: 0
+  IsStatic: 0
   AnimTime: 0.4
   AnimValue: 1
   AnimType: 5
   AnimEase: 7
-  HasDarkMask: 0
-  PassEvent: 0
+  HasDarkMask: 1
 --- !u!114 &114299286616816412
 MonoBehaviour:
   m_ObjectHideFlags: 1

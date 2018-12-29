@@ -17,6 +17,8 @@ namespace GameFramework
         //是否开启线程处理EventManager线程上的消息
         private bool progressThreadEvent = GameConfig.progressThreadEvent;
         private LuaFunction mLuaNotifyFunc;
+        //是否在游戏中（GameManager 单例整个游戏生命周期都存在）
+        private bool isRunning;
 
         public int ScreenSleepTime { get { return Screen.sleepTimeout; } set { Screen.sleepTimeout = value; } }
 
@@ -25,6 +27,7 @@ namespace GameFramework
         #region MonoBehaviour
         void Awake()
         {
+            isRunning = true;
             initLogFile();
             //初始化Platform，主要是插件相关
             initGamePlatform();
@@ -54,15 +57,6 @@ namespace GameFramework
         {
             //处理事件管理器在主线程的消息,暂时没有处理其他线程的事件分发
             EventManager.progressMainEvents();
-        }
-
-        void OnDestroy()
-        {
-            if(null != mLuaNotifyFunc)
-            {
-                mLuaNotifyFunc.Dispose();
-                mLuaNotifyFunc = null;
-            }
         }
 
         /// <summary>
@@ -97,7 +91,14 @@ namespace GameFramework
 
         public override bool Dispose()
         {
-            mCorMgr.StopAllCors();
+            isRunning = false;
+
+            if (null != mLuaNotifyFunc)
+            {
+                mLuaNotifyFunc.Dispose();
+                mLuaNotifyFunc = null;
+            }
+
             mCorMgr.DestroyComp();
             mUiMgr.DestroyComp();
             //mUpMgr.DestroyComp();
@@ -198,7 +199,7 @@ namespace GameFramework
             {
                 Loom.RunAsync(delegate ()
                 {
-                    while (progressThreadEvent)
+                    while (progressThreadEvent && isRunning)
                     {
                         Thread.Sleep(20);
                         EventManager.progressThreadEvents();
