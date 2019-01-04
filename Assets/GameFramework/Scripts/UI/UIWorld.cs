@@ -10,34 +10,28 @@ namespace GameFramework
     /// </summary>
     public class UIWorld : UIBase
     {
-        protected Transform mUITarget;
+        [HideInInspector]
+        public Transform UITarget;
+        [HideInInspector]
         public Vector3 UIOffset = Vector3.up;
         //public new bool IsBillboard = true;
 
-        public Transform UITarget
-        {
-            get { return mUITarget; }
-            set
-            {
-                mUITarget = value;
-            }
-        }
 
         void Awake()
         {
             RenderMode = RenderMode.WorldSpace;
+            IsBillboard = true;
             IsStatic = false;
             IsInStack = false;
-            IsBillboard = true;
             HideBefor = false;
         }
 
         protected override void update()
         {
             base.update();
-            if (null != mUITarget)
+            if (null != UITarget)
             {
-                transform.position = mUITarget.position + UIOffset;
+                transform.position = UITarget.position + UIOffset;
             }
         }
 

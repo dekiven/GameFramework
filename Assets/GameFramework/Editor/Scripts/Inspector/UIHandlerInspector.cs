@@ -36,8 +36,11 @@ namespace GameFramework
         {
             serializedObject.Update();
             CustomListInspector.Show(mListProperty);
+            GUILayout.Space(10);
             CustomListInspector.Show(mSubProperty);
+            GUILayout.Space(10);
             CustomListInspector.Show(mRTProperty);
+            GUILayout.Space(10);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("RootTransform"));
             serializedObject.ApplyModifiedProperties();
 

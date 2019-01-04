@@ -4,10 +4,8 @@ using UnityEngine;
 namespace GameFramework
 {
     [CustomEditor(typeof(UIView))]
-    public class UIViewInspector : Editor
+    public class UIViewInspector : UIBaseInspector
     {
-        private UIBase mTarget;
-
         //进入时刷新部分参数
         void OnEnable()
         {
@@ -34,23 +32,17 @@ namespace GameFramework
             //mTarget.AnimType
             //mTarget.AnimEase
             //mTarget.AnimValue
+            serializedObject.Update();
 
-            //GUILayout.Space(5);
-            //mTarget.IsBillboard = EditorGUILayout.Toggle(new GUIContent("IsBillboard"), mTarget.IsBillboard);
-            //GUILayout.Space(5);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("IsInStack"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("HasDarkMask"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("HideBefor"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("IsStatic"));
 
+            GUILayout.Space(10);
             base.OnInspectorGUI();
 
-            mTarget.Handler = EditorGUILayout.ObjectField("UIHandler", mTarget.Handler, typeof(UIHandler), false) as UIHandler;
-            GUILayout.BeginHorizontal();
-            GUI.enabled = null == mTarget.Handler;
-            //if (GUILayout.Button(new GUIContent("添加UIHandler"), GUILayout.ExpandWidth(false)))
-            if (GUILayout.Button(new GUIContent("添加UIHandler", "推荐使用UIHandler管理UIBehaviour")))
-            {
-                mTarget.Handler = mTarget.gameObject.AddComponent<UIHandler>();
-            }
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

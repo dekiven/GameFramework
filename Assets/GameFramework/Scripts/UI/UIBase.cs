@@ -13,36 +13,47 @@ namespace GameFramework
         public delegate void UIAnimResult(bool ret);
         #endregion
 
+        [HideInInspector]
         public bool IsBillboard;
+        [HideInInspector]
         public UIHandler Handler;
         /// <summary>
         /// 是否加入UI栈
         /// </summary>
+        [HideInInspector]
         public bool IsInStack = true;
         /// <summary>
         /// 加入栈中的UI是否隐藏当前栈顶
         /// </summary>
+        [HideInInspector]
         public bool HideBefor = true;
         /// <summary>
         /// 是否是静态的UI(全局多次使用，close不释放)
         /// </summary>
+        [HideInInspector]
         public bool IsStatic = false;
         /// <summary>
         /// show和hide的动画时间
         /// </summary>
+        [HideInInspector]
         public float AnimTime = 0.5f;
         /// <summary>
         /// show和hide的动画值，可能是缩放大小、某个轴的移动距离等
         /// </summary>
+        [HideInInspector]
         public float AnimValue = 1f;
+        [HideInInspector]
         public ViewAnimType AnimType = ViewAnimType.none;
         public UIAnimResult OnInitCallbcak;
         public UIAnimResult OnAnimCallbcak;
         /// <summary>
         /// 动画缓动效果，默认无效果
         /// </summary>
+        [HideInInspector]
         public Ease AnimEase = Ease.Linear;
+        [HideInInspector]
         public bool HasDarkMask = true;
+        [HideInInspector]
         public RenderMode RenderMode { get { return mRenderMode; } set { mRenderMode = value; }}
         //public RectTransform rectTransform { get { return mRectTransform; }}
 
