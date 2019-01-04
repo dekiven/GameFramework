@@ -7,7 +7,7 @@ using DG.Tweening;
 //参考：http://blog.csdn.net/u011484013/article/details/52182997
 namespace GameFramework
 {
-    public class UIBase : MonoBehaviour
+    public class UIBase : MonoBehaviour, ICanvasRaycastFilter
     {
         #region delegate
         public delegate void UIAnimResult(bool ret);
@@ -53,6 +53,7 @@ namespace GameFramework
         private LuaTable mLuaFuncs;
         private RectTransform mRectTransform;
         private RenderMode mRenderMode ;
+        private bool mIsPlayinngAni = false;
 
         public void SetLuaStatusListeners(LuaTable table)
         {
@@ -205,6 +206,7 @@ namespace GameFramework
 
         private void onStartAnim(ViewStatus status, UIAnimResult callback)
         {
+            mIsPlayinngAni = true;
             UIAnimResult _callback = (bool ret) =>
             {
                 switch (status)
@@ -218,8 +220,11 @@ namespace GameFramework
                         //gameObject.SetActive(true);
                         break;
                 }
+
+                mIsPlayinngAni = false;
+
                 //Debug.LogWarningFormat("status:{0}", status.ToString());
-                if(null != callback)
+                if (null != callback)
                 {
                     callback(ret);
                 }
@@ -361,6 +366,17 @@ namespace GameFramework
         {
             onLuaStatusChange(ViewStatus.onDestroy);
             dispose();
+        }
+
+        /// <summary>
+        /// 实现ICanvasRaycastFilter接口，播放动画时屏蔽UI及子节点点击事件
+        /// </summary>
+        /// <param name="screenPoint"></param>
+        /// <param name="eventCamera"></param>
+        /// <returns></returns>
+        public bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera)
+        {
+            return !mIsPlayinngAni;
         }
         #endregion
     }

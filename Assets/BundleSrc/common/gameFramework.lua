@@ -164,7 +164,7 @@ function  printTable( table, tName, deepth, indent, maxDeep )
     end
 end
 
-function string.split2(input, delimiter, handle)
+function string.split2( input, delimiter, handle )
     input = tostring(input)
     delimiter = tostring(delimiter)
     handle = handle or function ( v )
@@ -181,9 +181,76 @@ function string.split2(input, delimiter, handle)
     return arr
 end
 
-function dump( )
-    -- body
-    -- TODO:
+--[[
+-- sortTable 测试代码
+local t = {9,2,3,4,51}
+printTable(sortTable(t, {}, true))
+t = 
+{
+    {id=1, id2=4, txt=5},
+    {id=2, id2=4, txt=2},
+    {id=3, id2=-4, txt=1},
+    {id=4, id2=1, txt=3},
+}
+printTable(sortTable(t, {'id2', 'txt'}))
+printTable(sortTable(t, {{'id2', f=function ( v )
+    return v * v
+end, d=false}, 'txt'}, 1))
+--]]
+-- 根据传入的 args 进行多条件排序， descending 为 true 表示降序排列
+-- arg 是 table,其内容可以是 str 或 table（{'key',f=function,d=descending}, 其中 f、d 可以省略)
+-- 请注意数据格式，本函数不会校验数据格式，混合型 table 可能造成排序混乱
+function sortTable( tab, args, descending )
+    tab = tab or {}
+    local function sortFunc( a, b )
+        -- 有空或者相等的情况一定要返回 false，避免 invalid order function for sorting异常
+        if a == nil or b == nil then
+            return false
+        end
+
+        local ret = false
+        if type(args) == 'table' then
+            if #args > 0 then
+                for _, v in ipairs(args) do
+                    if type(a) ~= 'table' or type(b) ~= 'table' then
+                        return false
+                    end
+                    local k = v
+                    local f = tonumber
+                    local _d = descending
+                    if type(v) == 'table'then
+                        k = v[1]
+                        f = (v.f == nil) and tonumber or v.f
+                        _d = (v.d == nil) and descending or v.d
+                    end
+                    local va = f(a[k])
+                    local vb = f(b[k])
+                    if _d then
+                        ret = va > vb
+                    else
+                        ret = va < vb
+                    end
+                    if va ~= vb then
+                        break
+                    end
+                end
+            else
+                args = nil
+            end
+        end
+
+        if args == nil then
+            if descending then
+                ret = a > b
+            else
+                ret = a < b
+            end
+        end
+        
+        return ret
+    end
+    table.sort( tab, sortFunc )
+    return tab  
 end
 
 -- LogFile 相关
@@ -226,6 +293,8 @@ GetSpriteAsync = luaExp.GetSpriteAsync
 SetCurGroup = luaExp.SetCurGroup
 -- void ClearGroup (EnumResGroup e, string group)
 ClearGroup = luaExp.ClearGroup
+
+
 
 
 
