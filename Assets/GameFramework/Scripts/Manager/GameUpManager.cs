@@ -123,7 +123,7 @@ namespace GameFramework
                     string pUrl = Tools.PathCombine(tarUrl, confPath);
 
                     TimeOutWWW streamWWW = getTimeOutWWW();
-                    streamWWW.ReadFileStr("localResCOnf", sUrl, 1f, (rst, msg) =>
+                    streamWWW.ReadFileStr("localResConf", sUrl, 1f, (rst, msg) =>
                     {
                         if (rst)
                         {
@@ -166,6 +166,7 @@ namespace GameFramework
                                     //保存新的资源版本号
                                     GameConfig.SetInt(GameDefine.STR_CONF_KEY_RES_VER_I, curConf.VersionCode);
                                     curConf.SaveToFile(Tools.GetWriteableDataPath(GameConfig.STR_ASB_MANIFIST + "/" + STR_RES_CONF));
+                                    mVersionStr = "app:v" + Application.version + " res"+curConf.version;
                                 }
                             }, null);
                         }
@@ -250,6 +251,7 @@ namespace GameFramework
                                                     curConf.version = srcConf.version;
                                                     //保存新的资源版本号
                                                     GameConfig.SetInt(GameDefine.STR_CONF_KEY_RES_VER_I, curConf.VersionCode);
+                                                    mVersionStr = "app:v" + Application.version + " res" + curConf.version;
                                                     //拷贝完成
                                                     callback(true, "资源更新完成");
                                                 }
@@ -276,7 +278,7 @@ namespace GameFramework
                                                     //mInfoStr = string.Format(format, index, list.Count);
                                                 }
                                                 float now = Time.time;
-                                                float dt = last - now;
+                                                float dt = now - last;
                                                 long doneSize = (long)(totalSize * progress);
                                                 long siezPerSec = (long)((doneSize - lastSize) / dt);
                                                 if(siezPerSec > 0)
