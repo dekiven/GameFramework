@@ -10,7 +10,7 @@ namespace GameFramework
     public class SingletonComp<T> : MonoBehaviour where T : Component
     {
         //单例模式组件 begin----------------------------------------------
-        private static volatile T sInstance;
+        private static volatile T sInstance = null;
         private static readonly object syncRoot = new object();
         public static T Instance
         {
@@ -79,6 +79,11 @@ namespace GameFramework
         {
             LogFile.Log("clearComp:" + typeof(T));
             return true;
+        }
+
+        public static bool HasInstance()
+        {
+            return sInstance != null;
         }
         //单例模式组件 end================================================
     }

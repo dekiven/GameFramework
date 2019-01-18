@@ -204,8 +204,8 @@ MonoBehaviour:
   m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
-  m_Elasticity: 0.1
-  m_Inertia: 1
+  m_Elasticity: 0.05
+  m_Inertia: 0
   m_DecelerationRate: 0.135
   m_ScrollSensitivity: 1
   m_Viewport: {fileID: 224428959431442308}
@@ -222,12 +222,15 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   ScrollType: 1
   ItemSize: {x: 100, y: 100}
-  ItemPrefab: {fileID: 1428596653769786, guid: 779cec26753114d558dabf2fcae3d48d, type: 2}
+  ItemPrefab: {fileID: 1155566090604132, guid: e529fe0cec23a4175b49bf23045c27ba, type: 2}
   PaddingLeft: 0
   PaddingRight: 0
   PaddingTop: 0
   PaddingBottom: 0
   ItemNumPerStep: 1
+  ShowItemIntegers: 1
+  LineOffset: 2
+  mBtnClickPassStr: 0
 --- !u!114 &114433317113111772
 MonoBehaviour:
   m_ObjectHideFlags: 1

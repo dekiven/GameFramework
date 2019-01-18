@@ -359,8 +359,16 @@ namespace GameFramework
                 Handler = GetComponent<UIHandler>();
             }
             IsBillboard = false;
-            //进入初始化之后直接隐藏UI，修复在UI切换的时候会显示该UI，等待上个UI隐藏动画完成后再播放动画修复的bug
-            gameObject.SetActive(false);
+#if UNITY_EDITOR 
+            if (GameUIManager.HasInstance())
+            {
+#endif
+                //进入初始化之后直接隐藏UI，修复在UI切换的时候会显示该UI，等待上个UI隐藏动画完成后再播放动画修复的bug
+                gameObject.SetActive(false);
+#if UNITY_EDITOR                
+            }
+#endif
+            
             init();
         }
 

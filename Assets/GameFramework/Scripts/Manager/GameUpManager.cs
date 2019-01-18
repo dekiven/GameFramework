@@ -71,14 +71,14 @@ namespace GameFramework
                         List<string> files = new List<string>();
                         for (int i = 0; i < list.Count; i++)
                         {
-                            files.Add(Tools.PathCombine(list[i].path, "isAudit.bytes"));
+                        files.Add(Tools.PathCombine(list[i].path, GameConfig.STR_ASB_MANIFIST+"/isAudit.bytes"));
                         }
                         www.ReadFirstExistsStr("isIOSAudit", files, 0.5f, (bool rst, string msg) => 
                         {
                             if (!rst || msg.Trim().Equals("1"))
                             {
                                 //当资源服找不到配置文件或者配置文件内容为“1”时，表示是审核版本，跳过更新流程
-                                callback(true, "");
+                                callback(true, string.Empty);
                                 return;
                             }
                                 

@@ -138,13 +138,12 @@ namespace GameFramework
                     addToggleToGroup(i, mToggls[i]);
                 }
             }
-
-#if UNITY_EDITOR
-            if (Application.isPlaying)
-            {
-                StartCoroutine(test());
-            }
-#endif
+//#if UNITY_EDITOR
+//            if (Application.isPlaying)
+//            {
+//                StartCoroutine(test());
+//            }
+//#endif
         }
 
         protected override void OnDestroy()
@@ -324,25 +323,25 @@ namespace GameFramework
         }
         #endregion 私有方法
 
-        #region editor 测试方法
-#if UNITY_EDITOR
-        private IEnumerator test()
-        {
+//        #region editor 测试方法
+//#if UNITY_EDITOR
+//        private IEnumerator test()
+//        {
             
-            yield return new WaitForSeconds(4);
-            if (mToggls.Count == 0 && Dynamically)
-            {
-                SetTotalNum(5);
-                yield return new WaitForSeconds(4);
-                SetCurIndex(3);
+//            yield return new WaitForSeconds(4);
+//            if (mToggls.Count == 0 && Dynamically)
+//            {
+//                SetTotalNum(5);
+//                yield return new WaitForSeconds(4);
+//                SetCurIndex(3);
                 
-                yield return new WaitForSeconds(4);
-                SetTotalNum(8);
-                EnableTouch = false;
-                SetCurIndex(1);
-            }
-        }
-#endif
-        #endregion editor 测试方法
+//                yield return new WaitForSeconds(4);
+//                SetTotalNum(8);
+//                EnableTouch = false;
+//                SetCurIndex(1);
+//            }
+//        }
+//#endif
+        //#endregion editor 测试方法
     }
 }

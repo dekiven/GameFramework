@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using LuaInterface;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 
 //参考资料：「Unity3D」(10)自定义属性面板Inspector详解
@@ -49,7 +50,10 @@ namespace GameFramework
         private int mShowStart = -1;
         private int mShowEnd = -1;
         private Coroutine mUpCoroutine = null;
-        private Vector2 mContntSpace = new Vector2();
+        /// <summary>
+        /// Item 之间的间隔
+        /// </summary>
+        private Vector2 mContentPadding = new Vector2();
         private int mTargetIndex = -1;
         private Tween mMoveTween = null;
         /// <summary>
@@ -188,11 +192,11 @@ namespace GameFramework
                 float space = useSize.x - ItemSize.x * mNumPerLine;
                 if (mNumPerLine > 1)
                 {
-                    mContntSpace.x = space / (mNumPerLine - 1);
+                    mContentPadding.x = space / (mNumPerLine - 1);
                 }
                 else if (mNumPerLine == 1)
                 {
-                    mContntSpace.x = 0f;
+                    mContentPadding.x = 0f;
                     PaddingLeft += space / 2;
                     PaddingRight += space / 2;
                 }
@@ -201,20 +205,25 @@ namespace GameFramework
                 {
                     if (mLinePerPage > 1)
                     {
-                        mContntSpace.y = space / (mLinePerPage - 1);
+                        mContentPadding.y = space / (mLinePerPage - 1);
                     }
                     else if (mLinePerPage == 1)
                     {
-                        mContntSpace.y = mContntSpace.x;
+                        mContentPadding.y = mContentPadding.x;
                     }
                 }
                 else
                 {
-                    mContntSpace.y = LineOffset;
+                    mContentPadding.y = LineOffset;
+                    ////TODO:mLinePerPage 根据 lineOffset 来算
+                    //if (useSize.y - ItemSize.y * mLinePerPage - LineOffset * (mLinePerPage - 1) - PaddingBottom > 0.5)
+                    //{
+                    //    mLinePerPage += 1;
+                    //}
                 }
 
                 mTotalLines = Mathf.CeilToInt(dataCount / (float)mNumPerLine);
-                float height = PaddingTop + PaddingBottom + mTotalLines * ItemSize.y + (mTotalLines - 1) * mContntSpace.y;
+                float height = PaddingTop + PaddingBottom + mTotalLines * ItemSize.y + (mTotalLines - 1) * mContentPadding.y;
                 //content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
                 content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, viewSize.y > height ? viewSize.y : height);
                 //LogFile.Log("PaddingBottom:{0}, mTotalLines:{1},hieght:{2}, space:{3}", PaddingBottom, mTotalLines, rect.height, space);
@@ -229,11 +238,11 @@ namespace GameFramework
                 float space = useSize.y - ItemSize.y * mNumPerLine;
                 if (mNumPerLine > 1)
                 {
-                    mContntSpace.y = space / (mNumPerLine - 1);
+                    mContentPadding.y = space / (mNumPerLine - 1);
                 }
                 else if (mNumPerLine == 1)
                 {
-                    mContntSpace.y = 0f;
+                    mContentPadding.y = 0f;
                     PaddingTop += space / 2;
                     PaddingBottom += space / 2;
                 }
@@ -242,21 +251,26 @@ namespace GameFramework
                 {
                     if (mLinePerPage > 1)
                     {
-                        mContntSpace.x = space / (mLinePerPage - 1);
+                        mContentPadding.x = space / (mLinePerPage - 1);
                     }
                     else if (mLinePerPage == 1)
                     {
-                        mContntSpace.x = mContntSpace.y;
+                        mContentPadding.x = mContentPadding.y;
                     }
                 }
                 else
                 {
-                    mContntSpace.x = LineOffset;
+                    mContentPadding.x = LineOffset;
+                    ////TODO:mLinePerPage 根据 lineOffset 来算
+                    //if(useSize.x - ItemSize.x * mLinePerPage - LineOffset*(mLinePerPage - 1) - PaddingRight > 0.5)
+                    //{
+                    //    mLinePerPage += 1;
+                    //}
                 }
 
 
                 mTotalLines = Mathf.CeilToInt(dataCount / (float)mNumPerLine);
-                float width = PaddingLeft + PaddingRight + mTotalLines * ItemSize.x + (mTotalLines - 1) * mContntSpace.x;
+                float width = PaddingLeft + PaddingRight + mTotalLines * ItemSize.x + (mTotalLines - 1) * mContentPadding.x;
                 content.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, viewSize.x > width ? viewSize.x : width);
                 //content.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             }
@@ -321,6 +335,8 @@ namespace GameFramework
             base.Awake();
             mItemPool = new ObjPool<ScrollItem>(onPoolGetDelegate, onPoolRecoverDelegate, onPoolDisposeDelegate);
             mCurItems = new List<ScrollItem>();
+            elasticity = 0.05f;
+            inertia = false;
         }
 
         protected override void Start()
@@ -338,12 +354,12 @@ namespace GameFramework
 
             this.onValueChanged.AddListener(onSrollViewValueChanged);
 
-#if UNITY_EDITOR
-            if (Application.isPlaying)
-            {
-                StartCoroutine(setTestDatas());
-            }
-#endif
+//#if UNITY_EDITOR
+//            if (Application.isPlaying)
+//            {
+//                StartCoroutine(setTestDatas());
+//            }
+//#endif
         }
 
         protected override void OnDestroy()
@@ -392,14 +408,14 @@ namespace GameFramework
             {
                 colume = i % mNumPerLine;
                 row = i / mNumPerLine;
-                return new Vector3(PaddingLeft + colume * ItemSize.x + ItemSize.x / 2 + mContntSpace.x * colume - viewport.rect.width / 2, -(PaddingTop + row * ItemSize.y + ItemSize.y / 2 + mContntSpace.y * row));
+                return new Vector3(PaddingLeft + colume * ItemSize.x + ItemSize.x / 2 + mContentPadding.x * colume - viewport.rect.width / 2, -(PaddingTop + row * ItemSize.y + ItemSize.y / 2 + mContentPadding.y * row));
             }
             else
             {
                 row = i % mNumPerLine;
                 colume = i / mNumPerLine;
+                return new Vector3(PaddingLeft + colume * ItemSize.x + ItemSize.x / 2 + mContentPadding.x * colume, viewport.rect.height / 2 - (PaddingTop + row * ItemSize.y + ItemSize.y / 2 + mContentPadding.y * row));
             }
-            return new Vector3(PaddingLeft + colume * ItemSize.x + ItemSize.x / 2 + mContntSpace.x * colume, viewport.rect.height / 2 - (PaddingTop + row * ItemSize.y + ItemSize.y / 2 + mContntSpace.y * row));
         }
 
         private bool canItemShow(int index)
@@ -684,39 +700,33 @@ namespace GameFramework
             }
         }
 
-        //TODO:待优化，根据位置精确定位
         private void tweenToIndex(int index)
         {
-            if(mTotalLines < 2)
-            {
-                return;
-            }
-            index = Mathf.Clamp(index, 0, mItemDatas.Count - 1);
-            int lineIndex = index / mNumPerLine;
             if(null != mMoveTween)
             {
                 mMoveTween.Kill();
                 mMoveTween = null;
             }
-            Vector2 pos = Vector2.zero;
-            float value = (float)(lineIndex + 0.5f) / (mTotalLines);
-            if(0 == lineIndex)
+
+            Vector3 localPos = getConetntPosByIdx(index);
+            localPos.z = content.localPosition.z;
+            float dt = Vector3.Distance(content.localPosition, localPos) * 0.001f;
+            //if (ShowItemIntegers)
+            //{
+            //    Vector2 pos = getNormalizedPosByIndex(index);
+            //    mMoveTween = DOTween.To(() => normalizedPosition, (Vector2 v) => normalizedPosition = v, pos, dt).SetEase(Ease.InOutQuad).OnComplete(() => 
+            //    {
+            //        mMoveTween = null;
+            //    });
+            //}
+            //else
             {
-                value = 0;
+                mMoveTween = DOTween.To(() => content.localPosition, (Vector2 v) => content.localPosition = v, localPos, dt).SetEase(Ease.InOutQuad).OnComplete(() =>
+                {
+                    mMoveTween = null;
+                });
             }
-            if (mTotalLines-1 == lineIndex)
-            {
-                value = 1;
-            }
-            if(ScrollType == ScrollViewType.Vertical)
-            {
-                pos.y = 1 - value;
-            }
-            else
-            {
-                pos.x = value;
-            }
-            mMoveTween = DOTween.To(()=>normalizedPosition, (Vector2 v)=> normalizedPosition=v, pos, 0.4f);
+
         }
 
         private void setOnBtnClickLua(LuaFunction call, bool passStr)
@@ -728,6 +738,63 @@ namespace GameFramework
                 mOnBtnClickLua = null;
             }
             mOnBtnClickLua = call;
+        }
+
+        private Vector2 getNormalizedPosByIndex(int idx)
+        {
+            Vector2 pos = Vector2.zero;
+            int max = Math.Max(0, mTotalLines - mLinePerPage);
+            if (0 < max)
+            {
+                float value = idx / mNumPerLine;
+                value = Mathf.Clamp(value, 0, max);
+                if (ScrollType == ScrollViewType.Vertical)
+                {
+                    value = (PaddingTop + value * (ItemSize.y + mContentPadding.y)) / (PaddingTop + max * (ItemSize.y + mContentPadding.y));
+                    pos.y = 1 - value;
+                }
+                else
+                {
+                    value = (PaddingLeft + value * (ItemSize.x + mContentPadding.x)) / (PaddingTop + max * (ItemSize.x + mContentPadding.x));
+                    pos.x = value;
+                }
+            }
+            else
+            {
+                pos = new Vector2(0, 1);
+            }
+            return pos;
+        }
+
+        /// <summary>
+        /// 根据传入的 line index 确定 content 首行/列的 line index
+        /// </summary>
+        /// <returns>The valid line.</returns>
+        /// <param name="idx">Index.</param>
+        private int getFirstLineIdx(int idx)
+        {
+            //int ret = 0;
+            //int min = 0;
+            idx = idx / mNumPerLine;
+            int max = Math.Max(0, mTotalLines - mLinePerPage);
+            //ret = Mathf.Clamp(idx, 0, max);
+            return Mathf.Clamp(idx, 0, max);
+        }
+
+        private Vector2 getConetntPosByIdx(int idx)
+        {
+            Vector2 ret = Vector2.zero;
+            int line = -1;
+            line = getFirstLineIdx(idx);
+            if (ScrollViewType.Vertical == ScrollType)
+            {
+                ret = new Vector2(content.transform.localPosition.x, (0 == line ? 0 : PaddingTop) + (ItemSize.y + mContentPadding.y) * line);
+            }
+            else
+            {
+                ret = new Vector2((0 == line ? 0 : -PaddingLeft) - (ItemSize.x + mContentPadding.x) * line, content.transform.localPosition.y);
+            }
+            return ret;
         }
         #endregion 私有方法
 
@@ -772,23 +839,35 @@ namespace GameFramework
         {
             checkNeedUpdate();
         }
+
+        //TODO:拖动或者鼠标滚轮移动后吸附到行实现，低优先
+        //public override void OnEndDrag(PointerEventData eventData)
+        //{
+        //    base.OnEndDrag(eventData);
+        //    mEndDrag = true;
+        //    if (mEndDrag && null == mMoveTween)
+        //    {
+        //        tweenToIndex(mShowStart * mNumPerLine);
+        //        mEndDrag = false;
+        //    }
+        //}
         #endregion ScrollRect 显示区域改变回调
 
-        #region 编辑器测试相关
-        IEnumerator setTestDatas()
-        {
-            yield return new WaitForSeconds(5);
-            if(null == mItemDatas)
-            {
-                List<UIItemData> datas = new List<UIItemData>();
-                for (int i = 0; i < 30; i++)
-                {
-                    datas.Add(new UIItemData());
-                }
-                SetData(datas);
-            }
-        }
-        #endregion
+        //#region 编辑器测试相关
+        //IEnumerator setTestDatas()
+        //{
+        //    yield return new WaitForSeconds(5);
+        //    if(null == mItemDatas)
+        //    {
+        //        List<UIItemData> datas = new List<UIItemData>();
+        //        for (int i = 0; i < 30; i++)
+        //        {
+        //            datas.Add(new UIItemData());
+        //        }
+        //        SetData(datas);
+        //    }
+        //}
+        //#endregion
 
     }
 

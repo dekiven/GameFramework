@@ -18,7 +18,7 @@ namespace GameFramework
 
     public class Singleton<T> where T : class, new()
     {
-        private static T sInstance;
+        private static T sInstance = null;
         private static Object lockObj = new Object();
 
         public static T Instance
@@ -60,6 +60,11 @@ namespace GameFramework
             }
 
             return true;
+        }
+
+        public static bool HasInstance()
+        {
+            return sInstance != null;
         }
 
         protected virtual bool dispose()
