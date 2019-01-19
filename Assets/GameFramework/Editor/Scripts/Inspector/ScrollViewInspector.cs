@@ -119,6 +119,9 @@ namespace GameFramework
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("LineOffset"), new GUIContent(str + "间距"));
             }
+
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("AlignLines"), new GUIContent("对齐到行或列", "仅在拖动Scrollview content 区域后有效，拖动 Scrollbar或者鼠标滚轮造成的移动无效"));
+
             serializedObject.ApplyModifiedProperties();
 
             //测试相关，显示给定数量的item

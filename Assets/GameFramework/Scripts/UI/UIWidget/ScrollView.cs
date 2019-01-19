@@ -38,7 +38,11 @@ namespace GameFramework
         [HideInInspector]
         public bool ShowItemIntegers = true;
         [HideInInspector]
-        public float LineOffset = 2f; 
+        public float LineOffset = 2f;
+
+        //TODO:目前仅支持拖动 Item 后对齐,鼠标滚轮和 scrollbar 拖动后不能对齐
+        [HideInInspector]
+        public bool AlignLines = false;
 
         #region 私有属性
         private ObjPool<ScrollItem> mItemPool;
@@ -829,6 +833,38 @@ namespace GameFramework
             }
             return ret;
         }
+
+        private void alignNearestLine()
+        {
+            if (null == mMoveTween)
+            {
+                if (mLinePerPage >= mTotalLines)
+                {
+                    tweenToIndex(0);
+                }
+                else
+                {
+                    Vector3 pos = content.localPosition;
+                    Vector3 pos1 = getConetntPosByIdx(mShowStart);
+                    int i = 0;
+                    if (ScrollViewType.Vertical == ScrollType)
+                    {
+                        if (pos.y - pos1.y > (mRealItemSize.y + mContentPadding.y) / 2)
+                        {
+                            i = 1;
+                        }
+                    }
+                    else if (ScrollViewType.Horizontal == ScrollType)
+                    {
+                        if (pos1.x - pos.x > (mRealItemSize.x + mContentPadding.x) / 2)
+                        {
+                            i = 1;
+                        }
+                    }
+                    tweenToIndex((mShowStart + i) * mNumPerLine);
+                }
+            }
+        }
         #endregion 私有方法
 
         #region ObjPool回调
@@ -903,31 +939,14 @@ namespace GameFramework
             checkNeedUpdate();
         }
 
-        //TODO:拖动或者鼠标滚轮移动后吸附到行实现，低优先
         public override void OnEndDrag(PointerEventData eventData)
         {
             base.OnEndDrag(eventData);
-            //mEndDrag = true;
             if (null == mMoveTween)
             {
-                tweenToIndex(mShowStart * mNumPerLine);
-                //mEndDrag = false;
+                alignNearestLine();
             }
         }
-
-        public override void OnScroll(PointerEventData data)
-        {
-            base.OnScroll(data);
-            if (!data.IsScrolling())
-            {
-                if (null == mMoveTween)
-                {
-                    tweenToIndex(mShowStart * mNumPerLine);
-                    //mEndDrag = false;
-                }
-            }
-        }
-
         #endregion ScrollRect 显示区域改变回调
     }
 
