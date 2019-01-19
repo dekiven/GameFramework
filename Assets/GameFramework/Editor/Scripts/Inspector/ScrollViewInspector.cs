@@ -82,9 +82,17 @@ namespace GameFramework
             #endregion 显示ScrollRect的属性
 
             Prefab = EditorGUILayout.ObjectField("ItemPrefab", Prefab, typeof(GameObject), false) as GameObject;
+            if(null == Prefab)
+            {
+                EditorGUILayout.HelpBox("请设置 ScrollView ItemPrefab", MessageType.Error);
+
+            }
 
             mTarget.ItemSize = EditorGUILayout.Vector2Field("ItemSize", mTarget.ItemSize);
-            //EditorGUILayout.PropertyField(mItemSize);
+            if(mTarget.ItemSize.x.Equals(-1f) || mTarget.ItemSize.y.Equals(-1f))
+            {
+                EditorGUILayout.HelpBox("ItemSize x或y 值为-1时，表示 item 根据 ScrollView 缩放，prefab的RectTransform中left、right、top、bottom 无效，请调整下方PaadingXXX 修改 Item 显示大小", MessageType.Warning);
+            }
 
             GUILayout.Space(10);
 
@@ -156,6 +164,14 @@ namespace GameFramework
             if (null != rectTransform)
             {
                 mTarget.ItemSize = rectTransform.rect.size;
+                if(!rectTransform.anchorMin.x.Equals(rectTransform.anchorMax.x))
+                {
+                    mTarget.ItemSize.x = -1;
+                }
+                if (!rectTransform.anchorMin.y.Equals(rectTransform.anchorMax.y))
+                {
+                    mTarget.ItemSize.y = -1;
+                }
             }
             DestroyImmediate(obj);
         }

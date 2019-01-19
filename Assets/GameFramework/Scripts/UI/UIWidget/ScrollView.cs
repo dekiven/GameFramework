@@ -56,10 +56,7 @@ namespace GameFramework
         private Vector2 mContentPadding = new Vector2();
         private int mTargetIndex = -1;
         private Tween mMoveTween = null;
-        /// <summary>
-        /// ScrollItem 上的btn被点击时是否传递btn名，否则传UIHandler的index
-        /// </summary>
-        public bool mBtnClickPassStr = false;
+        private Vector2 mRealItemSize = Vector2.one;
 
 
         //Item 点击回调
@@ -70,6 +67,11 @@ namespace GameFramework
         private DelBtnClickedStr mOnBtnClickedS;
         private DelBtnClickedIndex mOnBtnClickedI;
         private LuaFunction mOnBtnClickLua;
+
+        /// <summary>
+        /// ScrollItem 上的btn被点击时是否传递btn名，否则传UIHandler的index
+        /// </summary>
+        private bool mBtnClickPassStr = false;
         #endregion 私有属性
 
         public void SetData(List<UIItemData> data)
@@ -174,22 +176,42 @@ namespace GameFramework
                 LogFile.Warn("ScrollView calculateContentSize Error: null == mItemDatas || null == ItemPrefab");
                 return;
             }
+            if(!IsActive())
+            {
+                return;
+            }
             Rect rect = content.rect;
             Vector2 rectSize = rect.size;
             Vector2 viewSize = viewport.rect.size;
             Vector2 useSize = Vector2.zero;
+            mRealItemSize = ItemSize;
+
             int dataCount = mItemDatas.Count;
             if (ScrollViewType.Vertical == ScrollType)
             {
                 useSize.x = rectSize.x - PaddingLeft - PaddingRight;
                 useSize.y = viewSize.y - PaddingTop - PaddingBottom;
-                mNumPerLine = Mathf.FloorToInt(useSize.x / ItemSize.x);
-                mLinePerPage = Mathf.FloorToInt(useSize.y / ItemSize.y);
+                if (ItemSize.x.Equals(-1f))
+                {
+                    mRealItemSize.x = useSize.x;
+                }
+                if (ItemSize.y.Equals(-1f))
+                {
+                    mRealItemSize.y = useSize.y;
+                }
+                mNumPerLine = Mathf.FloorToInt(useSize.x / mRealItemSize.x);
+                mLinePerPage = Mathf.FloorToInt(useSize.y / mRealItemSize.y);
                 if (mNumPerLine < 1 || mLinePerPage < 1)
                 {
-                    LogFile.Error("ScrollView calculateContentSize Error:  mNumPerLine < 1 || mLinePerPage < 1");
+                    LogFile.Error("ScrollView calculateContentSize Error:  mNumPerLine < 1 || mLinePerPage < 1, mRealItemSize:{0}, useSize:{1}", mRealItemSize, useSize);
+#if UNITY_EDITOR
+                    if(UnityEditor.EditorUtility.DisplayDialog("提示", "ScrollItem宽高超出可显示区域，请修改 ScrollItem 宽高或者 ScrollView宽高、 padding", "退出运行并修改"))
+                    {
+                        UnityEditor.EditorApplication.isPlaying = false;
+                    }
+#endif
                 }
-                float space = useSize.x - ItemSize.x * mNumPerLine;
+                float space = useSize.x - mRealItemSize.x * mNumPerLine;
                 if (mNumPerLine > 1)
                 {
                     mContentPadding.x = space / (mNumPerLine - 1);
@@ -200,7 +222,7 @@ namespace GameFramework
                     PaddingLeft += space / 2;
                     PaddingRight += space / 2;
                 }
-                space = useSize.y - mLinePerPage * ItemSize.y;
+                space = useSize.y - mLinePerPage * mRealItemSize.y;
                 if(ShowItemIntegers)
                 {
                     if (mLinePerPage > 1)
@@ -223,7 +245,7 @@ namespace GameFramework
                 }
 
                 mTotalLines = Mathf.CeilToInt(dataCount / (float)mNumPerLine);
-                float height = PaddingTop + PaddingBottom + mTotalLines * ItemSize.y + (mTotalLines - 1) * mContentPadding.y;
+                float height = PaddingTop + PaddingBottom + mTotalLines * mRealItemSize.y + (mTotalLines - 1) * mContentPadding.y;
                 //content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
                 content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, viewSize.y > height ? viewSize.y : height);
                 //LogFile.Log("PaddingBottom:{0}, mTotalLines:{1},hieght:{2}, space:{3}", PaddingBottom, mTotalLines, rect.height, space);
@@ -232,10 +254,18 @@ namespace GameFramework
             {
                 useSize.x = viewSize.x - PaddingLeft - PaddingRight;
                 useSize.y = rectSize.y - PaddingTop - PaddingBottom;
-                mNumPerLine = Mathf.FloorToInt(useSize.y / ItemSize.y);
-                mLinePerPage = Mathf.FloorToInt(useSize.x / ItemSize.x);
+                if (ItemSize.x.Equals(-1f))
+                {
+                    mRealItemSize.x = useSize.x;
+                }
+                if (ItemSize.y.Equals(-1f))
+                {
+                    mRealItemSize.y = useSize.y;
+                }
+                mNumPerLine = Mathf.FloorToInt(useSize.y / mRealItemSize.y);
+                mLinePerPage = Mathf.FloorToInt(useSize.x / mRealItemSize.x);
 
-                float space = useSize.y - ItemSize.y * mNumPerLine;
+                float space = useSize.y - mRealItemSize.y * mNumPerLine;
                 if (mNumPerLine > 1)
                 {
                     mContentPadding.y = space / (mNumPerLine - 1);
@@ -246,7 +276,7 @@ namespace GameFramework
                     PaddingTop += space / 2;
                     PaddingBottom += space / 2;
                 }
-                space = useSize.x - mLinePerPage * ItemSize.x;
+                space = useSize.x - mLinePerPage * mRealItemSize.x;
                 if(ShowItemIntegers)
                 {
                     if (mLinePerPage > 1)
@@ -270,7 +300,7 @@ namespace GameFramework
 
 
                 mTotalLines = Mathf.CeilToInt(dataCount / (float)mNumPerLine);
-                float width = PaddingLeft + PaddingRight + mTotalLines * ItemSize.x + (mTotalLines - 1) * mContentPadding.x;
+                float width = PaddingLeft + PaddingRight + mTotalLines * mRealItemSize.x + (mTotalLines - 1) * mContentPadding.x;
                 content.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, viewSize.x > width ? viewSize.x : width);
                 //content.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             }
@@ -335,8 +365,11 @@ namespace GameFramework
             base.Awake();
             mItemPool = new ObjPool<ScrollItem>(onPoolGetDelegate, onPoolRecoverDelegate, onPoolDisposeDelegate);
             mCurItems = new List<ScrollItem>();
-            elasticity = 0.05f;
-            inertia = false;
+            //// 开启回弹
+            //movementType = MovementType.Elastic;
+            //elasticity = 0.05f;
+            //// 关闭移动结束后回弹惯性
+            //inertia = false;
         }
 
         protected override void Start()
@@ -353,13 +386,6 @@ namespace GameFramework
             horizontal = !isVertical;
 
             this.onValueChanged.AddListener(onSrollViewValueChanged);
-
-//#if UNITY_EDITOR
-//            if (Application.isPlaying)
-//            {
-//                StartCoroutine(setTestDatas());
-//            }
-//#endif
         }
 
         protected override void OnDestroy()
@@ -408,13 +434,13 @@ namespace GameFramework
             {
                 colume = i % mNumPerLine;
                 row = i / mNumPerLine;
-                return new Vector3(PaddingLeft + colume * ItemSize.x + ItemSize.x / 2 + mContentPadding.x * colume - viewport.rect.width / 2, -(PaddingTop + row * ItemSize.y + ItemSize.y / 2 + mContentPadding.y * row));
+                return new Vector3(PaddingLeft + colume * mRealItemSize.x + mRealItemSize.x / 2 + mContentPadding.x * colume - viewport.rect.width / 2, -(PaddingTop + row * mRealItemSize.y + mRealItemSize.y / 2 + mContentPadding.y * row));
             }
             else
             {
                 row = i % mNumPerLine;
                 colume = i / mNumPerLine;
-                return new Vector3(PaddingLeft + colume * ItemSize.x + ItemSize.x / 2 + mContentPadding.x * colume, viewport.rect.height / 2 - (PaddingTop + row * ItemSize.y + ItemSize.y / 2 + mContentPadding.y * row));
+                return new Vector3(PaddingLeft + colume * mRealItemSize.x + mRealItemSize.x / 2 + mContentPadding.x * colume, viewport.rect.height / 2 - (PaddingTop + row * mRealItemSize.y + mRealItemSize.y / 2 + mContentPadding.y * row));
             }
         }
 
@@ -428,12 +454,12 @@ namespace GameFramework
             if (ScrollViewType.Vertical == ScrollType)
             {
                 float posY = -pos.y - content.localPosition.y;
-                return posY > -ItemSize.y / 2 && posY < viewport.rect.height + ItemSize.y / 2;
+                return posY > -mRealItemSize.y / 2 && posY < viewport.rect.height + mRealItemSize.y / 2;
             }
             else
             {
                 float posX = pos.x + content.localPosition.x;
-                return posX > -ItemSize.x / 2 && posX < viewport.rect.width + ItemSize.x / 2;
+                return posX > -mRealItemSize.x / 2 && posX < viewport.rect.width + mRealItemSize.x / 2;
             }
         }
 
@@ -578,7 +604,14 @@ namespace GameFramework
             UIItemData data = mItemDatas[index];
             item.Index = index;
             item.SetData(data);
-            item.transform.localPosition = getItemPosByIndex(index);
+            RectTransform rect = item.rectTransform;
+            Vector3 offset = Vector3.zero;
+            if (!rect.pivot.Equals(Vector2.one * 0.5f))
+            {
+                offset.x = rect.rect.width * (rect.pivot.x - 0.5f);
+                offset.y = rect.rect.height * (rect.pivot.y - 0.5f);
+            }
+            item.transform.localPosition = getItemPosByIndex(index) + offset;
         }
 
         private void addEndLine(int line)
@@ -750,12 +783,12 @@ namespace GameFramework
                 value = Mathf.Clamp(value, 0, max);
                 if (ScrollType == ScrollViewType.Vertical)
                 {
-                    value = (PaddingTop + value * (ItemSize.y + mContentPadding.y)) / (PaddingTop + max * (ItemSize.y + mContentPadding.y));
+                    value = (PaddingTop + value * (mRealItemSize.y + mContentPadding.y)) / (PaddingTop + max * (mRealItemSize.y + mContentPadding.y));
                     pos.y = 1 - value;
                 }
                 else
                 {
-                    value = (PaddingLeft + value * (ItemSize.x + mContentPadding.x)) / (PaddingTop + max * (ItemSize.x + mContentPadding.x));
+                    value = (PaddingLeft + value * (mRealItemSize.x + mContentPadding.x)) / (PaddingTop + max * (mRealItemSize.x + mContentPadding.x));
                     pos.x = value;
                 }
             }
@@ -788,11 +821,11 @@ namespace GameFramework
             line = getFirstLineIdx(idx);
             if (ScrollViewType.Vertical == ScrollType)
             {
-                ret = new Vector2(content.transform.localPosition.x, (0 == line ? 0 : PaddingTop) + (ItemSize.y + mContentPadding.y) * line);
+                ret = new Vector2(content.transform.localPosition.x, (0 == line ? 0 : PaddingTop) + (mRealItemSize.y + mContentPadding.y) * line);
             }
             else
             {
-                ret = new Vector2((0 == line ? 0 : -PaddingLeft) - (ItemSize.x + mContentPadding.x) * line, content.transform.localPosition.y);
+                ret = new Vector2((0 == line ? 0 : -PaddingLeft) - (mRealItemSize.x + mContentPadding.x) * line, content.transform.localPosition.y);
             }
             return ret;
         }
@@ -815,6 +848,36 @@ namespace GameFramework
                 obj.OnItemClicked = onItemClicked;
                 obj.OnBtnClickedIndex = onItemBtnClickI;
                 obj.OnBtnClickedStr = onItemBtnClickS;
+                if (ItemSize.x.Equals(-1f))
+                {
+                    //修改锚点
+                    Vector2 vector = obj.rectTransform.anchorMax;
+                    vector.x = 0.5f;
+                    obj.rectTransform.anchorMax = vector;
+                    vector = obj.rectTransform.anchorMin;
+                    vector.x = 0.5f;
+                    obj.rectTransform.anchorMin = vector;
+                    obj.rectTransform.pivot = vector;
+                    //修改 item 宽高
+                    vector.x = mRealItemSize.x;
+                    vector.y = obj.rectTransform.rect.height;
+                    obj.rectTransform.sizeDelta = vector;
+                }
+                if (ItemSize.y.Equals(-1f))
+                {
+                    //修改锚点
+                    Vector2 vector = obj.rectTransform.anchorMax;
+                    vector.y = 0.5f;
+                    obj.rectTransform.anchorMax = vector;
+                    vector = obj.rectTransform.anchorMin;
+                    vector.y = 0.5f;
+                    obj.rectTransform.anchorMin = vector;
+                    obj.rectTransform.pivot = vector;
+                    //修改 item 宽高
+                    vector.x = obj.rectTransform.rect.width;
+                    vector.y = mRealItemSize.y;
+                    obj.rectTransform.sizeDelta = vector;
+                }
             }
             obj.gameObject.SetActive(true);
             return true;
@@ -841,34 +904,31 @@ namespace GameFramework
         }
 
         //TODO:拖动或者鼠标滚轮移动后吸附到行实现，低优先
-        //public override void OnEndDrag(PointerEventData eventData)
-        //{
-        //    base.OnEndDrag(eventData);
-        //    mEndDrag = true;
-        //    if (mEndDrag && null == mMoveTween)
-        //    {
-        //        tweenToIndex(mShowStart * mNumPerLine);
-        //        mEndDrag = false;
-        //    }
-        //}
+        public override void OnEndDrag(PointerEventData eventData)
+        {
+            base.OnEndDrag(eventData);
+            //mEndDrag = true;
+            if (null == mMoveTween)
+            {
+                tweenToIndex(mShowStart * mNumPerLine);
+                //mEndDrag = false;
+            }
+        }
+
+        public override void OnScroll(PointerEventData data)
+        {
+            base.OnScroll(data);
+            if (!data.IsScrolling())
+            {
+                if (null == mMoveTween)
+                {
+                    tweenToIndex(mShowStart * mNumPerLine);
+                    //mEndDrag = false;
+                }
+            }
+        }
+
         #endregion ScrollRect 显示区域改变回调
-
-        //#region 编辑器测试相关
-        //IEnumerator setTestDatas()
-        //{
-        //    yield return new WaitForSeconds(5);
-        //    if(null == mItemDatas)
-        //    {
-        //        List<UIItemData> datas = new List<UIItemData>();
-        //        for (int i = 0; i < 30; i++)
-        //        {
-        //            datas.Add(new UIItemData());
-        //        }
-        //        SetData(datas);
-        //    }
-        //}
-        //#endregion
-
     }
 
     #region 辅助类或枚举
