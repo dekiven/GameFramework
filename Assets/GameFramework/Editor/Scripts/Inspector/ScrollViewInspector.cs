@@ -122,6 +122,8 @@ namespace GameFramework
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("AlignLines"), new GUIContent("对齐到行或列", "仅在拖动Scrollview content 区域后有效，拖动 Scrollbar或者鼠标滚轮造成的移动无效"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("EnableMuiltSelect"), new GUIContent("允许多选"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("SwitchItemOnClick"), new GUIContent("点击Item切换选中状态"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("TweenRate"), new GUIContent("Tween 时间像素比", "表示平均每tween一个像素花的时间"));
 
             serializedObject.ApplyModifiedProperties();
 

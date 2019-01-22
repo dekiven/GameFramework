@@ -51,6 +51,10 @@ namespace GameFramework
 
         [HideInInspector]
         public bool EnableMuiltSelect = false;
+        [HideInInspector]
+        public bool SwitchItemOnClick;
+        [HideInInspector]
+        public float TweenRate = 0.001f;
 
         #region 私有属性
         private ObjPool<ScrollItem> mItemPool;
@@ -92,6 +96,7 @@ namespace GameFramework
         /// 当Item多选关闭的情况下，记录当前选中的 Item
         /// </summary>
         private int murSelectIndex = -1;
+
         #endregion 私有属性
 
         /// <summary>
@@ -885,6 +890,10 @@ namespace GameFramework
             {
                 mOnItemClickLua.Call(index);
             }
+            if(SwitchItemOnClick)
+            {                
+                SwitchItem(index);
+            }
         }
 
         private void onItemBtnClickI(int index, int btnIndex)
@@ -929,7 +938,7 @@ namespace GameFramework
 
             Vector3 localPos = getConetntPosByIdx(index);
             localPos.z = content.localPosition.z;
-            float dt = Vector3.Distance(content.localPosition, localPos) * 0.001f;
+            float dt = Vector3.Distance(content.localPosition, localPos) * TweenRate;
             //if (ShowItemIntegers)
             //{
             //    Vector2 pos = getNormalizedPosByIndex(index);
