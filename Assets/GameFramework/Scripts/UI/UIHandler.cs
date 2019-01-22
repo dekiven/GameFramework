@@ -1731,6 +1731,28 @@ namespace GameFramework
             return false;
         }
 
+        //public bool SetScrollViewOnItemClick(int index, LuaFunction call)
+        //{
+        //    ScrollView ui = GetCompByIndex<ScrollView>(index);
+        //    return setScrollViewOnItemClick(ui, call);
+        //}
+
+        //public bool SetScrollViewOnItemClick(string cName, LuaFunction call)
+        //{
+        //    ScrollView ui = GetCompByName<ScrollView>(cName);
+        //    return setScrollViewOnItemClick(ui, call);
+        //}
+
+        //private static bool setScrollViewOnItemClick(ScrollView ui, LuaFunction call)
+        //{
+        //    if (null != ui)
+        //    {
+        //        ui.SetOnItemClickDelegate()
+        //        return true;
+        //    }
+        //    return false;
+        //}
+
         public bool SetScrollViewData(int index, LuaTable table)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);

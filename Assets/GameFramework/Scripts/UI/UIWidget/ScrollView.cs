@@ -13,6 +13,11 @@ using UnityEngine.EventSystems;
 
 namespace GameFramework
 {
+    using DelScrollItemClicked = Action<int>;
+    using DelBtnClickedStr = Action<int, string>;
+    using DelBtnClickedIndex = Action<int, int>;
+    using DelSelectChange = Action<int[]>;
+
     [RequireComponent(typeof(ScrollRect))]
     public class ScrollView : ScrollRect
     {
@@ -43,6 +48,9 @@ namespace GameFramework
         //TODO:目前仅支持拖动 Item 后对齐,鼠标滚轮和 scrollbar 拖动后不能对齐
         [HideInInspector]
         public bool AlignLines = false;
+
+        [HideInInspector]
+        public bool EnableMuiltSelect = false;
 
         #region 私有属性
         private ObjPool<ScrollItem> mItemPool;
@@ -76,14 +84,32 @@ namespace GameFramework
         /// ScrollItem 上的btn被点击时是否传递btn名，否则传UIHandler的index
         /// </summary>
         private bool mBtnClickPassStr = false;
+
+        private List<bool> mItemSelectStatus;
+        private DelSelectChange mOnSelectChange;
+        private LuaFunction mOnSelectChangeLua;
+        /// <summary>
+        /// 当Item多选关闭的情况下，记录当前选中的 Item
+        /// </summary>
+        private int murSelectIndex = -1;
         #endregion 私有属性
 
+        /// <summary>
+        /// SetData 会将所有 item 选中状态置为未选中
+        /// </summary>
+        /// <param name="data">Data.</param>
         public void SetData(List<UIItemData> data)
         {
             mItemDatas = data;
+            mItemSelectStatus.Clear();
+            mItemSelectStatus.AddRange(new bool[data.Count]);
             CalculateAndUpdateContent();
         }
 
+        /// <summary>
+        /// SetData 会将所有 item 选中状态置为未选中
+        /// </summary>
+        /// <param name="table">Table.</param>
         public void SetData(LuaTable table)
         {
             List<UIItemData> data = Tools.GenUIIemDataList(table);
@@ -113,6 +139,7 @@ namespace GameFramework
         public void AddData(UIItemData data)
         {
             mItemDatas.Add(data);
+            mItemSelectStatus.Add(false);
             CalculateAndUpdateContent();
         }
 
@@ -125,6 +152,7 @@ namespace GameFramework
         public void InsertData(UIItemData data, int index)
         {
             mItemDatas.Insert(index, data);
+            mItemSelectStatus.Insert(index, false);
             CalculateAndUpdateContent();
         }
 
@@ -144,7 +172,9 @@ namespace GameFramework
             if (mItemDatas.Contains(data))
             {
                 data.Dispose();
-                mItemDatas.Remove(data);
+                int index = mItemDatas.IndexOf(data);
+                mItemDatas.RemoveAt(index);
+                mItemSelectStatus.RemoveAt(index);
 
                 CalculateAndUpdateContent();
             }
@@ -156,12 +186,13 @@ namespace GameFramework
             {
                 mItemDatas[index].Dispose();
                 mItemDatas.RemoveAt(index);
+                mItemSelectStatus.RemoveAt(index);
 
                 CalculateAndUpdateContent();
             }
         }
 
-        public void SetCurIndex(int index)
+        public void Tween2Index(int index)
         {
             if(null != mUpCoroutine)
             {
@@ -180,10 +211,7 @@ namespace GameFramework
                 LogFile.Warn("ScrollView calculateContentSize Error: null == mItemDatas || null == ItemPrefab");
                 return;
             }
-            if(!IsActive())
-            {
-                return;
-            }
+                
             Rect rect = content.rect;
             Vector2 rectSize = rect.size;
             Vector2 viewSize = viewport.rect.size;
@@ -363,12 +391,155 @@ namespace GameFramework
             setOnBtnClickLua(call, false);
         }
 
+
+        public void SelectItem(int index)
+        {
+            if (!EnableMuiltSelect)
+            {
+                if(murSelectIndex >= 0 && murSelectIndex < mItemDatas.Count)
+                {
+                    setItemSelected(murSelectIndex, false);
+                    mItemSelectStatus[murSelectIndex] = false;
+                }
+                murSelectIndex = index;
+            }
+            setItemSelected(index, true);
+            onSelectStatusChanges();
+        }
+
+        public void SelectItems(int[] indexArr)
+        {
+            if(!EnableMuiltSelect)
+            {
+                LogFile.Warn("当前ScrollView为单选模式，请打开开关EnableMuiltSelect");
+                return;
+            }
+            for (int i = 0; i < indexArr.Length; i++)
+            {
+                setItemSelected(indexArr[i], true);
+            }
+            onSelectStatusChanges();
+        }
+
+        public void SelectItems(string indexArr)
+        {
+            SelectItems(Tools.GetIntArry(indexArr));
+        }
+
+        public void UnselectItem(int index)
+        {
+            if (!EnableMuiltSelect && index == murSelectIndex)
+            {
+                //mItemSelectStatus[murSelectIndex] = false;
+                murSelectIndex = -1;
+            }
+            setItemSelected(index, false);
+            //mItemSelectStatus[index] = false;
+            onSelectStatusChanges();
+        }
+
+        public void UnselectItems(int[] indexArr)
+        {
+            if (!EnableMuiltSelect)
+            {
+                LogFile.Warn("当前ScrollView为单选模式，请打开开关EnableMuiltSelect");
+                return;
+            }
+            for (int i = 0; i < indexArr.Length; i++)
+            {
+                setItemSelected(indexArr[i], false);
+            }
+            onSelectStatusChanges();
+        }
+
+        public void UnselectItems(string indexArr)
+        {
+            UnselectItems(Tools.GetIntArry(indexArr));
+        }
+
+        public void SwitchItem(int index)
+        {
+            if (!EnableMuiltSelect)
+            {
+                if (murSelectIndex >= 0 && murSelectIndex < mItemDatas.Count)
+                {
+                    setItemSelected(murSelectIndex, false);
+                } 
+                if(index == murSelectIndex)
+                {
+                    mItemSelectStatus[murSelectIndex] = false;
+                    murSelectIndex = -1;
+                    return;
+                }
+                murSelectIndex = index;
+            }
+            switchItem(index);
+            onSelectStatusChanges();
+        }
+
+        public void SwitchItems(int[] indexArr)
+        {
+            if (!EnableMuiltSelect)
+            {
+                LogFile.Warn("当前ScrollView为单选模式，请打开开关EnableMuiltSelect");
+                return;
+            }
+            for (int i = 0; i < indexArr.Length; i++)
+            {
+                switchItem(indexArr[i]);
+            }
+            onSelectStatusChanges();
+        }
+
+        public void SwitchItems(string indexArr)
+        {
+            SwitchItems(Tools.GetIntArry(indexArr));
+        }
+
+        public void SelectAll()
+        {
+            if (!EnableMuiltSelect)
+            {
+                LogFile.Warn("当前ScrollView为单选模式，请打开开关EnableMuiltSelect");
+                return;
+            }
+            //已经通知修改，不需要像上面的再写一次
+            changeSelectAll(true);
+        }
+
+        public void UnselectAll()
+        {
+            if (!EnableMuiltSelect)
+            {
+                LogFile.Warn("当前ScrollView为单选模式，请打开开关EnableMuiltSelect");
+                return;
+            }
+            //已经通知修改，不需要像上面的再写一次
+            changeSelectAll(false);
+        }
+
+        public void SetOnSelectChangeCall(DelSelectChange del)
+        {
+            mOnSelectChange = del;
+        }
+
+        public void SetOnSelectChangeCall(LuaFunction lua)
+        {
+            if(null != mOnSelectChangeLua)
+            {
+                mOnSelectChangeLua.Dispose();
+                mOnSelectChangeLua = null;
+            }
+            mOnSelectChangeLua = lua;
+        }
+
         #region MonoBehaviour
         protected override void Awake()
         {
             base.Awake();
             mItemPool = new ObjPool<ScrollItem>(onPoolGetDelegate, onPoolRecoverDelegate, onPoolDisposeDelegate);
             mCurItems = new List<ScrollItem>();
+            mItemSelectStatus = ObjPools.GetListBool();
             //// 开启回弹
             //movementType = MovementType.Elastic;
             //elasticity = 0.05f;
@@ -414,6 +585,16 @@ namespace GameFramework
             if (null != mOnItemClickLua)
             {
                 mOnItemClickLua.Dispose();
+                mOnItemClickLua = null;
+            }
+            if(null != mItemSelectStatus)
+            {
+                ObjPools.Recover(mItemSelectStatus);
+            }
+            if(null != mOnSelectChangeLua)
+            {
+                mOnSelectChangeLua.Dispose();
+                mOnSelectChangeLua = null;
             }
             base.OnDestroy();
         }
@@ -608,6 +789,7 @@ namespace GameFramework
             UIItemData data = mItemDatas[index];
             item.Index = index;
             item.SetData(data);
+            item.IsSelected = mItemSelectStatus[index];
             RectTransform rect = item.rectTransform;
             Vector3 offset = Vector3.zero;
             if (!rect.pivot.Equals(Vector2.one * 0.5f))
@@ -836,7 +1018,8 @@ namespace GameFramework
 
         private void alignNearestLine()
         {
-            if (null == mMoveTween)
+            if (AlignLines && null == mMoveTween)
+            //if (null == mMoveTween)
             {
                 if (mLinePerPage >= mTotalLines)
                 {
@@ -845,7 +1028,7 @@ namespace GameFramework
                 else
                 {
                     Vector3 pos = content.localPosition;
-                    Vector3 pos1 = getConetntPosByIdx(mShowStart);
+                    Vector3 pos1 = getConetntPosByIdx( mShowStart*mNumPerLine );
                     int i = 0;
                     if (ScrollViewType.Vertical == ScrollType)
                     {
@@ -856,7 +1039,7 @@ namespace GameFramework
                     }
                     else if (ScrollViewType.Horizontal == ScrollType)
                     {
-                        if (pos1.x - pos.x > (mRealItemSize.x + mContentPadding.x) / 2)
+                        if (pos1.x - pos.x > (mRealItemSize.x  + mContentPadding.x ) / 2)
                         {
                             i = 1;
                         }
@@ -864,6 +1047,70 @@ namespace GameFramework
                     tweenToIndex((mShowStart + i) * mNumPerLine);
                 }
             }
+        }
+
+        private void setItemSelected(int index, bool selected)
+        {
+            if (index >= 0 && index < mItemDatas.Count)
+            {
+                mItemSelectStatus[index] = selected;
+                for (int i = 0; i < mCurItems.Count; i++)
+                {
+                    ScrollItem item = mCurItems[i];
+                    if (index == item.Index)
+                    {
+                        item.IsSelected = selected;
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void switchItem(int index)
+        {
+            if (index >= 0 && index < mItemDatas.Count)
+            {
+                setItemSelected(index, !mItemSelectStatus[index]);
+            }
+        }
+
+        private void changeSelectAll(bool selected)
+        {
+            for (int i = 0; i < mItemDatas.Count; i++)
+            {
+                mItemSelectStatus[i] = selected;
+            }
+            for (int i = 0; i < mCurItems.Count; i++)
+            {
+                ScrollItem item = mCurItems[i];
+                item.IsSelected = selected;
+            }
+            onSelectStatusChanges();
+        }
+
+        private void onSelectStatusChanges()
+        {
+            List<int> l = ObjPools.GetListInt();
+            for (int i = 0; i < mItemSelectStatus.Count; i++)
+            {
+                if(mItemSelectStatus[i])
+                {
+                    l.Add(i);
+                }
+            }
+
+            int[] arr = l.ToArray();
+            ObjPools.Recover(l);
+
+            if(null != mOnSelectChange)
+            {
+                mOnSelectChange(arr);
+            }
+            if(null != mOnSelectChangeLua)
+            {
+                mOnSelectChangeLua.Call<int[]>(arr);
+            }
+
         }
         #endregion 私有方法
 
@@ -942,10 +1189,7 @@ namespace GameFramework
         public override void OnEndDrag(PointerEventData eventData)
         {
             base.OnEndDrag(eventData);
-            if (null == mMoveTween)
-            {
-                alignNearestLine();
-            }
+            alignNearestLine();
         }
         #endregion ScrollRect 显示区域改变回调
     }

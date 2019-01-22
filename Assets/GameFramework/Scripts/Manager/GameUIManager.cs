@@ -212,7 +212,9 @@ namespace GameFramework
                 {
                     if (mStaticViewInfos.Count == mStaticViews.Count)
                     {
-                        mStaticViewInfos.Add(new AsbInfo(asbName, prefabName));
+                        AsbInfo info = ObjPools.GetAsbInfo();
+                        info.Set(asbName, prefabName);
+                        mStaticViewInfos.Add(info);
                         mStaticViews.Add(ui);
                     }
                     else
@@ -276,6 +278,10 @@ namespace GameFramework
                     mStackViews.Clear();
                     //TODO:针对static的View处理
                     mStaticViews.Clear();
+                    for (int i = 0; i < mStaticViewInfos.Count; i++)
+                    {
+                        ObjPools.Recover(mStaticViewInfos[i]);
+                    }
                     mStaticViewInfos.Clear();
                 }
             }
@@ -375,6 +381,7 @@ namespace GameFramework
                     {
                         int index = mStaticViews.IndexOf(obj);
                         mStaticViews.RemoveAt(index);
+                        ObjPools.Recover(mStaticViewInfos[index]);
                         mStaticViewInfos.RemoveAt(index);
                     }
                 }

@@ -5,18 +5,50 @@ using System;
 
 namespace GameFramework
 {   
+    using DelScrollItemClicked = Action<int>;
+    using DelBtnClickedStr = Action<int, string>;
+    using DelBtnClickedIndex = Action<int, int>;
+
     public class ScrollItem : MonoBehaviour
     {
         public Button ItemClickBg;
+        /// <summary>
+        /// item被选中显示的效果
+        /// </summary>
+        public RectTransform selectedEffect;
+        /// <summary>
+        /// item没有被选中显示的效果
+        /// </summary>
+        public RectTransform unselectedEffect;
         public UIHandler UIHandler;
         [HideInInspector]
         public int Index;
         public DelScrollItemClicked OnItemClicked;
         public DelBtnClickedStr OnBtnClickedStr;
         public DelBtnClickedIndex OnBtnClickedIndex;
-        public RectTransform rectTransform { get { return transform as RectTransform; }}
+        public RectTransform rectTransform { get { return transform as RectTransform; } }
 
         UIItemData mItemData = null;
+
+        [SerializeField]
+        private bool mIsSelected = false;
+        public bool IsSelected { 
+            get { return mIsSelected; } 
+            set 
+            {
+                mIsSelected = value; 
+                if(null != selectedEffect)
+                {
+                    selectedEffect.gameObject.SetActive(value);
+                }
+                if (null != unselectedEffect)
+                {
+                    unselectedEffect.gameObject.SetActive(!value);
+                }
+            } 
+        }
+
+
 
         #region MonoBehaviour
         void Awake()
@@ -29,11 +61,11 @@ namespace GameFramework
 
         void Start()
         {
-            if(null != ItemClickBg)
+            if (null != ItemClickBg)
             {
-                ItemClickBg.onClick.AddListener(() => 
+                ItemClickBg.onClick.AddListener(() =>
                 {
-                    if(null != OnItemClicked)
+                    if (null != OnItemClicked)
                     {
                         OnItemClicked(Index);
                     }
@@ -44,9 +76,9 @@ namespace GameFramework
                 for (int i = 0; i < UIHandler.Count; i++)
                 {
                     Button btn = UIHandler.UIArray[i] as Button;
-                    if(null != btn && !btn.Equals(ItemClickBg))
+                    if (null != btn && !btn.Equals(ItemClickBg))
                     {
-                        btn.onClick.AddListener(() => 
+                        btn.onClick.AddListener(() =>
                         {
                             if (null != OnBtnClickedStr)
                             {
@@ -64,7 +96,7 @@ namespace GameFramework
 
         void OnDestroy()
         {
-            if(null != ItemClickBg)
+            if (null != ItemClickBg)
             {
                 ItemClickBg.onClick.RemoveAllListeners();
             }
@@ -77,9 +109,9 @@ namespace GameFramework
         /// <param name="scrollItemData">Scroll item data.</param>
         public void SetData(UIItemData scrollItemData)
         {
-            if(null != UIHandler)
+            if (null != UIHandler)
             {
-                if(null != mItemData)
+                if (null != mItemData)
                 {
                     mItemData.ClearAsyncRst();
                 }
@@ -91,8 +123,4 @@ namespace GameFramework
             }
         }
     }
-
-    public delegate void DelScrollItemClicked(int index);
-    public delegate void DelBtnClickedStr(int index, string name);
-    public delegate void DelBtnClickedIndex(int index, int btnIndex);
 }

@@ -32,6 +32,8 @@ namespace GameFramework
             //初始化Platform，主要是插件相关
             initGamePlatform();
 
+            ObjPools.Init();
+
             mCorMgr = GameCoroutineManager.Instance;
             mResMgr = GameResManager.Instance;
             mLuaMgr = GameLuaManager.Instance;

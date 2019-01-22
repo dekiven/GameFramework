@@ -868,6 +868,32 @@ namespace GameFramework
             return dictionary;
 
         }
+
+        /// <summary>
+        /// 将以英文逗号','隔开的 整数字符串分割成整数数组
+        /// </summary>
+        /// <returns>The int arry.</returns>
+        /// <param name="content">Content.</param>
+        public static int[] GetIntArry(string content)
+        {
+            string[] array = content.Split(',');
+            List<int> l = ObjPools.GetListInt();
+            for (int i = 0; i < array.Length; i++)
+            {
+                int v;
+                if (!int.TryParse(array[i], out v))
+                {
+                    LogFile.Warn("GetIntArry error -> colorStr:" + content);
+                }
+                else
+                {
+                    l.Add(v);
+                }
+            }
+            int[] ret = l.ToArray();
+            ObjPools.Recover(l);
+            return ret;
+        }
         #endregion Lua相关
 
         #region 基本的工具函数

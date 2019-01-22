@@ -24,6 +24,7 @@ namespace GameFramework
 
         public UIItemData(List<UIHandlerData> data)
         {
+            mList = new List<UIHandlerData>();
             mList = data;
         }
 

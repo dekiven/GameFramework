@@ -8,10 +8,6 @@ namespace GameFramework
 {
     public class GameResHandler<T> where T : UnityEngine.Object
     {
-        #region 静态对象
-        private ObjPool<AsbInfo> mInfoPool;
-        #endregion
-
         //#region delegates
         //public delegate void OnRelease(ref T t);
         //#endregion
@@ -33,16 +29,6 @@ namespace GameFramework
 
         public GameResHandler(string group)
         {
-            if (null == mInfoPool)
-            {
-                mInfoPool = new ObjPool<AsbInfo>(delegate(ref AsbInfo info) {
-                    if(null == info)
-                    {
-                        info = new AsbInfo();
-                    }
-                    return true;
-                },null, null);
-            }
             mDict = new ObjDict<T>();
             mList = new List<AsbInfo>();
             mQueue = new Queue<AsbInfo>();
@@ -208,7 +194,7 @@ namespace GameFramework
                         {
                             OnLoadCallbcak(t, info);
                             mList.Remove(info);
-                            mInfoPool.Recover(info);
+                            ObjPools.Recover(info);
                         }
                     }
                 }
@@ -220,7 +206,7 @@ namespace GameFramework
                     {
                         OnLoadCallbcak(t, info);
                         mQueue.Dequeue();
-                        mInfoPool.Recover(info);
+                        ObjPools.Recover(info);
 
                         for (int i = 0; i < mQueue.Count; i++)
                         {
@@ -230,7 +216,7 @@ namespace GameFramework
                             {
                                 OnLoadCallbcak(obj, head);
                                 mQueue.Dequeue();
-                                mInfoPool.Recover(head);
+                                ObjPools.Recover(head);
                             }
                             else
                             {
@@ -249,7 +235,7 @@ namespace GameFramework
             {
                 return;
             }
-            AsbInfo info = mInfoPool.Get();
+            AsbInfo info = ObjPools.GetAsbInfo();
             info.Set(asbName, name, extral);
             if (isOrdered)
             {
@@ -268,7 +254,7 @@ namespace GameFramework
                 }
             }
             //如果已经在list或者队列里则回收
-            mInfoPool.Recover(info);
+            ObjPools.Recover(info);
             return;
         }
 

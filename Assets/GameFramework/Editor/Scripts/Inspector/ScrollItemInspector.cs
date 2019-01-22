@@ -18,6 +18,10 @@ namespace GameFramework
             }
             //mPrefab = mTarget.ItemPrefab;
             //Debug.Log(mPrefab);
+            if(null == mTarget.UIHandler)
+            {
+                mTarget.UIHandler = mTarget.GetComponent<UIHandler>();
+            }
         }
 
         //Editor 展示
