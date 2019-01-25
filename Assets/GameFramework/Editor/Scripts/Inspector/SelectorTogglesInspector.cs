@@ -12,7 +12,7 @@ namespace GameFramework
             serializedObject.Update();
 
             SerializedProperty dynamically = serializedObject.FindProperty("Dynamically");
-            EditorGUILayout.PropertyField(dynamically, new GUIContent("Dynamically", "是否动态创建Togl\n如果是，需要TogglePrefab，不需要则要事先创建好toggle"));
+            EditorGUILayout.PropertyField(dynamically, new GUIContent("Dynamically", "是否动态创建Toggle\n如果是，需要TogglePrefab，不需要则要事先创建好toggle"));
             if(dynamically.boolValue)
             {
                 SerializedProperty prefab = serializedObject.FindProperty("TogglePrefab");
@@ -21,7 +21,7 @@ namespace GameFramework
             else
             {
                 SerializedProperty toggles = serializedObject.FindProperty("mToggls");
-                CustomListInspector.Show(toggles);
+                CustomListInspector.Show(toggles, new GUIContent("Toggles", "test"));
                 if(toggles.arraySize == 0)
                 {
                     EditorGUILayout.HelpBox("请手动创建所有Toggle", MessageType.Warning);

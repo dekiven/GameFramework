@@ -127,6 +127,7 @@ namespace GameFramework
             {
                 mItemDatas[index] = data;
             }
+            //TODO:更新某数据只需要刷新该数据即可
             checkNeedUpdate(true);
         }
 
@@ -196,6 +197,36 @@ namespace GameFramework
                 CalculateAndUpdateContent();
             }
         }
+
+        public void AddDatas(List<UIItemData> datas)
+        {
+            mItemDatas.AddRange(datas);
+            mItemSelectStatus.AddRange(new bool[datas.Count]);
+            CalculateAndUpdateContent();
+        }
+
+        public void AddDatas(LuaTable lua)
+        {
+            AddDatas(Tools.GenUIIemDataList(lua));
+        }
+
+        public void RemoveDatasAt(int[] idxs)
+        {
+            Array.Reverse(idxs);
+            for (int i = 0; i < idxs.Length; i++)
+            {
+                int idx = idxs[i];
+                mItemDatas.RemoveAt(idx);
+                mItemSelectStatus.RemoveAt(idx);
+            }
+            CalculateAndUpdateContent();
+        }
+
+        public void RemoveDatasAt(string intArr)
+        {
+            RemoveDatasAt(Tools.GetIntArry(intArr));
+        }
+
 
         public void Tween2Index(int index)
         {

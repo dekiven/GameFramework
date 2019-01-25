@@ -38,7 +38,7 @@ namespace GameFramework
 
         private static GUILayoutOption sMinBtnWidth = GUILayout.Width(20f);
 
-        public static void Show(SerializedProperty listProperty, CustomListOption options = CustomListOption.Default)
+        public static void Show(SerializedProperty listProperty, CustomListOption options = CustomListOption.Default, GUIContent content = null)
         {
             sOptions = options;
             int oldIndentLevel = EditorGUI.indentLevel;
@@ -53,12 +53,19 @@ namespace GameFramework
             }
 
             bool
-                showLabel = (sOptions & CustomListOption.ShowLabel) != 0,
+            showLabel = (sOptions & CustomListOption.ShowLabel) != 0 || null != content,
                 showSize = (sOptions & CustomListOption.ShowSize) != 0;
 
             if(showLabel)
             {
-                EditorGUILayout.PropertyField(listProperty);
+                if (null != content)
+                {
+                    EditorGUILayout.PropertyField(listProperty, content);
+                }
+                else
+                {                    
+                    EditorGUILayout.PropertyField(listProperty);
+                }
                 EditorGUI.indentLevel += 1;
             }
 
@@ -118,6 +125,11 @@ namespace GameFramework
                 //Debug.Log("listProperty.arraySize:" + listProperty.arraySize);
                 onAdd(listProperty, -1);
             }
+        }
+
+        public static void Show(SerializedProperty listProperty, GUIContent content)
+        {
+            Show(listProperty, CustomListOption.Default, content);
         }
 
         private static void showBtns(SerializedProperty listProperty, int index)

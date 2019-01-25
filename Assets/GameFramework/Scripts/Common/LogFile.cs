@@ -48,6 +48,7 @@ namespace GameFramework
                     mSWriter = null;
                     mPath = null;
                     mMinLevel = LogLevel.L_Log;
+                    Application.logMessageReceived -= handleLogCallback;
                 }
             }
         }

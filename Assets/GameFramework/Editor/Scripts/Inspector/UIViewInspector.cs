@@ -6,15 +6,15 @@ namespace GameFramework
     [CustomEditor(typeof(UIView))]
     public class UIViewInspector : UIBaseInspector
     {
-        //进入时刷新部分参数
-        void OnEnable()
-        {
-            mTarget = target as UIBase;
-            if (null == mTarget)
-            {
-                return;
-            }
-        }
+        ////进入时刷新部分参数
+        //void OnEnable()
+        //{
+        //    mTarget = target as UIBase;
+        //    if (null == mTarget)
+        //    {
+        //        return;
+        //    }
+        //}
 
         //Editor 展示
         public override void OnInspectorGUI()
@@ -39,7 +39,7 @@ namespace GameFramework
             EditorGUILayout.PropertyField(serializedObject.FindProperty("HideBefor"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("IsStatic"));
 
-            GUILayout.Space(10);
+            GUILayout.Space(5);
             base.OnInspectorGUI();
 
             serializedObject.ApplyModifiedProperties();

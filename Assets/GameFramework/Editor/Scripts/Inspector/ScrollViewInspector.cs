@@ -180,6 +180,7 @@ namespace GameFramework
                 }
             }
             DestroyImmediate(obj);
+            serializedObject.ApplyModifiedProperties();
         }
 
         /// <summary>

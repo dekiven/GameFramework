@@ -6,15 +6,15 @@ namespace GameFramework
     [CustomEditor(typeof(UIWorld))]
     public class UIWorldInspector : UIBaseInspector
     {
-        //进入时刷新部分参数
-        void OnEnable()
-        {
-            mTarget = target as UIWorld;
-            if (null == mTarget)
-            {
-                return;
-            }
-        }
+        ////进入时刷新部分参数
+        //void OnEnable()
+        //{
+        //    mTarget = target as UIWorld;
+        //    if (null == mTarget)
+        //    {
+        //        return;
+        //    }
+        //}
 
         //Editor 展示
         public override void OnInspectorGUI()
@@ -31,7 +31,7 @@ namespace GameFramework
             EditorGUILayout.PropertyField(serializedObject.FindProperty("UITarget"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("UIOffset"));
 
-            GUILayout.Space(10);
+            GUILayout.Space(5);
             base.OnInspectorGUI();
 
             serializedObject.ApplyModifiedProperties();

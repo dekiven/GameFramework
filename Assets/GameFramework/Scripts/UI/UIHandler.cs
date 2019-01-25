@@ -674,93 +674,177 @@ namespace GameFramework
                 case "removescrollviewdata":
                     if (uiIndex != -1)
                     {
-                        return RemoveScrollViewData(uiIndex, (UIItemData) data.Content);
+                        return RemoveScrollViewData(uiIndex, (UIItemData)data.Content);
                     }
                     else
                     {
-                        return RemoveScrollViewData(uiName, (UIItemData) data.Content);
+                        return RemoveScrollViewData(uiName, (UIItemData)data.Content);
                     }
-                    //break;
+                //break;
                 case "removescrollviewdataat":
                     if (uiIndex != -1)
                     {
-                        return RemoveScrollViewDataAt(uiIndex, (int) data.Content);
+                        return RemoveScrollViewDataAt(uiIndex, (int)data.Content);
                     }
                     else
                     {
-                        return RemoveScrollViewDataAt(uiName, (int) data.Content);
+                        return RemoveScrollViewDataAt(uiName, (int)data.Content);
                     }
-                    //break;
+                //break;
+                case "addscrollviewdatas":
+                    if (uiIndex != -1)
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return AddScrollViewDatas(uiIndex, (List<UIItemData>)data.Content);
+                        }
+                        else
+                        {
+                            return AddScrollViewDatas(uiIndex, (LuaTable)data.Content);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return AddScrollViewDatas(uiName, (List<UIItemData>)data.Content);
+                        }
+                        else
+                        {
+                            return AddScrollViewDatas(uiName, (LuaTable)data.Content);
+                        }
+                    }
+                //break;
+                case "removescrollviewdatasat":
+                    if (uiIndex != -1)
+                    {
+                        string str = data.Content as string;
+                        if (null != str)
+                        {
+                            return RemoveScrollViewDatasAt(uiIndex, (int[])data.Content);
+                        }
+                        else
+                        {
+                            return RemoveScrollViewDatasAt(uiIndex, str);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null != lua)
+                        {
+                            return RemoveScrollViewDatasAt(uiName, (int[])data.Content);
+                        }
+                        else
+                        {
+                            return RemoveScrollViewDatasAt(uiName, (string)data.Content);
+                        }
+                    }
+                //break;
                 case "tween2scrollviewindex":
                     if (uiIndex != -1)
                     {
-                        return Tween2ScrollViewIndex(uiIndex, (int) data.Content);
+                        return Tween2ScrollViewIndex(uiIndex, (int)data.Content);
                     }
                     else
                     {
-                        return Tween2ScrollViewIndex(uiName, (int) data.Content);
+                        return Tween2ScrollViewIndex(uiName, (int)data.Content);
                     }
-                    //break;
+                //break;
                 case "selectscrollviewitem":
                     if (uiIndex != -1)
                     {
-                        return SelectScrollViewItem(uiIndex, (int) data.Content);
+                        return SelectScrollViewItem(uiIndex, (int)data.Content);
                     }
                     else
                     {
-                        return SelectScrollViewItem(uiName, (int) data.Content);
+                        return SelectScrollViewItem(uiName, (int)data.Content);
                     }
-                    //break;
+                //break;
                 case "selectscrollviewselectitems":
                     if (uiIndex != -1)
                     {
-                        return SelectScrollViewSelectItems(uiIndex, (string) data.Content);
+                        string lua = data.Content as string;
+                        if (null != lua)
+                        {
+                            return SelectScrollViewItems(uiIndex, (int[])data.Content);
+                        }
+                        else
+                        {
+                            return SelectScrollViewSelectItems(uiIndex, (string)data.Content);
+                        }
                     }
                     else
                     {
-                        return SelectScrollViewSelectItems(uiName, (string) data.Content);
+                        string str = data.Content as string;
+                        if (null != str)
+                        {
+                            return SelectScrollViewItems(uiName, (int[])data.Content);
+                        }
+                        else
+                        {
+                            return SelectScrollViewSelectItems(uiName, str);
+                        }
                     }
-                    //break;
+                //break;
                 case "unselectscrollviewitem":
                     if (uiIndex != -1)
                     {
-                        return UnselectScrollViewItem(uiIndex, (int) data.Content);
+                        return UnselectScrollViewItem(uiIndex, (int)data.Content);
                     }
                     else
                     {
-                        return UnselectScrollViewItem(uiName, (int) data.Content);
+                        return UnselectScrollViewItem(uiName, (int)data.Content);
                     }
-                    //break;
+                //break;
                 case "unselectscrollviewitems":
                     if (uiIndex != -1)
                     {
-                        return UnselectScrollViewItems(uiIndex, (string) data.Content);
+                        string lua = data.Content as string;
+                        if (null != lua)
+                        {
+                            return UnselectScrollViewItems(uiIndex, (int[])data.Content);
+                        }
+                        else
+                        {
+                            return UnselectScrollViewItems(uiIndex, (string)data.Content);
+                        }
                     }
                     else
                     {
-                        return UnselectScrollViewItems(uiName, (string) data.Content);
+                        string str = data.Content as string;
+                        if (null != str)
+                        {
+                            return UnselectScrollViewItems(uiName, (int[])data.Content);
+                        }
+                        else
+                        {
+                            return UnselectScrollViewItems(uiName, str);
+                        }
                     }
-                    //break;
+                //break;
                 case "switchscrollviewitem":
                     if (uiIndex != -1)
                     {
-                        return SwitchScrollViewItem(uiIndex, (int) data.Content);
+                        return SwitchScrollViewItem(uiIndex, (int)data.Content);
                     }
                     else
                     {
-                        return SwitchScrollViewItem(uiName, (int) data.Content);
+                        return SwitchScrollViewItem(uiName, (int)data.Content);
                     }
-                    //break;
+                //break;
                 case "switchscrollviewitems":
                     if (uiIndex != -1)
                     {
-                        return SwitchScrollViewItems(uiIndex, (string) data.Content);
+                        return SwitchScrollViewItems(uiIndex, (string)data.Content);
                     }
                     else
                     {
-                        return SwitchScrollViewItems(uiName, (string) data.Content);
+                        return SwitchScrollViewItems(uiName, (string)data.Content);
                     }
-                    //break;
+                //break;
                 case "selectscrollviewall":
                     if (uiIndex != -1)
                     {
@@ -770,7 +854,7 @@ namespace GameFramework
                     {
                         return SelectScrollViewAll(uiName);
                     }
-                    //break;
+                //break;
                 case "unselectscrollviewall":
                     if (uiIndex != -1)
                     {
@@ -780,18 +864,18 @@ namespace GameFramework
                     {
                         return UnselectScrollViewAll(uiName);
                     }
-                    //break;
+                //break;
                 case "setscrollviewonselectchange":
                     if (uiIndex != -1)
                     {
                         LuaFunction lua = data.Content as LuaFunction;
                         if (null != lua)
                         {
-                            return  SetScrollViewOnSelect(uiIndex, (DelSelectChange) data.Content);
+                            return SetScrollViewOnSelect(uiIndex, (DelSelectChange)data.Content);
                         }
                         else
                         {
-                            return  SetScrollViewOnSelect(uiIndex, (LuaFunction) data.Content);
+                            return SetScrollViewOnSelect(uiIndex, (LuaFunction)data.Content);
                         }
                     }
                     else
@@ -799,16 +883,16 @@ namespace GameFramework
                         LuaFunction lua = data.Content as LuaFunction;
                         if (null != lua)
                         {
-                            return  SetScrollViewOnSelect(uiName, (DelSelectChange) data.Content);
+                            return SetScrollViewOnSelect(uiName, (DelSelectChange)data.Content);
                         }
                         else
                         {
-                            return  SetScrollViewOnSelect(uiName, (LuaFunction) data.Content);
+                            return SetScrollViewOnSelect(uiName, (LuaFunction)data.Content);
                         }
                     }
-                    //break;
-            
-        
+                //break;
+
+
 
                 case "setscrollselectordata":
                     if (uiIndex != -1)
@@ -1590,7 +1674,7 @@ namespace GameFramework
         {
             if (null != ui)
             {
-                ui.sprite = sprite; 
+                ui.sprite = sprite;
                 ui.SetNativeSize();
                 return true;
             }
@@ -2177,6 +2261,106 @@ namespace GameFramework
             return false;
         }
 
+        // 在最后添加多个数据
+        public bool AddScrollViewDatas(int index, List<UIItemData> datas)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return addScrollViewDatas(ui, datas);
+        }
+
+        // 在最后添加多个数据
+        public bool AddScrollViewDatas(string cName, List<UIItemData> datas)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return addScrollViewDatas(ui, datas);
+        }
+
+        // 在最后添加多个数据
+        private static bool addScrollViewDatas(ScrollView ui, List<UIItemData> datas)
+        {
+            if (null != ui)
+            {
+                ui.AddDatas(datas);
+                return true;
+            }
+            return false;
+        }
+
+        // 在最后添加多个数据
+        public bool AddScrollViewDatas(int index, LuaTable lua)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return addScrollViewDatas(ui, lua);
+        }
+
+        // 在最后添加多个数据
+        public bool AddScrollViewDatas(string cName, LuaTable lua)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return addScrollViewDatas(ui, lua);
+        }
+
+        // 在最后添加多个数据
+        private static bool addScrollViewDatas(ScrollView ui, LuaTable lua)
+        {
+            if (null != ui)
+            {
+                ui.AddDatas(lua);
+                return true;
+            }
+            return false;
+        }
+
+        // 删除多条数据
+        public bool RemoveScrollViewDatasAt(int index, int[] idxs)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return removeScrollViewDatasAt(ui, idxs);
+        }
+
+        // 删除多条数据
+        public bool RemoveScrollViewDatasAt(string cName, int[] idxs)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return removeScrollViewDatasAt(ui, idxs);
+        }
+
+        // 删除多条数据
+        private static bool removeScrollViewDatasAt(ScrollView ui, int[] idxs)
+        {
+            if (null != ui)
+            {
+                ui.RemoveDatasAt(idxs);
+                return true;
+            }
+            return false;
+        }
+
+        // 删除多条数据
+        public bool RemoveScrollViewDatasAt(int index, string intArr)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return removeScrollViewDatasAt(ui, intArr);
+        }
+
+        // 删除多条数据
+        public bool RemoveScrollViewDatasAt(string cName, string intArr)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return removeScrollViewDatasAt(ui, intArr);
+        }
+
+        // 删除多条数据
+        private static bool removeScrollViewDatasAt(ScrollView ui, string intArr)
+        {
+            if (null != ui)
+            {
+                ui.RemoveDatasAt(intArr);
+                return true;
+            }
+            return false;
+        }
+
         // 滚动到某个 item 所在位置
         public bool Tween2ScrollViewIndex(int index, int idx)
         {
@@ -2302,6 +2486,31 @@ namespace GameFramework
             return false;
         }
 
+        // 选中部分 Item
+        public bool SelectScrollViewItems(int index, int[] indexArr)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return selectScrollViewItems(ui, indexArr);
+        }
+
+        // 选中部分 Item
+        public bool SelectScrollViewItems(string cName, int[] indexArr)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return selectScrollViewItems(ui, indexArr);
+        }
+
+        // 选中部分 Item
+        private static bool selectScrollViewItems(ScrollView ui, int[] indexArr)
+        {
+            if (null != ui)
+            {
+                ui.SelectItems(indexArr);
+                return true;
+            }
+            return false;
+        }
+
         // 选中某几个Item
         public bool SelectScrollViewSelectItems(int index, string indexArr)
         {
@@ -2322,6 +2531,31 @@ namespace GameFramework
             if (null != ui)
             {
                 ui.SelectItems(indexArr);
+                return true;
+            }
+            return false;
+        }
+
+        // 取消选中部分 Item
+        public bool UnselectScrollViewItems(int index, int[] indexArr)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return unselectScrollViewItems(ui, indexArr);
+        }
+
+        // 取消选中部分 Item
+        public bool UnselectScrollViewItems(string cName, int[] indexArr)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return unselectScrollViewItems(ui, indexArr);
+        }
+
+        // 取消选中部分 Item
+        private static bool unselectScrollViewItems(ScrollView ui, int[] indexArr)
+        {
+            if (null != ui)
+            {
+                ui.UnselectItems(indexArr);
                 return true;
             }
             return false;
@@ -3610,15 +3844,15 @@ Set~Image~Sprite~Sprite~sprite~set~call(ui)//--注释
                     }
                     //break;
 
-                    ^.*return(.*)$\n(.*)return(.*)
+                     ^.*return(.*)$\n(.*)return(.* )\((\S+)\) data\.Content\);
 
-                        LuaTable lua = data.Content as LuaTable;
+                        \4 lua = data.Content as \4;
                         if (null != lua)
                         {
                             return \1
                         }
                         else
                         {
-                            return \3
+                            return \3(\4) data.Content);
                         }
 **/

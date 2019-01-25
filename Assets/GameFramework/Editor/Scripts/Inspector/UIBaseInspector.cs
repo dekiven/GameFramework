@@ -18,6 +18,11 @@ namespace GameFramework
             {
                 return;
             }
+            if (null == mTarget.Handler)
+            {
+                mTarget.Handler = mTarget.gameObject.GetComponent<UIHandler>();
+                //serializedObject.ApplyModifiedProperties();
+            }
         }
 
         public override void OnInspectorGUI()

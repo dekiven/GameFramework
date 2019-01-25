@@ -57,7 +57,7 @@ namespace GameFramework
             }
             if (GUILayout.Button(new GUIContent("拷贝Index信息到剪贴板")))
             {
-                copyIndex2ClipbordLua();
+                copyIndex2ClipboardLua();
             }
         }
 
@@ -139,7 +139,7 @@ namespace GameFramework
             mSelectingIndex = index + 1;
         }
 
-        private void copyIndex2ClipbordLua()
+        private void copyIndex2ClipboardLua()
         {
             string s = string.Empty;
             s = s + getLitsInfoLua(mTarget.UIArray, "uiIdx", "UIArray index");
