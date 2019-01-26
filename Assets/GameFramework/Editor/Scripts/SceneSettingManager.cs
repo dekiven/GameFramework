@@ -9,7 +9,7 @@ namespace GameFramework
     public class SceneSettingManager
     {
         [MenuItem("GameFrameWork/Add res scenes to setting")]
-        public static void setAllSceneToBuildSetting()
+        public static void SetAllSceneToBuildSetting()
         {
             // 设置场景 *.unity 路径
             string mainPath = Tools.RelativeTo(Tools.GetFrameworkPath(), Application.dataPath, true);
@@ -20,7 +20,7 @@ namespace GameFramework
         }
 
         [MenuItem("GameFrameWork/Set release res scenes to setting")]
-        public static void setReleaseSceneToBuildSetting()
+        public static void SetReleaseSceneToBuildSetting()
         {
             // 设置场景 *.unity 路径
             string mainPath = Tools.RelativeTo(Tools.GetFrameworkPath(), Application.dataPath, true);

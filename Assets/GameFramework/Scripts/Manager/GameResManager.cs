@@ -341,7 +341,7 @@ namespace GameFramework
                 if (bundleInfo == null)
                 {
                     m_LoadRequests.Remove(abName);
-                    Debug.LogError("OnLoadAsset--->>>" + abName);
+                    LogFile.Error("OnLoadAsset error --->>>" + abName);
                     yield break;
                 }
             }

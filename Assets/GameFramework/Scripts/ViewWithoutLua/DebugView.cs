@@ -22,7 +22,7 @@ namespace GameFramework
         public GameObject DebugPL;
         public Button MainBtn;
 
-        private LogFile.LogLevel mLogType = LogFile.LogLevel.L_Warning;
+        private LogFile.LogLevel mLogType = LogFile.LogLevel.L_Log;
         private List<LogInfo> list;
         private List<LogInfo> newList;
         private List<UIItemData> datas;
@@ -35,11 +35,10 @@ namespace GameFramework
         {
             DebugPL.SetActive(active);
             MainBtn.gameObject.SetActive(!active);
-
             if (active)
             {
-                StartCoroutine(freshLog());
                 freshAll();
+                StartCoroutine(freshLog());
             }
             else
             {
@@ -178,15 +177,7 @@ namespace GameFramework
                     log = codintion,
                     level = l,
                 };
-                if (DebugPL.activeSelf)
-                {
-                    newList.Add(info);
-                }
-                else
-                {
-                    list.Add(info);
-                }
-
+                newList.Add(info);
             }
         }
 
@@ -194,7 +185,6 @@ namespace GameFramework
         {
             while (true)
             {
-                yield return new WaitForSeconds(LogFreshInterval);
                 if (newList.Count > 0)
                 {
                     lock (mLockObj)
@@ -213,8 +203,8 @@ namespace GameFramework
                         Handler.SetScrollViewData(LogSvIdx, datas);
                         newList.Clear();
                     }
-
                 }
+                yield return new WaitForSeconds(LogFreshInterval);
             }
 
         }

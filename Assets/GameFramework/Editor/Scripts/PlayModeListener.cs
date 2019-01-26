@@ -25,7 +25,7 @@ namespace GameFramework
                 case PlayModeStateChange.EnteredPlayMode :
                     if (!GameConfig.useAsb)
                     {
-                        SceneSettingManager.setAllSceneToBuildSetting();
+                        SceneSettingManager.SetAllSceneToBuildSetting();
                     }
                     break;
                 case PlayModeStateChange.ExitingPlayMode :

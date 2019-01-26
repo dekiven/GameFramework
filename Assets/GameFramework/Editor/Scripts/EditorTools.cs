@@ -44,6 +44,13 @@ namespace GameFramework
             return PrefabUtility.GetPrefabType(obj) == PrefabType.PrefabInstance;
         }
 
+        //可以使用下面的方法打开窗口
+        //[MenuItem("test/test")]
+        //public static void OpenBuidlSetting()
+        //{
+        //    EditorApplication.ExecuteMenuItem("File/Build Settings...");
+        //}
+
         /// <summary>
         /// 获取某个视图（EditorWindow）
         /// </summary>
@@ -204,6 +211,8 @@ namespace GameFramework
                     return "UnityEditor.Graphs.AnimatorControllerTool";
                 case EditorViews.NavMeshEditorWindow:
                     return "UnityEditor.NavMeshEditorWindow";
+                case EditorViews.SpritePacker:
+                    return "UnityEditor.Sprites.PackerWindow";
             }
             return null;
         }
@@ -232,5 +241,7 @@ namespace GameFramework
         AssetStoreWindow,
         AnimatorControllerTool,
         NavMeshEditorWindow,
+        SpritePacker,
+        BuildSetting,
     }
 }

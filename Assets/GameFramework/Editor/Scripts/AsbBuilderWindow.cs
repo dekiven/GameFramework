@@ -155,6 +155,18 @@ namespace GameFramework
                 GameConfig.Save();
             }
             EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("设置清理不打包的 Scenens "))
+            {
+                SceneSettingManager.SetReleaseSceneToBuildSetting();
+            }
+            if (GUILayout.Button("显示 BuildSettings"))
+            {
+                EditorApplication.ExecuteMenuItem("File/Build Settings...");
+                Close();
+            }
+            EditorGUILayout.EndHorizontal();
         }
 
         private List<string> optionsList = new List<string>()

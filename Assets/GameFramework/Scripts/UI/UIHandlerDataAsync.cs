@@ -74,6 +74,7 @@ namespace GameFramework
                             mOnAsyncRst(s);
                             mOnAsyncRst = null;
                         }
+                        ContentBefor = null;
                     });
                 }
                 else

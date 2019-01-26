@@ -318,6 +318,7 @@ namespace GameFramework
                             };
                             return true;
                         }
+                        //TODO:图片刷新有问题，可能出现白色（null）再切换图片
                     }
                     if (uiIndex != -1)
                     {

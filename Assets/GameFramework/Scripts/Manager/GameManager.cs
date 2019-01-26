@@ -25,8 +25,8 @@ namespace GameFramework
         public string UpdateViewResPath = string.Empty;
         public string DebugViewRestPath = string.Empty;
 
-        private DebugView mDebugView;
-        public DebugView DebugView{ get { return mDebugView; }}
+        //private DebugView mDebugView;
+        //public DebugView DebugView{ get { return mDebugView; }}
 
         #region MonoBehaviour
         void Awake()

@@ -2811,7 +2811,7 @@ MonoBehaviour:
   AnimEase: 1
   HasDarkMask: 0
   RenderMode: 0
-  LogFreshInterval: 1
+  LogFreshInterval: 0.2
   MaxLineNum: 100
   LogSvIdx: 3
   PagesIdx: 0100000002000000
