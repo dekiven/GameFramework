@@ -34,6 +34,7 @@ namespace GameFramework
             //mTarget.AnimValue
             serializedObject.Update();
 
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("RenderMode"), new GUIContent("RenderMode"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("IsInStack"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("HasDarkMask"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("HideBefor"));

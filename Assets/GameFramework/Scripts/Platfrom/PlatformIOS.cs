@@ -22,6 +22,12 @@ namespace GameFramework
 
         [DllImport("__Internal")]
         private static extern void GFStartPurchase(string pid, string externalData);
+        
+        [DllImport("__Internal")]
+        private static extern void GFCopy2Pasteboard(string content);
+
+        [DllImport("__Internal")]
+        private static extern string GFGetFirstPastboard();
     #endregion
 
         public override void SetNoticeObFunc(string gameobjName, string funcName)
@@ -59,6 +65,16 @@ namespace GameFramework
             //path为appid，一般是一串数字
             var url = string.Format("itms-apps://itunes.apple.com/cn/app/id{0}?mt=8", path);
             Application.OpenURL(url);
+        }
+
+        public override void Copy2Clipboard(string content)
+        {
+            GFCopy2Pasteboard(content);
+        }
+
+        public override string GetFirstClipboard()
+        {
+            return GFGetFirstPastboard();
         }
     }
 #else

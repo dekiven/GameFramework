@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -16,7 +17,13 @@ namespace GameFramework
         /// 在获取assetbundle的文件名必须为小写，后缀大写可能造成不能读取资源
         /// </summary>
         public const string STR_ASB_EXT = ".unity3d";
+
+        private const string FILE_NAME = "gc.bytes";
         //静态常量 end==============================================================
+
+        //从配置文件加载的配置，没吃启动前冲配置文件读取
+        public static bool HasDebugView = true;
+        //public static 
 
         //业务逻辑 begin--------------------------------------------------------------
         public static bool IsPlayBgm { get { return GetBool(GameDefine.STR_CONF_KEY_IS_BGM_PLAY); } internal set { SetBool(GameDefine.STR_CONF_KEY_IS_BGM_PLAY, value); } }
@@ -90,6 +97,50 @@ namespace GameFramework
         public static void DeleteKey(string key)
         {
             PlayerPrefs.DeleteKey(key);
+        }
+
+        public static void Load()
+        {
+            string p = Tools.PathCombine(Application.dataPath+ "/Resources", FILE_NAME);
+            Tools.CheckFileExists(p, true);
+
+            TextAsset text = Resources.Load<TextAsset>(FILE_NAME.Split('.')[0]);
+            if (null == text)
+            {
+                return;
+            }
+            if(string.IsNullOrEmpty(text.text))
+            {
+                return;
+            }
+            string[] values = text.text.Split('|');
+            for (int i = 0; i < values.Length; i++)
+            {
+                switch(i)
+                {
+                    case 0:
+                        HasDebugView = values[i].ToLower().Equals("true"); 
+                        break;
+                }
+            }
+        }
+
+        public static void Save()
+        {
+#if UNITY_EDITOR
+            string p = Tools.PathCombine(Application.dataPath+"/Resources", FILE_NAME);
+            Tools.CheckFileExists(p, true);
+            FileStream fs = new FileStream(p, FileMode.Create);
+            StreamWriter sw = new StreamWriter(fs);
+            //开始写入
+            sw.Write(HasDebugView+"|");
+            //清空缓冲区
+            sw.Flush();
+            //关闭流
+            sw.Close();
+            fs.Close();
+            UnityEditor.AssetDatabase.Refresh();
+#endif
         }
         //业务逻辑 end================================================================
 

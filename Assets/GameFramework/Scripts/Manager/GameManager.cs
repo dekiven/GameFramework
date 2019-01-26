@@ -22,12 +22,17 @@ namespace GameFramework
 
         public int ScreenSleepTime { get { return Screen.sleepTimeout; } set { Screen.sleepTimeout = value; } }
 
-        public string UpdateViewResPath = String.Empty;
+        public string UpdateViewResPath = string.Empty;
+        public string DebugViewRestPath = string.Empty;
+
+        private DebugView mDebugView;
+        public DebugView DebugView{ get { return mDebugView; }}
 
         #region MonoBehaviour
         void Awake()
         {
             isRunning = true;
+            GameConfig.Load();
             initLogFile();
             //初始化Platform，主要是插件相关
             initGamePlatform();
@@ -52,6 +57,19 @@ namespace GameFramework
                 {
                     mUiMgr.ShowViewPrefab(prefab);
                 }
+            }
+            if(GameConfig.HasDebugView && !string.IsNullOrEmpty(DebugViewRestPath))
+            {
+                ShowDebugView();
+            }
+        }
+
+        public void ShowDebugView()
+        {
+            GameObject prefab = Resources.Load<GameObject>(DebugViewRestPath);
+            if (null != prefab)
+            {
+                mUiMgr.ShowViewPrefab(prefab);
             }
         }
 

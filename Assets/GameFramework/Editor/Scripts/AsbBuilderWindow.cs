@@ -10,7 +10,9 @@ namespace GameFramework
     {
         private static AsbBuilderWindow _instance;
 
-        [MenuItem("GameFrameWork/Show AssetBundle Builder")]
+        //% (ctrl on Windows, cmd on macOS), # (shift), & (alt).
+        //https://docs.unity3d.com/ScriptReference/MenuItem.html
+        [MenuItem("GameFrameWork/Show AssetBundle Builder #%a")]
         public static void Open()
         {
             _instance = (AsbBuilderWindow)EditorWindow.GetWindow(typeof(AsbBuilderWindow));
@@ -22,6 +24,7 @@ namespace GameFramework
             titleContent = new GUIContent("Builder");
             minSize = new Vector2(300f, 400f);
             _config = _config ?? new BuilderConfig();
+            GameConfig.Load();
         }
 
         private BuilderConfig _config;
@@ -77,7 +80,7 @@ namespace GameFramework
             }
             EditorGUILayout.EndHorizontal();
 
-            if (GUILayout.Button("重置设置"))
+            if (GUILayout.Button("重置资源导出路径"))
             {
                 _config.DeletConfig();
                 _config = new BuilderConfig();
@@ -142,6 +145,16 @@ namespace GameFramework
                 AsbBuilder.BuildAll(_config);
                 Close();
             }
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(30);
+            bool v = GUILayout.Toggle(GameConfig.HasDebugView, "是否显示DebugView");
+            if(v != GameConfig.HasDebugView)
+            {
+                GameConfig.HasDebugView = v;
+                GameConfig.Save();
+            }
+            EditorGUILayout.EndHorizontal();
         }
 
         private List<string> optionsList = new List<string>()

@@ -398,6 +398,7 @@ MonoBehaviour:
   - {fileID: 114563966859877632}
   - {fileID: 114941864784356194}
   SubHandlers: []
+  RTArray: []
   RootTransform: {fileID: 0}
 --- !u!114 &114398617154556364
 MonoBehaviour:
@@ -479,7 +480,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsBillboard: 0
-  UIObjs: {fileID: 114272949513413886}
+  Handler: {fileID: 114272949513413886}
   IsInStack: 1
   HideBefor: 1
   IsStatic: 0
@@ -488,6 +489,7 @@ MonoBehaviour:
   AnimType: 0
   AnimEase: 1
   HasDarkMask: 1
+  RenderMode: 1
 --- !u!114 &114502319025849104
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1073,7 +1075,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1616116024270062}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1800}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 224484344673731072}

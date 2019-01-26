@@ -155,7 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsBillboard: 0
-  UIObjs: {fileID: 114876698503963094}
+  Handler: {fileID: 114876698503963094}
   IsInStack: 1
   HideBefor: 1
   IsStatic: 0
@@ -164,6 +164,7 @@ MonoBehaviour:
   AnimType: 5
   AnimEase: 7
   HasDarkMask: 1
+  RenderMode: 1
 --- !u!114 &114391933154368608
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -318,7 +319,10 @@ MonoBehaviour:
   ItemNumPerStep: 1
   ShowItemIntegers: 1
   LineOffset: 2
-  mBtnClickPassStr: 0
+  AlignLines: 0
+  EnableMuiltSelect: 0
+  SwitchItemOnClick: 0
+  TweenRate: 0.001
 --- !u!114 &114876698503963094
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -483,7 +487,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1230239961229574}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1800}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 224440744830262914}

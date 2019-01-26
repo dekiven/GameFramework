@@ -26,6 +26,10 @@ extern "C" {
     void GFRestart(float delaySec);
     //请求支付订单
     void GFStartPurchase(const char* pid, const char* externalData);
+    //复制文字到剪贴板
+    void GFCopy2Pasteboard(const char* content);
+    //从剪贴板复制文字
+    const char* GFGetFirstPastboard();
 //---------------------------------------导出接口供外部使用===================================
 #if defined(__cplusplus)
 }

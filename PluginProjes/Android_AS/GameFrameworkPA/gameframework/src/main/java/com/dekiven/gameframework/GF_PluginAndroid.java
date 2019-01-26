@@ -3,6 +3,7 @@ package com.dekiven.gameframework;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -137,6 +138,52 @@ public class GF_PluginAndroid extends Fragment {
         mContext.startService(intent);
         // TODO
         // mContext.finish();
+    }
+
+
+    /**
+     * 复制内容到剪贴板
+     * @param content
+     */
+    public void copy2Clipboard(String content)
+    {
+        if(Build.VERSION.SDK_INT >= 11)
+        {
+            android.content.ClipboardManager cm = (android.content.ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+            // assert cm != null;
+            cm.setPrimaryClip(ClipData.newPlainText(null, content));
+        }
+        else
+        {
+            android.text.ClipboardManager cm = (android.text.ClipboardManager) mContext.getSystemService((Context.CLIPBOARD_SERVICE));
+            cm.setText(content);
+        }
+    }
+
+    /**
+     * 从剪贴板获取第一个内容
+     * @return
+     */
+    public String getFirstClipboard()
+    {
+        if(Build.VERSION.SDK_INT >= 11)
+        {
+            android.content.ClipboardManager cm = (android.content.ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+            // assert cm != null;
+            if(cm.hasPrimaryClip())
+            {
+                return cm.getPrimaryClip().getItemAt(0).getText().toString();
+            }
+        }
+        else
+        {
+            android.text.ClipboardManager cm = (android.text.ClipboardManager) mContext.getSystemService((Context.CLIPBOARD_SERVICE));
+            if(null != cm)
+            {
+                return cm.getText().toString();
+            }
+        }
+        return "";
     }
 
     public void showToast(String msg) {

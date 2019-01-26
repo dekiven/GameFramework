@@ -106,6 +106,15 @@ namespace GameFramework
             mPlatform.CheckAppVer(callback);
         }
 
+        public static void Copy2Clipboard(string content)
+        {
+            mPlatform.Copy2Clipboard(content);
+        }
+
+        public static string GetFirstClipboard()
+        {
+            return mPlatform.GetFirstClipboard();
+        }
         //=====================================test--------------------------------------
         public static void test1()
         {

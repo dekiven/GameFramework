@@ -1,5 +1,4 @@
-﻿#define __TEST__
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,9 +21,6 @@ namespace GameFramework
 
         public GameObject DebugPL;
         public Button MainBtn;
-#if __TEST__
-        uint updateCount = 1;
-#endif
 
         private LogFile.LogLevel mLogType = LogFile.LogLevel.L_Warning;
         private List<LogInfo> list;
@@ -104,11 +100,15 @@ namespace GameFramework
 
         public void CopyCurLog2Clipboard()
         {
+#if UNITY_EDITOR
             GUIUtility.systemCopyBuffer = mCurLogContent;
+#else
+            Platform.Copy2Clipboard(mCurLogContent);
+#endif
         }
-        #endregion Log 相关
+#endregion Log 相关
 
-        #region 继承 UIView
+#region 继承 UIView
         protected override void init()
         {
             base.init();
@@ -133,10 +133,6 @@ namespace GameFramework
             });
 
             ActiveDebugView(false);
-#if __TEST__
-            //test
-            StartCoroutine(printLog());
-#endif
         }
 
         protected override void dispose()
@@ -144,9 +140,9 @@ namespace GameFramework
             base.dispose();
             Application.logMessageReceived -= handleLogCallback;
         }
-        #endregion 继承 UIView
+#endregion 继承 UIView
 
-        #region 私有
+#region 私有
         private void handleLogCallback(string condition, string stackTrace, LogType type)
         {
             switch (type)
@@ -258,22 +254,6 @@ namespace GameFramework
             }
             return l;
         }
-
-#if __TEST__
-        //test
-        //protected override void update()
-        private IEnumerator printLog()
-        {
-            while (true)
-            {
-                Debug.Log("test   " + updateCount);
-                Debug.LogWarning("test" + updateCount);
-                Debug.LogError("test" + updateCount);
-                updateCount += 1;
-                yield return new WaitForSeconds(0.2f);
-            }
-        }
-#endif
-        #endregion 私有
+#endregion 私有
     }
 }

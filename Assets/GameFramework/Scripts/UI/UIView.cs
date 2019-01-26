@@ -12,7 +12,7 @@ namespace GameFramework
     {
         void Awake()
         {
-            RenderMode = RenderMode.ScreenSpaceOverlay;
+            //RenderMode = RenderMode.ScreenSpaceOverlay;
             IsBillboard = false;
         }
 

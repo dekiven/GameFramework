@@ -54,7 +54,7 @@ namespace GameFramework
         [HideInInspector]
         public bool HasDarkMask = true;
         [HideInInspector]
-        public RenderMode RenderMode { get { return mRenderMode; } set { mRenderMode = value; }}
+        public RenderMode RenderMode; // { get { return mRenderMode; } set { mRenderMode = value; }}
         //public RectTransform rectTransform { get { return mRectTransform; }}
 
         //protected RenderMode RenderMode = UnityEngine.RenderMode.ScreenSpaceOverlay;
@@ -63,7 +63,7 @@ namespace GameFramework
         private Tween mAnimTween = null;
         private LuaTable mLuaFuncs;
         private RectTransform mRectTransform;
-        private RenderMode mRenderMode ;
+        //private RenderMode mRenderMode ;
         private bool mIsPlayinngAni = false;
 
         public void SetLuaStatusListeners(LuaTable table)

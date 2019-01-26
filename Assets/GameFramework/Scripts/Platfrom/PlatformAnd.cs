@@ -7,7 +7,7 @@ namespace GameFramework
     public class PlatformAnd : PlatformBase
     {
         //private AndroidJavaClass mClass;
-        private AndroidJavaObject mPluginObj;
+        private readonly AndroidJavaObject mPluginObj;
 
         public PlatformAnd()
         {
@@ -97,7 +97,22 @@ namespace GameFramework
             }
         }
 
+        public override void Copy2Clipboard(string content)
+        {
+            if (null != mPluginObj)
+            {
+                mPluginObj.Call("copy2Clipboard", content);
+            }
+        }
 
+        public override string GetFirstClipboard()
+        {
+            if (null != mPluginObj)
+            {
+                return mPluginObj.Call<string>("getFirstClipboard");
+            }
+            return string.Empty;
+        }
         //=====================================test--------------------------------------
         public override void test1()
         {

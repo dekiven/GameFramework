@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+
 namespace GameFramework
 {
     public class PlatformBase
@@ -65,13 +67,26 @@ namespace GameFramework
             return false;
         }
 
-        public void CheckAppVer(Action<bool> callback)
+        public virtual void CheckAppVer(Action<bool> callback)
         {
             LogFile.Log("Platform方法 CheckAppUpdate(Action<bool> callback) 待实现,请重载该方法!");
             if(null != callback)
             {
                 callback(true);
             }
+        }
+
+        public virtual void Copy2Clipboard(string content)
+        {
+            GUIUtility.systemCopyBuffer = content;
+            LogFile.Log("Platform方法 Copy2Clipboard(string content) 待实现,\n默认使用GUIUtility.systemCopyBuffer,\n请重载该方法!");
+
+        }
+
+        public virtual string GetFirstClipboard()
+        {
+            LogFile.Log("Platform方法 GetFirstClipboard() 待实现,\n默认使用GUIUtility.systemCopyBuffer,\n请重载该方法!");
+            return GUIUtility.systemCopyBuffer;
         }
 
         //=====================================test--------------------------------------

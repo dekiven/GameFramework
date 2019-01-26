@@ -78,6 +78,29 @@ extern "C" {
             }
         }];
     }
+    
+    //复制文字到剪贴板
+    void GFCopy2Pasteboard(const char* content)
+    {
+        const char* con = strdup(content);
+        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+        pasteboard.string = NSStringFromUnityString(con);
+    }
+
+    //从剪贴板复制文字
+    const char* GFGetFirstPastboard()
+    {
+        UIPasteboard* pBoard = [UIPasteboard generalPasteboard];
+        if(nil != pBoard)
+        {
+            NSString* str = pBoard.string;
+            if(nil != str)
+            {
+                return UnityStringFromNSString(str);
+            }
+        }
+        return "";
+    }
     //---------------------------------------导出接口实现===================================
 #if defined(__cplusplus)
 }

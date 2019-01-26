@@ -43,7 +43,7 @@ namespace GameFramework
             {
                 GetCanvasByMode(RenderMode.WorldSpace);
                 //TODO:暂时不使用ScreenSpaceCamera模式，没有需求
-                //GetCanvasByMode(RenderMode.ScreenSpaceCamera);
+                GetCanvasByMode(RenderMode.ScreenSpaceCamera);
                 GetCanvasByMode(RenderMode.ScreenSpaceOverlay);
             }
 
@@ -70,17 +70,26 @@ namespace GameFramework
                 obj.AddComponent<CanvasScaler>();
                 obj.AddComponent<GraphicRaycaster>();
                 obj.transform.SetParent(transform);
+                obj.layer = LayerMask.NameToLayer("UI");
                 c.renderMode = mode;
-                if(RenderMode.ScreenSpaceOverlay == mode)
-                {
-                    mDarkMask = getDarkMask(c);
-                }
+                //if(RenderMode.ScreenSpaceOverlay == mode)
+                //{
+                //    mDarkMask = getDarkMask(c);
+                //}
                 if (RenderMode.ScreenSpaceCamera == mode)
                 {
-                    GameObject cameraObj = new GameObject();
-                    Camera _camera = cameraObj.AddComponent<Camera>();
-                    cameraObj.transform.SetParent(obj.transform);
+                    //GameObject cameraObj = new GameObject();
+                    Camera _camera = obj.AddComponent<Camera>();
+                    _camera.clearFlags = CameraClearFlags.Depth;
+                    _camera.nearClipPlane = 0.1f;
+                    _camera.farClipPlane = 200f;
+                    //_camera.name = "SSCamera";
+                    _camera.cullingMask = 1 << LayerMask.NameToLayer("UI");
+                    _camera.orthographic = true;
+                    //_camera.transform.LookAt(_camera.transform.position + Vector3.forward, Vector3.up);
+                    //cameraObj.transform.SetParent(obj.transform, false);
                     c.worldCamera = _camera;
+                    mDarkMask = getDarkMask(c);
                 }
                 SetCanvasByMode(c);
                 //mCanvas[(int)mode] = c;
