@@ -23,9 +23,9 @@ namespace GameFramework
         public Button MainBtn;
 
         private LogFile.LogLevel mLogType = LogFile.LogLevel.L_Log;
-        private List<LogInfo> list;
-        private List<LogInfo> newList;
-        private List<UIItemData> datas;
+        private List<LogInfo> mList;
+        private List<LogInfo> mNewList;
+        private List<UIItemData> itemDatas;
         private System.Object mLockObj = new System.Object();
         private Color[] mLevelColors = { Color.green, Color.yellow, Color.red, Color.red, Color.red, };
         private string mCurLogContent;
@@ -37,22 +37,31 @@ namespace GameFramework
             MainBtn.gameObject.SetActive(!active);
             if (active)
             {
-                freshAll();
-                StartCoroutine(freshLog());
+                refreshAll();
+                StartCoroutine(refreshLog());
             }
             else
             {
                 StopAllCoroutines();
                 lock (mLockObj)
                 {
-                    list.AddRange(newList);
-                    newList.Clear();
+                    mList.AddRange(mNewList);
+                    mNewList.Clear();
                 }
             }
 
         }
 
-        #region Log 相关
+        public void ExitApp()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
+#region Log 相关
         public LogFile.LogLevel MinLogLevel
         {
             get { return mLogType; }
@@ -61,7 +70,7 @@ namespace GameFramework
                 if (mLogType != value)
                 {
                     mLogType = value;
-                    freshAll();
+                    refreshAll();
                 }
             }
         }
@@ -75,10 +84,10 @@ namespace GameFramework
         {
             lock (mLockObj)
             {
-                list.Clear();
-                newList.Clear();
-                datas.Clear();
-                Handler.SetScrollViewData(LogSvIdx, datas);
+                mList.Clear();
+                mNewList.Clear();
+                itemDatas.Clear();
+                Handler.SetScrollViewData(LogSvIdx, itemDatas);
             }
         }
 
@@ -111,9 +120,9 @@ namespace GameFramework
         protected override void init()
         {
             base.init();
-            list = new List<LogInfo>();
-            newList = new List<LogInfo>();
-            datas = new List<UIItemData>();
+            mList = new List<LogInfo>();
+            mNewList = new List<LogInfo>();
+            itemDatas = new List<UIItemData>();
 
             Application.logMessageReceived += handleLogCallback;
 
@@ -127,7 +136,7 @@ namespace GameFramework
 
             Handler.SetScrollViewOnItemClick(LogSvIdx, (int idx) => 
             {
-                UIItemData data = datas[idx];
+                UIItemData data = itemDatas[idx];
                 ShowLogDetal(data);
             });
 
@@ -177,31 +186,31 @@ namespace GameFramework
                     log = codintion,
                     level = l,
                 };
-                newList.Add(info);
+                mNewList.Add(info);
             }
         }
 
-        private IEnumerator freshLog()
+        private IEnumerator refreshLog()
         {
             while (true)
             {
-                if (newList.Count > 0)
+                if (mNewList.Count > 0)
                 {
                     lock (mLockObj)
                     {
-                        list.AddRange(newList);
-                        datas.AddRange(GetDatas(newList));
+                        mList.AddRange(mNewList);
+                        itemDatas.AddRange(GetDatas(mNewList));
                         //Handler.AddScrollViewDatas(1, GetDatas(newList));
-                        int size = datas.Count - MaxLineNum;
+                        int size = itemDatas.Count - MaxLineNum;
                         if (size > 0)
                         {
                             for (int i = 0; i < size; i++)
                             {
-                                datas.RemoveAt(0);
+                                itemDatas.RemoveAt(0);
                             }
                         }
-                        Handler.SetScrollViewData(LogSvIdx, datas);
-                        newList.Clear();
+                        Handler.SetScrollViewData(LogSvIdx, itemDatas);
+                        mNewList.Clear();
                     }
                 }
                 yield return new WaitForSeconds(LogFreshInterval);
@@ -209,21 +218,24 @@ namespace GameFramework
 
         }
 
-        private void freshAll()
+        private void refreshAll()
         {
             lock (mLockObj)
             {
-                datas.Clear();
-                datas.AddRange(GetDatas(list));
-                int size = datas.Count - MaxLineNum;
+                itemDatas.Clear();
+                List<UIItemData> d = GetDatas(mList);
+                itemDatas.AddRange(d);
+                int size = itemDatas.Count - MaxLineNum;
                 if (size > 0)
                 {
                     for (int i = 0; i < size; i++)
                     {
-                        datas.RemoveAt(0);
+                        itemDatas.RemoveAt(0);
                     }
                 }
-                Handler.SetScrollViewData(1, datas);
+                Handler.SetScrollViewData(1, itemDatas);
+                //TODO:解决 refreshAll只会在有新的日志才能刷新的问题
+                LogFile.Log("DebugView refreshAll:"+MinLogLevel.ToString());
             }
         }
 

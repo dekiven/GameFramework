@@ -264,6 +264,43 @@ namespace GameFramework
                         return SetUIRaycastTarget(uiName, (bool)data.Content);
                     }
                 //break;
+                case "addeventtrigger" :
+                    if (uiIndex != -1)
+                    {
+                        //return SetUIRaycastTarget(uiIndex, (bool)data.Content);
+                        LuaTable lua = data.Content as LuaTable;
+                        if(null == lua)
+                        {
+                            return AddEventTrigger(uiIndex, data.Content as List<EventTrigger.Entry>);
+                        }
+                        else
+                        {
+                            return AddEventTrigger(uiIndex, lua);
+                        }
+                    }
+                    else
+                    {
+                        LuaTable lua = data.Content as LuaTable;
+                        if (null == lua)
+                        {
+                            return AddEventTrigger(uiName, data.Content as List<EventTrigger.Entry>);
+                        }
+                        else
+                        {
+                            return AddEventTrigger(uiName, lua);
+                        }
+                    }
+                //break;
+                case "removeeventtrigger" :
+                    if (uiIndex != -1)
+                    {
+                        return RemoveEventTrigger(uiIndex);
+                    }
+                    else
+                    {
+                        return RemoveEventTrigger(uiName);
+                    }
+                //break;
                 case "settextstring":
                     if (uiIndex != -1)
                     {
@@ -1421,6 +1458,66 @@ namespace GameFramework
             {
                 ui.raycastTarget = enabled;
                 return true;
+            }
+            return false;
+        }
+
+        public bool AddEventTrigger(int index, List<EventTrigger.Entry> entries)
+        {
+            UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
+            if (null != ui)
+            {
+                Tools.AddEventTrigger(ui.gameObject, entries);
+            }
+            return false;
+        }
+
+        public bool AddEventTrigger(string cName, List<EventTrigger.Entry> entries)
+        {
+            UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
+            if (null != ui)
+            {
+                Tools.AddEventTrigger(ui.gameObject, entries);
+            }
+            return false;
+        }
+
+        public bool AddEventTrigger(int index, LuaTable table)
+        {
+            UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
+            if(null != ui)
+            {
+                Tools.AddEventTrigger(ui.gameObject, table);
+            }
+            return false;
+        }
+
+        public bool AddEventTrigger(string cName, LuaTable table)
+        {
+            UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
+            if (null != ui)
+            {
+                Tools.AddEventTrigger(ui.gameObject, table);
+            }
+            return false;
+        }
+
+        public bool RemoveEventTrigger(int index)
+        {
+            UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
+            if (null != ui)
+            {
+                Tools.RemoveEventTrigger(ui.gameObject);
+            }
+            return false;
+        }
+
+        public bool RemoveEventTrigger(string cName)
+        {
+            UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
+            if (null != ui)
+            {
+                Tools.RemoveEventTrigger(ui.gameObject);
             }
             return false;
         }

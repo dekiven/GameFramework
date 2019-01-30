@@ -242,6 +242,10 @@ namespace GameFramework
 
         public void CalculateContentSize()
         {
+            if (!gameObject.activeSelf)
+            {
+                return;
+            }
             if (null == mItemDatas || null == ItemPrefab)
             {
                 LogFile.Warn("ScrollView calculateContentSize Error: null == mItemDatas || null == ItemPrefab");
@@ -599,6 +603,15 @@ namespace GameFramework
             this.onValueChanged.AddListener(onSrollViewValueChanged);
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            if (null != mItemDatas && null != ItemPrefab)
+            {                
+                CalculateAndUpdateContent();
+            }
+        }
+
         protected override void OnDestroy()
         {
             recoverAll();
@@ -691,6 +704,10 @@ namespace GameFramework
 
         private void checkNeedUpdate(bool forceUpdate = false)
         {
+            if(!gameObject.activeSelf)
+            {
+                return;
+            }
             if (null == mItemDatas || mItemDatas.Count == 0)
             {
                 recoverAll ();

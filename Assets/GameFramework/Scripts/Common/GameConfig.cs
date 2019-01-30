@@ -101,9 +101,6 @@ namespace GameFramework
 
         public static void Load()
         {
-            string p = Tools.PathCombine(Application.dataPath+ "/Resources", FILE_NAME);
-            //Tools.CheckFileExists(p, true);
-
             TextAsset text = Resources.Load<TextAsset>(FILE_NAME.Split('.')[0]);
             if (null == text)
             {

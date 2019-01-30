@@ -5,6 +5,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using LuaInterface;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace GameFramework
 {
@@ -853,6 +855,44 @@ namespace GameFramework
                 #endregion
             }
         }
+
+        public static void AddEventTrigger(GameObject obj, List<EventTrigger.Entry> entries)
+        {
+            if(null != obj && null != entries)
+            {
+                EventTrigger trigger = obj.GetComponent<EventTrigger>();
+                if(null == trigger)
+                {
+                    trigger = obj.AddComponent<EventTrigger>();
+                }
+                trigger.triggers = entries;
+            }
+        }
+
+        public static void AddEventTrigger(GameObject obj, LuaTable table)
+        {
+            if (null != obj && null != table)
+            {
+                LuaEventTrigger trigger = obj.GetComponent<LuaEventTrigger>();
+                if (null == trigger)
+                {
+                    trigger = obj.AddComponent<LuaEventTrigger>();
+                }
+                trigger.SetTriggers(table);
+            }
+        }
+
+        public static void RemoveEventTrigger(GameObject obj)
+        {
+            if(null != obj)
+            {
+                EventTrigger[] triggers = obj.GetComponents<EventTrigger>();
+                for (int i = triggers.Length-1; i >= 0; --i)
+                {
+                    UnityEngine.Object.Destroy(triggers[i]);
+                }
+            }
+        }
         #endregion U3D常用类型转换相关
 
         #region Lua相关
@@ -912,6 +952,121 @@ namespace GameFramework
             }
 
             return size.ToString();
+        }
+
+        public static Dictionary<string, string> SplitStr2Dic(string content, string pairSplit="\n", string valueSplit="|")
+        {
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            foreach (var item in content.Split(pairSplit.ToCharArray()))
+            {
+                string[] kv = item.Split(valueSplit.ToCharArray());
+                if(kv.Length == 2)
+                {
+                    dic[kv[0]] = kv[1];
+                }
+                else if(kv.Length ==1)
+                {
+                    dic[kv[0]] = string.Empty;
+                }
+            }
+            return dic;
+        }
+
+        public static bool GetBoolValue(Dictionary<string, string> dic, string key, bool def=false)
+        {
+            bool ret = def;
+            if (null != dic)
+            {
+                string value;
+                if(dic.TryGetValue(key, out value))
+                {
+                    ret = bool.Parse(value);
+                }
+            }
+            return ret;
+        }
+
+        public static string GetStringValue(Dictionary<string, string> dic, string key, string def = "")
+        {
+            string ret = def;
+            if (null != dic)
+            {
+                string value;
+                if (dic.TryGetValue(key, out value))
+                {
+                    ret = value;
+                }
+            }
+            return ret;
+        }
+
+        public static int GetIntValue(Dictionary<string, string> dic, string key, int def = 0)
+        {
+            int ret = def;
+            if (null != dic)
+            {
+                string value;
+                if (dic.TryGetValue(key, out value))
+                {
+                    ret = int.Parse(value);
+                }
+            }
+            return ret;
+        }
+
+        public static float GetFloatValue(Dictionary<string, string> dic, string key, float def = 0)
+        {
+            float ret = def;
+            if (null != dic)
+            {
+                string value;
+                if (dic.TryGetValue(key, out value))
+                {
+                    ret = float.Parse(value);
+                }
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// 仅支持包含数字和小数点的版本号对比,返回1 表示 v1 大于 v2，返回0表示相等
+        /// </summary>
+        /// <returns>The version.</returns>
+        /// <param name="v1">V1.</param>
+        /// <param name="v2">V2.</param>
+        public static int CompareVersion(string v1, string v2)
+        {
+            int ret = 0;
+            if(v1.Equals(v2))
+            {
+                return 0;
+            }
+            string[] v1a = v1.Split('.');
+            string[] v2a = v2.Split('.');
+            int l = Math.Min(v1a.Length, v2a.Length);
+            for (int i = 0; i < l; i++)
+            {
+                int i1 = int.Parse(v1a[i]);
+                int i2 = int.Parse(v2a[i]);
+                if (i1 > i2)
+                {
+                    return 1;
+                }
+                if(i1 < i2)
+                {
+                    return -1;                    
+                }
+
+            }
+            if(v1a.Length > v2a.Length)
+            {
+                ret = 1;
+            }
+            else if(v1a.Length < v2a.Length)
+            {
+                ret = -1;
+            }
+            return ret;
         }
         #endregion 基本的工具函数
     }

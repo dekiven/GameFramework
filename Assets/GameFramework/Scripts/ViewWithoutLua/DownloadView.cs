@@ -33,14 +33,16 @@ namespace GameFramework
                 mSlider = Handler.GetCompByIndex<Slider>(2);
             }
 
-            if(GameConfig.useAsb)
+            if(GameConfig.useAsb && GameConfig.checkUpdate)
             {
                 GameUpManager.Instance.CheckLocalRes((bool rst, string msg) =>
                 {
+                    LogFile.Log("检测本地资源结果：" + rst);
                     if (rst)
                     {
                         GameUpManager.Instance.CheckAppVer((bool obj) =>
                         {
+                            LogFile.Log("检测APP version资源结果：" + rst);
                             if (obj)
                             {
                                 GameUpManager.Instance.CheckServerRes((bool _rst, string _msg) =>

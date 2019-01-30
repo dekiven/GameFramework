@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GameFramework
@@ -64,6 +65,42 @@ namespace GameFramework
             if (null != mPluginObj)
             {
                 mPluginObj.Call("startPurchase", pid, externalData);
+            }
+        }
+
+        public override void CheckAppVer(Action<bool> callback)
+        {
+            //base.CheckAppVer(callback);
+            string version = Tools.GetStringValue(GameUpManager.Instance.ServConf, Application.identifier, "0.0.0");
+            string curVersion = Application.version;
+            if(Tools.CompareVersion(version, curVersion) > 0)
+            {
+                string apkName = Application.identifier + "_v" + version + ".apk";
+                //更新 apk
+                List<string> urls = new List<string>();
+                foreach (var item in GameUpManager.Instance.ResServList)
+                {
+                    urls.Add(Tools.PathCombine(item.path, apkName));
+                }
+                LargeFileDownloader downloader = new LargeFileDownloader();
+                string savePath = Tools.GetWriteableDataPath(apkName);
+                downloader.DownloadFile(urls, savePath, (double arg1, string arg2) => 
+                {
+                    EventManager.notifyMain("UpdateDownloadView", "", "下载新版本 apk (v" + version + ")...", (float)arg1);
+                    if(arg1.Equals(1d) && arg2.Equals(LargeFileDownloader.STR_SUCCEEDED))
+                    {
+                        InstallNewApp(savePath);
+                        callback(false);
+                    }
+                    if(arg1.Equals(1d))
+                    {
+                        downloader.Dispose();
+                    }
+                });
+            }
+            else
+            {
+                callback(true);
             }
         }
 

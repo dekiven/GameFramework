@@ -50,6 +50,11 @@ namespace GameFramework
         {
             //初始化部分信息
             init();
+            if (GameConfig.HasDebugView && !string.IsNullOrEmpty(DebugViewRestPath))
+            {
+                ShowDebugView();
+            }
+
             if(!string.IsNullOrEmpty(UpdateViewResPath))
             {
                 GameObject prefab = Resources.Load<GameObject>(UpdateViewResPath);
@@ -57,10 +62,6 @@ namespace GameFramework
                 {
                     mUiMgr.ShowViewPrefab(prefab);
                 }
-            }
-            if(GameConfig.HasDebugView && !string.IsNullOrEmpty(DebugViewRestPath))
-            {
-                ShowDebugView();
             }
         }
 

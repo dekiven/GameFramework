@@ -30,14 +30,111 @@ namespace GameFramework
         /// </summary>
         public bool DownloadTheFirst = true;
 
+        private List<ResInfo> mResServList;
+        public List<ResInfo> ResServList { get { return mResServList; } }
+        private Dictionary<string, string> mServConf;
+        public Dictionary<string, string> ServConf { get { return mServConf; }}
 
         public void CheckLocalRes(Action<bool, string> callback)
         {
             mInfoStr = "Loading...";
-            freshUI(0f);
+            refreshUI(0f);
             string srcUrl = Tools.GetUrlPathStream(Application.streamingAssetsPath, GameConfig.STR_ASB_MANIFIST);
             string tarUrl = Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
             delOldWriteableRes(srcUrl, tarUrl, callback);
+        }
+
+        public void LoadResServList(Action<List<ResInfo>> action, bool forceLoad=false)
+        {
+            if(null == mResServList || mResServList.Count == 0 || forceLoad)
+            {
+                GameResManager.Instance.Initialize(() =>
+                {
+                    GameResManager.Instance.LoadRes<TextAsset>("UpdateServer", ".bytes", (obj) =>
+                    {
+                        TextAsset text = obj as TextAsset;
+                        if (null != text)
+                        {
+                            ResConf servers = new ResConf(text.text);
+                            ResInfo[] arr = new ResInfo[servers.files.Values.Count];
+                            servers.files.Values.CopyTo(arr, 0);
+                            if (null == mResServList)
+                            {
+                                mResServList = new List<ResInfo>(arr);
+                            }
+                            else
+                            {
+                                mResServList.Clear();
+                                mResServList.AddRange(arr);
+                            }
+                            mResServList.Sort((ResInfo a, ResInfo b) =>
+                            {
+                                return a.size < b.size ? -1 : 1;
+                            });
+
+                            if (null != action)
+                            {
+                                action(mResServList);
+                            }
+                        }
+
+                    });
+                });   
+            }
+            else
+            {
+                if (null != action)
+                {
+                    action(mResServList);
+                }
+            }
+        }
+
+        public void LoadServConf(Action<Dictionary<string, string>> action, bool forceLoad=false)
+        {
+            if (null == mServConf || mServConf.Count == 0 || forceLoad)
+            {
+                LoadResServList((List<ResInfo> list) =>
+                {
+                    TimeOutWWW www = getTimeOutWWW();
+                    List<string> files = new List<string>();
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        files.Add(Tools.PathCombine(list[i].path, GameConfig.STR_ASB_MANIFIST + "/servConf.bytes"));
+                    }
+                    www.ReadFirstExistsStr("servConf", files, 0.2f, (bool rst, string msg) =>
+                    {
+                        
+                        if (null == mServConf)
+                        {
+                            mServConf = new Dictionary<string, string>();
+                        }
+                        else
+                        {
+                            mServConf.Clear();
+                        }
+                        if(rst)
+                        {
+                            mServConf = Tools.SplitStr2Dic(msg, "\n", "|");
+                        }
+                        else
+                        {
+                            LogFile.Warn("从资源服servConf.bytes失败");
+                        }
+                        if (null != action)
+                        {
+                            action(mServConf);
+                        }
+                    }, null);
+                });
+            }
+            else
+            {
+                if(null != action)
+                {
+                    action(mServConf);
+                }
+            }
         }
 
         /// <summary>
@@ -46,52 +143,28 @@ namespace GameFramework
         /// <param name="callback">Callback.</param>
         public void CheckAppVer(Action<bool> callback)
         {
-            Platform.CheckAppVer(callback);
+            LoadServConf((Dictionary<string, string> obj) => 
+            {
+                Platform.CheckAppVer(callback); 
+            });
         }
 
         public void CheckServerRes(Action<bool, string> callback)
         {
-            GameResManager.Instance.Initialize(() =>
+            LoadServConf((Dictionary<string, string> conf) =>
             {
-                GameResManager.Instance.LoadRes<TextAsset>("UpdateServer", ".bytes", (obj) =>
+                string tarUrl = Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
+                if(null != mResServList)
                 {
-                    TextAsset text = obj as TextAsset;
-                    if (null != text)
+                    if(!Tools.GetBoolValue(conf, "isReview"))
                     {
-                        ResConf servers = new ResConf(text.text);
-                        ResInfo[] arr = new ResInfo[servers.files.Values.Count];
-                        servers.files.Values.CopyTo(arr, 0);
-                        List<ResInfo> list = new List<ResInfo>(arr);
-                        list.Sort((ResInfo a, ResInfo b) =>
-                        {
-                            return a.size < b.size ? -1 : 1;
-                        });
-#if UNITY_IOS
-                        TimeOutWWW www = getTimeOutWWW();
-                        List<string> files = new List<string>();
-                        for (int i = 0; i < list.Count; i++)
-                        {
-                        files.Add(Tools.PathCombine(list[i].path, GameConfig.STR_ASB_MANIFIST+"/isAudit.bytes"));
-                        }
-                        www.ReadFirstExistsStr("isIOSAudit", files, 0.5f, (bool rst, string msg) => 
-                        {
-                            if (!rst || msg.Trim().Equals("1"))
-                            {
-                                //当资源服找不到配置文件或者配置文件内容为“1”时，表示是审核版本，跳过更新流程
-                                callback(true, string.Empty);
-                                return;
-                            }
-                                
-#endif
-                                string tarUrl = Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
-                                checkService(list, 0, tarUrl, callback);
-#if UNITY_IOS
-                                
-                        }, null);
-#endif
+                        checkService(mResServList, 0, tarUrl, callback);
                     }
-
-                });
+                }
+                else
+                {
+                    LogFile.Warn("服务器列表没有初始化");
+                }
             });
         }
 
@@ -285,7 +358,7 @@ namespace GameFramework
                                                 {
                                                     mInfoStr = string.Format(format, Tools.FormatMeroySize(doneSize), totalSizeStr, Tools.FormatMeroySize(siezPerSec) + "/s");
                                                     //LogFile.Log(mInfoStr);
-                                                    freshUI((float)progress);
+                                                    refreshUI((float)progress);
                                                 }
                                                 last = now;
                                                 lastSize = doneSize;
@@ -316,7 +389,7 @@ namespace GameFramework
             }
         }
 
-        private void freshUI(float progress)
+        private void refreshUI(float progress)
         {
             EventManager.notifyMain(STR_NOTIFY_EVENT_NAME, mVersionStr, mInfoStr, progress);
         }
@@ -334,6 +407,7 @@ namespace GameFramework
             if (idx < list.Count)
             {
                 mInfoStr = "检测服务器资源[ " + idx + " / " + list.Count + " ]...";
+                refreshUI((float)idx / list.Count);
                 string srcUrl = Tools.PathCombine(list[idx].path, GameConfig.STR_ASB_MANIFIST);
                 checkResConf(srcUrl, tarUrl, (bool rst, string msg) =>
                 {
@@ -360,6 +434,7 @@ namespace GameFramework
             else
             {
                 mInfoStr = "检测服务器资源失败，请检查网络";
+                refreshUI(1f);
                 if (null != callback)
                 {
                     callback(false, "服务器资源下载失败");
