@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    //TODO:多个文件多线程下载支持
+    //TODO:多个文件多线程下载支持 单个文件多线程
     /// <summary>
     /// 从多个（也可以是1个）URL找到第一个存在的大文件下载
     /// </summary>
@@ -29,6 +29,8 @@ namespace GameFramework
         Action<double, string> DownloadCallback;
 
         private long mTotalSize;
+        //服务器是否允许部分下载（AddRange）
+        private bool mPartialEnabled;
         private long mDoneSize;
         private int mCoroutine;
         private HttpWebRequest mRequest;
@@ -72,7 +74,10 @@ namespace GameFramework
 
                 try
                 {
-                    mTotalSize = mRequest.GetResponse().ContentLength;
+                    HttpWebResponse response = (HttpWebResponse)mRequest.GetResponse();
+                    mTotalSize = response.ContentLength;
+                    mPartialEnabled = response.StatusCode == HttpStatusCode.PartialContent;
+                    LogFile.Log("服务器是否允许部分下载：" + mPartialEnabled);
                 }
                 catch (Exception ex)
                 {
@@ -141,25 +146,33 @@ namespace GameFramework
             byte[] buffer = new byte[BufferSize];
 
             FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
-            long readSize = fs.Length;
+            mDoneSize = fs.Length;
+            if(!mPartialEnabled)
+            {
+                mDoneSize = 0;
+            }
+
             try
             {
                 //LogFile.Log("onRecave idx:{0}, readSize:{1}", idx, mPartDoneSize[idx]);
-                if(readSize < mTotalSize)
+                if(mDoneSize < mTotalSize)
                 {
                     //TODO:断点续传还有问题
                     //断点续传核心，设置本地文件流的起始位置
-                    fs.Seek(readSize, SeekOrigin.Begin);
-                    mRequest.AddRange((int)readSize);
-                    Stream stream = mRequest.GetResponse().GetResponseStream();
+                    fs.Seek(mDoneSize, SeekOrigin.Begin);
+                    mRequest.AddRange((int)mDoneSize, (int)mTotalSize-1);
+                    HttpWebResponse response = (HttpWebResponse)mRequest.GetResponse();
+                    Stream stream = response.GetResponseStream();
+                    //TODO:判断服务器是否支持读取范围
                     int length = stream.Read(buffer, 0, BufferSize);
-                    while(length > 0)
+                    while (length > 0)
                     {
                         fs.Write(buffer, 0, length);
                         mDoneSize += length;
                         length = stream.Read(buffer, 0, BufferSize);
-                        //LogFile.Log("onRecave while idx:{0}, readSize:{1}", idx, mPartDoneSize[idx]);
+                        LogFile.WriteLine(string.Format("下载进度:{0}/{1}", mDoneSize, mTotalSize));
                     }
+                    LogFile.WriteLine(string.Format("下载完成:{0}/{1}", mDoneSize, mTotalSize));
                     stream.Close();
                     stream.Dispose();
                 }
