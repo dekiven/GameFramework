@@ -8,7 +8,7 @@ local tests =
     {name='UIManager', dir='Tests/UIManagerTest', scene='TestUIManager'},
     {name='ScrollView', dir='Tests/ScrollViewTest', scene='ScrollViewTest'},
     {name='SpriteAtlas', dir='Tests/SpriteAtlasTest', scene='TestSpriteAtlas'},
-    {name='LoadPrefab', dir='Tests/LoadPrefabTest',},
+    -- {name='LoadPrefab', dir='Tests/LoadPrefabTest',},
     {name='Transform', dir='Tests/RectTransformLuaTest', view='test/TransformTestView'},
     {name='PluginTest', dir='Tests/PluginTest', view='test/PluginTestView'},
     {name='PurchaseTest', dir='Tests/PurchaseTest', view='test/PurchaseTestView'},
