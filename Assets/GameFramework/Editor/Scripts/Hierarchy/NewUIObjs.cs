@@ -20,7 +20,7 @@ namespace GameFramework
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/ScrollView.prefab");
             GameObject obj = Object.Instantiate(prefab);
-            obj.name = "ScrollView";
+            obj.name = "sv";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
             placeUIElementRoot(obj, menuCommand);
         }
@@ -30,7 +30,7 @@ namespace GameFramework
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/ScrollItem.prefab");
             GameObject obj = Object.Instantiate(prefab);
-            obj.name = "ScrollItem";
+            obj.name = "si";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
             placeUIElementRoot(obj, menuCommand);
         }
@@ -40,7 +40,7 @@ namespace GameFramework
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/ScrollSelector.prefab");
             GameObject obj = Object.Instantiate(prefab);
-            obj.name = "ScrollSelector";
+            obj.name = "ssl";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
             placeUIElementRoot(obj, menuCommand);
         }
@@ -50,7 +50,7 @@ namespace GameFramework
         {
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/SelectorToggles.prefab");
                 GameObject obj = Object.Instantiate(prefab);
-                obj.name = "SelectorToggles";
+                obj.name = "st";
                 //obj.transform.SetParent(Selection.activeGameObject.transform, false);
                 placeUIElementRoot(obj, menuCommand);
         }
@@ -64,7 +64,7 @@ namespace GameFramework
             RectTransform rect = gameObject.GetComponent<RectTransform>();
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = Vector2.zero;
-            rect.localPosition = new Vector3(0, 0, 1800);
+            rect.localPosition = new Vector3(0, 0, 1000);
         }
 
         [MenuItem("GameObject/UI/GF/UIWorld", false, 1601)]

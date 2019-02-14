@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace GameFramework
@@ -97,7 +98,7 @@ namespace GameFramework
             mCurLogContent = l[1].Content as string;
             mCurLogColor = (Color)l[0].Content;
             Handler.SetTextString(7, mCurLogContent);
-            Handler.SetTextColor(7, mCurLogColor);
+            Handler.SetUIColor(7, mCurLogColor);
             Handler.SetUIActive(5, true);
         }
 
@@ -134,11 +135,13 @@ namespace GameFramework
                 }
             });
 
-            Handler.SetScrollViewOnItemClick(LogSvIdx, (int idx) => 
+            Handler.SetScrollViewOnItemClick(LogSvIdx, (int idx) =>
             {
                 UIItemData data = itemDatas[idx];
                 ShowLogDetal(data);
             });
+
+            addMainBtnEvent();
 
             ActiveDebugView(false);
         }
@@ -249,12 +252,51 @@ namespace GameFramework
                 if (info.level >= min)
                 {
                     List<UIHandlerData> d = new List<UIHandlerData>();
-                    d.Add(new UIHandlerData("SetTextColor", 0, mLevelColors[info.level - 1]));
+                    d.Add(new UIHandlerData("SetUIColor", 0, mLevelColors[info.level - 1]));
                     d.Add(new UIHandlerData("SetTextString", 0, info.log));
                     l.Add(new UIItemData(d));
                 }
             }
             return l;
+        }
+
+        /// <summary>
+        /// 定义 debug 按钮交互事件
+        /// </summary>
+        private void addMainBtnEvent()
+        {
+            bool isDraging = false;
+
+            //拖拽事件
+            List<EventTrigger.Entry> entries = new List<EventTrigger.Entry>();
+            EventTrigger.Entry entryDrag = new EventTrigger.Entry();
+            entryDrag.eventID = EventTriggerType.Drag;
+            entryDrag.callback.AddListener((BaseEventData d) =>
+            {
+                PointerEventData data = d as PointerEventData;
+                if (null != data)
+                {
+                    Vector3 delta = data.delta;
+                    MainBtn.transform.Translate(delta * 0.9f);
+                }
+                isDraging = true;
+            });
+            entries.Add(entryDrag);
+
+            //点击事件
+            EventTrigger.Entry entryClick = new EventTrigger.Entry();
+            entryClick.eventID = EventTriggerType.PointerClick;
+            entryClick.callback.AddListener((BaseEventData arg0) =>
+            {
+                if(!isDraging)
+                {
+                    ActiveDebugView(true);
+                }
+                isDraging = false;
+            });
+            entries.Add(entryClick);
+
+            Tools.AddEventTrigger(MainBtn.gameObject, entries);
         }
 #endregion 私有
     }

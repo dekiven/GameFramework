@@ -157,7 +157,7 @@ namespace GameFramework
                     if(ThreadNum == 1)
                     {                        
                         callback(0.99d, "重命名");
-                        File.Move(SavePath + ".tmp1", SavePath);
+                        File.Move(SavePath + ".tmp0", SavePath);
                     }
                     else
                     {
@@ -237,9 +237,9 @@ namespace GameFramework
                             LogFile.Error(fileName + "下载出错,写入大小大于原文件分块");
                         }
                         length = stream.Read(buffer, 0, BufferSize);
-                        LogFile.WriteLine(string.Format("tmp{0}下载进度:{1}/{2}", idx, mPartDoneSize[idx], mPartSize[idx]));
+                        //LogFile.WriteLine(string.Format("tmp{0}下载进度:{1}/{2}", idx, mPartDoneSize[idx], mPartSize[idx]));
                     }
-                    LogFile.WriteLine(string.Format("tmp{0}下载完成:{1}/{2}", idx, mPartDoneSize[idx], mPartSize[idx]));
+                    //LogFile.WriteLine(string.Format("tmp{0}下载完成:{1}/{2}", idx, mPartDoneSize[idx], mPartSize[idx]));
                     stream.Close();
                     stream.Dispose();
                 }

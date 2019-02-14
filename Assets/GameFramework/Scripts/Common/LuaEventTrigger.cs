@@ -19,8 +19,10 @@ namespace GameFramework
             triggers.Clear();
             if (null != lua)
             {
+                int i = 0;
                 foreach (EventTriggerType t in Enum.GetValues(typeof(EventTriggerType)))
                 {
+                    int idx = i;
                     LuaFunction function = mTriggerTable.RawGet<EventTriggerType, LuaFunction>(t);
                     if (null != function)
                     {
@@ -29,9 +31,10 @@ namespace GameFramework
                         entry.eventID = t;
                         entry.callback.AddListener((BaseEventData data) => 
                         {
-                            function.Call(data);
+                            mFuncs[idx].Call(data);
                         });
                         triggers.Add(entry);
+                        i += 1;
                     }
                 }
             }

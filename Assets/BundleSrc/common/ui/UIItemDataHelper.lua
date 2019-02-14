@@ -15,7 +15,7 @@ function getUIData( dataTable )
     -- 一般count大于等于3,某些不需要参数的是2,_issv_ 表示是ScrollViewData teble，不参与转换
     if type(dataTable) == 'table' and count >= 2 then
         -- 如果v[3]是table，需要转换
-        if type(dataTable[3]) == 'table' and (not dataTable._issv_) then
+        if type(dataTable[3]) == 'table' and (not dataTable[3]._issv_) then
             -- dataTable[3]暂时不支持 index和key混用，
             local _v = clone(dataTable)
             if #dataTable[3] > 0 then

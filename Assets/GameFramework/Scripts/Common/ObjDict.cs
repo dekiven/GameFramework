@@ -33,7 +33,7 @@ namespace GameFramework
             }
             if(dict.ContainsKey(key))
             {
-                LogFile.Log("{0} 已经有{1}存在！", dictName, key);
+                //LogFile.Log("objDict[{0}] 已经有{1}存在！", dictName, key);
                 T oriObj = dict[key];
                 if(!Equals(obj, oriObj))
                 {

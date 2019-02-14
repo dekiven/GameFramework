@@ -517,6 +517,7 @@ namespace GameFramework
         /// <returns></returns>
         private IEnumerator onLoadRes<T>(string[] assetNames, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
         {
+            yield return null;
             List<T> list = new List<T>();
 #if UNITY_EDITOR
             foreach (var _name in assetNames)

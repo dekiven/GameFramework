@@ -264,6 +264,16 @@ namespace GameFramework
                         return SetUIRaycastTarget(uiName, (bool)data.Content);
                     }
                 //break;
+                case "setuicolor":
+                    if (uiIndex != -1)
+                    {
+                        return SetUIColor(uiIndex, (Color)data.Content);
+                    }
+                    else
+                    {
+                        return SetUIColor(uiName, (Color)data.Content);
+                    }
+                //break;
                 case "addeventtrigger" :
                     if (uiIndex != -1)
                     {
@@ -309,16 +319,6 @@ namespace GameFramework
                     else
                     {
                         return SetTextString(uiName, (string)data.Content);
-                    }
-                //break;
-                case "settextcolor":
-                    if (uiIndex != -1)
-                    {
-                        return SetTextColor(uiIndex, (Color)data.Content);
-                    }
-                    else
-                    {
-                        return SetTextColor(uiName, (Color)data.Content);
                     }
                 //break;
                 case "setrichtextstring":
@@ -1231,6 +1231,8 @@ namespace GameFramework
                     }
                 //break;
                 case "changesubhandleritem":
+                    //TODO:在 SetScrollViewData 时使用 ChangeSubHandlerItem 判断null != lua可能会造成类型转换失败，可使用一下的操作
+                    //bool isLua = data.Content is LuaTable;
                     if (uiIndex != -1)
                     {
                         LuaTable lua = data.Content as LuaTable;
@@ -1457,6 +1459,28 @@ namespace GameFramework
             if (null != ui)
             {
                 ui.raycastTarget = enabled;
+                return true;
+            }
+            return false;
+        }
+
+        public bool SetUIColor(int index, Color color)
+        {
+            Graphic text = GetCompByIndex<Graphic>(index);
+            return setUIColor(text, color);
+        }
+
+        public bool SetUIColor(string cName, Color color)
+        {
+            Graphic text = GetCompByName<Graphic>(cName);
+            return setUIColor(text, color);
+        }
+
+        private static bool setUIColor(Graphic ui, Color color)
+        {
+            if (null != ui)
+            {
+                ui.color = color;
                 return true;
             }
             return false;
@@ -1693,18 +1717,6 @@ namespace GameFramework
         {
             Text text = GetCompByName<Text>(cName);
             return setTextStr(text, content);
-        }
-
-        public bool SetTextColor(int index, Color color)
-        {
-            Text text = GetCompByIndex<Text>(index);
-            return setTextColor(text, color);
-        }
-
-        public bool SetTextColor(string cName, Color color)
-        {
-            Text text = GetCompByName<Text>(cName);
-            return setTextColor(text, color);
         }
 
         public bool SetRichTextString(int index, string content)
@@ -3533,16 +3545,6 @@ namespace GameFramework
             if (null != text)
             {
                 text.text = content;
-                return true;
-            }
-            return false;
-        }
-
-        private static bool setTextColor(Text text, Color color)
-        {
-            if (null != text)
-            {
-                text.color = color;
                 return true;
             }
             return false;
