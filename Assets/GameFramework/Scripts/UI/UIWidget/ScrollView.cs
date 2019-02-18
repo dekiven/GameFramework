@@ -96,6 +96,7 @@ namespace GameFramework
         /// 当Item多选关闭的情况下，记录当前选中的 Item
         /// </summary>
         private int murSelectIndex = -1;
+        private Vector3 mLastLocalPos;
 
         #endregion 私有属性
 
@@ -741,6 +742,7 @@ namespace GameFramework
             {
                 if (null != mUpCoroutine)
                 {
+                    //if(!forceUpdate && )
                     StopCoroutine(mUpCoroutine);
                     mUpCoroutine = null;
                 }
@@ -1240,6 +1242,12 @@ namespace GameFramework
         #region ScrollRect 显示区域改变回调
         void onSrollViewValueChanged(Vector2 value)
         {
+            Vector2 pos = content.localPosition;
+            if (Math.Abs(mLastLocalPos.x - pos.x) < mRealItemSize.x / 100 && Math.Abs(mLastLocalPos.y - pos.y) < mRealItemSize.y / 100)
+            {
+                return;
+            }
+            mLastLocalPos = pos;
             checkNeedUpdate();
         }
 
