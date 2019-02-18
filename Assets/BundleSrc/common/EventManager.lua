@@ -8,7 +8,8 @@
 --]]
 local pairs = pairs
 local type = type
-module "EventManager"
+
+module 'EventManager'
 
 local _events = {}
 
@@ -32,7 +33,7 @@ end
 function notifyEvent( eventName, ... )
 	local event = _events[eventName] or {}
 	for k, v in pairs(event) do
-		if type(v) == "function" then
+		if type(v) == 'function' then
 			v(...)
 		end
 	end
@@ -42,4 +43,4 @@ end
 	
 -- end
 
-return EventManager
+-- return EventManager

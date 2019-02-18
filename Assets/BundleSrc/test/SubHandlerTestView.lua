@@ -91,7 +91,7 @@ end
 function SubHandlerTestView:dispose( ... )
     self.super.dispose(self)
 
-    -- printWarn('SubHandlerTestView:dispose')
+    -- pWarn('SubHandlerTestView:dispose')
 end
 
 return SubHandlerTestView

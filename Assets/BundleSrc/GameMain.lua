@@ -25,7 +25,7 @@ function MainUpdate()
 end
 
 function OnEvent( eventName, ... )
-    printLog('OnEvent :'..tostring(eventName))
+    pLog('OnEvent :'..tostring(eventName))
     EventManager.notifyEvent(eventName, ...)
 end
 
@@ -37,5 +37,5 @@ function StartTest()
     AddLuaBundles(bundles)
 
     local test = require("test.Test").new()
-    printLog('lua:StartTest')
+    pLog('lua:StartTest')
 end

@@ -37,7 +37,6 @@ namespace GameFramework
             if (GameConfig.useAsb)
             {
                 ResVersion = GameConfig.GetInt(GameDefine.STR_CONF_KEY_RES_VER_I, 0);
-                //这里由于manifest所在的bundle没有后缀名，所以直接走LoadAsset
                 LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate (UObj[] objs)
                 {
                     if (objs.Length > 0)
@@ -277,11 +276,14 @@ namespace GameFramework
         /// <param name="isThorough"></param>
         public void UnloadAssetBundle(string abName, bool isThorough = false)
         {
-            abName = Tools.GetAsbName(abName);
-            Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);
-            unloadAssetBundleInternal(abName, isThorough);
-            unloadDependencies(abName, isThorough);
-            Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory after unloading " + abName);
+            if(GameConfig.useAsb)
+            {
+                abName = Tools.GetAsbName(abName);
+                Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);
+                unloadAssetBundleInternal(abName, isThorough);
+                unloadDependencies(abName, isThorough);
+                Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory after unloading " + abName);
+            }
         }
 
         public bool GetHasAsb(string path)

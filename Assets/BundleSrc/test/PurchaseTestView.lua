@@ -54,7 +54,7 @@ function PurchaseTestView:onInit(uiBase, uiHandler)
 
     EventManager.addEvent('StartPurchase', 'PurchaseTest', function ( ... )
         for i, v in ipairs({...}) do
-            printLog(tostring(v))
+            pLog(tostring(v))
         end
     end)
 
@@ -78,12 +78,12 @@ end
 function PurchaseTestView:dispose( ... )
     self.super.dispose(self)
 
-    -- printWarn('PurchaseTestView:dispose')
+    -- pWarn('PurchaseTestView:dispose')
 end
 
 function PurchaseTestView:onItemClick( index )
     local pid = pids[index+1][1]
-    printLog('clicked '..pid)
+    pLog('clicked '..pid)
     Platform.startPurchase(pid, 'ios')
 end
 

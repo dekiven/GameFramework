@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
+    using Lm = LanguageManager;
 #if UNITY_ANDROID
     public class PlatformAnd : PlatformBase
     {
@@ -86,7 +87,7 @@ namespace GameFramework
                 string savePath = Tools.GetWriteableDataPath(apkName);
                 downloader.DownloadFile(urls, savePath, (double arg1, string arg2) => 
                 {
-                    EventManager.notifyMain("UpdateDownloadView", "", "下载新版本 apk (v" + version + ")...", (float)arg1);
+                    EventManager.notifyMain("UpdateDownloadView", "", Lm.GetStr("下载新版本 apk (v") + version + Lm.GetStr(")..."), (float)arg1);
                     if(arg1.Equals(1d) && arg2.Equals(LargeFileDownloader.STR_SUCCEEDED))
                     {
                         InstallNewApp(savePath);

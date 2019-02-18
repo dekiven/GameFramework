@@ -228,8 +228,8 @@ MonoBehaviour:
   PaddingTop: 0
   PaddingBottom: 0
   ItemNumPerStep: 1
-  ShowItemIntegers: 1
-  LineOffset: 2
+  ShowItemIntegers: 0
+  LineOffset: 10
   AlignLines: 0
   EnableMuiltSelect: 0
   SwitchItemOnClick: 0

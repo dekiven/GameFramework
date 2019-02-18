@@ -94,7 +94,7 @@ function forceRequire(modName)
     local ok, err = pcall(require, modName)
     if not ok then
         -- 热加载失败，将之前的值赋值回去
-        printLog(string.format('[%s] 热加载失败，日志：%s', modName, tostring(err)))
+        pLog(string.format('[%s] 热加载失败，日志：%s', modName, tostring(err)))
         package.loaded[modName] = oldMod
     else
         return err
@@ -155,7 +155,7 @@ function  printTable( table, tName, deepth, indent, maxDeep )
     elseif type(table) == 'string' then
         writeLog(msg..'"'..table..'",')
     else
-        writeLog(msg..table..',')
+        writeLog(msg..tostring(table)..',')
     -- elseif type(table) == 'boolean' then
     -- elseif type(table) == 'number' then
     -- elseif type(table) == 'funtion' then
@@ -253,10 +253,22 @@ function sortTable( tab, args, descending )
     return tab  
 end
 
+function getModPath( modName )
+    return string.gsub(modName, '(%S+)%.%S+', '%1')
+end
+
+function getLuaAsb(path)
+    return 'lua_'..path.gsub(path, '[%.%/%\\]', '_')
+end
+
+function getLuaAsbByMod(modName)
+    return getLuaAsb(getModPath(modName))
+end
+
 -- LogFile 相关
-printLog = GameFramework.LogFile.Log
-printWarn = GameFramework.LogFile.Warn
-printError = GameFramework.LogFile.Error
+pLog = GameFramework.LogFile.Log
+pWarn = GameFramework.LogFile.Warn
+pError = GameFramework.LogFile.Error
 -- WriteLine仅写入
 writeLog = GameFramework.LogFile.WriteLine
 
@@ -277,10 +289,22 @@ LoadScene = luaExp.LoadScene
 CountAsbGroup = luaExp.CountAsbGroup
 -- void UnloadAsbGroup (string group)
 UnloadAsbGroup = luaExp.UnloadAsbGroup
+
 -- void AddLuaBundle (string name)
-AddLuaBundle = luaExp.AddLuaBundle
+local _AddLuaBundle = luaExp.AddLuaBundle
+function AddLuaBundle( path )
+    _AddLuaBundle(getLuaAsb(path))
+end
 -- void AddLuaBundles (string[] names)
-AddLuaBundles = luaExp.AddLuaBundles
+local _AddLuaBundles = luaExp.AddLuaBundles
+function AddLuaBundles( paths )
+    local ps = {}
+    for i,v in ipairs(paths) do
+        table.insert(ps, getLuaAsb(v))
+    end
+    _AddLuaBundles(ps)
+end
+
 -- void ShowView (string asbName, string viewName)
 ShowView = luaExp.ShowView
 -- void PopView ()
@@ -295,6 +319,6 @@ SetCurGroup = luaExp.SetCurGroup
 ClearGroup = luaExp.ClearGroup
 
 
-
+luaExp = nil
 
 

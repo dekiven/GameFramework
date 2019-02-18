@@ -10,8 +10,8 @@ namespace GameFramework
         #endregion OnMessage 通知事件回调名
 
         //通知事件的分隔符
-        private static string sStrSplit = "__;__";
-        public static string STR_SPLIT { get { return sStrSplit; } }
+        private static string sStrSplit = GameDefine.STR_SPLIT_STR;
+        public static string SplitStr { get { return sStrSplit; } }
 
         private static PlatformBase mPlatform = new PlatformBase();
 

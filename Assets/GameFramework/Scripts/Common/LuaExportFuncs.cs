@@ -161,6 +161,28 @@ namespace GameFramework
         }
         #endregion TimeOutWWW 相关
 
+        #region LanguageManager 相关
+        public static string GetStr(string key)
+        {
+            return LanguageManager.GetStr(key);
+        }
+
+        public static string GetLanguage()
+        {
+            return LanguageManager.GetCurLanguage();
+        }
+
+        public static void SetLanguage(string language, LuaFunction function)
+        {
+            LanguageManager.SetLanguage(language, null, function);
+        }
+
+        public static string GetValidLanguages()
+        {
+            return LanguageManager.GetValidLanguages();
+        }
+        #endregion LanguageManager 相关
+
         #region Test
         public static void TestDelegate(System.Action<float> action)
         {

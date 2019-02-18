@@ -1284,6 +1284,9 @@ namespace GameFramework
                         }
                     }
                     //break;
+                default :
+                    LogFile.Warn("ChangeUI找不到注册的函数：" + data.FuncStr);
+                    break;
             }
             return false;
         }

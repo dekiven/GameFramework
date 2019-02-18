@@ -72,7 +72,7 @@ end
 function PluginTestView:dispose( ... )
     self.super.dispose(self)
 
-    -- printWarn('PluginTestView:dispose')
+    -- pWarn('PluginTestView:dispose')
 end
 
 function PluginTestView:onItemClick( index )

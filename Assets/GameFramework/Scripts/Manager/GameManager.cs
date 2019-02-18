@@ -50,19 +50,30 @@ namespace GameFramework
         {
             //初始化部分信息
             init();
-            if (GameConfig.HasDebugView && !string.IsNullOrEmpty(DebugViewRestPath))
+            //第一次初始化GameResManager,完成后初始化多语言管理器
+            GameResManager.Instance.Initialize(() =>
             {
-                ShowDebugView();
-            }
-
-            if(!string.IsNullOrEmpty(UpdateViewResPath))
-            {
-                GameObject prefab = Resources.Load<GameObject>(UpdateViewResPath);
-                if(null != prefab)
+                LanguageManager.Init((bool ret) => 
                 {
-                    mUiMgr.ShowViewPrefab(prefab);
-                }
-            }
+                    if (!ret)
+                    {
+                        LogFile.Warn("多语言管理器 LanguageManager初始化失败");
+                    }
+                    if (GameConfig.HasDebugView && !string.IsNullOrEmpty(DebugViewRestPath))
+                    {
+                        ShowDebugView();
+                    }
+
+                    if (!string.IsNullOrEmpty(UpdateViewResPath))
+                    {
+                        GameObject prefab = Resources.Load<GameObject>(UpdateViewResPath);
+                        if (null != prefab)
+                        {
+                            mUiMgr.ShowViewPrefab(prefab);
+                        }
+                    }
+                });
+            });
         }
 
         public void ShowDebugView()
@@ -237,7 +248,7 @@ namespace GameFramework
         #region 通知相关
         public void OnMessage(string msg)
         {
-            List<string> par = new List<string>(Regex.Split(msg, Platform.STR_SPLIT, RegexOptions.IgnoreCase));
+            List<string> par = new List<string>(Regex.Split(msg, Platform.SplitStr, RegexOptions.IgnoreCase));
             if (par.Count >= 1)
             {
                 NotifyLua(par.ToArray());

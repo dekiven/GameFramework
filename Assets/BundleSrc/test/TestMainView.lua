@@ -53,7 +53,7 @@ end
 function TestMainView:dispose( ... )
     self.super.dispose(self)
 
-    printWarn('TestMainView:dispose')
+    pWarn('TestMainView:dispose')
 end
 
 function TestMainView:setTestDatas( data )
@@ -74,7 +74,7 @@ end
 function TestMainView:onItemClick( index )
     if index < #self.testDatas then
         local data = self.testDatas[index+1]
-        printLog('测试：'..data.name)
+        pLog('测试：'..data.name)
         if nil ~= data.scene then
             self:hide()
             LoadScene('Tests/Scenes/'..data.scene, '', true, false, function ( progress )

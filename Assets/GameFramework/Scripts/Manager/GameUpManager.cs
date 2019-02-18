@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
+    using Lm = LanguageManager;
     /// <summary>
     /// 游戏更新管理器
     /// 检查顺序： 
@@ -37,7 +38,7 @@ namespace GameFramework
 
         public void CheckLocalRes(Action<bool, string> callback)
         {
-            mInfoStr = "Loading...";
+            mInfoStr = "";
             refreshUI(0f);
             string srcUrl = Tools.GetUrlPathStream(Application.streamingAssetsPath, GameConfig.STR_ASB_MANIFIST);
             string tarUrl = Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
@@ -48,38 +49,34 @@ namespace GameFramework
         {
             if(null == mResServList || mResServList.Count == 0 || forceLoad)
             {
-                GameResManager.Instance.Initialize(() =>
+                GameResManager.Instance.LoadRes<TextAsset>("UpdateServer", ".bytes", (obj) =>
                 {
-                    GameResManager.Instance.LoadRes<TextAsset>("UpdateServer", ".bytes", (obj) =>
+                    TextAsset text = obj as TextAsset;
+                    if (null != text)
                     {
-                        TextAsset text = obj as TextAsset;
-                        if (null != text)
+                        ResConf servers = new ResConf(text.text);
+                        ResInfo[] arr = new ResInfo[servers.files.Values.Count];
+                        servers.files.Values.CopyTo(arr, 0);
+                        if (null == mResServList)
                         {
-                            ResConf servers = new ResConf(text.text);
-                            ResInfo[] arr = new ResInfo[servers.files.Values.Count];
-                            servers.files.Values.CopyTo(arr, 0);
-                            if (null == mResServList)
-                            {
-                                mResServList = new List<ResInfo>(arr);
-                            }
-                            else
-                            {
-                                mResServList.Clear();
-                                mResServList.AddRange(arr);
-                            }
-                            mResServList.Sort((ResInfo a, ResInfo b) =>
-                            {
-                                return a.size < b.size ? -1 : 1;
-                            });
-
-                            if (null != action)
-                            {
-                                action(mResServList);
-                            }
+                            mResServList = new List<ResInfo>(arr);
                         }
+                        else
+                        {
+                            mResServList.Clear();
+                            mResServList.AddRange(arr);
+                        }
+                        mResServList.Sort((ResInfo a, ResInfo b) =>
+                        {
+                            return a.size < b.size ? -1 : 1;
+                        });
 
-                    });
-                });   
+                        if (null != action)
+                        {
+                            action(mResServList);
+                        }
+                    }
+                });
             }
             else
             {
@@ -298,7 +295,7 @@ namespace GameFramework
                                     List<ResInfo> list = srcConf.GetUpdateFiles(tarConf);
                                     if (list.Count > 0)
                                     {
-                                        string format = "正在下载资源,已完成[ {0} / {1} ],下载速度：{2} ...";
+                                        string format = Lm.GetStr("正在下载资源,已完成[ {0} / {1} ],下载速度：{2} ...");
                                         mInfoStr = string.Format(format, 0, list.Count, "0Byte/s");
                                         //需要拷贝资源到可读写文件夹
                                         TimeOutWWW copyLocal = getTimeOutWWW();
@@ -406,7 +403,7 @@ namespace GameFramework
             //TODO:刷新UI显示
             if (idx < list.Count)
             {
-                mInfoStr = "检测服务器资源[ " + idx + " / " + list.Count + " ]...";
+                mInfoStr = Lm.GetStr("检测服务器资源[ ") + idx + " / " + list.Count + Lm.GetStr(" ]...");
                 refreshUI((float)idx / list.Count);
                 string srcUrl = Tools.PathCombine(list[idx].path, GameConfig.STR_ASB_MANIFIST);
                 checkResConf(srcUrl, tarUrl, (bool rst, string msg) =>

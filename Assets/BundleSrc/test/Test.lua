@@ -13,6 +13,7 @@ local tests =
     {name='PluginTest', view='test/PluginTestView'},
     {name='PurchaseTest', view='test/PurchaseTestView'},
     {name='SubHandlerTest', view='test/SubHandlerTestView'},
+    {name='LanguageTest', view='test/LanguageTest'},
 }
 
 function TestClass:ctor( ... )
@@ -52,12 +53,12 @@ function TestClass:testLoadPrefab()
 end
 
 function TestClass:testBySceneName(name)
-    printLog('测试：加载场景：'..name)
+    pLog('测试：加载场景：'..name)
     -- 测试UIManager
     gm.LoadScene('Tests/Scenes/'..name, '.unity', true, false, function ( progress )
         -- body
-        -- printLog('SpriteAtlas 测试场景载入完成！')
-        printLog('progress:'..progress)
+        -- pLog('SpriteAtlas 测试场景载入完成！')
+        pLog('progress:'..progress)
     end)
 end
 

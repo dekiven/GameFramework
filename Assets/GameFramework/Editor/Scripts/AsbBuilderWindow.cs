@@ -12,7 +12,7 @@ namespace GameFramework
 
         //% (ctrl on Windows, cmd on macOS), # (shift), & (alt).
         //https://docs.unity3d.com/ScriptReference/MenuItem.html
-        [MenuItem("GameFrameWork/Show AssetBundle Builder #%a")]
+        [MenuItem("GameFrameWork/Show AssetBundle Builder #%g")]
         public static void Open()
         {
             _instance = (AsbBuilderWindow)EditorWindow.GetWindow(typeof(AsbBuilderWindow));
@@ -32,6 +32,7 @@ namespace GameFramework
         {
             if (this._config == null)
                 Init();
+
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();

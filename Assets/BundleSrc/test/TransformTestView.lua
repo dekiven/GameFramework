@@ -60,7 +60,7 @@ end
 function TransformTestView:dispose( ... )
     self.super.dispose(self)
 
-    printWarn('TransformTestView:dispose')
+    pWarn('TransformTestView:dispose')
 end
 
 

@@ -91,9 +91,9 @@ end
 
 -- 子类在Oninit后调用，告知c#初始化结果，以便下一步处理
 function ViewBase:OnLuaInitResult( rst )
-    printLog('ViewBase:OnLuaInitResult( rst ):'..tostring(rst))
+    pLog('ViewBase:OnLuaInitResult( rst ):'..tostring(rst))
     if self.uiBase then
-        printLog('2 ViewBase:OnLuaInitResult( rst ):'..tostring(rst))
+        pLog('2 ViewBase:OnLuaInitResult( rst ):'..tostring(rst))
         self.uiBase:OnLuaInitResult(rst)
     end
 end
