@@ -14,10 +14,10 @@ require('common.Platform')
 require('common.EventManager')
 require('common.LanguageManager')
 
-AddLuaBundle('lua_common_ui')
+AddLuaBundle('common.ui')
 -- common.ui
 require('common.ui.UIItemDataHelper')
 ViewBase = require('common.ui.ViewBase')
 
--- AddLuaBundle('lua_common')
+AddLuaBundle('common')
 SceneBase = require('common.SceneBase')

@@ -254,11 +254,13 @@ function sortTable( tab, args, descending )
 end
 
 function getModPath( modName )
-    return string.gsub(modName, '(%S+)%.%S+', '%1')
+    local p = string.gsub(modName, '(%S+)%.%S+', '%1')
+    return p
 end
 
 function getLuaAsb(path)
-    return 'lua_'..path.gsub(path, '[%.%/%\\]', '_')
+    local p = 'lua_'..path.gsub(path, '[%.%/%\\]', '_')
+    return p
 end
 
 function getLuaAsbByMod(modName)

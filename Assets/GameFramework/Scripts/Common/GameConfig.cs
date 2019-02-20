@@ -145,7 +145,7 @@ namespace GameFramework
         public const string STR_ASB_MANIFIST =
 #if UNITY_EDITOR_OSX
         // mac editor使用pc asb
-        "pc";
+        "mac";
 #elif UNITY_EDITOR_WIN
         "pc";
 #elif UNITY_IOS

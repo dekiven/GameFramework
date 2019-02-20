@@ -118,7 +118,7 @@ namespace GameFramework
 
                     Loom.RunAsync(() =>
                     {
-                        onRecave(_i);
+                        onRecive(_i);
                     });
                  }
 
@@ -158,6 +158,7 @@ namespace GameFramework
                     {                        
                         callback(0.99d, "重命名");
                         File.Move(SavePath + ".tmp0", SavePath);
+                        progress = 1;
                     }
                     else
                     {
@@ -185,6 +186,7 @@ namespace GameFramework
                             FileInfo info = new FileInfo(SavePath + ".tmp" + i);
                             info.Delete();
                         }
+                        progress = 1d;
                     }
                 }
                 callback(progress, (progress.Equals(1d) ? STR_SUCCEEDED : string.Empty));
@@ -203,7 +205,7 @@ namespace GameFramework
             }
         }
 
-        private void onRecave(int idx)
+        private void onRecive(int idx)
         {
             string fileName = SavePath + ".tmp"+idx;
             //LogFile.Log("onRecave idx:{0}, fileName:{1}", idx, fileName);

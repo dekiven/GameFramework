@@ -32,7 +32,7 @@ end
 function StartTest()
     local bundles = 
     {
-        'lua_test',
+        'test',
     }
     AddLuaBundles(bundles)
 
