@@ -45,8 +45,7 @@ function loadLangMod( modName, force )
 
     local hasMod = table.indexof(LanguageManager.mods, modName)
     if (not hasMod) or force then
-        local asb = getLuaAsbByMod(realMod)
-        AddLuaBundle(asb)
+        AddLuaBundle(modPath)
         local data = forceRequire(realMod)
         local data2 = require(realMod)
         table.merge(LanguageManager.data, data)
