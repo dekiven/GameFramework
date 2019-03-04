@@ -18,7 +18,7 @@ namespace GameFramework
 
     public class Singleton<T> where T : class, new()
     {
-        private static T sInstance = null;
+        protected static T sInstance = null;
         private static Object lockObj = new Object();
 
         public static T Instance

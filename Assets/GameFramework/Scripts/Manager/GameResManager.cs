@@ -25,7 +25,6 @@ namespace GameFramework
         Dictionary<string, AssetBundleInfo> m_LoadedAssetBundles = new Dictionary<string, AssetBundleInfo>();
         Dictionary<string, List<LoadAssetRequest>> m_LoadRequests = new Dictionary<string, List<LoadAssetRequest>>();
 
-        Dictionary<string, Dictionary<string, int>> mGroups = new Dictionary<string, Dictionary<string, int>>();
         //资源版本号
         public int ResVersion = 0;
 
@@ -225,63 +224,18 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 将asb 添加到分组并计数，需要释放的时候统一释放某一个组
-        /// </summary>
-        /// <param name="asbName">Asb name.</param>
-        /// <param name="groupName">Group name.</param>
-        public void CountAsbGroup(string asbName, string groupName)
-        {
-            Dictionary<string, int> group;
-            if(!mGroups.TryGetValue(groupName, out group))
-            {
-                group = new Dictionary<string, int>();
-            }
-            if(group.ContainsKey(asbName))
-            {
-                group[asbName] += 1;
-            }else
-            {
-                group[asbName] = 1;
-            }
-            mGroups[groupName] = group;
-        }
-
-        /// <summary>
-        /// 统一释放某一组资源
-        /// </summary>
-        /// <param name="groupName">Group name.</param>
-        public void UnloadAsbGroup(string groupName)
-        {
-            Dictionary<string, int> group;
-            if (mGroups.TryGetValue(groupName, out group))
-            {
-                foreach(var asbInfo in group)
-                {
-                    string asbName = Tools.GetAsbName(asbInfo.Key);
-                    if(!string.IsNullOrEmpty(asbName))
-                    {
-                        for (int i = 0; i < asbInfo.Value; i++)
-                        {
-                            UnloadAssetBundle(asbName);
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// 此函数交给外部卸载专用，自己调整是否需要彻底清除AB
         /// </summary>
         /// <param name="abName"></param>
         /// <param name="isThorough"></param>
-        public void UnloadAssetBundle(string abName, bool isThorough = false)
+        public void UnloadAssetBundle(string abName, bool isThorough = false, int count=1)
         {
             if(GameConfig.useAsb)
             {
                 abName = Tools.GetAsbName(abName);
                 Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);
-                unloadAssetBundleInternal(abName, isThorough);
-                unloadDependencies(abName, isThorough);
+                unloadAssetBundleInternal(abName, isThorough, count);
+                unloadDependencies(abName, isThorough, count);
                 Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory after unloading " + abName);
             }
         }
@@ -452,7 +406,7 @@ namespace GameFramework
             return bundle;
         }
 
-        void unloadDependencies(string abName, bool isThorough)
+        void unloadDependencies(string abName, bool isThorough, int count)
         {
             string[] dependencies = null;
             if (!m_Dependencies.TryGetValue(abName, out dependencies))
@@ -461,20 +415,25 @@ namespace GameFramework
             // Loop dependencies.
             foreach (var dependency in dependencies)
             {
-                unloadAssetBundleInternal(dependency, isThorough);
+                unloadAssetBundleInternal(dependency, isThorough, count);
             }
             m_Dependencies.Remove(abName);
         }
 
-        void unloadAssetBundleInternal(string abName, bool isThorough)
+        void unloadAssetBundleInternal(string abName, bool isThorough, int count)
         {
             AssetBundleInfo bundle = GetLoadedAssetBundle(abName);
             if (bundle == null) return;
-
-            if (--bundle.m_ReferencedCount <= 0)
+            bundle.m_ReferencedCount = bundle.m_ReferencedCount - count;
+            if (bundle.m_ReferencedCount <= 0)
             {
+                if(bundle.m_ReferencedCount < 0)
+                {
+                    LogFile.Warn("unloadAssetBundleInternal :" + abName + ", count :" + count + ", m_ReferencedCount:" + bundle.m_ReferencedCount);
+                }
                 if (m_LoadRequests.ContainsKey(abName))
                 {
+                    //TODO:在 Async Loading 结束后删除
                     return;     //如果当前AB处于Async Loading过程中，卸载会崩溃，只减去引用计数即可
                 }
                 bundle.m_AssetBundle.Unload(isThorough);

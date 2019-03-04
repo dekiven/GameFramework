@@ -48,16 +48,6 @@ namespace GameFramework
         {
             GameResManager.Instance.LoadScene(abName, scenenName, sync, add, null, luaFunction);
         }
-
-        public static void CountAsbGroup(string asbName, string group)
-        {
-            GameResManager.Instance.CountAsbGroup(asbName, group);
-        }
-
-        public static void UnloadAsbGroup(string group)
-        {
-            GameResManager.Instance.UnloadAsbGroup(group);
-        }
         #endregion
 
         #region GameLuaManager

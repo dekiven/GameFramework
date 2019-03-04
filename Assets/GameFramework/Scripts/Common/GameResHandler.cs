@@ -18,10 +18,23 @@ namespace GameFramework
         public string Suffix = null;
 
         #region private 属性
+        /// <summary>
+        /// 保存所有已经加载到内存的 T 对象，释放也是通过 mDict 释放 
+        /// </summary>
         ObjDict<T> mDict;
+        /// <summary>
+        /// 当前 Group 的引用计数器
+        /// </summary>
+        ObjDict<int> mGroupsCounter;
+        /// <summary>
+        /// 记录当前 group 中的 T 对象,
+        /// 当释放 group 时检测 mDict 中对象是否存在当前 group 中，
+        /// 如果没有则不从 mDict 释放
+        /// </summary>
+        Dictionary<string, List<T>> mGroupObjs;
         List<AsbInfo> mList;
         Queue<AsbInfo> mQueue;
-        Dictionary<string, List<string>> mGroups;
+        //Dictionary<string, List<string>> mGroups;
         GameResManager mResMgr;
         #endregion
 
@@ -30,9 +43,10 @@ namespace GameFramework
         public GameResHandler(string group)
         {
             mDict = new ObjDict<T>();
+            mGroupsCounter = new ObjDict<int>();
+            mGroupObjs = new Dictionary<string, List<T>>();
             mList = new List<AsbInfo>();
             mQueue = new Queue<AsbInfo>();
-            mGroups = new Dictionary<string, List<string>>();
             mResMgr = GameResManager.Instance;
             CurGroup = group;
         }
@@ -55,8 +69,7 @@ namespace GameFramework
                     {
                         LogFile.Warn("load:({0},{1})error.", asbName, assetName);
                     }
-                    mResMgr.CountAsbGroup(asbName, groupName);
-                    addAsb2Group(asbName, groupName);
+                    addAsb2Group(asbName, groupName, new T[] {t,});
                 });
             }
         }
@@ -77,6 +90,7 @@ namespace GameFramework
             string groupName = CurGroup;
             mResMgr.LoadRes<T>(asbName, names, delegate (UnityEngine.Object[] obj)
             {
+                List<T> l = new List<T>();
                 if(obj.Length == names.Length)
                 {
                     for (int i = 0; i < names.Length; i++)
@@ -85,6 +99,7 @@ namespace GameFramework
                         if (null != t)
                         {
                             onLoad(asbName, names[i], t);
+                            l.Add(t);
                         }
                         else
                         {
@@ -96,8 +111,7 @@ namespace GameFramework
                 {
                     LogFile.Warn("load {0} error, names.count={1}, obj.Count={2}", asbName, names.Length, obj.Length);
                 }
-                mResMgr.CountAsbGroup(asbName, groupName);
-                addAsb2Group(asbName, groupName);
+                addAsb2Group(asbName, groupName, l.ToArray());
             });
         }
 
@@ -134,8 +148,7 @@ namespace GameFramework
                     {
                         LogFile.Warn("GetAsync load:({0},{1})error.", asbName, assetName);
                     }
-                    mResMgr.CountAsbGroup(asbName, groupName);
-                    addAsb2Group(asbName, groupName);
+                    addAsb2Group(asbName, groupName, new T[] {t,});
                 });               
             }
             else
@@ -154,16 +167,32 @@ namespace GameFramework
 
         public void ClearGroup(string group)
         {
-            mResMgr.UnloadAsbGroup(group);
-            List<string> l;
-            if(mGroups.TryGetValue(group, out l))
+            Dictionary<string, int> counts = mGroupsCounter.GetSubDict(group);
+            if (null != counts)
             {
-                foreach (var asbName in l)
+                foreach (var item in counts)
                 {
-                    //TODO:优化，检测其他group是否存在asb，存在则不清理
-                    mDict.ClearSubDict(asbName);
+                    mResMgr.UnloadAssetBundle(item.Key, false, item.Value);
                 }
-                mGroups.Remove(group);
+                mGroupsCounter.ClearSubDict(group);
+
+                List<T> list = null;
+                if(mGroupObjs.TryGetValue(group, out list))
+                {
+                    Dictionary<string, T> objs = mDict.GetSubDict(group);
+                    if (null != objs)
+                    {
+                        foreach (var obj in objs)
+                        {
+                            if (list.Contains(obj.Value))
+                            {
+                                list.Remove(obj.Value);
+                                mDict.ClearObj(group, obj.Key);
+                            }
+                        }
+                    }
+                    mGroupObjs.Remove(group);
+                }
             }
         }
 
@@ -172,7 +201,7 @@ namespace GameFramework
             mDict.ClearAll();
             mList.Clear();
             mQueue.Clear();
-            mGroups.Clear();
+            mGroupsCounter.ClearAll();
         }
 
         #endregion
@@ -258,17 +287,17 @@ namespace GameFramework
             return;
         }
 
-        private void addAsb2Group(string asbName, string groupName)
+        private void addAsb2Group(string asbName, string groupName, T[] obj)
         {
-            List<string> l;
-            if (!mGroups.TryGetValue(groupName, out l))
+            int count = mGroupsCounter.GetObj(groupName, asbName);
+            mGroupsCounter.AddObj(groupName, asbName, count+1);
+            List<T> ts;
+            if(!mGroupObjs.TryGetValue(groupName, out ts))
             {
-                l = new List<string>();
+                ts = new List<T>();
             }
-            if (!l.Contains(asbName))
-            {
-                l.Add(asbName);
-            }
+            ts.AddRange(obj);
+            mGroupObjs[groupName] = ts;
         }
 
         public string FixResName(string name)

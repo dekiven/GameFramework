@@ -8,19 +8,25 @@ using UnityEngine.U2D;
 namespace GameFramework
 {
     //TODO:dekiven 修改为单纯的单例
-    public class GameSpriteAtlasManager : SingletonComp<GameSpriteAtlasManager>, IResHandler<SpriteAtlas>
+    public class GameSpriteAtlasManager : Singleton<GameSpriteAtlasManager>, IResHandler<SpriteAtlas>
     {
         #region private 属性
         private GameResHandler<SpriteAtlas> mSpriteDict;
         #endregion
 
-        #region MonoBehaviour
-        void Awake()
+        /// <summary>
+        /// 请勿直接调用构造函数，请使用 Instance 方法获取单例
+        /// </summary>
+        public GameSpriteAtlasManager()
         {
             mSpriteDict = new GameResHandler<SpriteAtlas>("SpriteAtlas");
             mSpriteDict.Suffix = ".spriteatlas";
+            mSpriteDict.OnReleaseCallback = (ref SpriteAtlas s) => 
+            {
+                Resources.UnloadAsset(s);
+                s = null;
+            };
         }
-        #endregion
 
         #region IResHandler
         public void Load(string asbName, string atlasName)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFramework
 {
-    public class ObjDict<T> where T : class
+    public class ObjDict<T>
     {
 
         #region delegate
@@ -15,7 +15,7 @@ namespace GameFramework
         /// <summary>
         /// 同名的资源在多次载入的时候是否先处理Dispose回调
         /// </summary>
-        public bool ReleaseBeforeReAdd = false;
+        public bool ReleaseBeforeReAdd = true;
 
         public ObjDict() : this(null){}
 
@@ -49,7 +49,7 @@ namespace GameFramework
 
         public T GetObj(string dictName, string key)
         {
-            T obj = null;
+            T obj = default(T);
             Dictionary<string, T> objs;
             if (mDict.TryGetValue(dictName, out objs))
             {
@@ -78,6 +78,34 @@ namespace GameFramework
                 dict.Clear();
                 mDict.Remove(dictName);
             }
+        }
+
+        public void ClearObj(string dictName, string key)
+        {
+            Dictionary<string, T> dict = GetSubDict(dictName);
+            if (null != dict)
+            {
+                T obj;
+                if(dict.TryGetValue(key, out obj))
+                {
+                    if (null != DisposeCallback)
+                    {
+                        DisposeCallback(ref obj);
+                        dict.Remove(key);
+                    }
+                    if (dict.Count == 0)
+                    {
+                        mDict.Remove(dictName);
+                    }
+                }
+            }
+        }
+
+        public Dictionary<string, T> GetSubDict(string dictName)
+        {
+            Dictionary<string, T> dict = null;
+            mDict.TryGetValue(dictName, out dict);
+            return dict;
         }
 
 

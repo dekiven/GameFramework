@@ -287,10 +287,6 @@ LoadTextAsset = luaExp.LoadTextAsset
 LoadTextAssetBytes = luaExp.LoadTextAssetBytes
 -- void LoadScene (string abName, string scenenName, bool sync, bool add, LuaFunction luaFunction)
 LoadScene = luaExp.LoadScene
--- void CountAsbGroup (string asbName, string group)
-CountAsbGroup = luaExp.CountAsbGroup
--- void UnloadAsbGroup (string group)
-UnloadAsbGroup = luaExp.UnloadAsbGroup
 
 -- void AddLuaBundle (string name)
 local _AddLuaBundle = luaExp.AddLuaBundle

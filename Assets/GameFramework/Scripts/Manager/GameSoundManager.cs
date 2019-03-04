@@ -110,7 +110,8 @@ namespace GameFramework
             mSoundVolume = GameConfig.SoundVolume;
 
             mAudios = new GameResHandler<AudioClip>("audio");
-            mAudios.OnReleaseCallback = delegate(ref AudioClip audioClip) {
+            mAudios.OnReleaseCallback = delegate(ref AudioClip audioClip) 
+            {
                 audioClip.UnloadAudioData();
             };
             mPlayingSources = new List<AudioSource>();

@@ -301,6 +301,14 @@ namespace GameFramework
             ClearAllUI();
             mStackViews.Clear();
             mPrefabs.Dispose();
+            //foreach (var item in mViewListeners)
+            //{
+            //    if(null != item.Value)
+            //    {
+            //        item.Value.Dispose();
+            //    }
+            //}
+            mViewListeners.Clear();
             return base.Dispose();
         }
 
