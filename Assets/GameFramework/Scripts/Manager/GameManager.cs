@@ -12,7 +12,7 @@ namespace GameFramework
         GameCoroutineManager mCorMgr;
         GameUIManager mUiMgr;
         GameLuaManager mLuaMgr;
-        GameResManager mResMgr;
+        ResManager mResMgr;
 
         //是否开启线程处理EventManager线程上的消息
         private bool progressThreadEvent = GameConfig.progressThreadEvent;
@@ -40,7 +40,7 @@ namespace GameFramework
             ObjPools.Init();
 
             mCorMgr = GameCoroutineManager.Instance;
-            mResMgr = GameResManager.Instance;
+            mResMgr = ResManager.Instance;
             mLuaMgr = GameLuaManager.Instance;
             //mUpMgr = GameUpdateManager.Instance;
             mUiMgr = GameUIManager.Instance;
@@ -51,7 +51,7 @@ namespace GameFramework
             //初始化部分信息
             init();
             //第一次初始化GameResManager,完成后初始化多语言管理器
-            GameResManager.Instance.Initialize(() =>
+            ResManager.Instance.Initialize(() =>
             {
                 LanguageManager.Init((bool ret) => 
                 {
@@ -145,7 +145,7 @@ namespace GameFramework
         public void StartGameLogic()
         {
             //在资源更新完毕后再次初始化GameResMranager(正常的游戏逻辑会初始化两次GameResMranager)
-            GameResManager.Instance.Initialize(delegate ()
+            ResManager.Instance.Initialize(delegate ()
             {
                 LogFile.Log("启动Lua虚拟机:" + mLuaMgr);
                 mLuaMgr.InitStart();

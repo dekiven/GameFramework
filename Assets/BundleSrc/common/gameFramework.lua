@@ -276,15 +276,17 @@ writeLog = GameFramework.LogFile.WriteLine
 
 
 local luaExp = GameFramework.LuaExportFuncs
--- void LoadGameObj (string abName, string name, LuaFunction luaFunc)
--- void LoadGameObj (string abName, string[] names, LuaFunction luaFunc)
-LoadGameObj = luaExp.LoadGameObj
--- void LoadTextAsset (string abName, string name, LuaFunction luaFunc)
--- void LoadTextAsset (string abName, string[] names, LuaFunction luaFunc)
-LoadTextAsset = luaExp.LoadTextAsset
--- void LoadTextAssetBytes (string abName, string name, LuaFunction luaFunc)
--- void LoadTextAssetBytes (string abName, string[] names, LuaFunction luaFunc)
-LoadTextAssetBytes = luaExp.LoadTextAssetBytes
+
+-- void LoadPrefab (string abName, string name, LuaFunction luaFunc)
+LoadPrefab = luaExp.LoadPrefab
+
+-- void LoadString (string abName, string name, LuaFunction luaFunc)
+LoadString = luaExp.LoadString
+
+-- void LoadBytes (string abName, string name, LuaFunction luaFunc)
+-- void LoadBytes (string abName, string[] names, LuaFunction luaFunc)
+LoadBytes = luaExp.LoadBytes
+
 -- void LoadScene (string abName, string scenenName, bool sync, bool add, LuaFunction luaFunction)
 LoadScene = luaExp.LoadScene
 
@@ -305,15 +307,41 @@ end
 
 -- void ShowView (string asbName, string viewName)
 ShowView = luaExp.ShowView
+
 -- void PopView ()
 PopView = luaExp.PopView
+
 -- void GetAtlasAsync (string asbName, string atlasName, LuaFunction luaCall)
 GetAtlasAsync = luaExp.GetAtlasAsync
+
 -- void GetSpriteAsync (string asbName, string atlasName, string spriteName, LuaFunction luaCall)
 GetSpriteAsync = luaExp.GetSpriteAsync
--- void SetCurGroup (EnumResGroup e, string group)
+
+-- void LoadAudios(string asbName, string names)
+LoadAudios = luaExp.LoadAudios
+
+-- void PlayBgm(string asbName, string audioName, float fadeOutTime = 0f)
+PlayBgm = luaExp.PlayBgm
+
+-- void StopBgm(float fadeOutTime = 0f)
+StopBgm = luaExp.StopBgm
+
+-- void PauseBgm()
+PauseBgm = luaExp.PauseBgm
+
+-- void ResumeBgm()
+ResumeBgm = luaExp.ResumeBgm
+
+-- void PlaySound(string asbName, string audioName)
+PlaySound = luaExp.PlaySound
+
+-- void StopAllSound()
+StopAllSound = luaExp.StopAllSound
+
+-- void SetCurGroup (string group, EnumResGroup e=EnumResGroup.All)
 SetCurGroup = luaExp.SetCurGroup
--- void ClearGroup (EnumResGroup e, string group)
+
+-- void ClearGroup (string group, EnumResGroup e=EnumResGroup.All)
 ClearGroup = luaExp.ClearGroup
 
 

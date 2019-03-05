@@ -89,12 +89,12 @@ namespace GameFramework
                 string[] _params = str.Split(',');
                 if (_params.Length == 2)
                 {
-                    GameResManager.Instance.LoadRes<Material>(_params[0], _params[1], (UnityEngine.Object material) =>
+                    GameResManager.Instance.GetAsync(_params[0], _params[1], (Material obj) => 
                     {
-                        Content = material;
+                        Content = obj;
                         if (null != mOnAsyncRst)
                         {
-                            mOnAsyncRst(material);
+                            mOnAsyncRst(obj);
                             mOnAsyncRst = null;
                         }
                     });

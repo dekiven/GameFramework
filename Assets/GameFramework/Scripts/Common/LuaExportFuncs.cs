@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using LuaInterface;
 using UnityEngine;
@@ -14,39 +15,39 @@ namespace GameFramework
     public class LuaExportFuncs
     {
         #region GameResManager
-        public static void LoadGameObj(string abName, string name, LuaFunction luaFunc)
+        public static void LoadPrefab(string abName, string name, LuaFunction luaFunc)
         {
-            GameResManager.Instance.LoadRes<GameObject>(abName, name, null, luaFunc);
+            GamePrefabManager.Instance.GetAsync(abName, name, null, luaFunc);
         }
 
-        public static void LoadGameObj(string abName, string[] names, LuaFunction luaFunc)
+        //public static void LoadPrefab(string abName, string[] names, LuaFunction luaFunc)
+        //{
+        //    ResManager.Instance.LoadRes<GameObject>(abName, names, null, luaFunc);
+        //}
+
+        public static void LoadString(string abName, string name, LuaFunction luaFunc)
         {
-            GameResManager.Instance.LoadRes<GameObject>(abName, names, null, luaFunc);
+            GameResManager.Instance.GetStrAsync(abName, name, null, luaFunc);
         }
 
-        public static void LoadTextAsset(string abName, string name, LuaFunction luaFunc)
+        //public static void LoadString(string abName, string[] names, LuaFunction luaFunc)
+        //{
+        //    ResManager.Instance.LoadRes<TextAsset>(abName, names, null, luaFunc);
+        //}
+
+        public static void LoadBytes(string abName, string name, LuaFunction luaFunc)
         {
-            GameResManager.Instance.LoadRes<TextAsset>(abName, name, null, luaFunc);
+            GameResManager.Instance.GetBytesAsync(abName, name, null, luaFunc);
         }
 
-        public static void LoadTextAsset(string abName, string[] names, LuaFunction luaFunc)
-        {
-            GameResManager.Instance.LoadRes<TextAsset>(abName, names, null, luaFunc);
-        }
-
-        public static void LoadTextAssetBytes(string abName, string name, LuaFunction luaFunc)
-        {
-            GameResManager.Instance.LoadTextAssetBytes(abName, new string[] { name, }, luaFunc);
-        }
-
-        public static void LoadTextAssetBytes(string abName, string[] names, LuaFunction luaFunc)
-        {
-            GameResManager.Instance.LoadTextAssetBytes(abName, names, luaFunc);
-        }
+        //public static void LoadBytes(string abName, string[] names, LuaFunction luaFunc)
+        //{
+        //    ResManager.Instance.LoadBytes(abName, names, luaFunc);
+        //}
 
         public static void LoadScene(string abName, string scenenName, bool sync, bool add, LuaFunction luaFunction)
         {
-            GameResManager.Instance.LoadScene(abName, scenenName, sync, add, null, luaFunction);
+            GameSceneManager.Instance.LoadScene(abName, scenenName, sync, add, null, luaFunction);
         }
         #endregion
 
@@ -89,8 +90,46 @@ namespace GameFramework
 
         #endregion GameSpriteAtlasManager
 
+        #region GameSoundManager
+        public static void LoadAudios(string asbName, string names)
+        {
+            GameSoundManager.Instance.LoadAudios(asbName, names.Split(','));
+        }
+
+        public static void PlayBgm(string asbName, string audioName, float fadeOutTime = 0f)
+        {
+            GameSoundManager.Instance.PlayBgm(asbName, audioName, fadeOutTime);
+        }
+
+        public static void StopBgm(float fadeOutTime = 0f)
+        {
+            GameSoundManager.Instance.StopBgm(fadeOutTime);
+        }
+
+        public static void PauseBgm()
+        {
+            GameSoundManager.Instance.PauseBgm();
+        }
+
+        public static void ResumeBgm()
+        {
+            GameSoundManager.Instance.ResumeBgm();
+        }
+
+        public static void PlaySound(string asbName, string audioName)
+        {
+            GameSoundManager.Instance.PlaySound(asbName, audioName);
+        }
+
+        public static void StopAllSound()
+        {
+            GameSoundManager.Instance.StopAllSound();
+        }
+        #endregion GameSoundManager
+
+
         #region Res 释放相关
-        public static void SetCurGroup(EnumResGroup e, string group)
+        public static void SetCurGroup(string group, EnumResGroup e=EnumResGroup.All)
         {
             switch(e)
             {
@@ -103,10 +142,15 @@ namespace GameFramework
                 case EnumResGroup.SpriteAtlas:
                     GameSoundManager.Instance.SetCurGroup(group);
                     break;
+                case EnumResGroup.All :
+                    GameUIManager.Instance.SetCurGroup(group);
+                    GameSoundManager.Instance.SetCurGroup(group);
+                    GameSoundManager.Instance.SetCurGroup(group);
+                    break;
             }
         }
 
-        public static void ClearGroup(EnumResGroup e, string group)
+        public static void ClearGroup(string group, EnumResGroup e=EnumResGroup.All)
         {
             switch (e)
             {
@@ -117,6 +161,11 @@ namespace GameFramework
                     GameSoundManager.Instance.ClearGroup(group);
                     break;
                 case EnumResGroup.SpriteAtlas:
+                    GameSoundManager.Instance.ClearGroup(group);
+                    break;
+                case EnumResGroup.All:
+                    GameUIManager.Instance.ClearGroup(group);
+                    GameSoundManager.Instance.ClearGroup(group);
                     GameSoundManager.Instance.ClearGroup(group);
                     break;
             }
@@ -183,6 +232,7 @@ namespace GameFramework
 
     public enum EnumResGroup
     {
+        All,
         UI,
         Audio,
         SpriteAtlas,

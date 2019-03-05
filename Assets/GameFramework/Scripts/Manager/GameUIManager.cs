@@ -29,7 +29,7 @@ namespace GameFramework
         {
 
             mViewListeners = new Dictionary<string, LuaTable>();
-            mPrefabs = new GameResHandler<GameObject>("UI");
+            mPrefabs = new GameResHandler<GameObject>("common");
             mPrefabs.OnLoadCallbcak = onLoadPrefab;
             mPrefabs.Suffix = ".prefab";
 

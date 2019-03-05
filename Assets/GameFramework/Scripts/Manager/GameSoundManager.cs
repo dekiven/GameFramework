@@ -109,7 +109,7 @@ namespace GameFramework
             mBgmVolume = GameConfig.BGMVolume;
             mSoundVolume = GameConfig.SoundVolume;
 
-            mAudios = new GameResHandler<AudioClip>("audio");
+            mAudios = new GameResHandler<AudioClip>("common");
             mAudios.OnReleaseCallback = delegate(ref AudioClip audioClip) 
             {
                 audioClip.UnloadAudioData();
@@ -169,9 +169,8 @@ namespace GameFramework
         }
         #endregion
 
-        public void LoadAudios(string asbName, string[] audioNames, string group = "audio")
+        public void LoadAudios(string asbName, string[] audioNames)
         {
-            mAudios.CurGroup = group;
             mAudios.Load(asbName, audioNames);
         }
 

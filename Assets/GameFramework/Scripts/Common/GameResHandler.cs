@@ -27,15 +27,15 @@ namespace GameFramework
         /// </summary>
         ObjDict<int> mGroupsCounter;
         /// <summary>
-        /// 记录当前 group 中的 T 对象,
+        /// 记录当前 group 中的 T 对象名,
         /// 当释放 group 时检测 mDict 中对象是否存在当前 group 中，
         /// 如果没有则不从 mDict 释放
         /// </summary>
-        Dictionary<string, List<T>> mGroupObjs;
+        Dictionary<string, Dictionary<string, HashSet<string>>> mGroupObjs;
         List<AsbInfo> mList;
         Queue<AsbInfo> mQueue;
         //Dictionary<string, List<string>> mGroups;
-        GameResManager mResMgr;
+        ResManager mResMgr;
         #endregion
 
         #region public 方法
@@ -44,10 +44,10 @@ namespace GameFramework
         {
             mDict = new ObjDict<T>();
             mGroupsCounter = new ObjDict<int>();
-            mGroupObjs = new Dictionary<string, List<T>>();
+            mGroupObjs = new Dictionary<string, Dictionary<string, HashSet<string>>>();
             mList = new List<AsbInfo>();
             mQueue = new Queue<AsbInfo>();
-            mResMgr = GameResManager.Instance;
+            mResMgr = ResManager.Instance;
             CurGroup = group;
         }
 
@@ -69,7 +69,7 @@ namespace GameFramework
                     {
                         LogFile.Warn("load:({0},{1})error.", asbName, assetName);
                     }
-                    addAsb2Group(asbName, groupName, new T[] {t,});
+                    addAsb2Group(asbName, groupName, new string[] {assetName,});
                 });
             }
         }
@@ -90,7 +90,6 @@ namespace GameFramework
             string groupName = CurGroup;
             mResMgr.LoadRes<T>(asbName, names, delegate (UnityEngine.Object[] obj)
             {
-                List<T> l = new List<T>();
                 if(obj.Length == names.Length)
                 {
                     for (int i = 0; i < names.Length; i++)
@@ -99,7 +98,6 @@ namespace GameFramework
                         if (null != t)
                         {
                             onLoad(asbName, names[i], t);
-                            l.Add(t);
                         }
                         else
                         {
@@ -111,7 +109,7 @@ namespace GameFramework
                 {
                     LogFile.Warn("load {0} error, names.count={1}, obj.Count={2}", asbName, names.Length, obj.Length);
                 }
-                addAsb2Group(asbName, groupName, l.ToArray());
+                addAsb2Group(asbName, groupName, names);
             });
         }
 
@@ -121,6 +119,7 @@ namespace GameFramework
             return mDict.GetObj(asbName, assetName);
         }
 
+        //TODO:考虑支持多个异步获取
         public void GetAsync(string asbName, string assetName, Action<T> callback=null, LuaFunction luaFunction=null)
         {
             assetName = FixResName(assetName);
@@ -148,7 +147,7 @@ namespace GameFramework
                     {
                         LogFile.Warn("GetAsync load:({0},{1})error.", asbName, assetName);
                     }
-                    addAsb2Group(asbName, groupName, new T[] {t,});
+                    addAsb2Group(asbName, groupName, new string[] {assetName,});
                 });               
             }
             else
@@ -176,21 +175,14 @@ namespace GameFramework
                 }
                 mGroupsCounter.ClearSubDict(group);
 
-                List<T> list = null;
-                if(mGroupObjs.TryGetValue(group, out list))
+                Dictionary<string, HashSet<string>> dict;
+                if(mGroupObjs.TryGetValue(group, out dict))
                 {
-                    Dictionary<string, T> objs = mDict.GetSubDict(group);
-                    if (null != objs)
+                    foreach (var item in dict)
                     {
-                        foreach (var obj in objs)
-                        {
-                            if (list.Contains(obj.Value))
-                            {
-                                list.Remove(obj.Value);
-                                mDict.ClearObj(group, obj.Key);
-                            }
-                        }
+                        mDict.ClearObjs(item.Key, new List<string>(item.Value).ToArray());
                     }
+                    Dictionary<string, T> objs = mDict.GetSubDict(group);
                     mGroupObjs.Remove(group);
                 }
             }
@@ -209,9 +201,9 @@ namespace GameFramework
 
         #region private 方法
 
-        private void onLoad(string asbName, string assetName, T t)
+        private bool onLoad(string asbName, string assetName, T t)
         {
-            mDict.AddObj(asbName, assetName, t);
+            bool ret= mDict.AddObj(asbName, assetName, t);
             if(null != OnLoadCallbcak)
             {
                 if (mList.Count > 0)
@@ -249,13 +241,14 @@ namespace GameFramework
                             }
                             else
                             {
-                                return;
+                                //不是调用序列的第一个直接返回
+                                return ret;
                             }
                         }
                     }
                 }
             }
-
+            return ret;
         }
 
         private void addAsbInfo(string asbName, string name, string extral, bool isOrdered)
@@ -287,17 +280,24 @@ namespace GameFramework
             return;
         }
 
-        private void addAsb2Group(string asbName, string groupName, T[] obj)
+        private void addAsb2Group(string asbName, string groupName, string[] obj)
         {
             int count = mGroupsCounter.GetObj(groupName, asbName);
             mGroupsCounter.AddObj(groupName, asbName, count+1);
-            List<T> ts;
-            if(!mGroupObjs.TryGetValue(groupName, out ts))
+            Dictionary<string, HashSet<string>> groupDict;
+            if(!mGroupObjs.TryGetValue(groupName, out groupDict))
             {
-                ts = new List<T>();
+                groupDict = new Dictionary<string, HashSet<string>>();
             }
-            ts.AddRange(obj);
-            mGroupObjs[groupName] = ts;
+            HashSet<string> asbSet;
+            if(!groupDict.TryGetValue(asbName, out asbSet))
+            {
+                asbSet = new HashSet<string>();
+            }
+            //并集
+            asbSet.UnionWith(obj);
+            groupDict[asbName] = asbSet;
+            mGroupObjs[groupName] = groupDict;
         }
 
         public string FixResName(string name)

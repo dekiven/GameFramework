@@ -24,8 +24,16 @@ namespace GameFramework
             DisposeCallback = dispose;
         }
 
-        public void AddObj(string dictName, string key, T obj)
+        /// <summary>
+        /// 将 T 对象加入名字为 dictName 的 subDictionary，其 key 值为 key,返回 false 表示之前添加过，这次添加是替换
+        /// </summary>
+        /// <returns><c>true</c>, if object was added, <c>false</c> otherwise.</returns>
+        /// <param name="dictName"> ObjDict 中子 Dictionary 的 key</param>
+        /// <param name="key">添加对象在子 Dictionary 中的 key</param>
+        /// <param name="obj">添加的对象</param>
+        public bool AddObj(string dictName, string key, T obj)
         {
+            bool ret = true;
             Dictionary<string, T> dict;
             if(!mDict.TryGetValue(dictName, out dict))
             {
@@ -42,9 +50,11 @@ namespace GameFramework
                         DisposeCallback(ref oriObj);
                     }
                 }
+                ret = false;
             }
             dict[key] = obj;
             mDict[dictName] = dict;
+            return ret;
         }
 
         public T GetObj(string dictName, string key)
@@ -97,6 +107,31 @@ namespace GameFramework
                     {
                         mDict.Remove(dictName);
                     }
+                }
+            }
+        }
+
+        public void ClearObjs(string dictName, string[] keys)
+        {
+            Dictionary<string, T> dict = GetSubDict(dictName);
+            if (null != dict)
+            {
+                for (int i = 0; i < keys.Length; ++i)
+                {
+                    string key = keys[i];
+                    T obj;
+                    if (dict.TryGetValue(key, out obj))
+                    {
+                        if (null != DisposeCallback)
+                        {
+                            DisposeCallback(ref obj);
+                            dict.Remove(key);
+                        }
+                    }
+                }
+                if (dict.Count == 0)
+                {
+                    mDict.Remove(dictName);
                 }
             }
         }

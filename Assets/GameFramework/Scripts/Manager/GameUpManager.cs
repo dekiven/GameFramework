@@ -49,12 +49,12 @@ namespace GameFramework
         {
             if(null == mResServList || mResServList.Count == 0 || forceLoad)
             {
-                GameResManager.Instance.LoadRes<TextAsset>("UpdateServer", ".bytes", (obj) =>
+                GameResManager.Instance.GetStrAsync("UpdateServer", ".bytes", (text) =>
                 {
-                    TextAsset text = obj as TextAsset;
-                    if (null != text)
+                    // TextAsset text = obj as TextAsset;
+                    if (!string.IsNullOrEmpty(text))
                     {
-                        ResConf servers = new ResConf(text.text);
+                        ResConf servers = new ResConf(text);
                         ResInfo[] arr = new ResInfo[servers.files.Values.Count];
                         servers.files.Values.CopyTo(arr, 0);
                         if (null == mResServList)
@@ -237,6 +237,7 @@ namespace GameFramework
                                     GameConfig.SetInt(GameDefine.STR_CONF_KEY_RES_VER_I, curConf.VersionCode);
                                     curConf.SaveToFile(Tools.GetWriteableDataPath(GameConfig.STR_ASB_MANIFIST + "/" + STR_RES_CONF));
                                     mVersionStr = "app:v" + Application.version + " res"+curConf.version;
+                                    refreshUI(100);
                                 }
                             }, null);
                         }
@@ -322,6 +323,7 @@ namespace GameFramework
                                                     //保存新的资源版本号
                                                     GameConfig.SetInt(GameDefine.STR_CONF_KEY_RES_VER_I, curConf.VersionCode);
                                                     mVersionStr = "app:v" + Application.version + " res" + curConf.version;
+                                                    refreshUI(100);
                                                     //拷贝完成
                                                     callback(true, "资源更新完成");
                                                 }

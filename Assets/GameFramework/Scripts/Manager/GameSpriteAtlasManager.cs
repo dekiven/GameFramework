@@ -7,7 +7,6 @@ using UnityEngine.U2D;
 
 namespace GameFramework
 {
-    //TODO:dekiven 修改为单纯的单例
     public class GameSpriteAtlasManager : Singleton<GameSpriteAtlasManager>, IResHandler<SpriteAtlas>
     {
         #region private 属性
@@ -19,7 +18,7 @@ namespace GameFramework
         /// </summary>
         public GameSpriteAtlasManager()
         {
-            mSpriteDict = new GameResHandler<SpriteAtlas>("SpriteAtlas");
+            mSpriteDict = new GameResHandler<SpriteAtlas>("common");
             mSpriteDict.Suffix = ".spriteatlas";
             mSpriteDict.OnReleaseCallback = (ref SpriteAtlas s) => 
             {
@@ -60,7 +59,7 @@ namespace GameFramework
             mSpriteDict.GetAsync(asbName, atlasName, callbcak, luaCall);
         }
 
-        public void GetSpriteAsync(string asbName, string atlasName, string spriteName,Action<Sprite> callbcak, LuaFunction luaCall=null)
+        public void GetSpriteAsync(string asbName, string atlasName, string spriteName, Action<Sprite> callbcak, LuaFunction luaCall=null)
         {
             mSpriteDict.GetAsync(asbName, atlasName, (SpriteAtlas atlas)=>
             {

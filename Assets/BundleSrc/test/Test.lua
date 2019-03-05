@@ -34,7 +34,7 @@ function TestClass:testLoadPrefab()
         if progress >= 1 then
             GameFramework.LogFile.Log('gm.LoadScene 2')
 
-            gm.LoadGameObj('res/test/test/Cube', '.prefab', function ( obj )
+            gm.LoadPrefab('res/test/test/Cube', '.prefab', function ( obj )
                 -- print(tostring(obj[0]))
                 -- GameFramework.LogFile.Log(obj[0])
                 print(tostring(UnityEngine.GameObject.Instantiate))

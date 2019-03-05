@@ -30,16 +30,16 @@ namespace GameFramework
 
         public static void Init(Action<bool> action)
         {
-            GameResManager.Instance.LoadRes<TextAsset>(STR_BASE_ASB_PATH, "config.bytes", (UnityEngine.Object obj) =>
+            GameResManager.Instance.GetStrAsync(STR_BASE_ASB_PATH, "config.bytes", (text) =>
             {
-                TextAsset text = obj as TextAsset;
-                if (null == text && null != action)
+                // TextAsset text = obj as TextAsset;
+                if (string.IsNullOrEmpty(text) && null != action)
                 {
                     action(false);
                     LogFile.Error("语言配置文件不存在");
                     return;
                 }
-                SetValidLanguages(text.text);
+                SetValidLanguages(text);
                 SetLanguage(GetCurLanguage(), action, null);
             });
 
@@ -71,13 +71,13 @@ namespace GameFramework
             if(sLanguages.Contains(language))
             {
                 GameConfig.SetStr(GameDefine.STR_CUR_LANGUAGE, language);
-                GameResManager.Instance.LoadRes<TextAsset>(STR_BASE_ASB_PATH, language + ".bytes", (obj) =>
+                GameResManager.Instance.GetStrAsync(STR_BASE_ASB_PATH, language + ".bytes", (text) =>
                 {
-                    TextAsset text = obj as TextAsset;
+                    // TextAsset text = obj as TextAsset;
                     bool ret = text != null;
                     if (ret)
                     {
-                        resetLanguageData(text.text);
+                        resetLanguageData(text);
                     }
                     else
                     {
@@ -96,7 +96,7 @@ namespace GameFramework
                         function = null;
                     }
 
-                    GameResManager.Instance.UnloadAssetBundle(STR_BASE_ASB_PATH);
+                    ResManager.Instance.UnloadAssetBundle(STR_BASE_ASB_PATH);
                 });
             }
             else
