@@ -381,6 +381,12 @@ namespace GameFramework
                         }
                     }
                 }
+                while (!Caching.ready)
+                {
+                    // 等待缓存变为 Ready 状态，防止缓存很大的游戏出现 Move Cache 失败等问题
+                    yield return null;
+                }
+
                 //download = WWW.LoadFromCacheOrDownload(url, m_AssetBundleManifest.GetAssetBundleHash(abName), ResVersion);
                 //注意：LoadFromCacheOrDownload 的缓存不是根据url，而是根据文件名查找缓存，如果有同文件名的bundle可能会出问题
                 download = WWW.LoadFromCacheOrDownload(url, ResVersion);
