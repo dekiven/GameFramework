@@ -95,8 +95,12 @@ namespace GameFramework
         /// <summary>
         /// 当Item多选关闭的情况下，记录当前选中的 Item
         /// </summary>
-        private int murSelectIndex = -1;
+        private int mCurSelectIndex = -1;
         private Vector3 mLastLocalPos;
+        /// <summary>
+        /// 是否改变了 content size，如果是，下一次 onValueChanged 刷新
+        /// </summary>
+        private bool mIsSizeChanged = false;
 
         #endregion 私有属性
 
@@ -377,6 +381,7 @@ namespace GameFramework
                 content.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, viewSize.x > width ? viewSize.x : width);
                 //content.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             }
+            mIsSizeChanged = true;
         }
 
         public void SetOnItemClickDelegate(DelScrollItemClicked del)
@@ -437,12 +442,12 @@ namespace GameFramework
         {
             if (!EnableMuiltSelect)
             {
-                if(murSelectIndex >= 0 && murSelectIndex < mItemDatas.Count)
+                if(mCurSelectIndex >= 0 && mCurSelectIndex < mItemDatas.Count)
                 {
-                    setItemSelected(murSelectIndex, false);
-                    mItemSelectStatus[murSelectIndex] = false;
+                    setItemSelected(mCurSelectIndex, false);
+                    mItemSelectStatus[mCurSelectIndex] = false;
                 }
-                murSelectIndex = index;
+                mCurSelectIndex = index;
             }
             setItemSelected(index, true);
             onSelectStatusChanges();
@@ -469,10 +474,10 @@ namespace GameFramework
 
         public void UnselectItem(int index)
         {
-            if (!EnableMuiltSelect && index == murSelectIndex)
+            if (!EnableMuiltSelect && index == mCurSelectIndex)
             {
                 //mItemSelectStatus[murSelectIndex] = false;
-                murSelectIndex = -1;
+                mCurSelectIndex = -1;
             }
             setItemSelected(index, false);
             //mItemSelectStatus[index] = false;
@@ -502,17 +507,17 @@ namespace GameFramework
         {
             if (!EnableMuiltSelect)
             {
-                if (murSelectIndex >= 0 && murSelectIndex < mItemDatas.Count)
+                if (mCurSelectIndex >= 0 && mCurSelectIndex < mItemDatas.Count)
                 {
-                    setItemSelected(murSelectIndex, false);
+                    setItemSelected(mCurSelectIndex, false);
                 } 
-                if(index == murSelectIndex)
+                if(index == mCurSelectIndex)
                 {
-                    mItemSelectStatus[murSelectIndex] = false;
-                    murSelectIndex = -1;
+                    mItemSelectStatus[mCurSelectIndex] = false;
+                    mCurSelectIndex = -1;
                     return;
                 }
-                murSelectIndex = index;
+                mCurSelectIndex = index;
             }
             switchItem(index);
             onSelectStatusChanges();
@@ -758,7 +763,7 @@ namespace GameFramework
             if (mShowStart != startLine || mShowEnd != endLine || forceUpdate)
             {
                 //只有首尾的行变动，只处理相应的行,只在一帧处理完
-                if (Math.Abs(mShowStart - startLine) <= 1 && Math.Abs(endLine - mShowEnd) <= 1 && !forceUpdate)
+                if (!forceUpdate && Math.Abs(mShowStart - startLine) <= 1 && Math.Abs(endLine - mShowEnd) <= 1)
                 {
                     //减少Item
                     //如果开始的行数比当前的大1，证明现在在开头少显示了一行
@@ -920,6 +925,9 @@ namespace GameFramework
                 recoverItem(item);
                 mCurItems.RemoveAt(i);
             }
+
+            mShowStart = -1;
+            mShowEnd = -1;
             //LogFile.Warn("recoverAll 2 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
         }
 
@@ -1242,6 +1250,12 @@ namespace GameFramework
         #region ScrollRect 显示区域改变回调
         void onSrollViewValueChanged(Vector2 value)
         {
+            if (mIsSizeChanged)
+            {
+                mIsSizeChanged = false;
+                return;
+            }
+
             Vector2 pos = content.localPosition;
             if (Math.Abs(mLastLocalPos.x - pos.x) < mRealItemSize.x / 100 && Math.Abs(mLastLocalPos.y - pos.y) < mRealItemSize.y / 100)
             {
