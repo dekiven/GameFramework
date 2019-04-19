@@ -791,6 +791,16 @@ namespace GameFramework
                         return Tween2ScrollViewIndex(uiName, (int)data.Content);
                     }
                 //break;
+                case "tween2scrollviewpos":
+                    if (uiIndex != -1)
+                    {
+                        return Tween2ScrollViewPos(uiIndex, (float)data.Content);
+                    }
+                    else
+                    {
+                        return Tween2ScrollViewPos(uiName, (float)data.Content);
+                    }
+                //break;
                 case "selectscrollviewitem":
                     if (uiIndex != -1)
                     {
@@ -1341,7 +1351,7 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择,不能选择变灰
+        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择,不能选择将变灰
         /// </summary>
         /// <returns><c>true</c>, if UIS electable was set, <c>false</c> otherwise.</returns>
         /// <param name="index">Index.</param>
@@ -1353,7 +1363,7 @@ namespace GameFramework
         }
 
         /// <summary>
-        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择,不能选择变灰
+        /// 设置Button、Slider、Dropdown、InputField等UI是否可选择,不能选择将变灰
         /// </summary>
         /// <returns><c>true</c>, if UIS electable was set, <c>false</c> otherwise.</returns>
         /// <param name="cName">Name.</param>
@@ -2499,6 +2509,33 @@ namespace GameFramework
             return false;
         }
 
+        //----------------------------------------------------------------------------------
+        // Tween 到 ScrollView某位置，pos 取0~1f,0表示 显示列表头，1表示显示列表末尾
+        public bool Tween2ScrollViewPos(int index, float pos)
+        {
+            ScrollView ui = GetCompByIndex<ScrollView>(index);
+            return tween2ScrollViewPos(ui, pos);
+        }
+
+        // Tween 到 ScrollView某位置，pos 取0~1f,0表示 显示列表头，1表示显示列表末尾
+        public bool Tween2ScrollViewPos(string cName, float pos)
+        {
+            ScrollView ui = GetCompByName<ScrollView>(cName);
+            return tween2ScrollViewPos(ui, pos);
+        }
+
+        // Tween 到 ScrollView某位置，pos 取0~1f,0表示 显示列表头，1表示显示列表末尾
+        private static bool tween2ScrollViewPos(ScrollView ui, float pos)
+        {
+            if (null != ui)
+            {
+                ui.Tween2Pos(pos);
+                return true;
+            }
+            return false;
+        }
+        //----------------------------------------------------------------------------------
+
         // 设置点击代理
         public bool SetScrollViewOnItemClick(int index, DelScrollItemClicked del)
         {
@@ -2549,21 +2586,21 @@ namespace GameFramework
             return false;
         }
 
-        // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按index
+        // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按钮index
         public bool SetScrollViewBtnClick_I(int index, DelBtnClickedIndex del)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
             return setScrollViewOnBtnClick_I(ui, del);
         }
 
-        // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按index
+        // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按钮index
         public bool SetScrollViewBtnClick_I(string cName, DelBtnClickedIndex del)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
             return setScrollViewOnBtnClick_I(ui, del);
         }
 
-        // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按index
+        // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按钮index
         private static bool setScrollViewOnBtnClick_I(ScrollView ui, DelBtnClickedIndex del)
         {
             if (null != ui)
@@ -3890,16 +3927,22 @@ namespace GameFramework
         //正则 替换函数名   SelectItem(int index)  ====>   ___~ScrollView~SelectItem~int~index~___~ui.SelectItem(index);//--
         ^(\S+)\((\S*) ?(\S*)\)$
         ___~ScrollView~\1~\2~\3~___~ui.\1(\3);//--
-  
         // 正则 将上面的正则替换成 UIhandler 函数 
-        // \8
+        
+        /// <summary>
+        /// \8 
+        /// </summary>
+        /// <param name="\5"> \5(\4) </param>
         public bool \1\2\3(int index, \4 \5)
         {
             \2 ui = GetCompByIndex<\2>(index);
             return \6\2\3(ui, \5);
         }
 
-        // \8
+        /// <summary>
+        /// \8 
+        /// </summary>
+        /// <param name="\5"> \5(\4) </param>
         public bool \1\2\3(string cName, \4 \5)
         {
             \2 ui = GetCompByName<\2>(cName);

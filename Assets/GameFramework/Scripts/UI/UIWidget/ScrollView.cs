@@ -55,6 +55,8 @@ namespace GameFramework
         public bool SwitchItemOnClick;
         [HideInInspector]
         public float TweenRate = 0.001f;
+        [HideInInspector]
+        public float TweenMaxTime = 0.8f;
 
         #region 私有属性
         private ObjPool<ScrollItem> mItemPool;
@@ -71,6 +73,7 @@ namespace GameFramework
         /// </summary>
         private Vector2 mContentPadding = new Vector2();
         private int mTargetIndex = -1;
+        private float mTargetPos = -1f;
         private Tween mMoveTween = null;
         private Vector2 mRealItemSize = Vector2.one;
 
@@ -242,6 +245,22 @@ namespace GameFramework
             else
             {
                 tweenToIndex(index);
+            }
+        }
+
+        /// <summary>
+        /// Tween 到 固定位置0f~1f，0表示 显示列表头，1表示显示列表末尾
+        /// </summary>
+        /// <param name="pos">Position 取值:0f~1f</param>
+        public void Tween2Pos(float pos)
+        {
+            if (null != mUpCoroutine)
+            {
+                mTargetPos = pos;
+            }
+            else
+            {
+                tweenToPos(pos);
             }
         }
 
@@ -818,6 +837,12 @@ namespace GameFramework
                     {
                         tweenToIndex(mTargetIndex);
                         mTargetIndex = -1;
+                        mTargetPos = -1f;
+                    }
+                    else if( !mTargetPos.Equals(-1f) )
+                    {
+                        tweenToPos(mTargetPos);
+                        mTargetPos = -1f;
                     }
                 }
                 mShowStart = startLine;
@@ -996,23 +1021,49 @@ namespace GameFramework
 
             Vector3 localPos = getConetntPosByIdx(index);
             localPos.z = content.localPosition.z;
-            float dt = Vector3.Distance(content.localPosition, localPos) * TweenRate;
-            //if (ShowItemIntegers)
-            //{
-            //    Vector2 pos = getNormalizedPosByIndex(index);
-            //    mMoveTween = DOTween.To(() => normalizedPosition, (Vector2 v) => normalizedPosition = v, pos, dt).SetEase(Ease.InOutQuad).OnComplete(() => 
-            //    {
-            //        mMoveTween = null;
-            //    });
-            //}
-            //else
+            float dt = getTweenTimeByDis(Vector3.Distance(content.localPosition, localPos));
+            mMoveTween = DOTween.To(() => content.localPosition, (Vector2 v) => content.localPosition = v, localPos, dt).SetEase(Ease.InOutQuad).OnComplete(() =>
             {
-                mMoveTween = DOTween.To(() => content.localPosition, (Vector2 v) => content.localPosition = v, localPos, dt).SetEase(Ease.InOutQuad).OnComplete(() =>
-                {
-                    mMoveTween = null;
-                });
-            }
+                mMoveTween = null;
+            });
+        }
 
+        private void tweenToPos(float pos)
+        {
+            if (null != mMoveTween)
+            {
+                mMoveTween.Kill();
+                mMoveTween = null;
+            }
+            pos = Mathf.Clamp01(pos);
+            Vector2 tarPos = Vector2.zero;
+            float dis = 0f;
+            if (ScrollViewType.Vertical == ScrollType)
+            {
+                //normalizedPosition 以左下角为原点，详见normalizedPosition说明
+                pos = 1 - pos;
+                dis = Math.Abs(normalizedPosition.y - pos) * content.rect.size.y;
+                tarPos.y = pos;
+            }
+            else
+            {
+                dis = Math.Abs(normalizedPosition.x - pos) * content.rect.size.x;
+                tarPos.x = pos;
+            }
+            float dt = getTweenTimeByDis(dis);
+            mMoveTween = DOTween.To(() => normalizedPosition, (Vector2 v) => normalizedPosition = v, tarPos, dt).SetEase(Ease.InOutQuad).OnComplete(() =>
+            {
+                mMoveTween = null;
+            });
+        }
+
+        private float getTweenTimeByDis(float dis)
+        {
+            if (dis <= 0 )
+            {
+                return 0f;
+            }
+            return Math.Min(TweenMaxTime, dis * TweenRate);
         }
 
         private void setOnBtnClickLua(LuaFunction call, bool passStr)

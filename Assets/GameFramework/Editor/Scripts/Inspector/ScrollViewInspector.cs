@@ -124,6 +124,7 @@ namespace GameFramework
             EditorGUILayout.PropertyField(serializedObject.FindProperty("EnableMuiltSelect"), new GUIContent("允许多选"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("SwitchItemOnClick"), new GUIContent("点击Item切换选中状态"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("TweenRate"), new GUIContent("Tween 时间像素比", "表示平均每tween一个像素花的时间"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("TweenMaxTime"), new GUIContent("最大 Tween 运动时间", "Tween2*方法最大运动时间"));
 
             serializedObject.ApplyModifiedProperties();
 
