@@ -483,10 +483,12 @@ MonoBehaviour:
   Handler: {fileID: 114272949513413886}
   IsInStack: 1
   HideBefor: 1
-  IsStatic: 0
+  IsStatic: 1
   AnimTime: 0.5
   AnimValue: 1
   AnimType: 0
+  AnimDisType: 2
+  AnimOppor: 17
   AnimEase: 1
   HasDarkMask: 1
   RenderMode: 1

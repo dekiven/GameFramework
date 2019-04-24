@@ -10,7 +10,7 @@ namespace GameFramework
     public class AsbNameSetting
     {
 
-        [MenuItem("Assets/设置Asb名字")]
+        [MenuItem("Assets/GF/设置Asb名字", priority=20)]
         public static void SetAsbName()
         {
             string[] selections = Selection.assetGUIDs;
@@ -22,7 +22,7 @@ namespace GameFramework
             }
         }
 
-        [MenuItem("Assets/清理Asb名字")]
+        [MenuItem("Assets/GF/清理Asb名字", priority=21)]
         public static void ClearAsbName()
         {
             string[] selections = Selection.assetGUIDs;
@@ -54,9 +54,10 @@ namespace GameFramework
         private static void SetBundleNameByPath(string path)
         {
             string fullPath = path;
-            if (!Path.IsPathRooted(path) && !path.StartsWith(Application.dataPath, StringComparison.Ordinal))
+            //if (!Path.IsPathRooted(path) && !path.StartsWith(Application.dataPath, StringComparison.Ordinal))
+            if (!path.StartsWith(Application.dataPath, StringComparison.Ordinal))
             {
-                fullPath = Application.dataPath.Replace("Assets", path);
+                fullPath = Tools.PathCombine(Directory.GetParent(Application.dataPath).ToString(), path);
             }
             else
             {

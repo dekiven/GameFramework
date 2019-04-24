@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using LuaInterface;
 using UnityEngine;
@@ -44,7 +44,13 @@ namespace GameFramework
         public float AnimValue = 1f;
         [HideInInspector]
         public ViewAnimType AnimType = ViewAnimType.none;
+        [HideInInspector]
+        public ViewAnimDisType AnimDisType = ViewAnimDisType.proportionSelf;
+        [HideInInspector]
+        public ViewAnimOpportunity AnimOppor = ViewAnimOpportunity.showAndHide;
+        [HideInInspector]
         public UIAnimResult OnInitCallbcak;
+        [HideInInspector]
         public UIAnimResult OnAnimCallbcak;
         /// <summary>
         /// 动画缓动效果，默认无效果
@@ -54,11 +60,7 @@ namespace GameFramework
         [HideInInspector]
         public bool HasDarkMask = true;
         [HideInInspector]
-        public RenderMode RenderMode; // { get { return mRenderMode; } set { mRenderMode = value; }}
-        //public RectTransform rectTransform { get { return mRectTransform; }}
-
-        //protected RenderMode RenderMode = UnityEngine.RenderMode.ScreenSpaceOverlay;
-        //private Action<ViewStatus> mStatusChangeCall;
+        public RenderMode RenderMode;
 
         private Tween mAnimTween = null;
         private LuaTable mLuaFuncs;
@@ -272,73 +274,138 @@ namespace GameFramework
             }
             return mLuaFuncs[funcName] as LuaFunction;
         }
+
+        private float getAnimValue()
+        {
+            if (ViewAnimType.zoom == AnimType || ViewAnimDisType.pixelNum == AnimDisType)
+            {                
+                return AnimValue;
+            }
+            else
+            {
+                float v = 0f;
+                Vector2 size = mRectTransform.rect.size;
+                switch (AnimDisType)
+                {
+                    case ViewAnimDisType.proportionParent :
+                        RectTransform rect = transform.parent as RectTransform;
+                        if(rect)
+                        {
+                            size = rect.rect.size;
+                        }
+                        else
+                        {
+                            LogFile.Warn(name + " has no parent with RectTransform! ");
+                        }
+                        break;
+                    case ViewAnimDisType.proportionScreen :
+                        size = Screen.safeArea.size;
+                        break;
+                }
+                switch(AnimType)
+                {
+                    case ViewAnimType.move2Left :
+                    case ViewAnimType.move2Right :
+                        v = size.x * AnimValue;
+                        break;
+                    case ViewAnimType.moveDown :
+                    case ViewAnimType.moveUp :
+                        v = size.y * AnimValue;
+                        break;
+                }
+                return v;
+            }
+        }
+
+        private bool animNeeded(bool isShow)
+        {
+            if(ViewAnimType.none == AnimType)
+            {
+                return false;
+            }
+            if (isShow && (AnimOppor & ViewAnimOpportunity.show) == 0)
+            {
+                return false;                
+            }
+            if (!isShow && (AnimOppor & ViewAnimOpportunity.hide) == 0)
+            {
+                return false;
+            }
+            return true;
+        }
         #endregion
 
         #region protected
-        protected void runAnimTween(ViewAnimType animType, bool revert, UIAnimResult result)
+        protected void runAnimTween(ViewAnimType animType, bool isShow, UIAnimResult result)
         {
             if (null != mAnimTween && mAnimTween.IsActive())
             {
                 mAnimTween.Kill();
                 mAnimTween = null;
             }
+            if (!animNeeded(isShow))
+            {
+                result(true);
+                return;
+            }
+            float value = getAnimValue();
             switch(animType)
             {
-                case ViewAnimType.none :
-                    result(true);
-                    break;
+                //case ViewAnimType.none :
+                    //result(true);
+                    //break;
                 case ViewAnimType.moveUp :
-                    if (!revert)
+                    if (!isShow)
                     {
                         float posY = mRectTransform.localPosition.y;
-                        mAnimTween = mRectTransform.DOLocalMoveY(posY-AnimValue, AnimTime).SetEase(AnimEase).OnComplete(() => result(true));
+                        mAnimTween = mRectTransform.DOLocalMoveY(posY-value, AnimTime).SetEase(AnimEase).OnComplete(() => result(true));
                     }else
                     {
-                        mAnimTween = mRectTransform.DOLocalMoveY(-AnimValue, AnimTime).From(true).SetEase(AnimEase).OnComplete(() => result(true));
+                        mAnimTween = mRectTransform.DOLocalMoveY(-value, AnimTime).From(true).SetEase(AnimEase).OnComplete(() => result(true));
                     }
                     break;
                 case ViewAnimType.moveDown :
-                    if (!revert)
+                    if (!isShow)
                     {
                         float posY = mRectTransform.localPosition.y;
-                        mAnimTween = mRectTransform.DOLocalMoveY(posY + AnimValue, AnimTime).SetEase(AnimEase).OnComplete(() => result(true));
+                        mAnimTween = mRectTransform.DOLocalMoveY(posY + value, AnimTime).SetEase(AnimEase).OnComplete(() => result(true));
                     }
                     else
                     {
-                        mAnimTween = mRectTransform.DOLocalMoveY(AnimValue, AnimTime).From(true).SetEase(AnimEase).OnComplete(() => result(true));
+                        mAnimTween = mRectTransform.DOLocalMoveY(value, AnimTime).From(true).SetEase(AnimEase).OnComplete(() => result(true));
                     }
                     break;
                 case ViewAnimType.move2Left :
-                    if (!revert)
+                    if (!isShow)
                     {
                         float posX = mRectTransform.localPosition.x;
-                        mAnimTween = mRectTransform.DOLocalMoveX(posX+AnimValue, AnimTime).OnComplete(() => result(true));
+                        mAnimTween = mRectTransform.DOLocalMoveX(posX+value, AnimTime).OnComplete(() => result(true));
                     }
                     else
                     {
-                        mAnimTween = mRectTransform.DOLocalMoveX(AnimValue, AnimTime).From(true).OnComplete(() => result(true));
+                        mAnimTween = mRectTransform.DOLocalMoveX(value, AnimTime).From(true).OnComplete(() => result(true));
                     }
                     break;
                 case ViewAnimType.move2Right :
-                    if (!revert)
+                    if (!isShow)
                     {
                         float posX = mRectTransform.localPosition.x;
-                        mAnimTween = mRectTransform.DOLocalMoveX(posX - AnimValue, AnimTime).OnComplete(() => result(true));
+                        mAnimTween = mRectTransform.DOLocalMoveX(posX - value, AnimTime).OnComplete(() => result(true));
                     }
                     else
                     {
-                        mAnimTween = mRectTransform.DOLocalMoveX(-AnimValue, AnimTime).From(true).OnComplete(() => result(true));
+                        mAnimTween = mRectTransform.DOLocalMoveX(-value, AnimTime).From(true).OnComplete(() => result(true));
                     }
                     break;
                 case ViewAnimType.zoom :
-                    if (!revert)
+                    if (!isShow)
                     {
                         mAnimTween = transform.DOScale(0f, AnimTime).OnComplete(() => result(true));
                     }
                     else
                     {
                         transform.localScale = Vector3.zero;
-                        mAnimTween = transform.DOScale(AnimValue, AnimTime).OnComplete(() => result(true));
+                        mAnimTween = transform.DOScale(value, AnimTime).OnComplete(() => result(true));
                     }
                     break;
             }
@@ -348,7 +415,7 @@ namespace GameFramework
         #region MonoBehaviour
         void Start()
         {
-            mRectTransform = GetComponent<RectTransform>();
+            mRectTransform = transform as RectTransform;
             if(null == mRectTransform)
             {
                 LogFile.Error("mRectTransform is null");
@@ -423,5 +490,28 @@ namespace GameFramework
         move2Left,
         move2Right,
         zoom,
+    }
+
+    /// <summary>
+    /// BaseView 显示动画时机
+    /// </summary>
+    [Flags]
+    public enum ViewAnimOpportunity
+    {
+        none = 0x0000,
+        show = 0x0010,
+        hide = 0x0001,
+        showAndHide = 0x0011,
+    }
+
+    /// <summary>
+    /// BaseView ViewAnimType 为 move* 的动画移动距离计算的类型
+    /// </summary>
+    public enum ViewAnimDisType
+    {
+        pixelNum = 0,
+        proportionSelf,
+        proportionParent,
+        proportionScreen,
     }
 }

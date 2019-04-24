@@ -530,6 +530,8 @@ MonoBehaviour:
   AnimTime: 0.5
   AnimValue: 1
   AnimType: 0
+  AnimDisType: 2
+  AnimOppor: 1
   AnimEase: 1
   HasDarkMask: 1
   RenderMode: 1
@@ -846,6 +848,7 @@ MonoBehaviour:
   EnableMuiltSelect: 0
   SwitchItemOnClick: 0
   TweenRate: 0.001
+  TweenMaxTime: 0.8
 --- !u!114 &114573941774412952
 MonoBehaviour:
   m_ObjectHideFlags: 1

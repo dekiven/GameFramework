@@ -35,6 +35,11 @@ namespace GameFramework
             EditorGUILayout.PropertyField(serializedObject.FindProperty("AnimType"));
             if(ViewAnimType.none != mTarget.AnimType)
             {
+                if (ViewAnimType.zoom != mTarget.AnimType)
+                {
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("AnimDisType"));
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("AnimOppor"));   
+                }
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("AnimEase"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("AnimTime"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("AnimValue"));
