@@ -8,10 +8,8 @@ namespace GameFramework
     {
         static PlayModeListener()
         {
-            if(!GameConfig.useAsb)
-            {
-                EditorApplication.playModeStateChanged += OnPlayModeChanged;
-            }
+            EditorApplication.playModeStateChanged += OnPlayModeChanged;
+            EditorApplication.update += EditorTools.Update;
         }
 
         static void OnPlayModeChanged(PlayModeStateChange status)
@@ -29,7 +27,6 @@ namespace GameFramework
                     }
                     break;
                 case PlayModeStateChange.ExitingPlayMode :
-                    //SceneManager.setReleaseSceneToBuildSetting();
                     break;
             }
         }

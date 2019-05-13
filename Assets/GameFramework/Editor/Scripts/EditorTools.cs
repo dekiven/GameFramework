@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -216,6 +218,65 @@ namespace GameFramework
             }
             return null;
         }
+
+        public static string Guid2Path(string guid, bool isFull=true)
+        {
+            string resPath = AssetDatabase.GUIDToAssetPath(guid);
+            if (isFull && !resPath.StartsWith(Application.dataPath, StringComparison.Ordinal))
+            {
+                resPath = Tools.PathCombine(Directory.GetParent(Application.dataPath).ToString(), resPath);
+            }
+            return resPath;
+        }
+
+        public static UnityEngine.Object Guid2Obj(string guid)
+        {
+            UnityEngine.Object obj = null;
+            try
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                obj = AssetDatabase.LoadAssetAtPath(path, typeof(UnityEngine.Object));
+            }
+            catch (Exception ex)
+            {
+                LogFile.Error(ex.Message);
+            }
+            return obj;
+        }
+
+        #region Editor 协程相关
+        //Editor 协程相关
+        private static List<IEnumerator> sCoroutineInProgress = new List<IEnumerator>();
+        private static int sCurrentExecute = 0;
+
+        public static void StartCoroutione(IEnumerator newCorou)
+        {
+            //if(EditorApplication.isPlaying)
+            //{
+            //    EditorUtility.DisplayDialog("提示", "请勿在调试模式下使用 Editor 协程", "确定");
+            //    return;
+            //}
+            sCoroutineInProgress.Add(newCorou);
+        }
+
+        /// <summary>
+        /// 绑定到 EditorApplication.update ，处理 Editor 协程
+        /// </summary>
+        public static void Update()
+        {
+            if (sCoroutineInProgress.Count <= 0)
+            {
+                return;
+            }
+
+            sCurrentExecute = (sCurrentExecute + 1) % sCoroutineInProgress.Count;
+            bool finish = !sCoroutineInProgress[sCurrentExecute].MoveNext();
+            if (finish)
+            {
+                sCoroutineInProgress.RemoveAt(sCurrentExecute);
+            }
+        }
+        #endregion Editor 协程相关
 
         ///// <summary>
         ///// 按下Ctrl+w（win32）或command+w（mac）输出当前获得焦点的Window Type名字
