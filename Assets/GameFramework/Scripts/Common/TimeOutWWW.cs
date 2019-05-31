@@ -311,11 +311,11 @@ namespace GameFramework
             {
                 if (null != mRstDel)
                 {
-                    mRstDel(NoticeKey, progress, mDoneCount, msg);
+                    mRstDel(NoticeKey, progress, mDoneCount+mFialedList.Count, msg);
                 }
                 if (null != mLuaFunc)
                 {
-                    mLuaFunc.Call(NoticeKey, progress, mDoneCount, msg);
+                    mLuaFunc.Call(NoticeKey, progress, mDoneCount+mFialedList.Count, msg);
                 }
                 lastCallTime = Time.time;
                 if (progress >= 1)
@@ -470,6 +470,7 @@ namespace GameFramework
 
                 if (null == mWWW)
                 {
+                    mFialedList.Add(info);
                     callback(-1f, "www is null");
                     continue;
                 }
@@ -478,8 +479,8 @@ namespace GameFramework
                 {
                     mWWW.Dispose();
                     mWWW = null;
-                    callback(-1f, "time out");
                     mFialedList.Add(info);
+                    callback(-1f, "time out");
                 }
                 else
                 {
@@ -490,8 +491,8 @@ namespace GameFramework
                             //WWW上传或下载失败
                             mWWW.Dispose();
                             mWWW = null;
-                            callback(-1f, mWWW.error);
                             mFialedList.Add(info);
+                            callback(-1f, mWWW.error);
                         }
                         else
                         {

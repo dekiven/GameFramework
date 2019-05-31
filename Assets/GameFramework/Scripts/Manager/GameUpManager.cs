@@ -338,7 +338,7 @@ namespace GameFramework
                                             if(progress.Equals(-1d))
                                             {
                                                 //有文件下载或者拷贝失败
-                                                LogFile.Warn("[" + infos[index].Url + "]拷贝或下载失败");
+                                                LogFile.Warn("[" + infos[index-1].Url + "]拷贝或下载失败");
                                             }
                                             else
                                             {
