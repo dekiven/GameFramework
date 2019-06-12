@@ -10,6 +10,7 @@ Assets/Lua
 Assets/Lua.meta
 Assets/Temp.meta
 Generate/
+ResBack/
 !Generate/DelegateFactory.cs
 !Generate/LuaBinder.cs
 *.csproj

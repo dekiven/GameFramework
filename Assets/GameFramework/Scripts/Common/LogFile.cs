@@ -165,13 +165,16 @@ namespace GameFramework
                     fileName = fileName.Insert(mPath.LastIndexOf('/') + 1, "old_");
                     Tools.RenameFile(mPath, fileName);
                 }
-                if (Tools.CheckFileExists(mPath))
+                //if (Tools.CheckFileExists(mPath))
+                //{
+                //    File.Delete(mPath);
+                //}
+                if (null == mSWriter)
                 {
-                    File.Delete(mPath);
+                    Tools.CheckFileExists(mPath, true);
+                    FileStream stream = new FileStream(mPath, FileMode.Create);
+                    mSWriter = new StreamWriter(stream);
                 }
-                Tools.CheckFileExists(mPath, true);
-                FileStream stream = new FileStream(mPath, FileMode.Create);
-                mSWriter = new StreamWriter(stream);
             }
         }
 
