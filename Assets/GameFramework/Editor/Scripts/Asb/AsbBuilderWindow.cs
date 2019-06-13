@@ -23,6 +23,12 @@ namespace GameFramework
         {
             titleContent = new GUIContent("Builder");
             minSize = new Vector2(300f, 400f);
+            /**
+             * 空合并运算符(??)：
+用于定义可空类型和引用类型的默认值。如果此运算符的左操作数不为null，则此运算符将返回左操作数，否则返回右操作数。
+例如：a??b 当a为null时则返回b，a不为null时则返回a本身。
+空合并运算符为右结合运算符，即操作时从右向左进行组合的。如，“a??b??c”的形式按“a??(b??c)”计算
+            **/
             _config = _config ?? new BuilderConfig();
             GameConfig.Load();
         }

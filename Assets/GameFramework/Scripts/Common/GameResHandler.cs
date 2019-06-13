@@ -182,7 +182,7 @@ namespace GameFramework
                     {
                         mDict.ClearObjs(item.Key, new List<string>(item.Value).ToArray());
                     }
-                    Dictionary<string, T> objs = mDict.GetSubDict(group);
+                    //Dictionary<string, T> objs = mDict.GetSubDict(group);
                     mGroupObjs.Remove(group);
                 }
             }
