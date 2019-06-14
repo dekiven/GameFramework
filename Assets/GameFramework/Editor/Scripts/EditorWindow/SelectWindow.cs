@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public class SeclectWindow : EditorWindow
+    public class SelectWindow : EditorWindow
     {
         private Action<int> mOnSelected;
         private string[] options;
@@ -20,7 +20,7 @@ namespace GameFramework
 
         public static void ShowWithOptions(string[] options, Action<int> callback)
         {
-            SeclectWindow window = GetWindow(typeof(SeclectWindow)) as SeclectWindow;
+            SelectWindow window = GetWindow(typeof(SelectWindow)) as SelectWindow;
             window.mHasKeyDown = false;
             window.mOnSelected = callback;
             window.options = options;

@@ -89,7 +89,7 @@ namespace GameFramework
                                 if (list.Count > 1)
                                 {
                                     //TODO:显示选择窗口
-                                    SeclectWindow.ShowWithOptions(options.ToArray(), (int index) =>
+                                    SelectWindow.ShowWithOptions(options.ToArray(), (int index) =>
                                     {
                                         //Debug.Log("Selceted:" + index + ",mTarget.UIArray.Count:" + mTarget.UIArray.Count + "ui index:" + mSelectingIndex);
                                         if (-1 == index)

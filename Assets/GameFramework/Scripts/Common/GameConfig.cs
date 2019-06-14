@@ -17,7 +17,9 @@ namespace GameFramework
         /// 在获取assetbundle的文件名必须为小写，后缀大写可能造成不能读取资源
         /// </summary>
         public const string STR_ASB_EXT = ".unity3d";
-
+        /// <summary>
+        /// 该文件不会热更，用来定义一打包就定死的参数，如：是否开启日志按钮
+        /// </summary>
         private const string FILE_NAME = "gc.bytes";
         //静态常量 end==============================================================
 

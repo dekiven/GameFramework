@@ -8,7 +8,7 @@ namespace GameFramework
 {
     public class SceneSettingManager
     {
-        [MenuItem("GameFrameWork/Add res scenes to setting")]
+        [MenuItem("GameFramework/Add res scenes to setting")]
         public static void SetAllSceneToBuildSetting()
         {
             // 设置场景 *.unity 路径
@@ -19,7 +19,7 @@ namespace GameFramework
 
         }
 
-        [MenuItem("GameFrameWork/Set release res scenes to setting")]
+        [MenuItem("GameFramework/Set release res scenes to setting")]
         public static void SetReleaseSceneToBuildSetting()
         {
             // 设置场景 *.unity 路径

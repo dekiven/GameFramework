@@ -8,20 +8,21 @@ namespace GameFramework
 {
     class AsbBuilderWindow : EditorWindow
     {
-        private static AsbBuilderWindow _instance;
+        private BuilderConfig _config;
 
         //% (ctrl on Windows, cmd on macOS), # (shift), & (alt).
         //https://docs.unity3d.com/ScriptReference/MenuItem.html
-        [MenuItem("GameFrameWork/Show AssetBundle Builder #%g")]
+        [MenuItem("GameFramework/Show AssetBundle Builder #%g")]
         public static void Open()
         {
-            _instance = (AsbBuilderWindow)EditorWindow.GetWindow(typeof(AsbBuilderWindow));
+            AsbBuilderWindow _instance = (AsbBuilderWindow)EditorWindow.GetWindow(typeof(AsbBuilderWindow), false, "GameFramework", true);
             _instance.Init();
+            _instance.Show();
         }
 
         private void Init()
         {
-            titleContent = new GUIContent("Builder");
+            //titleContent = new GUIContent("Builder");
             minSize = new Vector2(300f, 400f);
             /**
              * 空合并运算符(??)：
@@ -33,7 +34,6 @@ namespace GameFramework
             GameConfig.Load();
         }
 
-        private BuilderConfig _config;
         void OnGUI()
         {
             if (this._config == null)

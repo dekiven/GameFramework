@@ -13,7 +13,7 @@ namespace GameFramework
     {
         //public static string STR_ASB_EXT = ".asb";
         public static HashSet<string> SET_SKIP_EXTS = new HashSet<string>() { ".meta", ".DS_Store", ".cs"};
-        const string configPath = "Assets/GameFramework/Editor/conifg.cfg";
+        static string configPath = Tools.PathCombine(Application.dataPath, "GameFramework/Editor/Configs/conifg.cfg");
 
         IDictionary<string, string> mConfDic = new Dictionary<string, string>();
 
@@ -112,10 +112,7 @@ namespace GameFramework
         public void LoadConfig()
         {
             //TODO:dekiven
-            if (!File.Exists(configPath))
-            {
-                File.Create(configPath).Close();
-            }
+            Tools.CheckFileExists(configPath, true);
             if (File.Exists(configPath))
             {
                 var lines = File.ReadAllLines(configPath);
