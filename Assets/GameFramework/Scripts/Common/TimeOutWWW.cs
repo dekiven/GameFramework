@@ -17,15 +17,15 @@ namespace GameFramework
         /// <summary>
         /// 所有操作(上传或下载)全部完成
         /// </summary>
-        public static string STR_SUCCEEDED = "succeeded";
+        public const string STR_SUCCEEDED = "succeeded";
         /// <summary>
         /// 有操作执行失败
         /// </summary>
-        public static string STR_FAILED = "failed";
+        public const string STR_FAILED = "failed";
         /// <summary>
         /// 有一个文件上传或下载成功
         /// </summary>
-        public static string STR_DONE = "done";
+        public const string STR_DONE = "done";
         /// <summary>
         /// www 回调的间隔时间
         /// </summary>
@@ -641,220 +641,220 @@ namespace GameFramework
         #endregion 私有方法
     }
 
-    public class WWWInfo : IDisposable
-    {
-        public static WWWInfo Default = new WWWInfo ("", "");
+    //public class WWWInfo : IDisposable
+    //{
+    //    public static WWWInfo Default = new WWWInfo ("", "");
 
-        public string Url;
-        public string TargetPath;
-        public long Size;
-        public Dictionary<string, string> Headers;
+    //    public string Url;
+    //    public string TargetPath;
+    //    public long Size;
+    //    public Dictionary<string, string> Headers;
 
-        public WWWInfo()
-        {
+    //    public WWWInfo()
+    //    {
 
-        }
+    //    }
 
-        public WWWInfo(string url, string targetPath, long size = 0, Dictionary<string, string> headers = null)
-        {
-            Url = url;
-            TargetPath = targetPath;
-            Size = size;
-            Headers = headers;
-        }
+    //    public WWWInfo(string url, string targetPath, long size = 0, Dictionary<string, string> headers = null)
+    //    {
+    //        Url = url;
+    //        TargetPath = targetPath;
+    //        Size = size;
+    //        Headers = headers;
+    //    }
 
-        public WWWInfo(LuaTable table)
-        {
-            if (null != table)
-            {
-                Url = table.RawGet<string, string>("url");
-                TargetPath = table.RawGet<string, string>("targetPath");
-                Size = table.RawGet<string, long>("size");
-                LuaTable ht = table.RawGet<string, LuaTable>("headers");
-                if (null != ht)
-                {
-                    Headers = ht.ToDictTable<string, string>().ToDictionary();
-                    ht.Dispose();
-                    ht = null;
-                }
-                table.Dispose();
-                table = null;
-            }
-        }
+    //    public WWWInfo(LuaTable table)
+    //    {
+    //        if (null != table)
+    //        {
+    //            Url = table.RawGet<string, string>("url");
+    //            TargetPath = table.RawGet<string, string>("targetPath");
+    //            Size = table.RawGet<string, long>("size");
+    //            LuaTable ht = table.RawGet<string, LuaTable>("headers");
+    //            if (null != ht)
+    //            {
+    //                Headers = ht.ToDictTable<string, string>().ToDictionary();
+    //                ht.Dispose();
+    //                ht = null;
+    //            }
+    //            table.Dispose();
+    //            table = null;
+    //        }
+    //    }
 
-        public static List<WWWInfo> GetListByLua(LuaTable table)
-        {
-            List<WWWInfo> infos = new List<WWWInfo>();
-            LuaArrayTable luaArray = new LuaArrayTable(table);
-            luaArray.ForEach((obj) =>
-            {
-                LuaTable t = obj as LuaTable;
-                if (null != t)
-                {
-                    infos.Add(new WWWInfo(t));
-                    t.Dispose();
-                    t = null;
-                }
-            });
-            luaArray.Dispose();
-            luaArray = null;
-            table.Dispose();
-            table = null;
-            return infos;
-        }
+    //    public static List<WWWInfo> GetListByLua(LuaTable table)
+    //    {
+    //        List<WWWInfo> infos = new List<WWWInfo>();
+    //        LuaArrayTable luaArray = new LuaArrayTable(table);
+    //        luaArray.ForEach((obj) =>
+    //        {
+    //            LuaTable t = obj as LuaTable;
+    //            if (null != t)
+    //            {
+    //                infos.Add(new WWWInfo(t));
+    //                t.Dispose();
+    //                t = null;
+    //            }
+    //        });
+    //        luaArray.Dispose();
+    //        luaArray = null;
+    //        table.Dispose();
+    //        table = null;
+    //        return infos;
+    //    }
 
-        public void Dispose()
-        {
-            Headers.Clear();
-        }
-    }
+    //    public void Dispose()
+    //    {
+    //        Headers.Clear();
+    //    }
+    //}
 
-    public class WWWUploadInfo : WWWInfo
-    {
-        public string SaveName;
-        public string FieldName;
-        public string MimeType;
+    //public class WWWUploadInfo : WWWInfo
+    //{
+    //    public string SaveName;
+    //    public string FieldName;
+    //    public string MimeType;
 
-        public WWWUploadInfo()
-        {
-        }
+    //    public WWWUploadInfo()
+    //    {
+    //    }
 
-        public WWWUploadInfo(string url, string targetPath, string fieldName, string saveName = "", string mimeType = "", long size = 0, Dictionary<string, string> headers = null) : base(url, targetPath, size, headers)
-        {
-            FieldName = fieldName;
-            SaveName = saveName;
-            if (string.IsNullOrEmpty(SaveName))
-            {
-                SaveName = Tools.FormatPathStr(targetPath);
-                SaveName = SaveName.Substring(SaveName.LastIndexOf("/", StringComparison.Ordinal) + 1);
-            }
-            MimeType = mimeType;
-            if (string.IsNullOrEmpty(MimeType))
-            {
-                MimeType = GetMimeTypeByName(saveName);
-            }
-        }
+    //    public WWWUploadInfo(string url, string targetPath, string fieldName, string saveName = "", string mimeType = "", long size = 0, Dictionary<string, string> headers = null) : base(url, targetPath, size, headers)
+    //    {
+    //        FieldName = fieldName;
+    //        SaveName = saveName;
+    //        if (string.IsNullOrEmpty(SaveName))
+    //        {
+    //            SaveName = Tools.FormatPathStr(targetPath);
+    //            SaveName = SaveName.Substring(SaveName.LastIndexOf("/", StringComparison.Ordinal) + 1);
+    //        }
+    //        MimeType = mimeType;
+    //        if (string.IsNullOrEmpty(MimeType))
+    //        {
+    //            MimeType = GetMimeTypeByName(saveName);
+    //        }
+    //    }
 
-        public WWWUploadInfo(LuaTable table)
-        {
-            if (null != table)
-            {
-                Url = table.RawGet<string, string>("url");
-                TargetPath = table.RawGet<string, string>("targetPath");
-                Size = table.RawGet<string, long>("size");
-                SaveName = table.RawGet<string, string>("saveName");
-                FieldName = table.RawGet<string, string>("fieldName");
-                MimeType = table.RawGet<string, string>("mimeType");
-                LuaTable ht = table.RawGet<string, LuaTable>("headers");
-                if (null != ht)
-                {
-                    Headers = ht.ToDictTable<string, string>().ToDictionary();
-                    ht.Dispose();
-                    ht = null;
-                }
-                table.Dispose();
-                table = null;
-            }
-        }
+    //    public WWWUploadInfo(LuaTable table)
+    //    {
+    //        if (null != table)
+    //        {
+    //            Url = table.RawGet<string, string>("url");
+    //            TargetPath = table.RawGet<string, string>("targetPath");
+    //            Size = table.RawGet<string, long>("size");
+    //            SaveName = table.RawGet<string, string>("saveName");
+    //            FieldName = table.RawGet<string, string>("fieldName");
+    //            MimeType = table.RawGet<string, string>("mimeType");
+    //            LuaTable ht = table.RawGet<string, LuaTable>("headers");
+    //            if (null != ht)
+    //            {
+    //                Headers = ht.ToDictTable<string, string>().ToDictionary();
+    //                ht.Dispose();
+    //                ht = null;
+    //            }
+    //            table.Dispose();
+    //            table = null;
+    //        }
+    //    }
 
-        public static new List<WWWInfo> GetListByLua(LuaTable table)
-        {
-            List<WWWInfo> infos = new List<WWWInfo>();
-            LuaArrayTable luaArray = new LuaArrayTable(table);
-            luaArray.ForEach((obj) =>
-            {
-                LuaTable t = obj as LuaTable;
-                if (null != t)
-                {
-                    infos.Add(new WWWUploadInfo(t));
-                    t.Dispose();
-                    t = null;
-                }
-            });
-            luaArray.Dispose();
-            luaArray = null;
-            table.Dispose();
-            table = null;
-            return infos;
-        }
+    //    public static new List<WWWInfo> GetListByLua(LuaTable table)
+    //    {
+    //        List<WWWInfo> infos = new List<WWWInfo>();
+    //        LuaArrayTable luaArray = new LuaArrayTable(table);
+    //        luaArray.ForEach((obj) =>
+    //        {
+    //            LuaTable t = obj as LuaTable;
+    //            if (null != t)
+    //            {
+    //                infos.Add(new WWWUploadInfo(t));
+    //                t.Dispose();
+    //                t = null;
+    //            }
+    //        });
+    //        luaArray.Dispose();
+    //        luaArray = null;
+    //        table.Dispose();
+    //        table = null;
+    //        return infos;
+    //    }
 
-        public static string GetMimeTypeByName(string saveName)
-        {
-            #region GetMimeTypeByName
-            string type = "application/octet-stream";
-            string extension = Path.GetExtension(saveName);
-            switch (extension)
-            {
-                case ".swf":
-                    return "application/x-shockwave-flash";
-                case ".dll":
-                    return "application/x-msdownload";
-                case ".exe":
-                    return "application/octet-stream";
-                case ".rar":
-                    return "application/octet-stream";
-                case ".tar":
-                    return "application/x-tar";
-                case ".tgz":
-                    return "application/x-compressed";
-                case ".zip":
-                    return "application/x-zip-compressed";
-                case ".z":
-                    return "application/x-compress";
-                case ".wav":
-                    return "audio/wav";
-                case ".wma":
-                    return "audio/x-ms-wma";
-                case ".wmv":
-                    return "video/x-ms-wmv";
-                case ".mp3":
-                case ".mp2":
-                case ".mpe":
-                case ".mpeg":
-                case ".mpg":
-                    return "audio/mpeg";
-                case ".rm":
-                    return "application/vnd.rn-realmedia";
-                case ".mid":
-                case ".midi":
-                case ".rmi":
-                    return "audio/mid";
-                case ".bmp":
-                    return "image/bmp";
-                case ".gif":
-                    return "image/gif";
-                case ".png":
-                    return "image/png";
-                case ".tif":
-                case ".tiff":
-                    return "image/tiff";
-                case ".jpe":
-                case ".jpeg":
-                case ".jpg":
-                    return "image/jpeg";
-                case ".txt":
-                case ".log":
-                    return "text/plain";
-                case ".xml":
-                    return "text/xml";
-                case ".html":
-                    return "text/html";
-                case ".css":
-                    return "text/css";
-                case ".js":
-                    return "text/javascript";
-            }
-            return type;
-            #endregion GetMimeTypeByName
-        }
-    }
+    //    public static string GetMimeTypeByName(string saveName)
+    //    {
+    //        #region GetMimeTypeByName
+    //        string type = "application/octet-stream";
+    //        string extension = Path.GetExtension(saveName);
+    //        switch (extension)
+    //        {
+    //            case ".swf":
+    //                return "application/x-shockwave-flash";
+    //            case ".dll":
+    //                return "application/x-msdownload";
+    //            case ".exe":
+    //                return "application/octet-stream";
+    //            case ".rar":
+    //                return "application/octet-stream";
+    //            case ".tar":
+    //                return "application/x-tar";
+    //            case ".tgz":
+    //                return "application/x-compressed";
+    //            case ".zip":
+    //                return "application/x-zip-compressed";
+    //            case ".z":
+    //                return "application/x-compress";
+    //            case ".wav":
+    //                return "audio/wav";
+    //            case ".wma":
+    //                return "audio/x-ms-wma";
+    //            case ".wmv":
+    //                return "video/x-ms-wmv";
+    //            case ".mp3":
+    //            case ".mp2":
+    //            case ".mpe":
+    //            case ".mpeg":
+    //            case ".mpg":
+    //                return "audio/mpeg";
+    //            case ".rm":
+    //                return "application/vnd.rn-realmedia";
+    //            case ".mid":
+    //            case ".midi":
+    //            case ".rmi":
+    //                return "audio/mid";
+    //            case ".bmp":
+    //                return "image/bmp";
+    //            case ".gif":
+    //                return "image/gif";
+    //            case ".png":
+    //                return "image/png";
+    //            case ".tif":
+    //            case ".tiff":
+    //                return "image/tiff";
+    //            case ".jpe":
+    //            case ".jpeg":
+    //            case ".jpg":
+    //                return "image/jpeg";
+    //            case ".txt":
+    //            case ".log":
+    //                return "text/plain";
+    //            case ".xml":
+    //                return "text/xml";
+    //            case ".html":
+    //                return "text/html";
+    //            case ".css":
+    //                return "text/css";
+    //            case ".js":
+    //                return "text/javascript";
+    //        }
+    //        return type;
+    //        #endregion GetMimeTypeByName
+    //    }
+    //}
 
-    public enum WWWType
-    {
-        read,
-        readBytes,
-        download,
-        upload,
-        request,
-    }
+    //public enum WWWType
+    //{
+    //    read,
+    //    readBytes,
+    //    download,
+    //    upload,
+    //    request,
+    //}
 }

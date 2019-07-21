@@ -9,9 +9,8 @@ namespace GameFramework
     /// <summary>
     /// 游戏更新管理器
     /// 检查顺序： 
-    /// 1.包内资源是否释放到可读写文件夹
-    /// 2.从可读写文件夹读取配置，检查app是否需要更新
-    /// 3.app不需要更新，检查服务器资源是否需要更新
+    /// 1.读取配置，检查app是否需要更新
+    /// 2.app不需要更新，检查服务器资源是否需要更新
     /// </summary>
     public class GameUpManager : Singleton<GameUpManager>
     {
@@ -19,7 +18,7 @@ namespace GameFramework
         public static string STR_NOTIFY_EVENT_NAME = "UpdateDownloadView";
 
         string STR_CONFIG_MISSING = "ConfigMissing";
-        string STR_RES_CONF = "resConf.bytes";
+        string STR_RES_CONF = "version/base.bytes";
         string mVersionStr = "app:v" + Application.version + " res:v0.0.0.1.base";
         string mInfoStr = "";
         /// <summary>
@@ -42,7 +41,7 @@ namespace GameFramework
             refreshUI(0f);
             string srcUrl = Tools.GetUrlPathStream(Application.streamingAssetsPath, GameConfig.STR_ASB_MANIFIST);
             string tarUrl = Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
-            delOldWriteableRes(srcUrl, tarUrl, callback);
+            checkLocalRes(srcUrl, tarUrl, callback);
         }
 
         public void LoadResServList(Action<List<ResInfo>> action, bool forceLoad=false)
@@ -153,6 +152,7 @@ namespace GameFramework
                 string tarUrl = Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST);
                 if(null != mResServList)
                 {
+                    //isReview版本不更新资源
                     if(!Tools.GetBoolValue(conf, "isReview"))
                     {
                         checkService(mResServList, 0, tarUrl, callback);
@@ -172,13 +172,14 @@ namespace GameFramework
         }
 
         /// <summary>
+        /// 对比可读写文件夹下资源版本和包内资源版本
         /// 加载asb可以从streaming路径加载，不需要将资源拷贝到可读写文件夹
-        /// 当包体资源有更新时，删除老的资源包
+        /// 当包体资源有更新时，删除老的已下载资源包
         /// </summary>
         /// <param name="srcUrl">Source URL.</param>
         /// <param name="tarUrl">Tar URL.</param>
         /// <param name="callback">Callback.</param>
-        private void delOldWriteableRes(string srcUrl, string tarUrl, Action<bool, string> callback)
+        private void checkLocalRes(string srcUrl, string tarUrl, Action<bool, string> callback)
         {
             string confPath = STR_RES_CONF;
 
@@ -190,7 +191,7 @@ namespace GameFramework
                 if (GameConfig.useAsb)
                 {
                     string sUrl = Tools.PathCombine(srcUrl, confPath);
-                    string pUrl = Tools.PathCombine(tarUrl, confPath);
+                    string tUrl = Tools.PathCombine(tarUrl, confPath);
 
                     TimeOutWWW streamWWW = getTimeOutWWW();
                     streamWWW.ReadFileStr("localResConf", sUrl, 1f, (rst, msg) =>
@@ -200,7 +201,7 @@ namespace GameFramework
                             srcConf = new ResConf(msg);
 
                             TimeOutWWW writableWWW = getTimeOutWWW();
-                            writableWWW.ReadFileStr("externalResConf", pUrl, 1f, (_rst, _msg) =>
+                            writableWWW.ReadFileStr("externalResConf", tUrl, 1f, (_rst, _msg) =>
                             {
                                 if (_rst)
                                 {

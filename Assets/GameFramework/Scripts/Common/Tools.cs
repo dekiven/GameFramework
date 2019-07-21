@@ -16,14 +16,14 @@ namespace GameFramework
         public static string GetWriteableDataPath(string subPath = "")
         {
             string root = string.Empty;
-
 #if UNITY_EDITOR
             //root = Application.streamingAssetsPath;
             root = PathCombine(Application.dataPath, "../RunTimeRes");
-#elif UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN
-        root = Application.streamingAssetsPath;
+#elif UNITY_STANDALONE_WIN
+            //root = Application.streamingAssetsPath;
+            root = Path.GetFullPath(PathCombine(Application.streamingAssetsPath, "../Download"))
 #else
-        root = Application.persistentDataPath;        
+            root = Application.persistentDataPath;        
 #endif
 
             if (string.IsNullOrEmpty(subPath))
@@ -266,9 +266,36 @@ namespace GameFramework
         }
 
         /// <summary>
+        /// 获取资源路径，可能在下载路径或者包内
+        /// </summary>
+        /// <returns><c>true</c>, 表示在下载(Writeable)路径, <c>false</c> 表示可能存在包内(Stream),(android 不能校验是否在包内).</returns>
+        /// <param name="path">资源相对 Assets(或平台文件夹) 文件夹的路径</param>
+        /// <param name="realPath">资源路径，若为空则资源在两个路径都不存在</param>
+        public static bool GetResPath(string path, out string realPath)
+        {
+            bool ret = false;
+            path = GameConfig.STR_ASB_MANIFIST + "/" + path;
+            realPath = GetWriteableDataPath(path);
+            ret = File.Exists(realPath);
+            if (!ret)
+            {
+                realPath = PathCombine(Application.streamingAssetsPath, path);
+            }
+#if !UNITY_ANDROID
+            if(!File.Exists(realPath))
+            {
+                realPath = string.Empty;
+            }
+#endif
+            return ret;
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
         /// 获取原始资源的根目录，在Assets/BundleRes,一般情况下只有编辑器会使用本函数
         /// </summary>
         /// <returns></returns>
+        [NoToLua]
         public static string GetResPath(string path = "")
         {
             if (string.IsNullOrEmpty(path))
@@ -281,6 +308,7 @@ namespace GameFramework
             }
 
         }
+#endif
 
         /// <summary>
         /// 获取某原始资源的url
@@ -292,7 +320,6 @@ namespace GameFramework
             return GetUrlPathWriteabble(GetResPath(), name);
         }
 
-        //test
         public static string GetLuaSrcPath()
         {
             return PathCombine(Application.dataPath, GameConfig.STR_LUA_FOLDER);
@@ -394,9 +421,9 @@ namespace GameFramework
         {
             return GetTransformName(transform, null);
         }
-        #endregion GameResManger等资源路径相关
+#endregion GameResManger等资源路径相关
 
-        #region U3D常用类型转换相关
+#region U3D常用类型转换相关
         public static Rect GenRect(float[] array)
         {
             Rect rect = Rect.zero;
@@ -640,7 +667,7 @@ namespace GameFramework
         {
             if (null != rectTransform && null != dict)
             {
-                #region ModifyRectTransform实现
+#region ModifyRectTransform实现
                 //rectTransform.anchoredPosition = Vector2.zero;
                 //rectTransform.anchoredPosition3D = Vector3.zero;
                 //rectTransform.anchorMax = Vector2.zero;
@@ -852,7 +879,7 @@ namespace GameFramework
                     }
                     rectTransform.sizeDelta = value;
                 }
-                #endregion
+#endregion
             }
         }
 
@@ -893,9 +920,9 @@ namespace GameFramework
                 }
             }
         }
-        #endregion U3D常用类型转换相关
+#endregion U3D常用类型转换相关
 
-        #region Lua相关
+#region Lua相关
         public static Dictionary<string, System.Object> LuaTable2Dict(LuaTable table)
         {
             if (null == table)
@@ -934,12 +961,12 @@ namespace GameFramework
             ObjPools.Recover(l);
             return ret;
         }
-        #endregion Lua相关
+#endregion Lua相关
 
-        #region 基本的工具函数
+#region 基本的工具函数
         public static string FormatMeroySize(long size)
         {
-            string[] unitStrs = { "Byte", "K", "M", "G" };
+            string[] unitStrs = { "B", "K", "M", "G" };
             long unit = 1;
             for (int i = 0; i < unitStrs.Length; i++)
             {
@@ -1068,7 +1095,17 @@ namespace GameFramework
             }
             return ret;
         }
-        #endregion 基本的工具函数
+
+        public static bool Equals(double a, double b)
+        {
+            return Math.Abs(a - b) < 0.00000000001d;
+        }
+
+        public static bool Equals(float a, float b)
+        {
+            return Mathf.Approximately(a, b);
+        }
+#endregion 基本的工具函数
     }
 }
 

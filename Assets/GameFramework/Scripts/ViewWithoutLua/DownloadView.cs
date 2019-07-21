@@ -61,7 +61,8 @@ namespace GameFramework
                             }
                             else
                             {
-                                LogFile.Error("包内不含ResConf.bytes文件");
+                                LogFile.Error("检测到app有更新，但是更新失败！");
+                                //TODO:显示弹窗等
                             }
                         });
                     }
@@ -80,7 +81,7 @@ namespace GameFramework
 
         private static void startGameLogic()
         {
-            GameUpManager.Instance.Destroy();
+            //GameUpManager.Instance.Destroy();
             GameUIManager.Instance.PopView();
             GameManager.Instance.StartGameLogic();
         }

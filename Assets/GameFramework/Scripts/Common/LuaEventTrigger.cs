@@ -23,7 +23,15 @@ namespace GameFramework
                 foreach (EventTriggerType t in Enum.GetValues(typeof(EventTriggerType)))
                 {
                     int idx = i;
-                    LuaFunction function = mTriggerTable.RawGet<EventTriggerType, LuaFunction>(t);
+                    LuaFunction function = null;
+                    try
+                    {
+                        function = mTriggerTable.RawGet<EventTriggerType, LuaFunction>(t);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogFile.Log(ex.Message);
+                    }
                     if (null != function)
                     {
                         mFuncs.Add(function);

@@ -23,7 +23,7 @@ namespace GameFramework
         public int ScreenSleepTime { get { return Screen.sleepTimeout; } set { Screen.sleepTimeout = value; } }
 
         public string UpdateViewResPath = string.Empty;
-        public string DebugViewRestPath = string.Empty;
+        public string DebugViewResPath = string.Empty;
 
         //private DebugView mDebugView;
         //public DebugView DebugView{ get { return mDebugView; }}
@@ -59,7 +59,7 @@ namespace GameFramework
                     {
                         LogFile.Warn("多语言管理器 LanguageManager初始化失败");
                     }
-                    if (GameConfig.HasDebugView && !string.IsNullOrEmpty(DebugViewRestPath))
+                    if (GameConfig.HasDebugView && !string.IsNullOrEmpty(DebugViewResPath))
                     {
                         ShowDebugView();
                     }
@@ -78,7 +78,7 @@ namespace GameFramework
 
         public void ShowDebugView()
         {
-            GameObject prefab = Resources.Load<GameObject>(DebugViewRestPath);
+            GameObject prefab = Resources.Load<GameObject>(DebugViewResPath);
             if (null != prefab)
             {
                 mUiMgr.ShowViewPrefab(prefab);
@@ -246,6 +246,10 @@ namespace GameFramework
 
 
         #region 通知相关
+        /// <summary>
+        /// 平台相关异步的消息接收函数
+        /// </summary>
+        /// <param name="msg">Message.</param>
         public void OnMessage(string msg)
         {
             List<string> par = new List<string>(Regex.Split(msg, Platform.SplitStr, RegexOptions.IgnoreCase));
