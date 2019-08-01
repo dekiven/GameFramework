@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    [CustomEditor(typeof(UIView))]
+    [CustomEditor(typeof(UIView), true)]
     public class UIViewInspector : UIBaseInspector
     {
         ////进入时刷新部分参数

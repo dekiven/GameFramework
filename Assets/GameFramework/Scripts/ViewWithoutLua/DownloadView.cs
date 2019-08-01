@@ -1,112 +1,99 @@
-﻿using UnityEngine.UI;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameFramework
 {
-    //-- UIArray index
-    //local uiIdx =
-    //{
-    //    TextVersion = 0,  -- TextVersion (UnityEngine.UI.Text)
-
-    //    TextInfo = 1,  -- TextInfo (UnityEngine.UI.Text)
-
-    //    Slider = 2,  -- Slider (UnityEngine.UI.Slider)
-    //}
-
     public class DownloadView : UIView
     {
-        public string STR_NOTIFY_FUNC = GameUpManager.STR_NOTIFY_EVENT_NAME;
+        string eventKeyDownload = "DownloadProgressAndSpeed";
+        string eventKeyFinish = "DownloadPkgsFinish";
 
         Text mTextVersions;
         Text mTextInfo;
         Slider mSlider;
 
+        string mAppVer;
+        string mResVer;
 
+        #region UIVIew
         protected override void init()
         {
             base.init();
 
-            EventManager.registerToMain(STR_NOTIFY_FUNC, this, "UpdateDownloadView");
-            if (null != Handler)
-            {
-                mTextVersions = Handler.GetCompByIndex<Text>(0);
-                mTextInfo = Handler.GetCompByIndex<Text>(1);
-                mSlider = Handler.GetCompByIndex<Slider>(2);
-            }
+            mAppVer = GameManager.Instance.AppVer;
 
-            if(GameConfig.useAsb && GameConfig.checkUpdate)
-            {
-                GameUpManager.Instance.CheckLocalRes((bool rst, string msg) =>
-                {
-                    LogFile.Log("检测本地资源结果：" + rst);
-                    if (rst)
-                    {
-                        GameUpManager.Instance.CheckAppVer((bool obj) =>
-                        {
-                            LogFile.Log("检测APP version资源结果：" + rst);
-                            if (obj)
-                            {
-                                GameUpManager.Instance.CheckServerRes((bool _rst, string _msg) =>
-                                {
-                                    if (_rst)
-                                    {
-                                        startGameLogic();
-                                    }
-                                    else
-                                    {
-                                        LogFile.Error("服务器资源更新失败");
-                                        //TODO:显示弹窗等
-                                        startGameLogic();
-                                    }
-                                });
-                            }
-                            else
-                            {
-                                LogFile.Error("检测到app有更新，但是更新失败！");
-                                //TODO:显示弹窗等
-                            }
-                        });
-                    }
-                    else
-                    {
-                        LogFile.Error("包内不含ResConf.bytes文件");
-                    }
-                });
-            }
-            else
-            {
-                startGameLogic();
-            }
+            EventManager.AddToMain(eventKeyDownload, this, "_onProgressAndSpeed");
+            EventManager.AddToMain(ResPkgDownloder.STR_EVENT_PKG_VERSION, this, "_onResVerChange");
+            EventManager.AddToMain(UpdateMgr.STR_UP_MGR_STATE_CHANGE, this, "_onMsgChange");
 
+            mTextVersions = Handler.GetCompByIndex<Text>(0);
+            mTextInfo = Handler.GetCompByIndex<Text>(1);
+            mSlider = Handler.GetCompByIndex<Slider>(2);
+
+            _freshVersion();
+
+            UpdateMgr.Instance.Init(eventKeyDownload, eventKeyFinish);
         }
 
-        private static void startGameLogic()
-        {
-            //GameUpManager.Instance.Destroy();
-            GameUIManager.Instance.PopView();
-            GameManager.Instance.StartGameLogic();
-        }
+        
 
         protected override void dispose()
         {
-            EventManager.deregisterFromMain(this);
+            EventManager.RemoveFromMain(this);
         }
+        #endregion UIVIew
 
-        public void UpdateDownloadView(string versions, string info, float progress)
+        #region 通知
+        public void _onProgressAndSpeed(double progres, long speed)
         {
-            if(null != mTextVersions)
+            if(Tools.Equals(-1d, progres))
             {
-                mTextVersions.text = versions;
+                mSlider.gameObject.SetActive(false);
             }
-
-            if (null != mTextInfo)
+            else 
             {
-                mTextInfo.text = info;
+                mSlider.gameObject.SetActive(true);
+                mSlider.value = (float)progres;
             }
-
-            if (null != mSlider)
+            if (speed.Equals(-1))
             {
-                mSlider.value = progress;
+                mTextInfo.text = string.Empty;
+            }
+            else
+            {
+                mTextInfo.text = LanguageManager.GetStr("下载中，请稍候，当前速度:{0}/s", Tools.FormatMeroySize(speed));
             }
         }
+
+        public void _onResVerChange(string ver)
+        {
+            if (Tools.CompareVersion(ver, mResVer) > 0)
+            {
+                mResVer = ver;
+            }
+            _freshVersion();
+        }
+
+        public void _onMsgChange(string msg)
+        {
+            mTextInfo.text = msg;
+            mSlider.gameObject.SetActive(false);
+        }
+        #endregion 通知
+
+        #region 私有
+        void _freshVersion()
+        {
+            if(string.IsNullOrEmpty(mResVer))
+            {
+                mTextVersions.text = LanguageManager.GetStr("App版本:{0}", mAppVer);
+            }
+            else
+            {
+                mTextVersions.text = LanguageManager.GetStr("App版本:{0}, 资源版本:{1}", mAppVer, mResVer);
+            }
+        }
+        #endregion 私有
     }
 }

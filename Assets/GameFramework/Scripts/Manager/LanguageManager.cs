@@ -26,11 +26,11 @@ namespace GameFramework
         /// 配置文件分隔符
         /// </summary>
         public static string sStrSplit = GameDefine.STR_SPLIT_STR;
-        private static string STR_BASE_ASB_PATH = "BaseLanguage";
+        private static string STR_BASE_ASB_PATH = "BasicRes";
 
         public static void Init(Action<bool> action)
         {
-            GameResManager.Instance.GetStrAsync(STR_BASE_ASB_PATH, "config.bytes", (text) =>
+            GameResManager.Instance.GetStrAsync(STR_BASE_ASB_PATH, "Language/config.bytes", (text) =>
             {
                 // TextAsset text = obj as TextAsset;
                 if (string.IsNullOrEmpty(text) && null != action)
@@ -50,15 +50,16 @@ namespace GameFramework
         /// </summary>
         /// <returns>The string.</returns>
         /// <param name="key">Key.</param>
-        public static string GetStr(string key)
+        public static string GetStr(string key, params string[] args)
         {
             key.Replace("\n", "\\n");
             string ret;
-            if(sDic.TryGetValue(key, out ret))
+            if(!sDic.TryGetValue(key, out ret))
             {
-                return ret;
+                ret = key;
             }
-            return key.Replace("\\n", "\n");
+            ret = ret.Replace("\\n", "\n");
+            return string.Format(ret, args);
         }
 
         //public static string SetLanguage(int language, Action<bool> action, LuaFunction function)
@@ -71,7 +72,7 @@ namespace GameFramework
             if(sLanguages.Contains(language))
             {
                 GameConfig.SetStr(GameDefine.STR_CUR_LANGUAGE, language);
-                GameResManager.Instance.GetStrAsync(STR_BASE_ASB_PATH, language + ".bytes", (text) =>
+                GameResManager.Instance.GetStrAsync(STR_BASE_ASB_PATH, "Language/"+language + ".bytes", (text) =>
                 {
                     // TextAsset text = obj as TextAsset;
                     bool ret = text != null;
@@ -81,7 +82,7 @@ namespace GameFramework
                     }
                     else
                     {
-                        LogFile.Error("基础语言配置不存在：" + STR_BASE_ASB_PATH + "/" + language + ".bytes");
+                        LogFile.Error("基础语言配置不存在：" + STR_BASE_ASB_PATH + "/Language/" + language + ".bytes");
                     }
 
                     if (null != action)

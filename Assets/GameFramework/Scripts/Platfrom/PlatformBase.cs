@@ -67,13 +67,27 @@ namespace GameFramework
             return false;
         }
 
-        public virtual void CheckAppVer(Action<bool> callback)
+        public virtual void CheckAppVer(Action<bool, string> callback)
         {
             LogFile.Log("Platform方法 CheckAppUpdate(Action<bool> callback) 待实现,请重载该方法!");
             if(null != callback)
             {
-                callback(true);
+                callback(true, string.Empty);
             }
+        }
+
+        public virtual void Quite()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
+        public virtual void UpdateApp()
+        {
+            LogFile.Log("Platform方法 UpdateApp() 待实现");
         }
 
         public virtual void Copy2Clipboard(string content)
@@ -88,7 +102,6 @@ namespace GameFramework
             LogFile.Log("Platform方法 GetFirstClipboard() 待实现,\n默认使用GUIUtility.systemCopyBuffer,\n请重载该方法!");
             return GUIUtility.systemCopyBuffer;
         }
-
         //=====================================test--------------------------------------
         public virtual void test1()
         {
@@ -99,7 +112,6 @@ namespace GameFramework
         {
             LogFile.Log("Platform方法 test2() 待实现,请重载该方法!");
         }
-
         //--------------------------------------test=====================================
     }
 }

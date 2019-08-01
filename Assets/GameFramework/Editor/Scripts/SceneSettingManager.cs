@@ -23,10 +23,10 @@ namespace GameFramework
         public static void SetReleaseSceneToBuildSetting()
         {
             // 设置场景 *.unity 路径
-            string mainPath = Tools.RelativeTo(Tools.GetFrameworkPath(), Application.dataPath, true);
+            //string mainPath = Tools.RelativeTo(Tools.GetFrameworkPath(), Application.dataPath, true);
             //string resPath = Tools.RelativeTo(Tools.GetResPath(), Application.dataPath, true);
 
-            SetScenesByPaths(new string[] { mainPath });
+            SetScenesByPaths(new string[] { "Assets/MainScene" });
 
         }
 

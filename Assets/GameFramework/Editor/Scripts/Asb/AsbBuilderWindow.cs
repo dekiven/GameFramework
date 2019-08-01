@@ -156,7 +156,7 @@ namespace GameFramework
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(30);
             bool v = GUILayout.Toggle(GameConfig.HasDebugView, "是否显示DebugView");
-            if(v != GameConfig.HasDebugView)
+            if (v != GameConfig.HasDebugView)
             {
                 GameConfig.HasDebugView = v;
                 GameConfig.Save();
@@ -177,23 +177,23 @@ namespace GameFramework
         }
 
         private List<string> optionsList = new List<string>()
-    {
-        BuildAssetBundleOptions.None.ToString(),
-        BuildAssetBundleOptions.DeterministicAssetBundle.ToString(),
-        BuildAssetBundleOptions.IgnoreTypeTreeChanges.ToString(),
-        //BuildAssetBundleOptions.OmitClassVersions.ToString(),
-        BuildAssetBundleOptions.UncompressedAssetBundle.ToString(),
-    };
+        {
+            BuildAssetBundleOptions.None.ToString(),
+            BuildAssetBundleOptions.DeterministicAssetBundle.ToString(),
+            BuildAssetBundleOptions.IgnoreTypeTreeChanges.ToString(),
+            //BuildAssetBundleOptions.OmitClassVersions.ToString(),
+            BuildAssetBundleOptions.UncompressedAssetBundle.ToString(),
+        };
 
         private List<string> targetList = new List<string>()
-    {
-        BuildTarget.StandaloneWindows.ToString(),
-        BuildTarget.StandaloneOSX.ToString(),
-        BuildTarget.Android.ToString(),
-        BuildTarget.iOS.ToString(),
-        //表示打包所有平台（IOS和Android), 有bug暂时分开打包
-        //BuildTarget.NoTarget.ToString(),
-    };
+        {
+            BuildTarget.StandaloneWindows.ToString(),
+            BuildTarget.StandaloneOSX.ToString(),
+            BuildTarget.Android.ToString(),
+            BuildTarget.iOS.ToString(),
+            //表示打包所有平台（IOS和Android), 有bug暂时分开打包
+            //BuildTarget.NoTarget.ToString(),
+        };
 
 
         private T getEnumByString<T>(string value)

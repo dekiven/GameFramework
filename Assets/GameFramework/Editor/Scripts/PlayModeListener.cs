@@ -9,7 +9,7 @@ namespace GameFramework
         static PlayModeListener()
         {
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
-            EditorApplication.update += EditorTools.Update;
+            EditorApplication.update += EdiorCoroutine.Update;
         }
 
         static void OnPlayModeChanged(PlayModeStateChange status)

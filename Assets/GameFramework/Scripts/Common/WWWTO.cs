@@ -43,6 +43,10 @@ namespace GameFramework
         /// 失败重试次数，默认 3 次
         /// </summary>
         public int Retry = 3;
+        /// <summary>
+        /// 下载进度
+        /// </summary>
+        public double Progress { get { return mProgress; } }
 
         private WWW mWWW = null;
         private WWWRstDel mRstDel = null;
@@ -53,12 +57,14 @@ namespace GameFramework
         private bool mIsTimeOut;
         private long mTotalSize = 0;
         private long mDoneSize = 0;
+        private double mProgress;
         private List<WWWInfo> mList;
         private List<WWWInfo> mFialedList;
         private int mDoneCount = 0;
         private WWWType mType = WWWType.download;
         private float mLastCallTime = 0;
         private float mRetryCount = 0;
+
 
         #region 静态方法
         public static WWWTO ReadFileStr(string fileUrl, WWWUrlRstDel del, LuaFunction lua)
@@ -310,6 +316,7 @@ namespace GameFramework
             }
         }
 
+
         protected override void _disposUnmananged()
         {
             _stopCoroutine();
@@ -347,6 +354,7 @@ namespace GameFramework
                 }
                 mLastCallTime = Time.time;
             }
+            mProgress = progress;
         }
 
         private void callback(bool rst, string msg)
@@ -584,15 +592,28 @@ namespace GameFramework
                             if (mRetryCount < Retry)
                             {
                                 ++mRetryCount;
+                                mWWW.Dispose();
+                                mWWW = null;
                                 continue;
                             }
                             else
                             {
                                 //请求失败
                                 error = "读取 {" + mWWW.url + "} 超时或失败;" + mWWW.error;
+
+                                if (mType == WWWType.read)
+                                {
+                                    callback(false, error);
+                                }
+                                else
+                                {
+                                    callbackBytes(true, Encoding.Default.GetBytes(error));
+                                }
+                                mWWW.Dispose();
+                                mWWW = null;
+                                yield break;
                             }
-                            mWWW.Dispose();
-                            mWWW = null;
+                            
                         }
                         else
                         {

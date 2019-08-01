@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    [CustomEditor(typeof(UIBase))]
+    [CustomEditor(typeof(UIBase), true)]
     public class UIBaseInspector : Editor
     {
         protected UIBase mTarget;

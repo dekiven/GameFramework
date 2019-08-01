@@ -25,12 +25,16 @@ namespace GameFramework
         public string UpdateViewResPath = string.Empty;
         public string DebugViewResPath = string.Empty;
 
+        public string AppVer;
+
         //private DebugView mDebugView;
         //public DebugView DebugView{ get { return mDebugView; }}
 
         #region MonoBehaviour
         void Awake()
         {
+            AppVer = Application.version;
+
             isRunning = true;
             GameConfig.Load();
             initLogFile();
@@ -66,11 +70,7 @@ namespace GameFramework
 
                     if (!string.IsNullOrEmpty(UpdateViewResPath))
                     {
-                        GameObject prefab = Resources.Load<GameObject>(UpdateViewResPath);
-                        if (null != prefab)
-                        {
-                            mUiMgr.ShowViewPrefab(prefab);
-                        }
+                        mUiMgr.ShowView(GameConfig.BasicRes, UpdateViewResPath);
                     }
                 });
             });
@@ -78,17 +78,13 @@ namespace GameFramework
 
         public void ShowDebugView()
         {
-            GameObject prefab = Resources.Load<GameObject>(DebugViewResPath);
-            if (null != prefab)
-            {
-                mUiMgr.ShowViewPrefab(prefab);
-            }
+            mUiMgr.ShowView(GameConfig.BasicRes, DebugViewResPath);
         }
 
         void Update()
         {
             //处理事件管理器在主线程的消息,暂时没有处理其他线程的事件分发
-            EventManager.progressMainEvents();
+            EventManager.ProgressMainEvents();
         }
 
         /// <summary>
@@ -234,13 +230,13 @@ namespace GameFramework
                     while (progressThreadEvent && isRunning)
                     {
                         Thread.Sleep(20);
-                        EventManager.progressThreadEvents();
+                        EventManager.ProgressThreadEvents();
                     }
                 });
             }
 
             //注册LogFile事件
-            EventManager.registerToMain(GameDefine.STR_EVENT_LOG_EVENT, this, "LogEvent");
+            EventManager.AddToMain(GameDefine.STR_EVENT_LOG_EVENT, this, "LogEvent");
         }
         #endregion
 
@@ -258,7 +254,7 @@ namespace GameFramework
                 NotifyLua(par.ToArray());
                 string eventName = par[0];
                 par.RemoveAt(0);
-                EventManager.notifyAll(eventName, par.ToArray());
+                EventManager.NotifyAll(eventName, par.ToArray());
             }
             //LogFile.Log("OnMessage:   " + msg);
         }
@@ -266,19 +262,7 @@ namespace GameFramework
         public void OnMessageArr(string eventName, params object[] msg)
         {
             NotifyLua(eventName, msg);
-            EventManager.notifyAll(eventName, msg);
-        }
-
-        /// <summary>
-        /// lua创建的TimeOutWWW回调函数
-        /// </summary>
-        /// <param name="noticeKey">Notice key.</param>
-        /// <param name="progress">Progress.</param>
-        /// <param name="index">Index.</param>
-        /// <param name="msg">Message.</param>
-        public void OnLuaWWWRst(string noticeKey, double progress, int index, string msg)
-        {
-            NotifyLua(GameDefine.STR_EVENT_LUA_WWW_RST, new object[] { noticeKey, progress, index, msg });
+            EventManager.NotifyAll(eventName, msg);
         }
         #endregion 通知相关
     }

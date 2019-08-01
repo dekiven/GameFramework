@@ -50,19 +50,19 @@ namespace GameFramework
             Monitor.Exit(obj);
         }
 
-        public static bool registerToMain(string eventName, object obj, string funcName)
+        public static bool AddToMain(string eventName, object obj, string funcName)
         {
-            return _registerEvent(sDicToMain, eventName, obj, funcName);
+            return _addEvent(sDicToMain, eventName, obj, funcName);
         }
 
-        public static bool registerToThread(string eventName, object obj, string funcName)
+        public static bool AddToThread(string eventName, object obj, string funcName)
         {
-            return _registerEvent(sDicToThread, eventName, obj, funcName);
+            return _addEvent(sDicToThread, eventName, obj, funcName);
         }
 
-        protected static bool _registerEvent(EventPairDic dic, string eventName, object obj, string funcName)
+        protected static bool _addEvent(EventPairDic dic, string eventName, object obj, string funcName)
         {
-            _deregisterEvent(dic, eventName, obj);
+            _removeEvent(dic, eventName, obj);
 
             Pair pair = new Pair();
             pair.obj = obj;
@@ -91,17 +91,17 @@ namespace GameFramework
             return true;
         }
 
-        public static bool deregisterFromMain(string eventName, object obj)
+        public static bool RemoveFromMain(string eventName, object obj)
         {
-            return _deregisterEvent(sDicToMain, eventName, obj);
+            return _removeEvent(sDicToMain, eventName, obj);
         }
 
-        public static bool deregisterFromThread(string eventName, object obj)
+        public static bool RemoveFromThread(string eventName, object obj)
         {
-            return _deregisterEvent(sDicToThread, eventName, obj);
+            return _removeEvent(sDicToThread, eventName, obj);
         }
 
-        protected static bool _deregisterEvent(EventPairDic dic, string eventName, object obj)
+        protected static bool _removeEvent(EventPairDic dic, string eventName, object obj)
         {
             monitorEnter(dic);
 
@@ -128,17 +128,17 @@ namespace GameFramework
             return true;
         }
 
-        public static bool deregisterFromMain(object obj)
+        public static bool RemoveFromMain(object obj)
         {
-            return _deregisterEvent(sDicToMain, obj);
+            return _removeEvent(sDicToMain, obj);
         }
 
-        public static bool deregisterFromThread(object obj)
+        public static bool RemoveFromThread(object obj)
         {
-            return _deregisterEvent(sDicToThread, obj);
+            return _removeEvent(sDicToThread, obj);
         }
 
-        protected static bool _deregisterEvent(EventPairDic dic, object obj)
+        protected static bool _removeEvent(EventPairDic dic, object obj)
         {
             monitorEnter(dic);
 
@@ -171,20 +171,20 @@ namespace GameFramework
             return true;
         }
 
-        public static bool notifyMain(string eventName, params object[] args)
+        public static bool NotifyMain(string eventName, params object[] args)
         {
             return _notifyEvent(sDicToMain, sListToMainWait, eventName, args);
         }
 
-        public static bool notifyThread(string eventName, params object[] args)
+        public static bool NotifyThread(string eventName, params object[] args)
         {
             return _notifyEvent(sDicToThread, sListToThreadWait, eventName, args);
         }
 
-        public static void notifyAll(string eventName, params object[] args)
+        public static void NotifyAll(string eventName, params object[] args)
         {
-            notifyMain(eventName, args);
-            notifyThread(eventName, args);
+            NotifyMain(eventName, args);
+            NotifyThread(eventName, args);
         }
 
         protected static bool _notifyEvent(EventPairDic dic, EventObjList list, string eventName, params object[] args)
@@ -220,12 +220,12 @@ namespace GameFramework
             return true;
         }
 
-        public static void progressMainEvents()
+        public static void ProgressMainEvents()
         {
             _progressMainEvents(sDicToMain, sListToMainWait, sListToMainDoing, true);
         }
 
-        public static void progressThreadEvents()
+        public static void ProgressThreadEvents()
         {
             _progressMainEvents(sDicToThread, sListToThreadWait, sListToThreadDoing);
         }

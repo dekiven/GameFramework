@@ -312,6 +312,21 @@ namespace GameFramework
             return base.Dispose();
         }
 
+        public UIBase GetStaticView(string asbName, string prefab)
+        {
+            for (int i = 0; i < mStaticViewInfos.Count; i++)
+            {
+                if (mStaticViewInfos[i].Equals(asbName, prefab))
+                {
+                    UIBase ui = mStaticViews[i];
+                    if (null != ui)
+                    {
+                        return ui;
+                    }
+                }
+            }
+            return null;
+        }
         #region 私有方法
 
         /// <summary>
@@ -322,19 +337,12 @@ namespace GameFramework
         /// <param name="prefab">Prefab.</param>
         private bool showStaticView(string asbName, string prefab)
         {
-            for (int i = 0; i < mStaticViewInfos.Count; i++)
+            UIBase ui = GetStaticView(asbName, prefab);
+            if(null != ui)
             {
-                if(mStaticViewInfos[i].Equals(asbName, prefab))
-                {
-                    UIBase ui = mStaticViews[i];
-                    if(null != ui)
-                    {
-                        setViewTopOfAll(ui);
-                        ShowViewObj(ui, null);
-                        return true;
-                    }
-                    break;
-                }
+                setViewTopOfAll(ui);
+                ShowViewObj(ui, null);
+                return true;
             }
             return false;
         }
@@ -490,7 +498,7 @@ namespace GameFramework
             {
                 mViewListeners.Remove(info.extral);
             }
-            ShowViewPrefab(prefab, table);
+            ShowViewPrefab(prefab, table, info.asbName, info.assetName);
         }
 
         private GameObject getPrefab(string asbName, string resName)

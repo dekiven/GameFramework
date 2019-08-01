@@ -20,7 +20,7 @@ namespace GameFramework
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/ScrollView.prefab");
             GameObject obj = Object.Instantiate(prefab);
-            obj.name = "sv";
+            obj.name = "Sv";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
             placeUIElementRoot(obj, menuCommand);
         }
@@ -30,7 +30,7 @@ namespace GameFramework
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/ScrollItem.prefab");
             GameObject obj = Object.Instantiate(prefab);
-            obj.name = "si";
+            obj.name = "Si";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
             placeUIElementRoot(obj, menuCommand);
         }
@@ -40,7 +40,7 @@ namespace GameFramework
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/ScrollSelector.prefab");
             GameObject obj = Object.Instantiate(prefab);
-            obj.name = "ssl";
+            obj.name = "Ss";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
             placeUIElementRoot(obj, menuCommand);
         }
@@ -50,7 +50,7 @@ namespace GameFramework
         {
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/SelectorToggles.prefab");
                 GameObject obj = Object.Instantiate(prefab);
-                obj.name = "st";
+                obj.name = "St";
                 //obj.transform.SetParent(Selection.activeGameObject.transform, false);
                 placeUIElementRoot(obj, menuCommand);
         }

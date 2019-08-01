@@ -7,6 +7,7 @@ using DG.Tweening;
 //参考：http://blog.csdn.net/u011484013/article/details/52182997
 namespace GameFramework
 {
+    [DisallowMultipleComponent]
     public class UIBase : MonoBehaviour, ICanvasRaycastFilter
     {
         #region delegate
@@ -176,6 +177,12 @@ namespace GameFramework
             //callback(true);
         }
 
+        /// <summary>
+        /// 显示完成后的操作
+        /// </summary>
+        protected virtual void onEnabled()
+        {
+        }
 
         /// <summary>
         /// 准备关闭的处理，可以在这里做关闭动画
@@ -184,6 +191,14 @@ namespace GameFramework
         {
             runAnimTween(AnimType, false, callback);
             //callback(true);
+        }
+
+        /// <summary>
+        /// 隐藏完成的操作
+        /// </summary>
+        protected virtual void onDisabled()
+        {
+
         }
         #endregion
 
@@ -225,11 +240,13 @@ namespace GameFramework
                 switch (status)
                 {
                     case ViewStatus.onHideBegin:
-                        onLuaStatusChange(ViewStatus.onDisable);
                         gameObject.SetActive(false);
+                        this.onDisabled();
+                        this.onLuaStatusChange(ViewStatus.onDisable);
                         break;
                     case ViewStatus.onShowBegin:
-                        onLuaStatusChange(ViewStatus.onEnable);
+                        this.onEnabled();
+                        this.onLuaStatusChange(ViewStatus.onEnable);
                         //gameObject.SetActive(true);
                         break;
                 }

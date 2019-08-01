@@ -1497,6 +1497,7 @@ MonoBehaviour:
   EnableMuiltSelect: 0
   SwitchItemOnClick: 0
   TweenRate: 0.001
+  TweenMaxTime: 0.8
 --- !u!114 &114217995126988306
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2955,6 +2956,8 @@ MonoBehaviour:
   AnimTime: 0.5
   AnimValue: 1
   AnimType: 0
+  AnimDisType: 1
+  AnimOppor: 17
   AnimEase: 1
   HasDarkMask: 0
   RenderMode: 0
@@ -3160,6 +3163,7 @@ MonoBehaviour:
   EnableMuiltSelect: 0
   SwitchItemOnClick: 0
   TweenRate: 0.001
+  TweenMaxTime: 0.8
 --- !u!114 &114904791971137622
 MonoBehaviour:
   m_ObjectHideFlags: 1

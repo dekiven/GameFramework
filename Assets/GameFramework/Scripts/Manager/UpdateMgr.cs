@@ -5,12 +5,47 @@ using UnityEngine;
 
 namespace GameFramework
 {
+    using LM = LanguageManager;
+
     public class UpdateMgr : Singleton<UpdateMgr>
     {
+        public const string STR_UP_MGR_STATE_CHANGE = "UpdateMgrStateChnage";
+
+        string mDownLoadKey;
+        string mFinishKey;
+
+        /// <summary>
+        /// 请勿直接调用，使用Instance方法获取单例
+        /// 初始化后直接检查服务器资源
+        /// </summary>
+        public void Init(string downloadKey, string finishKey)
+        {
+            mDownLoadKey = downloadKey;
+            mFinishKey = finishKey;
+            _changeState(LM.GetStr("检测服务器资源..."));
+            LoadServConf( (ret) =>
+            {
+                if (GameConfig.useAsb && GameConfig.checkUpdate)
+                {
+                    _changeState(LM.GetStr("检测App版本..."));
+                    CheckAPP(() =>
+                    {
+                        _changeState(LM.GetStr("检测本地资源..."));
+                        CheckPkgsCotained();
+                    });
+                }
+                else
+                {
+                    StartGameLogic();
+                }
+            });
+            
+        }
+
         /// <summary>
         /// 服务器列表获取回调
         /// </summary>
-        Action<List<ResInfo>> mServListCall;
+        Action<ResInfo[]> mServListCall;
 
         /// <summary>
         /// 服务器配置信息获取回调
@@ -21,7 +56,7 @@ namespace GameFramework
         /// 服务器列表
         /// </summary>
         /// <value>The res serv list.</value>
-        public List<ResInfo> ResServList { get { return mResServList; } }
+        public ResInfo[] ResServList { get { return mResServList.ToArray(); } }
         List<ResInfo> mResServList;
 
         /// <summary>
@@ -36,11 +71,11 @@ namespace GameFramework
         /// </summary>
         /// <param name="callback">回调</param>
         /// <param name="forceLoad">如果设置为 <c>true</c> 强制读取配置</param>
-        public void LoadResServList(Action<List<ResInfo>> callback, bool forceLoad = false)
+        public void LoadResServList(Action<ResInfo[]> callback, bool forceLoad = false)
         {
+            mServListCall = callback;
             if (null == mResServList || mResServList.Count == 0 || forceLoad)
             {
-                mServListCall = callback;
                 GameResManager.Instance.GetStrAsync("UpdateServer", ".bytes", _onServListLoaded);
             }
             else
@@ -59,18 +94,16 @@ namespace GameFramework
             mServConfCall = callback;
             if (null == mServConf || mServConf.Count == 0 || forceLoad)
             {
-                LoadResServList((List<ResInfo> list) =>
+                LoadResServList((ResInfo[] list) =>
                 {
                     List<string> files = new List<string>();
-                    for (int i = 0; i < list.Count; i++)
+                    for (int i = 0; i < list.Length; i++)
                     {
                         files.Add(Tools.PathCombine(list[i].path, GameConfig.STR_ASB_MANIFIST + "/servConf.bytes"));
                     }
-                    using(WWWTO www = WWWTO.ReadFirstExistsStr(files, _onServConfResp, null))
-                    {
-                        www.TimeoutSec = 1.5f;
-                        www.Start();
-                    }
+                    WWWTO www = WWWTO.ReadFirstExistsStr(files, _onServConfResp, null);
+                    www.TimeoutSec = 1.5f;
+                    www.Start();
                 });
             }
             else
@@ -82,21 +115,55 @@ namespace GameFramework
         /// <summary>
         /// 检测 app 是否需要更新，如果有更新弹出确认框，跳转应用商店或者下载更新
         /// </summary>
-        public void CheckAPP()
+        public void CheckAPP(Action skipUpAppCall)
         {
-            //TDOD:
+            Platform.CheckAppVer((bool isLatest, string msg) =>
+            {
+                if (!isLatest)
+                {
+                    MsgBoxMgr.Instance.ShowMsg(LM.GetStr("提示"), LM.GetStr(msg), (idx) =>
+                    {
+                        Platform.UpdateApp();
+                    });
+                }
+                else
+                {
+                    if (null != skipUpAppCall)
+                    {
+                        skipUpAppCall();
+                    }
+                }
+            });
         }
 
         /// <summary>
         /// 检测已经下载的包是否需要更新，需要则弹出确认框
         /// </summary>
-        public void CheckPkgsDownloaded()
+        public void CheckPkgsCotained()
         {
-            //TDOD:
+            ResPkgMgr.Instance.CheckCotainedPkg((long size) =>
+            {
+                if(size == -1)
+                {
+                    // 更新检测失败提示框
+                    _showCheckErrMsg();
+                }
+                if (size > 0)
+                {
+                    //弹出确认框，确认下载
+                    _showDownloadMsg(size);
+                }
+                if (size == 0)
+                {
+                    //继续游戏逻辑
+                    StartGameLogic();
+                }
+                
+            });
         }
 
         /// <summary>
-        /// 检测某个资源包的更新情况
+        /// 检测某个资源包的更新情况，待实现
         /// </summary>
         /// <param name="pkgName">Package name.</param>
         public void CheckPkg(string pkgName)
@@ -104,7 +171,16 @@ namespace GameFramework
             //TODO:
         }
 
+        public void StartGameLogic()
+        {
+            // pop DownloadView
+            GameUIManager.Instance.PopView();
+            GameManager.Instance.StartGameLogic();
+
+            EventManager.RemoveFromMain(this);
+        }
         #region 私有方法
+
         /// <summary>
         /// 当从本地读取到服务器地址配置表
         /// </summary>
@@ -139,7 +215,7 @@ namespace GameFramework
         {
             if (null != mServListCall)
             {
-                mServListCall(mResServList);
+                mServListCall(ResServList);
             }
         }
 
@@ -178,6 +254,109 @@ namespace GameFramework
                 mServConfCall(mServConf);
             }
         }
+
+        void _onCheckUpErrMsgBox(int idx)
+        {
+            if(MsgBox.IdxL == idx)
+            {
+                _quiteGame();
+            }
+            if(MsgBox.IdxR == idx)
+            {
+                StartGameLogic();
+            }
+        }
+
+        void _onDownloadMsgBox(int idx)
+        {
+            EventManager.AddToMain(mFinishKey, this, "_0nDownloadRst");
+            ResPkgMgr.Instance.DownloadCotainedPkgs(mDownLoadKey, mFinishKey);
+        }
+
+        void _onAppUpdateMsgBox(int idx)
+        {
+            Platform.UpdateApp();
+        }
+
+        void _onDownlaodErrMsgBox(int idx)
+        {
+            Platform.Quit();
+        }
+
+        void _quiteGame()
+        {
+            Platform.Quit();
+        }
+
+
+        void _changeState(string state)
+        {
+            EventManager.NotifyMain(STR_UP_MGR_STATE_CHANGE, state);
+        }
+
+        void _showCheckErrMsg()
+        {
+            //更新检测失败
+            var info = new MsgBoxInfo()
+            {
+                Title = LM.GetStr("提示"),
+                BtnTxtL = LM.GetStr("退出游戏"),
+                BtnTxtR = LM.GetStr("强制进入"),
+                Msg = LM.GetStr("获取更新信息失败，是否强制进入游戏？\n<color=red>强制进入可能引起程序异常。</color>"),
+                ClickCallback = _onCheckUpErrMsgBox,
+            };
+            MsgBoxMgr.Instance.ShowMsg(info);
+        }
+
+        void _showDownloadMsg(long size)
+        {
+            var info = new MsgBoxInfo()
+            {
+                Title = LM.GetStr("提示"),
+                BtnTxtM = LM.GetStr("确定"),
+                Msg = LM.GetStr("检测到更新资源，共计<color=blue>{0}</color>，推荐使用Wifi下载。", Tools.FormatMeroySize(size)),
+                ClickCallback = _onDownloadMsgBox,
+            };
+            MsgBoxMgr.Instance.ShowMsg(info);
+        }
+
+        void _showDownloadErrMsg()
+        {
+            var info = new MsgBoxInfo()
+            {
+                Title = LM.GetStr("提示"),
+                BtnTxtM = LM.GetStr("确定"),
+                Msg = LM.GetStr("资源下载失败，请检查网络"),
+                ClickCallback = _onDownlaodErrMsgBox,
+            };
+            MsgBoxMgr.Instance.ShowMsg(info);
+        }
         #endregion 私有方法
+
+        #region 事件回调
+        public void _0nDownloadRst(bool rst)
+        {
+            if (rst)
+            {
+                StartGameLogic();
+            }
+            else
+            {
+                _showCheckErrMsg();
+            }
+        }
+        #endregion
+
+
+        #region test
+        void ____test____()
+        {
+            _showDownloadErrMsg();
+            GameCoroutineManager.Instance.Delay(5, () => 
+            {
+                _showCheckErrMsg();
+            });
+        }
+        #endregion test
     }
 }

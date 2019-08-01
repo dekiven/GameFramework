@@ -47,7 +47,6 @@ function loadLangMod( modName, force )
     if (not hasMod) or force then
         AddLuaBundle(modPath)
         local data = forceRequire(realMod)
-        local data2 = require(realMod)
         table.merge(LanguageManager.data, data)
         if not hasMod then
             table.insert(LanguageManager.mods, modName)

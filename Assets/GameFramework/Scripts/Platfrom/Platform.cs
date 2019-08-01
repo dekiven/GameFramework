@@ -78,6 +78,10 @@ namespace GameFramework
             mPlatform.Restart(delaySec);
         }
 
+        public static void Quit()
+        {
+            mPlatform.Quite();
+        }
         /// <summary>
         /// Installs the new app.安卓安装apk，ios跳转到商店
         /// </summary>
@@ -101,9 +105,14 @@ namespace GameFramework
         /// 检查app版本，返回true表示是最新或者已经更新完成
         /// </summary>
         /// <param name="callback">Callback.</param>
-        public static void CheckAppVer(Action<bool> callback)
+        public static void CheckAppVer(Action<bool, string> callback)
         {
             mPlatform.CheckAppVer(callback);
+        }
+
+        public static void UpdateApp()
+        {
+            mPlatform.UpdateApp();
         }
 
         public static void Copy2Clipboard(string content)

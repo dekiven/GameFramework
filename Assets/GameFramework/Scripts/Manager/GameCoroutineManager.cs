@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,11 +10,14 @@ namespace  GameFramework {
     /// </summary>
     public class GameCoroutineManager : SingletonComp<GameCoroutineManager>
     {
-        Dictionary<int, Coroutine> sMap;
+        Dictionary<int, Coroutine> mMap;
+        List<int> mStopList;
+
 
         void Awake()
         {
-            sMap = new Dictionary<int, Coroutine>();
+            mMap = new Dictionary<int, Coroutine>();
+            mStopList = new List<int>();
         }
 
         public int StartCor(IEnumerator routine)
@@ -22,28 +26,36 @@ namespace  GameFramework {
             if(null != coroutine)
             {
                 int hashcode = coroutine.GetHashCode();
-                sMap[hashcode] = coroutine;
+                mMap[hashcode] = coroutine;
                 return hashcode;
             }
             return 0;
         }
 
-        public bool StopCor(int hashCode)
+        /// <summary>
+        /// 结束协程，不是实时的，但是支持在其他线程结束线程
+        /// </summary>
+        /// <param name="hashCode"></param>
+        public void StopCor(int hashCode)
         {
-            Coroutine coroutine;
-            if(sMap.TryGetValue(hashCode, out coroutine))
+            lock (syncRoot)
             {
-                base.StopCoroutine(coroutine);
-                sMap.Remove(hashCode);
-                return true;
+                if (!mStopList.Contains(hashCode))
+                {
+                    mStopList.Add(hashCode);
+                }
             }
-            return false;
         }
 
         public void StopAllCors()
         {
             StopAllCoroutines();
-            sMap.Clear();
+            mMap.Clear();
+        }
+
+        public void Delay(float delaySec, Action act)
+        {
+            StartCoroutine(_delay(delaySec, act));
         }
 
         public override bool Dispose()
@@ -51,6 +63,45 @@ namespace  GameFramework {
             StopAllCors();
             return true;
         }
+
+        #region MonoBehaviour
+        void LateUpdate()
+        {
+            //结束线程
+            lock (syncRoot)
+            {
+                foreach (var hashCode in mStopList)
+                {
+                    _stopCor(hashCode);
+                }
+                mStopList.Clear();
+            }
+        }
+        #endregion MonoBehaviour
+
+        #region private
+        bool _stopCor(int hashCode)
+        {
+            Coroutine coroutine;
+            if (mMap.TryGetValue(hashCode, out coroutine))
+            {
+                base.StopCoroutine(coroutine);
+                mMap.Remove(hashCode);
+                return true;
+            }
+            return false;
+        }
+
+        IEnumerator _delay(float delaySec, Action act)
+        {
+            yield return new WaitForSeconds(delaySec);
+            if(null != act)
+            {
+                act();
+            }
+        }
+        #endregion private
+
     }
 }
 

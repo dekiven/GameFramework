@@ -10,13 +10,32 @@ namespace GameFramework
     /// <summary>
     /// 资源包下载器
     /// </summary>
-    public class ResPkgDownloder
+    public class ResPkgDownloder : DisposableObj
     {
         public const string STR_CONFIG_MISSING = "config_missing";
-        public const string sVerDirName = "version";
+        public const string STR_EVENT_PKG_VERSION = "OnPkgVersion";
+        public const string VerDirName = "version";
 
         public string PackageName { get { return mPkgName; } }
         string mPkgName = string.Empty;
+
+        public bool IsDownloading { get { return mIsDownloading; } }
+        bool mIsDownloading = false;
+
+        public long TotalSize { get { return mTotalSize; } }
+        long mTotalSize = -1;
+
+        public long DoneSize
+        {
+            get
+            {
+                if (null != mDownloader)
+                {
+                    return mDownloader.DoneSize;
+                }
+                return -1;
+            }
+        }
 
         /// <summary>
         /// 当前的资源配置
@@ -25,7 +44,7 @@ namespace GameFramework
         /// <summary>
         /// 服务器的配置
         /// </summary>
-        ResConf servConf = null;
+        ResConf mServConf = null;
         /// <summary>
         /// StreamPath(包内)资源配置 
         /// </summary>
@@ -43,7 +62,7 @@ namespace GameFramework
         /// <summary>
         /// 资源服列表
         /// </summary>
-        List<ResInfo> mServList;
+        ResInfo[] mServList;
         /// <summary>
         /// 当前使用的服务器地址所对应的 idx 
         /// </summary>
@@ -53,12 +72,13 @@ namespace GameFramework
         LuaFunction mLocalLua;
 
         //检测服务器资源的回调
-        Action<bool, long, string> mServCall;
+        Action<long, string> mServCall;
         LuaFunction mServLua;
 
         //下载更新资源的回调
         Action<double, long, string> mDownloadCall;
         LuaFunction mDownloadLua;
+        private WWWTO mDownloader;
 
         public ResPkgDownloder(string pkgName)
         {
@@ -76,8 +96,8 @@ namespace GameFramework
             if (null != mLocalLua)
             {
                 mLocalLua.Dispose();
-                mLocalLua = lua;
             }
+            mLocalLua = lua;
             checkLocalRes();
         }
 
@@ -86,18 +106,37 @@ namespace GameFramework
         /// </summary>
         /// <param name="callback">Callback.</param>
         /// <param name="lua">Lua.</param>
-        public void CheckServRes(Action<bool, long, string> callback, LuaFunction lua = null)
+        public void CheckServRes(Action<long, string> callback, LuaFunction lua = null)
         {
             mServCall = callback;
+            if (null != mServLua)
+            {
+                mServLua.Dispose();
+            }
             mServLua = lua;
-            UpdateMgr.Instance.LoadResServList(
-                (List<ResInfo> list) =>
+            mServList = UpdateMgr.Instance.ResServList;
+            mCurIdx = -1;
+            _checkSerRes();
+        }
+
+        /// <summary>
+        /// 检测该资源包资源是否有更新，实质上是调用CheckLocalRes后再调用CheckServRes
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="lua"></param>
+        public void CheckUpdate(Action<long, string> callback, LuaFunction lua = null)
+        {
+            CheckLocalRes((bool hasInit, string msg) =>
+            {
+                if (hasInit)
                 {
-                    mServList = list;
-                    mCurIdx = -1;
-                    _checkSerRes();
+                    CheckServRes(callback, lua);
                 }
-            );
+                else
+                {
+                    _callbackServ(-1, "本地文件检测有误");
+                }
+            });
         }
 
         /// <summary>
@@ -105,7 +144,7 @@ namespace GameFramework
         /// </summary>
         /// <param name="action">Action.</param>
         /// <param name="lua">Lua.</param>
-        public void Download(Action<double, long, string> action, LuaFunction lua)
+        public void Download(Action<double, long, string> action, LuaFunction lua = null)
         {
             mDownloadCall = action;
             if (null != mDownloadLua)
@@ -119,14 +158,19 @@ namespace GameFramework
 
         #region 私有方法
 
-        string _confPathStream()
+        string _confUrlStream()
         {
-            return Tools.GetUrlPathStream(Application.streamingAssetsPath, GameConfig.STR_ASB_MANIFIST + "/" + sVerDirName + "/" + mPkgName);
+            return Tools.GetUrlPathStream(Application.streamingAssetsPath, GameConfig.STR_ASB_MANIFIST + "/" + VerDirName + "/" + mPkgName + ".bytes");
+        }
+
+        string _confUrlWrite()
+        {
+            return Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST + "/" + VerDirName + "/" + mPkgName + ".bytes");
         }
 
         string _confPathWrite()
         {
-            return Tools.GetUrlPathWriteabble(Tools.GetWriteableDataPath(), GameConfig.STR_ASB_MANIFIST + "/" + sVerDirName + "/" + mPkgName);
+            return Tools.GetWriteableDataPath(GameConfig.STR_ASB_MANIFIST + "/" + VerDirName + "/" + mPkgName + ".bytes");
         }
 
         /// <summary>
@@ -136,7 +180,7 @@ namespace GameFramework
         /// <param name="url">URL.</param>
         string _confUrl(string url)
         {
-            return Tools.PathCombine(url, sVerDirName + "/" + mPkgName);
+            return Tools.PathCombine(url, VerDirName + "/" + mPkgName + ".bytes");
         }
 
         /// <summary>
@@ -148,14 +192,15 @@ namespace GameFramework
         {
             if (GameConfig.useAsb)
             {
-                string sUrl = _confPathStream();
-                string wUrl = _confPathWrite();
+                string sUrl = _confUrlStream();
+                string wUrl = _confUrlWrite();
 
                 WWWTO streamWWW = WWWTO.ReadFileStr(sUrl, (rst, msg) =>
                 {
                     if (rst)
                     {
                         mStreamConf = new ResConf(msg);
+                        EventManager.NotifyMain(STR_EVENT_PKG_VERSION, mStreamConf.version);
                     }
                     else
                     {
@@ -179,14 +224,14 @@ namespace GameFramework
             string srcUrl = getServUrl();
             if (string.IsNullOrEmpty(srcUrl))
             {
-                _callbackServ(false, -1, "服务器列表尚未初始化");
+                _callbackServ(-1, "服务器列表尚未初始化");
                 return;
             }
-            compareNewFiles(srcUrl, (bool rst, long size, string msg) =>
+            compareNewFiles(srcUrl, (long size, string msg) =>
             {
-                if (rst)
+                if (size >= 0)
                 {
-                    _callbackServ(rst, size, msg);
+                    _callbackServ(size, msg);
                     return;
                 }
                 _checkSerRes();
@@ -195,42 +240,47 @@ namespace GameFramework
 
         void _download()
         {
+
+            if (mTotalSize == 0 || mIsDownloading)
+            {
+                LogFile.Log(mPkgName + " 正在下载，不用重复下载。");
+                return;
+            }
             string srcUrl = getServUrl();
             float last = Time.time;
             long lastSize = 0L;
             if (null != mNewFiles && mNewFiles.Count > 0)
             {
                 List<WWWInfo> infos = new List<WWWInfo>();
-                long totalSize = 0;
                 for (int i = 0; i < mNewFiles.Count; ++i)
                 {
                     ResInfo ri = mNewFiles[i];
                     string url = Tools.PathCombine(srcUrl, ri.path);
                     string savePath = Tools.GetWriteableDataPath(GameConfig.STR_ASB_MANIFIST + "/" + ri.path);
-                    totalSize += ri.size;
                     infos.Add(new WWWInfo(url, savePath, ri.size));
                 }
 
                 //需要拷贝资源到可读写文件夹
-                WWWTO downloader = WWWTO.DownloadFiles(
+                mDownloader = WWWTO.DownloadFiles(
                     infos,
-                    (double progress, int index, string __msg) =>
+                    (double progress, int index, string msg) =>
                     {
                         if (Tools.Equals(progress, 1d))
                         {
-                            if (__msg.Equals(WWWTO.STR_SUCCEEDED))
+                            if (msg.Equals(WWWTO.STR_SUCCEEDED))
                             {
-                                mCurConf.version = servConf.version;
+                                mCurConf.version = mServConf.version;
                                 //保存新的资源版本号
-                                saveVersionCode(mCurConf.VersionCode);
-                                _callbackDownload(1d, 0, "资源更新完成");
+                                saveVersionCode();
+                                _callbackDownload(1d, 0, msg);
                             }
                             else
                             {
-                                _callbackDownload(1d, -1, "部分资源更新失败");
+                                _callbackDownload(1d, -1, msg);
                             }
 
                             mCurConf.SaveToFile(_confPathWrite());
+                            mIsDownloading = false;
                         }
                         else
                         {
@@ -242,14 +292,14 @@ namespace GameFramework
                             }
                             else
                             {
-                                if (__msg.Equals(WWWTO.STR_DONE))
+                                if (msg.Equals(WWWTO.STR_DONE))
                                 {
                                     //有文件下载成功
-                                    mCurConf.files[filePath] = servConf.files[filePath];
+                                    mCurConf.files[filePath] = mServConf.files[filePath];
                                 }
                                 float now = Time.time;
                                 float dt = now - last;
-                                long doneSize = (long)(totalSize * progress);
+                                long doneSize = (long)(mTotalSize * progress);
                                 long sizePerSec = (long)((doneSize - lastSize) / dt);
                                 if (sizePerSec >= 0)
                                 {
@@ -262,7 +312,8 @@ namespace GameFramework
                     },
                     null
                 );
-                downloader.Start();
+                mDownloader.Start();
+                mIsDownloading = true;
             }
         }
 
@@ -271,60 +322,55 @@ namespace GameFramework
         /// </summary>
         /// <param name="url">服务器地址 URL.</param>
         /// <param name="callback">Callback.</param>
-        private void compareNewFiles(string url, Action<bool, long, string> callback)
+        private void compareNewFiles(string url, Action<long, string> callback)
         {
             if (null != callback)
             {
-                ResConf srcConf = null;
-
                 if (GameConfig.useAsb)
                 {
                     string sUrl = _confUrl(url);
-                    string pUrl = _confPathWrite();
+                    string pUrl = _confUrlWrite();
 
                     WWWTO streamWWW = WWWTO.ReadFileStr(sUrl, (rst, msg) =>
                     {
                         if (rst)
                         {
-                            srcConf = new ResConf(msg);
+                            mServConf = new ResConf(msg);
 
                             WWWTO writableWWW = WWWTO.ReadFileStr(pUrl, (_rst, _msg) =>
-                           {
-                               if (_rst)
-                               {
-                                   //之前已经拷贝过资源
-                                   servConf = new ResConf(_msg);
-                               }
-                               else
-                               {
-                                   servConf = new ResConf("");
-                               }
+                            {
+                                if (_rst)
+                                {
+                                    //之前已经拷贝过资源
+                                    mCurConf = new ResConf(_msg);
+                                }
+                                else
+                                {
+                                    mCurConf = new ResConf("");
+                                }
+                                mTotalSize = 0;
+                                if (mServConf.CompareVer(mCurConf) > 0)
+                                {
+                                    mNewFiles = mServConf.GetUpdateFiles(mCurConf);
+                                    foreach (var f in mNewFiles)
+                                    {
+                                        mTotalSize += f.size;
+                                    }
+                                    callback(mTotalSize, mServConf.version);
+                                }
+                                else
+                                {
+                                    LogFile.Log("没有检测到新版本资源，跳过更新步骤");
+                                    callback(mTotalSize, "没有检测到新版本资源，跳过更新步骤");
+                                }
 
-                               mCurConf = servConf;
-                               long size = 0;
-
-                               if (srcConf.CompareVer(servConf) > 0)
-                               {
-                                   mNewFiles = srcConf.GetUpdateFiles(servConf);
-                                   foreach (var f in mNewFiles)
-                                   {
-                                       size += f.size;
-                                   }
-                                   callback(true, size, servConf.version);
-                               }
-                               else
-                               {
-                                   LogFile.Log("没有检测到新版本资源，跳过更新步骤");
-                                   callback(true, size, "没有检测到新版本资源，跳过更新步骤");
-                               }
-
-                           }, null);
+                            }, null);
                             writableWWW.Start();
                         }
                         else
                         {
                             LogFile.Warn("资源配置文件" + sUrl + "丢失");
-                            callback(false, 0, STR_CONFIG_MISSING);
+                            callback(-1, STR_CONFIG_MISSING);
                         }
 
                     }, null);
@@ -332,7 +378,7 @@ namespace GameFramework
                 }
                 else
                 {
-                    callback(true, 0, "不使用Assetbundle不用拷贝/下载资源");
+                    callback(0, "不使用Assetbundle不用拷贝/下载资源");
                 }
             }
         }
@@ -343,7 +389,7 @@ namespace GameFramework
         /// <returns>The serv URL.</returns>
         private string getServUrl()
         {
-            if (mCurIdx < mServList.Count)
+            if (mCurIdx < mServList.Length)
             {
                 return Tools.PathCombine(mServList[mCurIdx].path, GameConfig.STR_ASB_MANIFIST);
             }
@@ -353,13 +399,15 @@ namespace GameFramework
             }
         }
 
-        void saveVersionCode(int code)
+        void saveVersionCode()
         {
+            int code = mCurConf.VersionCode;
             string key = GameDefine.STR_CONF_KEY_RES_VER_I;
             int curCode = GameConfig.GetInt(key);
             if (curCode < code)
             {
                 GameConfig.SetInt(key, code);
+                EventManager.NotifyMain(STR_EVENT_PKG_VERSION, mCurConf.version);
             }
             else
             {
@@ -381,15 +429,15 @@ namespace GameFramework
             }
         }
 
-        void _callbackServ(bool hasNewRes, long size, string msg)
+        void _callbackServ(long size, string msg)
         {
             if (null != mServCall)
             {
-                mServCall(hasNewRes, size, msg);
+                mServCall(size, msg);
             }
             if (null != mServLua)
             {
-                mServLua.Call(hasNewRes, size, msg);
+                mServLua.Call(size, msg);
                 mServLua.Dispose();
                 mServLua = null;
             }
@@ -450,10 +498,48 @@ namespace GameFramework
                 }
                 mCurConf.version = mStreamConf.version;
                 //保存新的资源版本号
-                saveVersionCode(mCurConf.VersionCode);
+                saveVersionCode();
                 mCurConf.SaveToFile(_confPathWrite());
-                _callbackLocal(true, "");
             }
+            _callbackLocal(true, "");
+        }
+
+        protected override void _disposUnmananged()
+        {
+            if (null != mLocalLua)
+            {
+                mLocalLua.Dispose();
+                mLocalLua = null;
+            }
+
+            if (null != mServLua)
+            {
+                mServLua.Dispose();
+                mServLua = null;
+            }
+
+            if (null != mDownloader)
+            {
+                mDownloader.Dispose();
+                mDownloader = null;
+            }
+        }
+
+        protected override void _disposMananged()
+        {
+            mCurConf = null;
+            mServConf = null;
+            mStreamConf = null;
+            mWriteableConf = null;
+
+            if (null != mNewFiles)
+            {
+                mNewFiles.Clear();
+            }
+            mNewFiles = null;
+            mServList = null;
+            mServList = null;
+
         }
         #endregion 私有方法
     }

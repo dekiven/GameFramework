@@ -244,39 +244,6 @@ namespace GameFramework
             return obj;
         }
 
-        #region Editor 协程相关
-        //Editor 协程相关
-        private static List<IEnumerator> sCoroutineInProgress = new List<IEnumerator>();
-        private static int sCurrentExecute = 0;
-
-        public static void StartCoroutione(IEnumerator newCorou)
-        {
-            //if(EditorApplication.isPlaying)
-            //{
-            //    EditorUtility.DisplayDialog("提示", "请勿在调试模式下使用 Editor 协程", "确定");
-            //    return;
-            //}
-            sCoroutineInProgress.Add(newCorou);
-        }
-
-        /// <summary>
-        /// 绑定到 EditorApplication.update ，处理 Editor 协程
-        /// </summary>
-        public static void Update()
-        {
-            if (sCoroutineInProgress.Count <= 0)
-            {
-                return;
-            }
-
-            sCurrentExecute = (sCurrentExecute + 1) % sCoroutineInProgress.Count;
-            bool finish = !sCoroutineInProgress[sCurrentExecute].MoveNext();
-            if (finish)
-            {
-                sCoroutineInProgress.RemoveAt(sCurrentExecute);
-            }
-        }
-        #endregion Editor 协程相关
 
         ///// <summary>
         ///// 按下Ctrl+w（win32）或command+w（mac）输出当前获得焦点的Window Type名字

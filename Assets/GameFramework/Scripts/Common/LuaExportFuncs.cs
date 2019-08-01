@@ -173,30 +173,40 @@ namespace GameFramework
         #endregion Res 释放相关
 
         #region TimeOutWWW 相关
-        public static void DownloadFile(string noticeKey, LuaTable info, float timeoutSec=1f) 
+        public static void DownloadFile(LuaTable info, LuaFunction call, float timeoutSec, int retry=3) 
         {
-            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.DownloadFile(noticeKey, new WWWInfo(info), timeoutSec, GameManager.Instance.OnLuaWWWRst, null);
+            var www = WWWTO.DownloadFile(new WWWInfo(info), null, call);
+            www.TimeoutSec = timeoutSec;
+            www.Retry = retry;
+            www.Start();
         }
-        public static void DownloadFiles(string noticeKey, LuaTable infos, float timeoutSec= 1f) 
+        public static void DownloadFiles(LuaTable info, LuaFunction call, float timeoutSec=3f, int retry = 3)
         {
-            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.DownloadFiles(noticeKey, WWWInfo.GetListByLua(infos), timeoutSec, GameManager.Instance.OnLuaWWWRst, null);
+            var www = WWWTO.DownloadFiles(WWWInfo.GetListByLua(info), null, call);
+            www.TimeoutSec = timeoutSec;
+            www.Retry = retry;
+            www.Start();
         }
-        public static void UploadFile(string noticeKey, LuaTable info, float timeoutSec= 1f) 
+        public static void UploadFile(LuaTable info, LuaFunction call, float timeoutSec=3f, int retry = 3)
         {
-            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.UploadFile(noticeKey, new WWWInfo(info), timeoutSec, GameManager.Instance.OnLuaWWWRst, null);
+            var www = WWWTO.DownloadFiles(WWWInfo.GetListByLua(info), null, call);
+            www.TimeoutSec = timeoutSec;
+            www.Retry = retry;
+            www.Start();
         }
-        public static void UploadFiles(string noticeKey, LuaTable infos, float timeoutSec= 1f) 
+        public static void UploadFiles(LuaTable info, LuaFunction call, float timeoutSec=3f, int retry = 3)
         {
-            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.UploadFiles(noticeKey, WWWUploadInfo.GetListByLua(infos), timeoutSec, GameManager.Instance.OnLuaWWWRst, null);
+            var www = WWWTO.UploadFiles(WWWInfo.GetListByLua(info), null, call);
+            www.TimeoutSec = timeoutSec;
+            www.Retry = retry;
+            www.Start();
         }
-        public static void RequestUrl(string url, LuaFunction lua, float timeoutSec= 1f) 
+        public static void RequestUrl(string url, LuaFunction call, float timeoutSec=3f, int retry = 3)
         {
-            TimeOutWWW t = GameManager.Instance.gameObject.AddComponent<TimeOutWWW>();
-            t.RequestUrl(url, timeoutSec, null, lua);
+            var www = WWWTO.RequestUrl(url, null, call);
+            www.TimeoutSec = timeoutSec;
+            www.Retry = retry;
+            www.Start();
         }
         #endregion TimeOutWWW 相关
 

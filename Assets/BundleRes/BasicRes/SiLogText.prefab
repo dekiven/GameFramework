@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 114681594876883360}
   - component: {fileID: 114344723034512906}
   m_Layer: 5
-  m_Name: siLogText
+  m_Name: SiLogText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

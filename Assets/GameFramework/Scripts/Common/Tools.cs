@@ -21,11 +21,11 @@ namespace GameFramework
             root = PathCombine(Application.dataPath, "../RunTimeRes");
 #elif UNITY_STANDALONE_WIN
             //root = Application.streamingAssetsPath;
-            root = Path.GetFullPath(PathCombine(Application.streamingAssetsPath, "../Download"))
+            root = Path.GetFullPath(PathCombine(Application.streamingAssetsPath, "../Data"));
 #else
             root = Application.persistentDataPath;        
 #endif
-
+            root = Path.GetFullPath(root);
             if (string.IsNullOrEmpty(subPath))
             {
                 return root;
@@ -40,6 +40,7 @@ namespace GameFramework
         /// 获取GameFramework的路径，仅在编辑器使用
         /// </summary>
         /// <returns>The framework path.</returns>
+        [NoToLua]
         public static string GetFrameworkPath()
         {
             return PathCombine(Application.dataPath, "GameFramework");
@@ -178,7 +179,6 @@ namespace GameFramework
             {
                 path = PathCombine(path, subPath);
             }
-
             if (Application.isEditor)
             {
                 return "file://" + path;
@@ -207,12 +207,10 @@ namespace GameFramework
             }
 
             string pre = "file://";
-            //#if UNITY_ANDROID
             if (Application.platform == RuntimePlatform.Android)
             {
                 pre = "";
             }
-            //#endif
             return pre + path;
         }
 
@@ -266,31 +264,48 @@ namespace GameFramework
         }
 
         /// <summary>
+        /// 获取文件在Stream或Writeable Path 的路径，Writeable路径优先
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetFileUrl(string path)
+        {
+            string url = string.Empty;
+            if (GetFilePath(path, out url))
+            {
+                url = GetUrlPathWriteabble(url);
+            }
+            else
+            {
+                url = GetUrlPathStream(url);
+            }
+            return url;
+        }
+
+        /// <summary>
         /// 获取资源路径，可能在下载路径或者包内
         /// </summary>
         /// <returns><c>true</c>, 表示在下载(Writeable)路径, <c>false</c> 表示可能存在包内(Stream),(android 不能校验是否在包内).</returns>
         /// <param name="path">资源相对 Assets(或平台文件夹) 文件夹的路径</param>
-        /// <param name="realPath">资源路径，若为空则资源在两个路径都不存在</param>
-        public static bool GetResPath(string path, out string realPath)
+        /// <param name="realPath">资源路径</param>
+        public static bool GetFilePath(string path, out string realPath)
         {
             bool ret = false;
-            path = GameConfig.STR_ASB_MANIFIST + "/" + path;
             realPath = GetWriteableDataPath(path);
             ret = File.Exists(realPath);
             if (!ret)
             {
                 realPath = PathCombine(Application.streamingAssetsPath, path);
             }
-#if !UNITY_ANDROID
-            if(!File.Exists(realPath))
-            {
-                realPath = string.Empty;
-            }
-#endif
+//#if !UNITY_ANDROID
+//            if(!File.Exists(realPath))
+//            {
+//                realPath = string.Empty;
+//            }
+//#endif
             return ret;
         }
 
-#if UNITY_EDITOR
         /// <summary>
         /// 获取原始资源的根目录，在Assets/BundleRes,一般情况下只有编辑器会使用本函数
         /// </summary>
@@ -308,7 +323,6 @@ namespace GameFramework
             }
 
         }
-#endif
 
         /// <summary>
         /// 获取某原始资源的url
@@ -923,6 +937,7 @@ namespace GameFramework
 #endregion U3D常用类型转换相关
 
 #region Lua相关
+        [NoToLua]
         public static Dictionary<string, System.Object> LuaTable2Dict(LuaTable table)
         {
             if (null == table)
@@ -941,6 +956,7 @@ namespace GameFramework
         /// </summary>
         /// <returns>The int arry.</returns>
         /// <param name="content">Content.</param>
+        [NoToLua]
         public static int[] GetIntArry(string content)
         {
             string[] array = content.Split(',');
@@ -981,6 +997,7 @@ namespace GameFramework
             return size.ToString();
         }
 
+        [NoToLua]
         public static Dictionary<string, string> SplitStr2Dic(string content, string pairSplit="\n", string valueSplit="|")
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
@@ -999,6 +1016,7 @@ namespace GameFramework
             return dic;
         }
 
+        [NoToLua]
         public static bool GetBoolValue(Dictionary<string, string> dic, string key, bool def=false)
         {
             bool ret = def;
@@ -1013,6 +1031,7 @@ namespace GameFramework
             return ret;
         }
 
+        [NoToLua]
         public static string GetStringValue(Dictionary<string, string> dic, string key, string def = "")
         {
             string ret = def;
@@ -1027,6 +1046,7 @@ namespace GameFramework
             return ret;
         }
 
+        [NoToLua]
         public static int GetIntValue(Dictionary<string, string> dic, string key, int def = 0)
         {
             int ret = def;
@@ -1041,6 +1061,7 @@ namespace GameFramework
             return ret;
         }
 
+        [NoToLua]
         public static float GetFloatValue(Dictionary<string, string> dic, string key, float def = 0)
         {
             float ret = def;
@@ -1068,6 +1089,17 @@ namespace GameFramework
             {
                 return 0;
             }
+
+            if(string.IsNullOrEmpty(v1))
+            {
+                v1 = "0.0.0";
+            }
+
+            if (string.IsNullOrEmpty(v2))
+            {
+                v2 = "0.0.0";
+            }
+
             string[] v1a = v1.Split('.');
             string[] v2a = v2.Split('.');
             int l = Math.Min(v1a.Length, v2a.Length);
@@ -1096,11 +1128,13 @@ namespace GameFramework
             return ret;
         }
 
+        [NoToLua]
         public static bool Equals(double a, double b)
         {
             return Math.Abs(a - b) < 0.00000000001d;
         }
 
+        [NoToLua]
         public static bool Equals(float a, float b)
         {
             return Mathf.Approximately(a, b);

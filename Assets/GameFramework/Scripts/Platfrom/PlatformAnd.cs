@@ -69,17 +69,17 @@ namespace GameFramework
             }
         }
 
-        public override void CheckAppVer(Action<bool> callback)
+        public override void CheckAppVer(Action<bool, string> callback)
         {
             //base.CheckAppVer(callback);
-            string version = Tools.GetStringValue(GameUpManager.Instance.ServConf, Application.identifier, "0.0.0");
+            string version = Tools.GetStringValue(UpdateMgr.Instance.ServConf, Application.identifier, "0.0.0");
             string curVersion = Application.version;
             if(Tools.CompareVersion(version, curVersion) > 0)
             {
                 string apkName = Application.identifier + "_v" + version + ".apk";
                 //更新 apk
                 List<string> urls = new List<string>();
-                foreach (var item in GameUpManager.Instance.ResServList)
+                foreach (var item in UpdateMgr.Instance.ResServList)
                 {
                     urls.Add(Tools.PathCombine(item.path, apkName));
                 }
@@ -87,11 +87,10 @@ namespace GameFramework
                 string savePath = Tools.GetWriteableDataPath(apkName);
                 downloader.DownloadFile(urls, savePath, (double arg1, string arg2) => 
                 {
-                    EventManager.notifyMain("UpdateDownloadView", "", Lm.GetStr("下载新版本 apk (v") + version + Lm.GetStr(")..."), (float)arg1);
                     if(arg1.Equals(1d) && arg2.Equals(LargeFileDownloader.STR_SUCCEEDED))
                     {
                         InstallNewApp(savePath);
-                        callback(false);
+                        callback(false, Lm.GetStr("检测到新版本<color=yellow>{0}</color>, 点击确认下载。", version));
                     }
                     if(arg1.Equals(1d))
                     {
@@ -101,7 +100,7 @@ namespace GameFramework
             }
             else
             {
-                callback(true);
+                callback(true, string.Empty);
             }
         }
 

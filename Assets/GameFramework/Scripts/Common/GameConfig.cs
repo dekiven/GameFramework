@@ -23,8 +23,12 @@ namespace GameFramework
         private const string FILE_NAME = "gc.bytes";
         //静态常量 end==============================================================
 
-        //从配置文件加载的配置，没吃启动前冲配置文件读取
+        //从配置文件加载的配置，没吃启动前从配置文件读取
         public static bool HasDebugView = true;
+
+        //必须要的基础资源，如：DebugView、C#部分language等
+        public const string BasicRes = "BasicRes";
+
         //public static 
 
         //业务逻辑 begin--------------------------------------------------------------
@@ -46,9 +50,9 @@ namespace GameFramework
         public static bool progressThreadEvent = true;
 #if UNITY_EDITOR
         //配置是否使用Assetbundle
-        public static bool useAsb = false;
+        public static bool useAsb = true;
         // 检查更新
-        public static bool checkUpdate = false;
+        public static bool checkUpdate = true;
 #else
     // 注意，非编辑器模式下 useAsb只能为true，请勿修改，要在编辑器模式下不使用asb请修改上面的useAsb值
     public static bool useAsb = true;

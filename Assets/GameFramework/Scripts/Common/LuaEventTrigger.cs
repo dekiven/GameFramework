@@ -58,6 +58,7 @@ namespace GameFramework
             if (null != mTriggerTable)
             {
                 mTriggerTable.Dispose();
+                mTriggerTable = null;
             }
         }
 
