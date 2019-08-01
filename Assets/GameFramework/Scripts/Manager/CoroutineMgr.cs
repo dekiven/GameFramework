@@ -8,7 +8,7 @@ namespace  GameFramework {
     /// <summary>
     /// 协程管理器
     /// </summary>
-    public class GameCoroutineManager : SingletonComp<GameCoroutineManager>
+    public class CoroutineMgr : SingletonComp<CoroutineMgr>
     {
         Dictionary<int, Coroutine> mMap;
         List<int> mStopList;

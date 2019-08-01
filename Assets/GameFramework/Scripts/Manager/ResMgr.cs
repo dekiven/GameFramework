@@ -9,7 +9,7 @@ namespace GameFramework
     /// <summary>
     /// 管理 Material、TextAsset 等资源
     /// </summary>
-    public class GameResManager : Singleton<GameResManager> , IResHandler<UObj>
+    public class ResMgr : Singleton<ResMgr> , IResHandler<UObj>
     {
         #region private 属性
         private GameResHandler<UObj> mObjDict;
@@ -18,7 +18,7 @@ namespace GameFramework
         /// <summary>
         /// 请勿直接调用构造函数，请使用 Instance 方法获取单例
         /// </summary>
-        public GameResManager()
+        public ResMgr()
         {
             mObjDict = new GameResHandler<UObj>("common");
             //mObjDict.Suffix = ".spriteatlas";

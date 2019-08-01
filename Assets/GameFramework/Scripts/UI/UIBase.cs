@@ -81,7 +81,7 @@ namespace GameFramework
         /// <param name="callback">Callback.</param>
         public void Show(UIAnimResult callback)
         {
-            GameUIManager.Instance.ShowViewObj(this, callback);
+            UIMgr.Instance.ShowViewObj(this, callback);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace GameFramework
         /// <param name="callback">Callback.</param>
         public void Hide(UIAnimResult callback)
         {
-            GameUIManager.Instance.HideView(this, callback);
+            UIMgr.Instance.HideView(this, callback);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace GameFramework
         /// </summary>
         public void ShowAnim(UIAnimResult callback)
         {
-            onStartAnim(ViewStatus.onShowBegin, callback);
+            _onStartAnim(ViewStatus.onShowBegin, callback);
         }
 
         /// <summary>
@@ -106,12 +106,12 @@ namespace GameFramework
         /// </summary>
         public void HideAnim(UIAnimResult callback)
         {
-            onStartAnim(ViewStatus.onHideBegin, callback);
+            _onStartAnim(ViewStatus.onHideBegin, callback);
         }
 
         public void Close()
         {
-            GameUIManager.Instance.CloseView(this);
+            UIMgr.Instance.CloseView(this);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace GameFramework
         #region protected virtual 方法
         protected virtual void init()
         {
-            if(!onLuaStatusChange(ViewStatus.onInit))
+            if(!_onLuaStatusChange(ViewStatus.onInit))
             {
                 if(null != OnInitCallbcak)
                 {
@@ -206,16 +206,16 @@ namespace GameFramework
         /// <summary>
         /// 转换UI角度，使之正对摄像头，实现billboard效果
         /// </summary>
-        private void CalcBillboard()
+        private void _calcBillboard()
         {
             transform.rotation = Camera.main.transform.rotation;
         }
 
-        private bool onLuaStatusChange(ViewStatus status)
+        private bool _onLuaStatusChange(ViewStatus status)
         {
             if(null != mLuaFuncs)
             {
-                LuaFunction func = getLuaFunc(status.ToString());
+                LuaFunction func = _getLuaFunc(status.ToString());
                 if(null != func)
                 {
                     if (ViewStatus.onInit == status)
@@ -232,7 +232,7 @@ namespace GameFramework
             return false;
         }
 
-        private void onStartAnim(ViewStatus status, UIAnimResult callback)
+        private void _onStartAnim(ViewStatus status, UIAnimResult callback)
         {
             mIsPlayinngAni = true;
             UIAnimResult _callback = (bool ret) =>
@@ -242,11 +242,11 @@ namespace GameFramework
                     case ViewStatus.onHideBegin:
                         gameObject.SetActive(false);
                         this.onDisabled();
-                        this.onLuaStatusChange(ViewStatus.onDisable);
+                        this._onLuaStatusChange(ViewStatus.onDisable);
                         break;
                     case ViewStatus.onShowBegin:
                         this.onEnabled();
-                        this.onLuaStatusChange(ViewStatus.onEnable);
+                        this._onLuaStatusChange(ViewStatus.onEnable);
                         //gameObject.SetActive(true);
                         break;
                 }
@@ -261,7 +261,7 @@ namespace GameFramework
             };
             if (null != mLuaFuncs)
             {
-                LuaFunction func = getLuaFunc(status.ToString());
+                LuaFunction func = _getLuaFunc(status.ToString());
                 if (null != func)
                 {
                     OnAnimCallbcak = _callback;
@@ -283,7 +283,7 @@ namespace GameFramework
             }
         }
 
-        private LuaFunction getLuaFunc(string funcName)
+        private LuaFunction _getLuaFunc(string funcName)
         {
             if(null == mLuaFuncs)
             {
@@ -292,7 +292,7 @@ namespace GameFramework
             return mLuaFuncs[funcName] as LuaFunction;
         }
 
-        private float getAnimValue()
+        private float _getAnimValue()
         {
             if (ViewAnimType.zoom == AnimType || ViewAnimDisType.pixelNum == AnimDisType)
             {                
@@ -334,7 +334,7 @@ namespace GameFramework
             }
         }
 
-        private bool animNeeded(bool isShow)
+        private bool _animNeeded(bool isShow)
         {
             if(ViewAnimType.none == AnimType)
             {
@@ -360,12 +360,12 @@ namespace GameFramework
                 mAnimTween.Kill();
                 mAnimTween = null;
             }
-            if (!animNeeded(isShow))
+            if (!_animNeeded(isShow))
             {
                 result(true);
                 return;
             }
-            float value = getAnimValue();
+            float value = _getAnimValue();
             switch(animType)
             {
                 //case ViewAnimType.none :
@@ -444,7 +444,7 @@ namespace GameFramework
             }
             IsBillboard = false;
 #if UNITY_EDITOR 
-            if (GameUIManager.HasInstance())
+            if (UIMgr.HasInstance())
             {
 #endif
                 //进入初始化之后直接隐藏UI，修复在UI切换的时候会显示该UI，等待上个UI隐藏动画完成后再播放动画修复的bug
@@ -460,14 +460,14 @@ namespace GameFramework
         {
             if (IsBillboard)
             {
-                CalcBillboard();
+                _calcBillboard();
             }
             update();
         }
 
         void OnDestroy()
         {
-            onLuaStatusChange(ViewStatus.onDestroy);
+            _onLuaStatusChange(ViewStatus.onDestroy);
             dispose();
         }
 

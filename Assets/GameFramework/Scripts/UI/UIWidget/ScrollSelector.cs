@@ -51,17 +51,17 @@ namespace GameFramework
             //{
             //    setShowNum(count);
             //}
-            calculateItemOffset();
-            recoverAll();
+            _calculateItemOffset();
+            _recoverAll();
             //if (null == mItemPos || mItemPos.Length != count)
-            calulateItemPos(count);
-            checkNeedUpdate(true);
+            _calulateItemPos(count);
+            _checkNeedUpdate(true);
             if(null != Toggles)
             {
                 Toggles.SetTotalNum(data.Count);
             }
             SetCurIndex(0);
-            updateDrag (new Vector2(5, 0));
+            _updateDrag (new Vector2(5, 0));
         }
 
         public void SetData(LuaTable luaTable)
@@ -87,7 +87,7 @@ namespace GameFramework
                 else
                 {
                     mTargetIndex = -1;
-                    tweenToIndex(index);
+                    _tweenToIndex(index);
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace GameFramework
         protected override void Start()
         {
             base.Start();
-            calculateItemOffset();
+            _calculateItemOffset();
             if(null != Toggles)
             {
                 Toggles.SetOnIndexChange(SetCurIndex);
@@ -153,7 +153,7 @@ namespace GameFramework
         {
             if (null != mMoveTween)
             {
-                checkNeedUpdate();
+                _checkNeedUpdate();
             }
         }
 
@@ -189,8 +189,8 @@ namespace GameFramework
                 return;
             }
             //TODO:
-            killMoveTween();
-            checkNeedUpdate();
+            _killMoveTween();
+            _checkNeedUpdate();
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -200,8 +200,8 @@ namespace GameFramework
                 return;
             }
             //TODO:
-            killMoveTween();
-            checkNeedUpdate();
+            _killMoveTween();
+            _checkNeedUpdate();
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -214,7 +214,7 @@ namespace GameFramework
             {
                 return;
             }
-            updateDrag(eventData.delta * DragRate);
+            _updateDrag(eventData.delta * DragRate);
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -226,7 +226,7 @@ namespace GameFramework
 
             //TODO:
             //checkCurItemOnEnd(eventData.delta);
-            updateDragEnd();
+            _updateDragEnd();
         }
         #endregion  Drag相关
 
@@ -244,7 +244,7 @@ namespace GameFramework
                     LogFile.Error("ItemPrefab：{0} prefab没有添加ScrollItem组件", ItemPrefab.name);
                     return false;
                 }
-                obj.OnItemClicked = onItemClicked;
+                obj.OnItemClicked = _onItemClicked;
             }
             obj.transform.SetSiblingIndex(0);
             obj.gameObject.SetActive(true);
@@ -277,13 +277,13 @@ namespace GameFramework
                 if (!v.Equals(ShowNum) && v > 1)
                 {
                     ShowNum = v;
-                    calculateItemOffset();
+                    _calculateItemOffset();
                 }
                 //Debug.LogWarning(ShowNum);
             }
         }
 
-        private void calculateItemOffset()
+        private void _calculateItemOffset()
         {
             if (!ItemSize.Equals(Vector2.zero))
             {
@@ -304,7 +304,7 @@ namespace GameFramework
             }
         }
 
-        private void calulateItemPos(int count)
+        private void _calulateItemPos(int count)
         {
             mItemPos = new Vector3[count];
             for (int i = 0; i < count; i++)
@@ -313,33 +313,33 @@ namespace GameFramework
             }
         }
 
-        private void recoverItem(ScrollItem item)
+        private void _recoverItem(ScrollItem item)
         {
             mItemPool.Recover(item);
         }
 
-        private ScrollItem getItem()
+        private ScrollItem _getItem()
         {
             return mItemPool.Get();
         }
 
-        private void recoverAll()
+        private void _recoverAll()
         {
             for (int i = mCurItems.Count - 1; i > -1; --i)
             {
                 ScrollItem item = mCurItems[i];
-                recoverItem(item);
+                _recoverItem(item);
                 mCurItems.RemoveAt(i);
             }
         }
 
-        private void onItemClicked(int index)
+        private void _onItemClicked(int index)
         {
             //Debug.Log("onItemClicked:" + index);
-            tweenToIndex(index);
+            _tweenToIndex(index);
         }
 
-        private int getCurIndex()
+        private int _getCurIndex()
         {
             int index = -1;
             float min = float.MaxValue;
@@ -360,9 +360,9 @@ namespace GameFramework
             return index;
         }
 
-        private void sortItems(bool force = false)
+        private void _sortItems(bool force = false)
         {
-            int curIndex = getCurIndex();
+            int curIndex = _getCurIndex();
             if (mCurIndex != curIndex || force)
             {
                 int count = mCurItems.Count;
@@ -404,7 +404,7 @@ namespace GameFramework
             }
         }
 
-        private void updateDrag(Vector2 delta)
+        private void _updateDrag(Vector2 delta)
         {
             float posX = Content.localPosition.x;
             float rate = 1f;
@@ -437,15 +437,15 @@ namespace GameFramework
                 }
             }
             Content.Translate(new Vector3(delta.x * rate, 0, 0));
-            checkNeedUpdate();
+            _checkNeedUpdate();
         }
 
-        private void updateDragEnd()
+        private void _updateDragEnd()
         {
-            tweenToIndex(mCurIndex);
+            _tweenToIndex(mCurIndex);
         }
 
-        private void tweenToIndex(int index)
+        private void _tweenToIndex(int index)
         {
             if (index >= 0 && index < mData.Count)
             {
@@ -455,17 +455,17 @@ namespace GameFramework
                 {
                     Vector3 pos = new Vector3(targetPosX, 0, 0);
                     float dt = Math.Min(1f, Math.Abs(targetPosX - posX) / ItemSize.x / 8);
-                    killMoveTween();
+                    _killMoveTween();
                     mMoveTween = DOTween.To(() => Content.localPosition, (Vector3 v) => Content.localPosition = v, pos, dt).SetEase(AnimEase).OnComplete(() => 
                     { 
-                        noticeIndexChange(index);
-                        checkNeedUpdate(true);
+                        _notifyIndexChange(index);
+                        _checkNeedUpdate(true);
                     });
                 }
             }
         }
 
-        private ScrollItem getItemByIndex(int index)
+        private ScrollItem _getItemByIndex(int index)
         {
             ScrollItem item = null;
             //test
@@ -475,17 +475,17 @@ namespace GameFramework
             return item;
         }
 
-        private void killMoveTween()
+        private void _killMoveTween()
         {
             if (null != mMoveTween)
             {
                 mMoveTween.Kill();
                 mMoveTween = null;
             }
-            checkNeedUpdate();
+            _checkNeedUpdate();
         }
 
-        private void noticeIndexChange(int index)
+        private void _notifyIndexChange(int index)
         {
             if (null != OnItemSelected)
             {
@@ -499,7 +499,7 @@ namespace GameFramework
         #endregion 私有方法
 
         #region 刷新相关
-        private Vector3 getItemPosByIndex(int i)
+        private Vector3 _getItemPosByIndex(int i)
         {
             if (i >= 0 && i < mData.Count)
             {
@@ -509,25 +509,25 @@ namespace GameFramework
             return Vector3.zero;
         }
 
-        private bool canItemShow(int index)
+        private bool _canItemShow(int index)
         {
-            return canItemShow(getItemPosByIndex(index));
+            return _canItemShow(_getItemPosByIndex(index));
         }
 
-        private bool canItemShow(Vector2 pos)
+        private bool _canItemShow(Vector2 pos)
         {
             float posX = pos.x + Content.localPosition.x + Viewport.rect.width / 2;
             return posX > -ItemSize.x / 2 && posX < Viewport.rect.width + ItemSize.x / 2;
         }
 
-        private void checkNeedUpdate(bool forceUpdate = false)
+        private void _checkNeedUpdate(bool forceUpdate = false)
         {
             bool start = false;
             int startIndex = -1;
             int endIndex = -1;
             for (int i = 0; i < mData.Count; i++)
             {
-                bool canShow = canItemShow(i);
+                bool canShow = _canItemShow(i);
                 if (!start)
                 {
                     if (canShow)
@@ -553,14 +553,14 @@ namespace GameFramework
                     StopCoroutine(mUpCoroutine);
                     mUpCoroutine = null;
                 }
-                mUpCoroutine = StartCoroutine(updateAllItem(startIndex, endIndex, forceUpdate));
+                mUpCoroutine = StartCoroutine(_updateAllItem(startIndex, endIndex, forceUpdate));
             }
 
-            sortItems(forceUpdate);
+            _sortItems(forceUpdate);
 
         }
 
-        private IEnumerator updateAllItem(int startIndex, int endIndex, bool forceUpdate = false)
+        private IEnumerator _updateAllItem(int startIndex, int endIndex, bool forceUpdate = false)
         {
             if (mShowStart != startIndex || mShowEnd != endIndex || forceUpdate)
             {
@@ -571,24 +571,24 @@ namespace GameFramework
                     //如果开始的行数比当前的大1，证明现在在开头少显示了一行
                     if (startIndex - mShowStart == 1)
                     {
-                        recoverStartItem(mShowStart);
+                        _recoverStartItem(mShowStart);
                     }
                     //如果结束的行数比当前的小1，证明现在在末尾少显示了一行
                     if (mShowEnd - endIndex == 1)
                     {
-                        recoverEndItem(mShowEnd);
+                        _recoverEndItem(mShowEnd);
                     }
 
                     ///添加新的Item
                     //如果开始的行数比当前的小1，证明现在在开头多显示了一行
                     if (mShowStart - startIndex == 1)
                     {
-                        addStartItem(startIndex);
+                        _addStartItem(startIndex);
                     }
                     //如果结束的行数比当前的大1，证明现在在末尾多显示了一行
                     if (endIndex - mShowEnd == 1)
                     {
-                        addEndItem(endIndex);
+                        _addEndItem(endIndex);
                     }
 
                     mShowStart = startIndex;
@@ -606,13 +606,13 @@ namespace GameFramework
                     int count = endIdx - startIdx + 1;
 
                     //回收所有Item，在之后的协程中刷新
-                    recoverAll();
+                    _recoverAll();
 
                     for (int i = 0; i < count; i++)
                     {
-                        ScrollItem item = getItem();
+                        ScrollItem item = _getItem();
                         mCurItems.Add(item);
-                        setItemDataByIndex(item, startIdx + i);
+                        _setItemDataByIndex(item, startIdx + i);
                         if ((count + 1) % ItemNumPerStep == 0)
                         {
                             yield return null;
@@ -623,7 +623,7 @@ namespace GameFramework
 
                 if (mTargetIndex != -1)
                 {
-                    tweenToIndex(mTargetIndex);
+                    _tweenToIndex(mTargetIndex);
                     mTargetIndex = -1;
                 }
             }
@@ -634,29 +634,29 @@ namespace GameFramework
             }
         }
 
-        private void addStartItem(int index)
+        private void _addStartItem(int index)
         {
-            ScrollItem item = getItem();
+            ScrollItem item = _getItem();
             mCurItems.Insert(0, item);
-            setItemDataByIndex(item, index);
+            _setItemDataByIndex(item, index);
         }
 
-        private void setItemDataByIndex(ScrollItem item, int index)
+        private void _setItemDataByIndex(ScrollItem item, int index)
         {
             UIItemData data = mData[index];
             item.Index = index;
             item.SetData(data);
-            item.transform.localPosition = getItemPosByIndex(index);
+            item.transform.localPosition = _getItemPosByIndex(index);
         }
 
-        private void addEndItem(int index)
+        private void _addEndItem(int index)
         {
-            ScrollItem item = getItem();
+            ScrollItem item = _getItem();
             mCurItems.Add(item);
-            setItemDataByIndex(item, index);
+            _setItemDataByIndex(item, index);
         }
 
-        private void recoverStartItem(int index)
+        private void _recoverStartItem(int index)
         {
             if (index < 0 || index > mData.Count - 1)
             {
@@ -665,12 +665,12 @@ namespace GameFramework
             if (index < mData.Count)
             {
                 ScrollItem item = mCurItems[0];
-                recoverItem(item);
+                _recoverItem(item);
                 mCurItems.RemoveAt(0);
             }
         }
 
-        private void recoverEndItem(int index)
+        private void _recoverEndItem(int index)
         {
             if (index < 0 || index > mData.Count - 1)
             {
@@ -680,7 +680,7 @@ namespace GameFramework
             {
                 int idx = mCurItems.Count - 1;
                 ScrollItem item = mCurItems[idx];
-                recoverItem(item);
+                _recoverItem(item);
                 mCurItems.RemoveAt(idx);
             }
         }

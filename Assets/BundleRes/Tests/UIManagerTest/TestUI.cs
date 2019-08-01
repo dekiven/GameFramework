@@ -7,11 +7,11 @@ using System;
 
 public class TestUI : MonoBehaviour {
     const string asb = "Tests/UIManagerTest";
-    private GameUIManager mMgr;
+    private UIMgr mMgr;
     bool hasInit = false;
     void Awake()
     {
-        mMgr = GameUIManager.Instance;
+        mMgr = UIMgr.Instance;
     }
 
     // Use this for initialization
@@ -26,11 +26,11 @@ public class TestUI : MonoBehaviour {
             mMgr.ShowView(asb, "TestUI.prefab");
             hasInit = true;
 
-            StartCoroutine(showAnotherUI());
+            StartCoroutine(_showAnotherUI());
         }
 	}
 
-    private IEnumerator showAnotherUI()
+    private IEnumerator _showAnotherUI()
     {
         yield return new WaitForSeconds(3);
         mMgr.ShowView(asb, "TestUI2");

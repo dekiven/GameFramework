@@ -22,13 +22,13 @@ namespace GameFramework
             mListProperty = serializedObject.FindProperty("UIArray");
             mSubProperty = serializedObject.FindProperty("SubHandlers");
             mRTProperty = serializedObject.FindProperty("RTArray");
-            CustomListInspector.OnElementAdd.AddListener(onListAdd);
+            CustomListInspector.OnElementAdd.AddListener(_onListAdd);
             UIHandlerHierarchy.CurUIHandler = mTarget;
         }
 
         void OnDisable()
         {
-            CustomListInspector.OnElementAdd.RemoveListener(onListAdd);
+            CustomListInspector.OnElementAdd.RemoveListener(_onListAdd);
             UIHandlerHierarchy.CurUIHandler = null;
         }
 
@@ -48,20 +48,20 @@ namespace GameFramework
             string commandName = e.commandName;
             if (mIsSelecting && e.type != EventType.Layout && commandName == "ObjectSelectorUpdated")
             {
-                setPickerObj();
+                _setPickerObj();
             }
             if (mIsSelecting && e.type != EventType.Layout && commandName == "ObjectSelectorClosed")
             {
                 mIsSelecting = false;
-                setPickerObj(true);
+                _setPickerObj(true);
             }
             if (GUILayout.Button(new GUIContent("拷贝Index信息到剪贴板")))
             {
-                copyIndex2ClipboardLua();
+                _copyIndex2ClipboardLua();
             }
         }
 
-        private void setPickerObj(bool checkMulti = false)
+        private void _setPickerObj(bool checkMulti = false)
         {
             if (mSelectingIndex >= 0 && mSelectingIndex < mTarget.UIArray.Count)
             {
@@ -126,7 +126,7 @@ namespace GameFramework
             }
         }
 
-        private void onListAdd(SerializedProperty list, int index)
+        private void _onListAdd(SerializedProperty list, int index)
         {
             if (!list.Equals(mListProperty))
             {
@@ -139,16 +139,16 @@ namespace GameFramework
             mSelectingIndex = index + 1;
         }
 
-        private void copyIndex2ClipboardLua()
+        private void _copyIndex2ClipboardLua()
         {
             string s = string.Empty;
-            s = s + getLitsInfoLua(mTarget.UIArray, "uiIdx", "UIArray index");
-            s = s + getLitsInfoLua(mTarget.SubHandlers, "subIdx", "SubHandlers index");
-            s = s + getLitsInfoLua(mTarget.RTArray, "rtIdx", "RTArray index");
+            s = s + _getLitsInfoLua(mTarget.UIArray, "uiIdx", "UIArray index");
+            s = s + _getLitsInfoLua(mTarget.SubHandlers, "subIdx", "SubHandlers index");
+            s = s + _getLitsInfoLua(mTarget.RTArray, "rtIdx", "RTArray index");
             GUIUtility.systemCopyBuffer = s;
         }
 
-        private string getLitsInfoLua<T>(List<T> list, string tname, string notes) where T : Component
+        private string _getLitsInfoLua<T>(List<T> list, string tname, string notes) where T : Component
         {
             string s = string.Empty;
             if (null != list && list.Count > 0)
@@ -159,7 +159,7 @@ namespace GameFramework
                     T t = list[i];
                     if (null != t)
                     {
-                        s = s + getComponentInfoLua(t, i);
+                        s = s + _getComponentInfoLua(t, i);
                     }
                 }
                 s = s + "\n}\n\n";
@@ -167,7 +167,7 @@ namespace GameFramework
             return s;
         }
 
-        private string getComponentInfoLua(Component com, int index)
+        private string _getComponentInfoLua(Component com, int index)
         {
             string transName = Tools.GetTransformName(com.transform, null == mTarget.RootTransform ? mTarget.transform : mTarget.RootTransform);
             return "\n\t" + com.name + " = " + index + ",  -- " + transName + " (" + com.GetType() + ")";

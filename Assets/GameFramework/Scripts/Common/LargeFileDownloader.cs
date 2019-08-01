@@ -47,7 +47,7 @@ namespace GameFramework
             SavePath = savePath;
             DownloadCallback = callback;
             mIdx = -1;
-            downloadNextUrl();
+            _downloadNextUrl();
         }
 
         public void Dispose()
@@ -56,11 +56,11 @@ namespace GameFramework
             
             if(mCoroutine != 0)
             {
-                GameCoroutineManager.Instance.StopCor(mCoroutine);
+                CoroutineMgr.Instance.StopCor(mCoroutine);
             }
         }
 
-        private void downloadNextUrl()
+        private void _downloadNextUrl()
         {
             mIdx += 1;
             LogFile.Log("startDownload：" + Urls[mIdx]);
@@ -94,7 +94,7 @@ namespace GameFramework
                     LogFile.Log("error =>> " + ex.Message);
                     mRequest.Abort();
                     mRequest = null;
-                    downloadNextUrl();
+                    _downloadNextUrl();
                     return;
                 }
 
@@ -118,14 +118,14 @@ namespace GameFramework
 
                     Loom.RunAsync(() =>
                     {
-                        onRecive(_i);
+                        _onRecive(_i);
                     });
                  }
 
                 if(mCoroutine == 0)
                 {
                     //GameCoroutineManager.Instance.StopCor(mCoroutine);
-                    mCoroutine = GameCoroutineManager.Instance.StartCor(onProgress());
+                    mCoroutine = CoroutineMgr.Instance.StartCor(_onProgress());
                 }
             }
             else
@@ -134,7 +134,7 @@ namespace GameFramework
             }
         }
 
-        private IEnumerator onProgress()
+        private IEnumerator _onProgress()
         {
             bool hasFinish = false;
             double p = 100d - ThreadNum;
@@ -156,13 +156,13 @@ namespace GameFramework
                     }
                     if(ThreadNum == 1)
                     {                        
-                        callback(0.99d, "重命名");
+                        _callback(0.99d, "重命名");
                         File.Move(SavePath + ".tmp0", SavePath);
                         progress = 1;
                     }
                     else
                     {
-                        callback(p/100, "开始合并临时文件");
+                        _callback(p/100, "开始合并临时文件");
                         byte[] bytes = new byte[BufferSize];
                         FileStream fs = new FileStream(SavePath, FileMode.Create);
                         FileStream fsTemp = null;
@@ -177,7 +177,7 @@ namespace GameFramework
                             }
                             fsTemp.Close();
                             p += 1;
-                            callback(p/ 100, "合并临时文件:"+i);
+                            _callback(p/ 100, "合并临时文件:"+i);
                         }
                         fs.Close();
 
@@ -189,15 +189,15 @@ namespace GameFramework
                         progress = 1d;
                     }
                 }
-                callback(progress, (progress.Equals(1d) ? STR_SUCCEEDED : string.Empty));
+                _callback(progress, (progress.Equals(1d) ? STR_SUCCEEDED : string.Empty));
                 yield return new WaitForSeconds(0.5f);
             }
-            GameCoroutineManager.Instance.StopCor(mCoroutine);
+            CoroutineMgr.Instance.StopCor(mCoroutine);
 
             //UnityEditor.EditorApplication.isPlaying = false;
         }
 
-        private void callback(double progress, string msg)
+        private void _callback(double progress, string msg)
         {
             if(null != DownloadCallback)
             {
@@ -205,7 +205,7 @@ namespace GameFramework
             }
         }
 
-        private void onRecive(int idx)
+        private void _onRecive(int idx)
         {
             string fileName = SavePath + ".tmp"+idx;
             //LogFile.Log("onRecave idx:{0}, fileName:{1}", idx, fileName);

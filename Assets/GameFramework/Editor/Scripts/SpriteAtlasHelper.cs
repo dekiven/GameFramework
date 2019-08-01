@@ -43,7 +43,7 @@ namespace GameFramework
             {
                 atlas.Add(sCurSelectObjs);
             }
-            clearStatus();
+            _clearStatus();
 
             AssetDatabase.SaveAssets();
         }
@@ -78,10 +78,10 @@ namespace GameFramework
             AssetDatabase.CreateAsset(atlas, p);
 
             AssetDatabase.SaveAssets();
-            clearStatus();
+            _clearStatus();
         }
 
-        private static void clearStatus()
+        private static void _clearStatus()
         {
             AssetDatabase.Refresh();
             sCurSelectObjs.Clear();

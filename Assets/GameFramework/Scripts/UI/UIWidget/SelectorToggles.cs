@@ -68,7 +68,7 @@ namespace GameFramework
                 StopCoroutine(mSetToggleCor);
                 mSetToggleCor = null;
             }
-            mSetToggleCor = StartCoroutine(setTotalNum(num));
+            mSetToggleCor = StartCoroutine(_setTotalNum(num));
         }
 
         public void SetData(List<UIItemData> data)
@@ -93,7 +93,7 @@ namespace GameFramework
             }
             else
             {
-                setCurIndex(index);
+                _setCurIndex(index);
             }
         }
 
@@ -135,7 +135,7 @@ namespace GameFramework
             {
                 for (int i = 0; i < mToggls.Count; i++)
                 {
-                    addToggleToGroup(i, mToggls[i]);
+                    _addToggleToGroup(i, mToggls[i]);
                 }
             }
 //#if UNITY_EDITOR
@@ -219,14 +219,14 @@ namespace GameFramework
             mToggls.Clear();
         }
 
-        private IEnumerator setTotalNum(int num)
+        private IEnumerator _setTotalNum(int num)
         {
             recoverAll();
             for (int i = 0; i < num; i++)
             {
                 Toggle toggle = getToggle();
                 mToggls.Add(toggle);
-                addToggleToGroup(i, toggle);
+                _addToggleToGroup(i, toggle);
                 if (null != mData && i < mData.Count)
                 {
                     UIHandler handler = toggle.GetComponent<UIHandler>();
@@ -244,12 +244,12 @@ namespace GameFramework
             }
             if(mTargetIndex != -1)
             {
-                setCurIndex(mTargetIndex, true);
+                _setCurIndex(mTargetIndex, true);
                 mTargetIndex = -1;
             }
         }
 
-        private void addToggleToGroup(int i, Toggle toggle)
+        private void _addToggleToGroup(int i, Toggle toggle)
         {
             if(null != toggle)
             {
@@ -258,12 +258,12 @@ namespace GameFramework
                 toggle.onValueChanged.RemoveAllListeners();
                 toggle.onValueChanged.AddListener(delegate(bool isOn)
                 {
-                    onToggleOn(i, isOn);
+                    _onToggleOn(i, isOn);
                 });
             }
         }
 
-        private void setCurIndex(int index, bool force=false)
+        private void _setCurIndex(int index, bool force=false)
         {
             int idx = Mathf.Clamp(index, 0, mToggls.Count - 1);
             if(mCurIndex != idx || force)
@@ -290,11 +290,11 @@ namespace GameFramework
             }
             if (CallbackOnSet)
             {
-                noticeValueChanged();
+                _noticeValueChanged();
             }
         }
 
-        private void onToggleOn(int index, bool value)
+        private void _onToggleOn(int index, bool value)
         {
             if(value)
             {
@@ -303,12 +303,12 @@ namespace GameFramework
                 {
                     mCurIndex = index;
                     //Debug.Log("onToggleOn curIndex:" + index);
-                    noticeValueChanged();
+                    _noticeValueChanged();
                 }
             }
         }
 
-        private void noticeValueChanged()
+        private void _noticeValueChanged()
         {
             if(null != mOnValueChange)
             {

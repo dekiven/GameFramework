@@ -11,11 +11,11 @@ namespace GameFramework
         None = 0,
         ShowSize = 1,
         ShowLabel = 2,
-        ShowElementLabels = 4,
-        ShowBtns = 8,
-        Default = ShowSize | ShowLabel | ShowElementLabels | ShowBtns,
+        _showElementLabels = 4,
+        _showBtns = 8,
+        Default = ShowSize | ShowLabel | _showElementLabels | _showBtns,
         NoElementLabels = ShowSize | ShowLabel,
-        NoBtns = ShowSize | ShowLabel | ShowElementLabels,
+        NoBtns = ShowSize | ShowLabel | _showElementLabels,
         All = Default,
     }
 
@@ -28,7 +28,7 @@ namespace GameFramework
         /// <summary>
         /// 添加完成后对数据进行处理，如果返回false 取消添加
         /// </summary>
-        //public PassIndexCallback OnAddCallback;
+        //public PassIndexCallback _onAddCallback;
         public static CustomListOption sOptions = CustomListOption.Default;
 
         private static GUIContent sBtnUp = new GUIContent("\u2191", "上移");
@@ -83,7 +83,7 @@ namespace GameFramework
                 }
                 else
                 {
-                    showElement(listProperty);
+                    _showElement(listProperty);
                     GUILayout.Space(5f);
                 }
             }
@@ -93,11 +93,11 @@ namespace GameFramework
             }
         }
 
-        private static void showElement(SerializedProperty listProperty)
+        private static void _showElement(SerializedProperty listProperty)
         {
             bool
-                showLabel = (sOptions & CustomListOption.ShowElementLabels) != 0,
-                showBtn = (sOptions & CustomListOption.ShowBtns) != 0;
+                showLabel = (sOptions & CustomListOption._showElementLabels) != 0,
+                showBtn = (sOptions & CustomListOption._showBtns) != 0;
             for (int i = 0; i < listProperty.arraySize; i++)
             {
                 if(showBtn)
@@ -114,7 +114,7 @@ namespace GameFramework
                 }
                 if (showBtn)
                 {
-                    showBtns(listProperty, i);
+                    _showBtns(listProperty, i);
                     EditorGUILayout.EndHorizontal();
                 }
             }
@@ -123,7 +123,7 @@ namespace GameFramework
             {
                 //listProperty.arraySize += 1;
                 //Debug.Log("listProperty.arraySize:" + listProperty.arraySize);
-                onAdd(listProperty, -1);
+                _onAdd(listProperty, -1);
             }
         }
 
@@ -132,32 +132,32 @@ namespace GameFramework
             Show(listProperty, CustomListOption.Default, content);
         }
 
-        private static void showBtns(SerializedProperty listProperty, int index)
+        private static void _showBtns(SerializedProperty listProperty, int index)
         {
             //if (GUILayout.Button(sBtnUp, EditorStyles.miniButtonLeft, sMinBtnWidth))
             GUI.enabled = index != 0;
             if(GUILayout.Button(sBtnUp, EditorStyles.miniButton, sMinBtnWidth))
             {
-                onMoveUp(listProperty, index);
+                _onMoveUp(listProperty, index);
             }
             GUI.enabled = index != listProperty.arraySize - 1;
             if (GUILayout.Button(sBtnDown, EditorStyles.miniButton, sMinBtnWidth))
             {
-                onMoveDown(listProperty, index);
+                _onMoveDown(listProperty, index);
             }
             GUI.enabled = true;
             if (GUILayout.Button(sBtnDuplicate, EditorStyles.miniButton, sMinBtnWidth))
             {
-                onAdd(listProperty, index);
+                _onAdd(listProperty, index);
             }
             //if (GUILayout.Button(sBtnRemove, EditorStyles.miniButtonRight, sMinBtnWidth))
             if (GUILayout.Button(sBtnRemove, EditorStyles.miniButton, sMinBtnWidth))
             {
-                onRemove(listProperty, index);
+                _onRemove(listProperty, index);
             }
         }
 
-        private static void onAdd(SerializedProperty listProperty, int index)
+        private static void _onAdd(SerializedProperty listProperty, int index)
         {
             //-1 == index是列表数量为0时，创建第一个元素
             if (-1 == index)
@@ -174,7 +174,7 @@ namespace GameFramework
             }
         }
 
-        private static void onRemove(SerializedProperty listProperty, int index)
+        private static void _onRemove(SerializedProperty listProperty, int index)
         {
             int oldSize = listProperty.arraySize;
             listProperty.DeleteArrayElementAtIndex(index);
@@ -184,12 +184,12 @@ namespace GameFramework
             }
         }
 
-        private static void onMoveUp(SerializedProperty listProperty, int index)
+        private static void _onMoveUp(SerializedProperty listProperty, int index)
         {
             listProperty.MoveArrayElement(index, index - 1);
         }
 
-        private static void onMoveDown(SerializedProperty listProperty, int index)
+        private static void _onMoveDown(SerializedProperty listProperty, int index)
         {
             listProperty.MoveArrayElement(index, index + 1);
         }

@@ -7,11 +7,11 @@ using System.Threading;
 using UnityEngine;
 namespace GameFramework
 {
-    public class GameManager : SingletonComp<GameManager>
+    public class GameMgr : SingletonComp<GameMgr>
     {
-        GameCoroutineManager mCorMgr;
-        GameUIManager mUiMgr;
-        GameLuaManager mLuaMgr;
+        CoroutineMgr mCorMgr;
+        UIMgr mUiMgr;
+        LuaMgr mLuaMgr;
         ResManager mResMgr;
 
         //是否开启线程处理EventManager线程上的消息
@@ -37,17 +37,17 @@ namespace GameFramework
 
             isRunning = true;
             GameConfig.Load();
-            initLogFile();
+            _initLogFile();
             //初始化Platform，主要是插件相关
-            initGamePlatform();
+            _initGamePlatform();
 
             ObjPools.Init();
 
-            mCorMgr = GameCoroutineManager.Instance;
+            mCorMgr = CoroutineMgr.Instance;
             mResMgr = ResManager.Instance;
-            mLuaMgr = GameLuaManager.Instance;
+            mLuaMgr = LuaMgr.Instance;
             //mUpMgr = GameUpdateManager.Instance;
-            mUiMgr = GameUIManager.Instance;
+            mUiMgr = UIMgr.Instance;
         }
 
         void Start()
@@ -182,7 +182,7 @@ namespace GameFramework
         #endregion
 
         #region private
-        private static void initLogFile()
+        private static void _initLogFile()
         {
             if (
                 RuntimePlatform.WindowsPlayer == Application.platform
@@ -198,7 +198,7 @@ namespace GameFramework
             }
         }
 
-        private void initGamePlatform()
+        private void _initGamePlatform()
         {
             switch (Application.platform)
             {

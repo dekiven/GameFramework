@@ -12,10 +12,10 @@ namespace GameFramework
 
         static UIHandlerHierarchy()
         {
-            EditorApplication.hierarchyWindowItemOnGUI = onHierarchyGUI;
+            EditorApplication.hierarchyWindowItemOnGUI = _onHierarchyGUI;
         }
 
-        private static Rect getRect(Rect selectionrect, float width, ref float total, float offset=1)
+        private static Rect _getRect(Rect selectionrect, float width, ref float total, float offset=1)
         {
             Rect rect = new Rect(selectionrect);
             //rect.x = selectionrect.width - width - total;
@@ -25,18 +25,18 @@ namespace GameFramework
             return rect;
         }
 
-        private static void drawIcon<T>(T obj, Rect rect) where T : UnityEngine.Object
+        private static void _drawIcon<T>(T obj, Rect rect) where T : UnityEngine.Object
         {
             Texture icon = EditorGUIUtility.ObjectContent(obj, typeof(T)).image;
             GUI.Label(rect, icon);
         }
 
-        private static void drawLabel(string text, Rect rect)
+        private static void _drawLabel(string text, Rect rect)
         {
             GUI.Label(rect, new GUIContent(text));
         }
 
-        private static void onHierarchyGUI(int instanceid, Rect selectionrect)
+        private static void _onHierarchyGUI(int instanceid, Rect selectionrect)
         {
             GameObject obj = EditorUtility.InstanceIDToObject(instanceid) as GameObject;
             if(null == obj)
@@ -48,7 +48,7 @@ namespace GameFramework
             {
                 float height = selectionrect.height;
                 float total = 0f;
-                obj.SetActive(GUI.Toggle(getRect(selectionrect, height, ref total, 5), obj.activeSelf, string.Empty));
+                obj.SetActive(GUI.Toggle(_getRect(selectionrect, height, ref total, 5), obj.activeSelf, string.Empty));
                 if( null != CurUIHandler.UIArray && CurUIHandler.UIArray.Count > 0)
                 {
                     for (int i = 0; i < CurUIHandler.UIArray.Count; i++)
@@ -56,8 +56,8 @@ namespace GameFramework
                         UIBehaviour ui = CurUIHandler.UIArray[i];
                         if(null != ui && ui.gameObject.Equals(obj))
                         {
-                            drawLabel("" + i, getRect(selectionrect, height+2, ref total));
-                            drawIcon(ui, getRect(selectionrect, height, ref total));
+                            _drawLabel("" + i, _getRect(selectionrect, height+2, ref total));
+                            _drawIcon(ui, _getRect(selectionrect, height, ref total));
                         }
                     }
                 }
@@ -69,8 +69,8 @@ namespace GameFramework
                         UIHandler ui = CurUIHandler.SubHandlers[i];
                         if(null != ui && ui.gameObject.Equals(obj))
                         {
-                            drawLabel(""+i, getRect(selectionrect, height+4, ref total, 10));
-                            drawLabel("sub:  ", getRect(selectionrect, height*2, ref total));
+                            _drawLabel(""+i, _getRect(selectionrect, height+4, ref total, 10));
+                            _drawLabel("sub:  ", _getRect(selectionrect, height*2, ref total));
                         }
                     }
                 }

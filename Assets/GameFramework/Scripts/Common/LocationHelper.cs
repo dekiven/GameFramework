@@ -35,13 +35,13 @@ namespace GameFramework
             sTimeoutSec = timeoutSec;
             sDesiredAccuracyInMeters = desiredAccuracyInMeters;
             sUpdateDistanceInMeters = updateDistanceInMeters;
-            sHashcode = GameCoroutineManager.Instance.StartCor(startGPS());
+            sHashcode = CoroutineMgr.Instance.StartCor(_startGPS());
         }
 
         public static void StopGPS()
         {
             Input.location.Stop();
-            stopCoroutine();
+            _stopCoroutine();
             sGpsOn = false;
         }
 
@@ -50,14 +50,14 @@ namespace GameFramework
             return Input.location.lastData;
         }
 
-        private static IEnumerator startGPS()
+        private static IEnumerator _startGPS()
         {
             // Input.location 用于访问设备的位置属性（手持设备）, 静态的LocationService位置
             // LocationService.isEnabledByUser 用户设置里的定位服务是否启用
             if (!Input.location.isEnabledByUser)
             {
-                callback(false, "isEnabledByUser value is:" + Input.location.isEnabledByUser.ToString() + ". Please turn on the GPS");
-                stopCoroutine();
+                _callback(false, "isEnabledByUser value is:" + Input.location.isEnabledByUser.ToString() + ". Please turn on the GPS");
+                _stopCoroutine();
                 yield break;
             }
 
@@ -74,33 +74,33 @@ namespace GameFramework
 
             if (count > sTimeoutSec)
             {
-                callback(false, "Init GPS service time out");
-                stopCoroutine();
+                _callback(false, "Init GPS service time out");
+                _stopCoroutine();
                 yield break;
             }
 
             if (Input.location.status == LocationServiceStatus.Failed)
             {
-                callback(false, "Unable to determine device location");
+                _callback(false, "Unable to determine device location");
             }
             else
             {
                 sGpsOn = true;
-                callback(true, "latitude:" + Input.location.lastData.latitude + " longitude:" + Input.location.lastData.longitude);
+                _callback(true, "latitude:" + Input.location.lastData.latitude + " longitude:" + Input.location.lastData.longitude);
             }
-            stopCoroutine();
+            _stopCoroutine();
         }
 
-        private static void stopCoroutine()
+        private static void _stopCoroutine()
         {
             if (sHashcode != 0)
             {
-                GameCoroutineManager.Instance.StopCor(sHashcode);
+                CoroutineMgr.Instance.StopCor(sHashcode);
                 sHashcode = 0;
             }
         }
 
-        private static void callback(bool rst, string msg)
+        private static void _callback(bool rst, string msg)
         {
             if(null != sStartRst)
             {

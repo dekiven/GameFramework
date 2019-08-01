@@ -7,7 +7,7 @@ using UnityEngine.U2D;
 
 namespace GameFramework
 {
-    public class GameSpriteAtlasManager : Singleton<GameSpriteAtlasManager>, IResHandler<SpriteAtlas>
+    public class SpriteAtlasMgr : Singleton<SpriteAtlasMgr>, IResHandler<SpriteAtlas>
     {
         #region private 属性
         private GameResHandler<SpriteAtlas> mSpriteDict;
@@ -16,7 +16,7 @@ namespace GameFramework
         /// <summary>
         /// 请勿直接调用构造函数，请使用 Instance 方法获取单例
         /// </summary>
-        public GameSpriteAtlasManager()
+        public SpriteAtlasMgr()
         {
             mSpriteDict = new GameResHandler<SpriteAtlas>("common");
             mSpriteDict.Suffix = ".spriteatlas";

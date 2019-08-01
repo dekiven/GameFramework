@@ -22,7 +22,7 @@ namespace GameFramework
             GameObject obj = Object.Instantiate(prefab);
             obj.name = "Sv";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
-            placeUIElementRoot(obj, menuCommand);
+            _placeUIElementRoot(obj, menuCommand);
         }
 
         [MenuItem("GameObject/UI/GF/ScrollItem", false, 1502)]
@@ -32,7 +32,7 @@ namespace GameFramework
             GameObject obj = Object.Instantiate(prefab);
             obj.name = "Si";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
-            placeUIElementRoot(obj, menuCommand);
+            _placeUIElementRoot(obj, menuCommand);
         }
 
         [MenuItem("GameObject/UI/GF/ScrollSelector", false, 1503)]
@@ -42,7 +42,7 @@ namespace GameFramework
             GameObject obj = Object.Instantiate(prefab);
             obj.name = "Ss";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
-            placeUIElementRoot(obj, menuCommand);
+            _placeUIElementRoot(obj, menuCommand);
         }
 
         [MenuItem("GameObject/UI/GF/SelectorToggles", false, 1504)]
@@ -52,14 +52,14 @@ namespace GameFramework
                 GameObject obj = Object.Instantiate(prefab);
                 obj.name = "St";
                 //obj.transform.SetParent(Selection.activeGameObject.transform, false);
-                placeUIElementRoot(obj, menuCommand);
+                _placeUIElementRoot(obj, menuCommand);
         }
 
         [MenuItem("GameObject/UI/GF/UIView", false, 1600)]
         public static void CreateUIView(MenuCommand menuCommand)
         {
             GameObject gameObject = GFUICreateControls.CreatUIView(new DRes());
-            placeUIElementRoot(gameObject, menuCommand);
+            _placeUIElementRoot(gameObject, menuCommand);
 
             RectTransform rect = gameObject.GetComponent<RectTransform>();
             rect.anchoredPosition = Vector2.zero;
@@ -71,7 +71,7 @@ namespace GameFramework
         public static void CreateUIWorld(MenuCommand menuCommand)
         {
             GameObject gameObject = GFUICreateControls.CreatUIWorld(new DRes());
-            placeUIElementRoot(gameObject, menuCommand);
+            _placeUIElementRoot(gameObject, menuCommand);
 
             RectTransform rect = gameObject.GetComponent<RectTransform>();
             rect.anchoredPosition = Vector2.zero;
@@ -79,12 +79,12 @@ namespace GameFramework
         }
 
         #region 私有
-        private static void placeUIElementRoot(GameObject element, MenuCommand menuCommand)
+        private static void _placeUIElementRoot(GameObject element, MenuCommand menuCommand)
         {
             GameObject parent = menuCommand.context as GameObject;
             if (parent == null || parent.GetComponentInParent<Canvas>() == null)
             {
-                parent = getOrCreateCanvasGameObject();
+                parent = _getOrCreateCanvasGameObject();
             }
 
             string uniqueName = GameObjectUtility.GetUniqueNameForSibling(parent.transform, element.name);
@@ -93,12 +93,12 @@ namespace GameFramework
             Undo.SetTransformParent(element.transform, parent.transform, "Parent " + element.name);
             GameObjectUtility.SetParentAndAlign(element, parent);
             if (parent != menuCommand.context) // not a context click, so center in sceneview
-                setPositionVisibleinSceneView(parent.GetComponent<RectTransform>(), element.GetComponent<RectTransform>());
+                _setPositionVisibleinSceneView(parent.GetComponent<RectTransform>(), element.GetComponent<RectTransform>());
 
             Selection.activeGameObject = element;
         }
 
-        private static void setPositionVisibleinSceneView(RectTransform canvasRTransform, RectTransform itemTransform)
+        private static void _setPositionVisibleinSceneView(RectTransform canvasRTransform, RectTransform itemTransform)
         {
             // Find the best scene view
             SceneView sceneView = SceneView.lastActiveSceneView;
@@ -144,7 +144,7 @@ namespace GameFramework
         }
 
         // Helper function that returns a Canvas GameObject; preferably a parent of the selection, or other existing Canvas.
-        static private GameObject getOrCreateCanvasGameObject()
+        static private GameObject _getOrCreateCanvasGameObject()
         {
             GameObject selectedGo = Selection.activeGameObject;
 
@@ -159,10 +159,10 @@ namespace GameFramework
                 return canvas.gameObject;
 
             // No canvas in the scene at all? Then create a new one.
-            return createNewUI();
+            return _createNewUI();
         }
 
-        static private GameObject createNewUI()
+        static private GameObject _createNewUI()
         {
             // Root for the UI
             var root = new GameObject("Canvas");
@@ -174,16 +174,16 @@ namespace GameFramework
             Undo.RegisterCreatedObjectUndo(root, "Create " + root.name);
 
             // if there is no event system add one...
-            createEventSystem(false);
+            _createEventSystem(false);
             return root;
         }
 
-        private static void createEventSystem(bool select)
+        private static void _createEventSystem(bool select)
         {
-            createEventSystem(select, null);
+            _createEventSystem(select, null);
         }
 
-        private static void createEventSystem(bool select, GameObject parent)
+        private static void _createEventSystem(bool select, GameObject parent)
         {
             var esys = Object.FindObjectOfType<EventSystem>();
             if (esys == null)

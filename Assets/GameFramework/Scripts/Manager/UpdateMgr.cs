@@ -76,7 +76,7 @@ namespace GameFramework
             mServListCall = callback;
             if (null == mResServList || mResServList.Count == 0 || forceLoad)
             {
-                GameResManager.Instance.GetStrAsync("UpdateServer", ".bytes", _onServListLoaded);
+                ResMgr.Instance.GetStrAsync("UpdateServer", ".bytes", _onServListLoaded);
             }
             else
             {
@@ -174,8 +174,8 @@ namespace GameFramework
         public void StartGameLogic()
         {
             // pop DownloadView
-            GameUIManager.Instance.PopView();
-            GameManager.Instance.StartGameLogic();
+            UIMgr.Instance.PopView();
+            GameMgr.Instance.StartGameLogic();
 
             EventManager.RemoveFromMain(this);
         }
@@ -352,7 +352,7 @@ namespace GameFramework
         void ____test____()
         {
             _showDownloadErrMsg();
-            GameCoroutineManager.Instance.Delay(5, () => 
+            CoroutineMgr.Instance.Delay(5, () => 
             {
                 _showCheckErrMsg();
             });

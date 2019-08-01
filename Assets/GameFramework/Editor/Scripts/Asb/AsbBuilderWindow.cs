@@ -66,7 +66,7 @@ namespace GameFramework
                      _config.options.ToString(), optionsList,
                     (string selectedTypeStr) =>
                     {
-                        _config.options = getEnumByString<BuildAssetBundleOptions>(selectedTypeStr);
+                        _config.options = _getEnumByString<BuildAssetBundleOptions>(selectedTypeStr);
                     }
                 );
             }
@@ -81,7 +81,7 @@ namespace GameFramework
                     (string selectedTypeStr) =>
                     {
 
-                        _config.target = getEnumByString<BuildTarget>(selectedTypeStr);
+                        _config.target = _getEnumByString<BuildTarget>(selectedTypeStr);
                     }
                 );
             }
@@ -196,7 +196,7 @@ namespace GameFramework
         };
 
 
-        private T getEnumByString<T>(string value)
+        private T _getEnumByString<T>(string value)
         {
             return (T)Enum.Parse(typeof(T), value);
         }

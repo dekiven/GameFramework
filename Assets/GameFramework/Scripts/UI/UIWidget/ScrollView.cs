@@ -116,7 +116,7 @@ namespace GameFramework
             mItemDatas = data;
             mItemSelectStatus.Clear();
             mItemSelectStatus.AddRange(new bool[data.Count]);
-            CalculateAndUpdateContent();
+            _calculateAndUpdateContent();
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace GameFramework
                 mItemDatas[index] = data;
             }
             //TODO:更新某数据只需要刷新该数据即可
-            checkNeedUpdate(true);
+            _checkNeedUpdate(true);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace GameFramework
         {
             mItemDatas.Add(data);
             mItemSelectStatus.Add(false);
-            CalculateAndUpdateContent();
+            _calculateAndUpdateContent();
         }
 
         public void AddData(LuaTable table)
@@ -167,7 +167,7 @@ namespace GameFramework
         {
             mItemDatas.Insert(index, data);
             mItemSelectStatus.Insert(index, false);
-            CalculateAndUpdateContent();
+            _calculateAndUpdateContent();
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace GameFramework
                 mItemDatas.RemoveAt(index);
                 mItemSelectStatus.RemoveAt(index);
 
-                CalculateAndUpdateContent();
+                _calculateAndUpdateContent();
             }
         }
 
@@ -202,7 +202,7 @@ namespace GameFramework
                 mItemDatas.RemoveAt(index);
                 mItemSelectStatus.RemoveAt(index);
 
-                CalculateAndUpdateContent();
+                _calculateAndUpdateContent();
             }
         }
 
@@ -210,7 +210,7 @@ namespace GameFramework
         {
             mItemDatas.AddRange(datas);
             mItemSelectStatus.AddRange(new bool[datas.Count]);
-            CalculateAndUpdateContent();
+            _calculateAndUpdateContent();
         }
 
         public void AddDatas(LuaTable lua)
@@ -227,7 +227,7 @@ namespace GameFramework
                 mItemDatas.RemoveAt(idx);
                 mItemSelectStatus.RemoveAt(idx);
             }
-            CalculateAndUpdateContent();
+            _calculateAndUpdateContent();
         }
 
         public void RemoveDatasAt(string intArr)
@@ -244,7 +244,7 @@ namespace GameFramework
             }
             else
             {
-                tweenToIndex(index);
+                _tweenToIndex(index);
             }
         }
 
@@ -260,7 +260,7 @@ namespace GameFramework
             }
             else
             {
-                tweenToPos(pos);
+                _tweenToPos(pos);
             }
         }
 
@@ -444,7 +444,7 @@ namespace GameFramework
         /// <param name="call"></param>
         public void SetOnBtnClickLua_S(LuaFunction call)
         {
-            setOnBtnClickLua(call, true);
+            _setOnBtnClickLua(call, true);
         }
 
         /// <summary>
@@ -453,7 +453,7 @@ namespace GameFramework
         /// <param name="call"></param>
         public void SetOnBtnClickLua_I(LuaFunction call)
         {
-            setOnBtnClickLua(call, false);
+            _setOnBtnClickLua(call, false);
         }
 
 
@@ -463,13 +463,13 @@ namespace GameFramework
             {
                 if(mCurSelectIndex >= 0 && mCurSelectIndex < mItemDatas.Count)
                 {
-                    setItemSelected(mCurSelectIndex, false);
+                    _setItemSelected(mCurSelectIndex, false);
                     mItemSelectStatus[mCurSelectIndex] = false;
                 }
                 mCurSelectIndex = index;
             }
-            setItemSelected(index, true);
-            onSelectStatusChanges();
+            _setItemSelected(index, true);
+            _onSelectStatusChanges();
         }
 
         public void SelectItems(int[] indexArr)
@@ -481,9 +481,9 @@ namespace GameFramework
             }
             for (int i = 0; i < indexArr.Length; i++)
             {
-                setItemSelected(indexArr[i], true);
+                _setItemSelected(indexArr[i], true);
             }
-            onSelectStatusChanges();
+            _onSelectStatusChanges();
         }
 
         public void SelectItems(string indexArr)
@@ -498,9 +498,9 @@ namespace GameFramework
                 //mItemSelectStatus[murSelectIndex] = false;
                 mCurSelectIndex = -1;
             }
-            setItemSelected(index, false);
+            _setItemSelected(index, false);
             //mItemSelectStatus[index] = false;
-            onSelectStatusChanges();
+            _onSelectStatusChanges();
         }
 
         public void UnselectItems(int[] indexArr)
@@ -512,9 +512,9 @@ namespace GameFramework
             }
             for (int i = 0; i < indexArr.Length; i++)
             {
-                setItemSelected(indexArr[i], false);
+                _setItemSelected(indexArr[i], false);
             }
-            onSelectStatusChanges();
+            _onSelectStatusChanges();
         }
 
         public void UnselectItems(string indexArr)
@@ -528,7 +528,7 @@ namespace GameFramework
             {
                 if (mCurSelectIndex >= 0 && mCurSelectIndex < mItemDatas.Count)
                 {
-                    setItemSelected(mCurSelectIndex, false);
+                    _setItemSelected(mCurSelectIndex, false);
                 } 
                 if(index == mCurSelectIndex)
                 {
@@ -538,8 +538,8 @@ namespace GameFramework
                 }
                 mCurSelectIndex = index;
             }
-            switchItem(index);
-            onSelectStatusChanges();
+            _switchItem(index);
+            _onSelectStatusChanges();
         }
 
         public void SwitchItems(int[] indexArr)
@@ -551,9 +551,9 @@ namespace GameFramework
             }
             for (int i = 0; i < indexArr.Length; i++)
             {
-                switchItem(indexArr[i]);
+                _switchItem(indexArr[i]);
             }
-            onSelectStatusChanges();
+            _onSelectStatusChanges();
         }
 
         public void SwitchItems(string indexArr)
@@ -633,13 +633,13 @@ namespace GameFramework
             base.OnEnable();
             if (null != mItemDatas && null != ItemPrefab)
             {                
-                CalculateAndUpdateContent();
+                _calculateAndUpdateContent();
             }
         }
 
         protected override void OnDestroy()
         {
-            recoverAll();
+            _recoverAll();
             if (null != mCurItems)
             {
                 mCurItems.Clear();
@@ -675,17 +675,17 @@ namespace GameFramework
         #endregion MonoBehaviour
 
         #region 私有方法
-        private ScrollItem getItem()
+        private ScrollItem _getItem()
         {
             return mItemPool.Get();
         }
 
-        private void recoverItem(ScrollItem item)
+        private void _recoverItem(ScrollItem item)
         {
             mItemPool.Recover(item);
         }
 
-        private Vector3 getItemPosByIndex(int i)
+        private Vector3 _getItemPosByIndex(int i)
         {
             int row = 0;
             int colume = 0;
@@ -703,12 +703,12 @@ namespace GameFramework
             }
         }
 
-        private bool canItemShow(int index)
+        private bool _canItemShow(int index)
         {
-            return canItemShow(getItemPosByIndex(index));
+            return _canItemShow(_getItemPosByIndex(index));
         }
 
-        private bool canItemShow(Vector2 pos)
+        private bool _canItemShow(Vector2 pos)
         {
             if (ScrollViewType.Vertical == ScrollType)
             {
@@ -724,10 +724,10 @@ namespace GameFramework
 
         private bool canLineShow(int line)
         {
-            return canItemShow(line * mNumPerLine);
+            return _canItemShow(line * mNumPerLine);
         }
 
-        private void checkNeedUpdate(bool forceUpdate = false)
+        private void _checkNeedUpdate(bool forceUpdate = false)
         {
             if(!gameObject.activeSelf)
             {
@@ -735,7 +735,7 @@ namespace GameFramework
             }
             if (null == mItemDatas || mItemDatas.Count == 0)
             {
-                recoverAll ();
+                _recoverAll ();
                 return;
             }
             bool start = false;
@@ -770,12 +770,12 @@ namespace GameFramework
                     StopCoroutine(mUpCoroutine);
                     mUpCoroutine = null;
                 }
-                mUpCoroutine = StartCoroutine(updateAllItem(startLine, endLine, forceUpdate));
+                mUpCoroutine = StartCoroutine(_updateAllItem(startLine, endLine, forceUpdate));
             }
 
         }
 
-        private IEnumerator updateAllItem(int startLine, int endLine, bool forceUpdate = false)
+        private IEnumerator _updateAllItem(int startLine, int endLine, bool forceUpdate = false)
         {
             //修复异步加载图片可能失败的问题
             yield return null;
@@ -788,24 +788,24 @@ namespace GameFramework
                     //如果开始的行数比当前的大1，证明现在在开头少显示了一行
                     if (startLine - mShowStart == 1)
                     {
-                        recoverStartLine(mShowStart);
+                        _recoverStartLine(mShowStart);
                     }
                     //如果结束的行数比当前的小1，证明现在在末尾少显示了一行
                     if (mShowEnd - endLine == 1)
                     {
-                        recoverEndLine(mShowEnd);
+                        _recoverEndLine(mShowEnd);
                     }
 
                     ///添加新的Item
                     //如果开始的行数比当前的小1，证明现在在开头多显示了一行
                     if (mShowStart - startLine == 1)
                     {
-                        addStartLine(startLine);
+                        _addStartLine(startLine);
                     }
                     //如果结束的行数比当前的大1，证明现在在末尾多显示了一行
                     if (endLine - mShowEnd == 1)
                     {
-                        addEndLine(endLine);
+                        _addEndLine(endLine);
                     }
 
                     mShowStart = startLine;
@@ -821,13 +821,13 @@ namespace GameFramework
                     int count = Mathf.Clamp(endIndex - startIndex + 1, 0, mItemDatas.Count);
 
                     //回收所有Item，在之后的协程中刷新
-                    recoverAll();
+                    _recoverAll();
 
                     for (int i = 0; i < count; i++)
                     {
-                        ScrollItem item = getItem();
+                        ScrollItem item = _getItem();
                         mCurItems.Add(item);
-                        setItemDataByIndex(item, startIndex + i);
+                        _setItemDataByIndex(item, startIndex + i);
                         if ((count + 1) % ItemNumPerStep == 0)
                         {
                             yield return null;
@@ -835,13 +835,13 @@ namespace GameFramework
                     }
                     if(mTargetIndex != -1)
                     {
-                        tweenToIndex(mTargetIndex);
+                        _tweenToIndex(mTargetIndex);
                         mTargetIndex = -1;
                         mTargetPos = -1f;
                     }
                     else if( !mTargetPos.Equals(-1f) )
                     {
-                        tweenToPos(mTargetPos);
+                        _tweenToPos(mTargetPos);
                         mTargetPos = -1f;
                     }
                 }
@@ -855,21 +855,21 @@ namespace GameFramework
             }
         }
 
-        private void addStartLine(int line)
+        private void _addStartLine(int line)
         {
             for (int i = 0; i < mNumPerLine; i++)
             {
                 int index = line * mNumPerLine + i;
                 if (index < mItemDatas.Count)
                 {
-                    ScrollItem item = getItem();
+                    ScrollItem item = _getItem();
                     mCurItems.Insert(0, item);
-                    setItemDataByIndex(item, index);
+                    _setItemDataByIndex(item, index);
                 }
             }
         }
 
-        private void setItemDataByIndex(ScrollItem item, int index)
+        private void _setItemDataByIndex(ScrollItem item, int index)
         {
             UIItemData data = mItemDatas[index];
             item.Index = index;
@@ -882,24 +882,24 @@ namespace GameFramework
                 offset.x = rect.rect.width * (rect.pivot.x - 0.5f);
                 offset.y = rect.rect.height * (rect.pivot.y - 0.5f);
             }
-            item.transform.localPosition = getItemPosByIndex(index) + offset;
+            item.transform.localPosition = _getItemPosByIndex(index) + offset;
         }
 
-        private void addEndLine(int line)
+        private void _addEndLine(int line)
         {
             for (int i = 0; i < mNumPerLine; i++)
             {
                 int index = line * mNumPerLine + i;
                 if (index < mItemDatas.Count)
                 {
-                    ScrollItem item = getItem();
+                    ScrollItem item = _getItem();
                     mCurItems.Add(item);
-                    setItemDataByIndex(item, index);
+                    _setItemDataByIndex(item, index);
                 }
             }
         }
 
-        private void recoverStartLine(int line)
+        private void _recoverStartLine(int line)
         {
             if (line < 0 || line > mTotalLines - 1)
             {
@@ -911,13 +911,13 @@ namespace GameFramework
                 if (index < mItemDatas.Count)
                 {
                     ScrollItem item = mCurItems[0];
-                    recoverItem(item);
+                    _recoverItem(item);
                     mCurItems.RemoveAt(0);
                 }
             }
         }
 
-        private void recoverEndLine(int line)
+        private void _recoverEndLine(int line)
         {
             if (line < 0 || line > mTotalLines - 1)
             {
@@ -931,13 +931,13 @@ namespace GameFramework
                 {
                     int idx = count - 1 - i;
                     ScrollItem item = mCurItems[idx];
-                    recoverItem(item);
+                    _recoverItem(item);
                     mCurItems.RemoveAt(idx);
                 }
             }
         }
 
-        private void recoverAll()
+        private void _recoverAll()
         {
             if(null == mCurItems)
             {
@@ -947,7 +947,7 @@ namespace GameFramework
             for (int i = mCurItems.Count - 1; i > -1; --i)
             {
                 ScrollItem item = mCurItems[i];
-                recoverItem(item);
+                _recoverItem(item);
                 mCurItems.RemoveAt(i);
             }
 
@@ -956,13 +956,13 @@ namespace GameFramework
             //LogFile.Warn("recoverAll 2 mCurItems.Count:{0}, objPool.count:{1}", mCurItems.Count, mItemPool.Count);
         }
 
-        private void CalculateAndUpdateContent()
+        private void _calculateAndUpdateContent()
         {
             CalculateContentSize();
-            checkNeedUpdate(true);
+            _checkNeedUpdate(true);
         }
 
-        private void onItemClicked(int index)
+        private void _onItemClicked(int index)
         {
             if (null != mOnItemClicked)
             {
@@ -979,7 +979,7 @@ namespace GameFramework
             }
         }
 
-        private void onItemBtnClickI(int index, int btnIndex)
+        private void _onItemBtnClickI(int index, int btnIndex)
         {
             //Debug.LogWarningFormat("onItemBtnClickI({0}, {1})", index, btnIndex);
             if(!mBtnClickPassStr)
@@ -995,7 +995,7 @@ namespace GameFramework
             }
         }
 
-        private void onItemBtnClickS(int index, string btnName)
+        private void _onItemBtnClickS(int index, string btnName)
         {
             //Debug.LogWarningFormat("onItemBtnClickS({0}, {1})", index, btnName);
             if (mBtnClickPassStr)
@@ -1011,7 +1011,7 @@ namespace GameFramework
             }
         }
 
-        private void tweenToIndex(int index)
+        private void _tweenToIndex(int index)
         {
             if(null != mMoveTween)
             {
@@ -1019,16 +1019,16 @@ namespace GameFramework
                 mMoveTween = null;
             }
 
-            Vector3 localPos = getConetntPosByIdx(index);
+            Vector3 localPos = _getConetntPosByIdx(index);
             localPos.z = content.localPosition.z;
-            float dt = getTweenTimeByDis(Vector3.Distance(content.localPosition, localPos));
+            float dt = _getTweenTimeByDis(Vector3.Distance(content.localPosition, localPos));
             mMoveTween = DOTween.To(() => content.localPosition, (Vector2 v) => content.localPosition = v, localPos, dt).SetEase(Ease.InOutQuad).OnComplete(() =>
             {
                 mMoveTween = null;
             });
         }
 
-        private void tweenToPos(float pos)
+        private void _tweenToPos(float pos)
         {
             if (null != mMoveTween)
             {
@@ -1050,14 +1050,14 @@ namespace GameFramework
                 dis = Math.Abs(normalizedPosition.x - pos) * content.rect.size.x;
                 tarPos.x = pos;
             }
-            float dt = getTweenTimeByDis(dis);
+            float dt = _getTweenTimeByDis(dis);
             mMoveTween = DOTween.To(() => normalizedPosition, (Vector2 v) => normalizedPosition = v, tarPos, dt).SetEase(Ease.InOutQuad).OnComplete(() =>
             {
                 mMoveTween = null;
             });
         }
 
-        private float getTweenTimeByDis(float dis)
+        private float _getTweenTimeByDis(float dis)
         {
             if (dis <= 0 )
             {
@@ -1066,7 +1066,7 @@ namespace GameFramework
             return Math.Min(TweenMaxTime, dis * TweenRate);
         }
 
-        private void setOnBtnClickLua(LuaFunction call, bool passStr)
+        private void _setOnBtnClickLua(LuaFunction call, bool passStr)
         {
             mBtnClickPassStr = passStr;
             if (null != mOnBtnClickLua)
@@ -1077,7 +1077,7 @@ namespace GameFramework
             mOnBtnClickLua = call;
         }
 
-        private Vector2 getNormalizedPosByIndex(int idx)
+        private Vector2 _getNormalizedPosByIndex(int idx)
         {
             Vector2 pos = Vector2.zero;
             int max = Math.Max(0, mTotalLines - mLinePerPage);
@@ -1108,7 +1108,7 @@ namespace GameFramework
         /// </summary>
         /// <returns>The valid line.</returns>
         /// <param name="idx">Index.</param>
-        private int getFirstLineIdx(int idx)
+        private int _getFirstLineIdx(int idx)
         {
             //int ret = 0;
             //int min = 0;
@@ -1118,11 +1118,11 @@ namespace GameFramework
             return Mathf.Clamp(idx, 0, max);
         }
 
-        private Vector2 getConetntPosByIdx(int idx)
+        private Vector2 _getConetntPosByIdx(int idx)
         {
             Vector2 ret = Vector2.zero;
             int line = -1;
-            line = getFirstLineIdx(idx);
+            line = _getFirstLineIdx(idx);
             if (ScrollViewType.Vertical == ScrollType)
             {
                 ret = new Vector2(content.transform.localPosition.x, (0 == line ? 0 : PaddingTop) + (mRealItemSize.y + mContentPadding.y) * line);
@@ -1134,19 +1134,19 @@ namespace GameFramework
             return ret;
         }
 
-        private void alignNearestLine()
+        private void _alignNearestLine()
         {
             if (AlignLines && null == mMoveTween)
             //if (null == mMoveTween)
             {
                 if (mLinePerPage >= mTotalLines)
                 {
-                    tweenToIndex(0);
+                    _tweenToIndex(0);
                 }
                 else
                 {
                     Vector3 pos = content.localPosition;
-                    Vector3 pos1 = getConetntPosByIdx( mShowStart*mNumPerLine );
+                    Vector3 pos1 = _getConetntPosByIdx( mShowStart*mNumPerLine );
                     int i = 0;
                     if (ScrollViewType.Vertical == ScrollType)
                     {
@@ -1162,12 +1162,12 @@ namespace GameFramework
                             i = 1;
                         }
                     }
-                    tweenToIndex((mShowStart + i) * mNumPerLine);
+                    _tweenToIndex((mShowStart + i) * mNumPerLine);
                 }
             }
         }
 
-        private void setItemSelected(int index, bool selected)
+        private void _setItemSelected(int index, bool selected)
         {
             if (index >= 0 && index < mItemDatas.Count)
             {
@@ -1184,11 +1184,11 @@ namespace GameFramework
             }
         }
 
-        private void switchItem(int index)
+        private void _switchItem(int index)
         {
             if (index >= 0 && index < mItemDatas.Count)
             {
-                setItemSelected(index, !mItemSelectStatus[index]);
+                _setItemSelected(index, !mItemSelectStatus[index]);
             }
         }
 
@@ -1203,10 +1203,10 @@ namespace GameFramework
                 ScrollItem item = mCurItems[i];
                 item.IsSelected = selected;
             }
-            onSelectStatusChanges();
+            _onSelectStatusChanges();
         }
 
-        private void onSelectStatusChanges()
+        private void _onSelectStatusChanges()
         {
             List<int> l = ObjPools.GetListInt();
             for (int i = 0; i < mItemSelectStatus.Count; i++)
@@ -1246,9 +1246,9 @@ namespace GameFramework
                     LogFile.Error("ItemPrefab：{0} prefab没有添加ScrollItem组件", ItemPrefab.name);
                     return false;
                 }
-                obj.OnItemClicked = onItemClicked;
-                obj.OnBtnClickedIndex = onItemBtnClickI;
-                obj.OnBtnClickedStr = onItemBtnClickS;
+                obj.OnItemClicked = _onItemClicked;
+                obj.OnBtnClickedIndex = _onItemBtnClickI;
+                obj.OnBtnClickedStr = _onItemBtnClickS;
                 if (ItemSize.x.Equals(-1f))
                 {
                     //修改锚点
@@ -1313,13 +1313,13 @@ namespace GameFramework
                 return;
             }
             mLastLocalPos = pos;
-            checkNeedUpdate();
+            _checkNeedUpdate();
         }
 
         public override void OnEndDrag(PointerEventData eventData)
         {
             base.OnEndDrag(eventData);
-            alignNearestLine();
+            _alignNearestLine();
         }
         #endregion ScrollRect 显示区域改变回调
     }

@@ -6,8 +6,7 @@ using DG.Tweening;
 
 namespace GameFramework
 {
-    //TODO:dekiven 修改为单纯的单例
-    public class GameSoundManager : SingletonComp<GameSoundManager>
+    public class SoundMgr : SingletonComp<SoundMgr>
     {
         public const string STR_BGM = "bgm";
         public const string STR_SOUND = "sound";
@@ -115,7 +114,7 @@ namespace GameFramework
                 audioClip.UnloadAudioData();
             };
             mPlayingSources = new List<AudioSource>();
-            mAudios.OnLoadCallbcak = onAudioClipLoad;
+            mAudios.OnLoadCallbcak = _onAudioClipLoad;
             mSourcePool = new ObjPool<AudioSource>(HandleOnGetDelegate, HandleOnRecoverDelegate, HandleOnDisposeDelegate);
 
             mBgmSource = gameObject.AddComponent<AudioSource>();
@@ -183,7 +182,7 @@ namespace GameFramework
             AudioClip audioClip = mAudios.Get(asbName, audioName);
             if(null != audioClip)
             {
-                playBgm(audioClip, fadeOutTime);
+                _playBgm(audioClip, fadeOutTime);
             }else
             {
                 //BGM不添加到队列里面顺序执行
@@ -229,7 +228,7 @@ namespace GameFramework
             AudioClip audioClip = mAudios.Get(asbName, audioName);
             if (null != audioClip)
             {
-                playSound(audioClip);
+                _playSound(audioClip);
             }
             else
             {
@@ -259,7 +258,7 @@ namespace GameFramework
         }
 
         #region private 
-        private bool playBgm(AudioClip audioClip, float fadeOutTime)
+        private bool _playBgm(AudioClip audioClip, float fadeOutTime)
         {
             if(null != audioClip)
             {
@@ -315,7 +314,7 @@ namespace GameFramework
             return false;
         }
 
-        private bool playSound(AudioClip audioClip)
+        private bool _playSound(AudioClip audioClip)
         {
             AudioSource source = mSourcePool.Get();
             source.clip = audioClip;
@@ -331,15 +330,15 @@ namespace GameFramework
         /// </summary>
         /// <param name="audioClip">Arg1.</param>
         /// <param name="info">Arg2.</param>
-        private void onAudioClipLoad(AudioClip audioClip, AsbInfo info)
+        private void _onAudioClipLoad(AudioClip audioClip, AsbInfo info)
         {
             if(info.extral.Equals(STR_BGM))
             {
                 //异步的快速播放，想要淡入淡出可以后期做优化
-                playBgm(audioClip, 0f);
+                _playBgm(audioClip, 0f);
             }else if(info.extral.Equals(STR_SOUND))
             {
-                playSound(audioClip);
+                _playSound(audioClip);
             }
         }
         #endregion

@@ -128,65 +128,65 @@ namespace GameFramework
 
         public static List<int> GetListInt()
         {
-            checkInit();
+            _checkInit();
             return sPoolLI.Get();
         }
 
         public static List<float> GetListFloat()
         {
-            checkInit();
+            _checkInit();
             return sPoolLF.Get();
         }
 
         public static List<string> GetListString()
         {
-            checkInit();
+            _checkInit();
             return sPoolLS.Get();
         }
 
         public static List<bool> GetListBool()
         {
-            checkInit();
+            _checkInit();
             return sPoolLB.Get();
         }
 
         public static AsbInfo GetAsbInfo()
         {
-            checkInit();
+            _checkInit();
             return sPoolAsbInfo.Get();
         }
 
         public static bool Recover(List<string> obj)
         {
-            checkInit();
+            _checkInit();
             return sPoolLS.Recover(obj);
         }
 
         public static bool Recover(List<int> obj)
         {
-            checkInit();
+            _checkInit();
             return sPoolLI.Recover(obj);
         }
 
         public static bool Recover(List<float> obj)
         {
-            checkInit();
+            _checkInit();
             return sPoolLF.Recover(obj);
         }
 
         public static bool Recover(List<bool> obj)
         {
-            checkInit();
+            _checkInit();
             return sPoolLB.Recover(obj);
         }
 
         public static bool Recover(AsbInfo obj)
         {
-            checkInit();
+            _checkInit();
             return sPoolAsbInfo.Recover(obj);
         }
 
-        private static void checkInit()
+        private static void _checkInit()
         {
             if(null == sPoolLI)
             {

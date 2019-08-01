@@ -17,7 +17,7 @@ namespace GameFramework
         #region GameResManager
         public static void LoadPrefab(string abName, string name, LuaFunction luaFunc)
         {
-            GamePrefabManager.Instance.GetAsync(abName, name, null, luaFunc);
+            PrefabMgr.Instance.GetAsync(abName, name, null, luaFunc);
         }
 
         //public static void LoadPrefab(string abName, string[] names, LuaFunction luaFunc)
@@ -27,7 +27,7 @@ namespace GameFramework
 
         public static void LoadString(string abName, string name, LuaFunction luaFunc)
         {
-            GameResManager.Instance.GetStrAsync(abName, name, null, luaFunc);
+            ResMgr.Instance.GetStrAsync(abName, name, null, luaFunc);
         }
 
         //public static void LoadString(string abName, string[] names, LuaFunction luaFunc)
@@ -37,7 +37,7 @@ namespace GameFramework
 
         public static void LoadBytes(string abName, string name, LuaFunction luaFunc)
         {
-            GameResManager.Instance.GetBytesAsync(abName, name, null, luaFunc);
+            ResMgr.Instance.GetBytesAsync(abName, name, null, luaFunc);
         }
 
         //public static void LoadBytes(string abName, string[] names, LuaFunction luaFunc)
@@ -47,7 +47,7 @@ namespace GameFramework
 
         public static void LoadScene(string abName, string scenenName, bool sync, bool add, LuaFunction luaFunction)
         {
-            GameSceneManager.Instance.LoadScene(abName, scenenName, sync, add, null, luaFunction);
+            SceneMgr.Instance.LoadScene(abName, scenenName, sync, add, null, luaFunction);
         }
         #endregion
 
@@ -55,12 +55,12 @@ namespace GameFramework
 
         public static void AddLuaBundle(string name)
         {
-            GameLuaManager.Instance.AddLuaBundle(name);
+            LuaMgr.Instance.AddLuaBundle(name);
         }
 
         public static void AddLuaBundles(string[] names)
         {
-            GameLuaManager.Instance.AddLuaBundles(names);
+            LuaMgr.Instance.AddLuaBundles(names);
         }
 
         #endregion
@@ -68,24 +68,24 @@ namespace GameFramework
         #region GameUIManager
         public static void ShowView(string asbName, string viewName, LuaTable table)
         {
-            GameUIManager.Instance.ShowView(asbName, viewName, table);
+            UIMgr.Instance.ShowView(asbName, viewName, table);
         }
 
         public static void PopView()
         {
-            GameUIManager.Instance.PopView();
+            UIMgr.Instance.PopView();
         }
         #endregion GameUIManager
 
         #region GameSpriteAtlasManager
         public static void GetAtlasAsync(string asbName, string atlasName, LuaFunction luaCall)
         {
-            GameSpriteAtlasManager.Instance.GetAtlasAsync(asbName, atlasName, null, luaCall);
+            SpriteAtlasMgr.Instance.GetAtlasAsync(asbName, atlasName, null, luaCall);
         }
 
         public static void GetSpriteAsync(string asbName, string atlasName, string spriteName, LuaFunction luaCall)
         {
-            GameSpriteAtlasManager.Instance.GetSpriteAsync(asbName, atlasName, spriteName, null, luaCall);
+            SpriteAtlasMgr.Instance.GetSpriteAsync(asbName, atlasName, spriteName, null, luaCall);
         }
 
         #endregion GameSpriteAtlasManager
@@ -93,37 +93,37 @@ namespace GameFramework
         #region GameSoundManager
         public static void LoadAudios(string asbName, string names)
         {
-            GameSoundManager.Instance.LoadAudios(asbName, names.Split(','));
+            SoundMgr.Instance.LoadAudios(asbName, names.Split(','));
         }
 
         public static void PlayBgm(string asbName, string audioName, float fadeOutTime = 0f)
         {
-            GameSoundManager.Instance.PlayBgm(asbName, audioName, fadeOutTime);
+            SoundMgr.Instance.PlayBgm(asbName, audioName, fadeOutTime);
         }
 
         public static void StopBgm(float fadeOutTime = 0f)
         {
-            GameSoundManager.Instance.StopBgm(fadeOutTime);
+            SoundMgr.Instance.StopBgm(fadeOutTime);
         }
 
         public static void PauseBgm()
         {
-            GameSoundManager.Instance.PauseBgm();
+            SoundMgr.Instance.PauseBgm();
         }
 
         public static void ResumeBgm()
         {
-            GameSoundManager.Instance.ResumeBgm();
+            SoundMgr.Instance.ResumeBgm();
         }
 
         public static void PlaySound(string asbName, string audioName)
         {
-            GameSoundManager.Instance.PlaySound(asbName, audioName);
+            SoundMgr.Instance.PlaySound(asbName, audioName);
         }
 
         public static void StopAllSound()
         {
-            GameSoundManager.Instance.StopAllSound();
+            SoundMgr.Instance.StopAllSound();
         }
         #endregion GameSoundManager
 
@@ -134,18 +134,18 @@ namespace GameFramework
             switch(e)
             {
                 case EnumResGroup.UI:
-                    GameUIManager.Instance.SetCurGroup(group);
+                    UIMgr.Instance.SetCurGroup(group);
                     break;
                 case EnumResGroup.Audio:
-                    GameSoundManager.Instance.SetCurGroup(group);
+                    SoundMgr.Instance.SetCurGroup(group);
                     break;
                 case EnumResGroup.SpriteAtlas:
-                    GameSoundManager.Instance.SetCurGroup(group);
+                    SoundMgr.Instance.SetCurGroup(group);
                     break;
                 case EnumResGroup.All :
-                    GameUIManager.Instance.SetCurGroup(group);
-                    GameSoundManager.Instance.SetCurGroup(group);
-                    GameSoundManager.Instance.SetCurGroup(group);
+                    UIMgr.Instance.SetCurGroup(group);
+                    SoundMgr.Instance.SetCurGroup(group);
+                    SoundMgr.Instance.SetCurGroup(group);
                     break;
             }
         }
@@ -155,18 +155,18 @@ namespace GameFramework
             switch (e)
             {
                 case EnumResGroup.UI:
-                    GameUIManager.Instance.ClearGroup(group);
+                    UIMgr.Instance.ClearGroup(group);
                     break;
                 case EnumResGroup.Audio:
-                    GameSoundManager.Instance.ClearGroup(group);
+                    SoundMgr.Instance.ClearGroup(group);
                     break;
                 case EnumResGroup.SpriteAtlas:
-                    GameSoundManager.Instance.ClearGroup(group);
+                    SoundMgr.Instance.ClearGroup(group);
                     break;
                 case EnumResGroup.All:
-                    GameUIManager.Instance.ClearGroup(group);
-                    GameSoundManager.Instance.ClearGroup(group);
-                    GameSoundManager.Instance.ClearGroup(group);
+                    UIMgr.Instance.ClearGroup(group);
+                    SoundMgr.Instance.ClearGroup(group);
+                    SoundMgr.Instance.ClearGroup(group);
                     break;
             }
         }

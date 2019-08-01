@@ -172,7 +172,7 @@ public class ScreenTouchHandler : MonoBehaviour
         if (Input.mousePresent)
         {
             //鼠标没有操作才检测touch
-            checkTouch = !updateMouse();
+            checkTouch = !_updateMouse();
         }
 
         if(checkTouch)
@@ -180,16 +180,16 @@ public class ScreenTouchHandler : MonoBehaviour
             if (Input.touchCount == 1)
             {
                 //单指触摸
-                updateSingle();
+                _updateSingle();
             }
             else if (Input.touchCount > 1)
             {
                 //多指触摸
-                updateMultiple();
+                _updateMultiple();
             }
             else
             {
-                updateClick();
+                _updateClick();
                 mHasMultiTouched = false;
                 mSingleCancled = false;
             }
@@ -197,7 +197,7 @@ public class ScreenTouchHandler : MonoBehaviour
 
 	}
 
-    private void updateClick()
+    private void _updateClick()
     {
         if(1 == mClickCount 
            && !mSingleCancled
@@ -214,7 +214,7 @@ public class ScreenTouchHandler : MonoBehaviour
         }
     }
 
-    private void updateSingle()
+    private void _updateSingle()
     {
         //单指触摸 
         mIsSingleTouch = true;
@@ -226,26 +226,26 @@ public class ScreenTouchHandler : MonoBehaviour
         switch (phase)
         {
             case TouchPhase.Began:
-                onTouchBegin(nowTime, pos);
+                _onTouchBegin(nowTime, pos);
                 break;
             case TouchPhase.Canceled:
-                onTouchCancle();
+                _onTouchCancle();
                 break;
             case TouchPhase.Ended:
-                onTouchEnd(nowTime, pos);
+                _onTouchEnd(nowTime, pos);
                 break;
             case TouchPhase.Moved:
                 Vector2 delta = touch.deltaPosition;
-                onTouchMove(pos, delta);
+                _onTouchMove(pos, delta);
                 break;
             case TouchPhase.Stationary:
-                onStaionary(nowTime, pos);
+                _onStaionary(nowTime, pos);
                 break;
         }
     }
 
 
-    private void updateMultiple()
+    private void _updateMultiple()
     {
         //多点触控是用来回调缩放（OnTouchScale）的，没有就跳过
         if(null == OnTouchScale)
@@ -301,7 +301,7 @@ public class ScreenTouchHandler : MonoBehaviour
     /// 鼠标左键按下事件或者滚轮事件返回true
     /// </summary>
     /// <returns><c>true</c>, if mouse was updated, <c>false</c> otherwise.</returns>
-    private bool updateMouse()
+    private bool _updateMouse()
     {
         bool useMouse = false;
         Vector2 pos = Input.mousePosition;
@@ -320,17 +320,17 @@ public class ScreenTouchHandler : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             //鼠标左键按下时
-            onTouchBegin(nowTime, pos);
+            _onTouchBegin(nowTime, pos);
             mLastMousePos = pos;
             useMouse = true;
         }
         if (Input.GetMouseButton(0))
         {
             //鼠标左键按住时
-            onStaionary(nowTime, pos);
+            _onStaionary(nowTime, pos);
             if(!Equals(mLastMousePos, Vector2.zero))
             {
-                onTouchMove(pos, pos - mLastMousePos);
+                _onTouchMove(pos, pos - mLastMousePos);
             }
             mLastMousePos = pos;
             useMouse = true;
@@ -338,14 +338,14 @@ public class ScreenTouchHandler : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             //鼠标左键抬起时
-            onTouchEnd(nowTime, pos);
+            _onTouchEnd(nowTime, pos);
             mLastMousePos = Vector2.zero;
             useMouse = true;
         }
         return useMouse;
     }
 
-    private void onTouchBegin(float nowTime, Vector2 pos)
+    private void _onTouchBegin(float nowTime, Vector2 pos)
     {
         mIsSingleTouch = true;
         //TODO:以后可以做双击长按等的区域限制
@@ -358,7 +358,7 @@ public class ScreenTouchHandler : MonoBehaviour
         mSingleCancled = false;
     }
 
-    private void onTouchMove(Vector2 pos, Vector2 delta)
+    private void _onTouchMove(Vector2 pos, Vector2 delta)
     {
         if (!mTouchMoved && delta.sqrMagnitude >= MoveThresholdSqr)
         {
@@ -367,7 +367,7 @@ public class ScreenTouchHandler : MonoBehaviour
         else if(!mTouchMoved)
         {
             //如果一直以来移动的距离都很小当做固定按住某个位置处理
-            onStaionary(Time.time, pos);
+            _onStaionary(Time.time, pos);
         }
         if (mTouchMoved && null != OnTouchMove)
         {
@@ -376,7 +376,7 @@ public class ScreenTouchHandler : MonoBehaviour
     }
 
 
-    private void onStaionary(float nowTime, Vector2 pos)
+    private void _onStaionary(float nowTime, Vector2 pos)
     {
         if (null != OnTouchStationary)
         {
@@ -398,7 +398,7 @@ public class ScreenTouchHandler : MonoBehaviour
         }
     }
 
-    private void onTouchEnd(float nowTime, Vector2 pos)
+    private void _onTouchEnd(float nowTime, Vector2 pos)
     {
         if (mIsSingleTouch && !mTouchMoved && !mHasMultiTouched && !mSingleCancled)
         {
@@ -433,7 +433,7 @@ public class ScreenTouchHandler : MonoBehaviour
         }
     }
 
-    private void onTouchCancle()
+    private void _onTouchCancle()
     {
         mIsSingleTouch = true;
         mTouchsBeginPos[0] = Vector2.zero;

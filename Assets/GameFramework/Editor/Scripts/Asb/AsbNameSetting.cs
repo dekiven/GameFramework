@@ -18,7 +18,7 @@ namespace GameFramework
             {
                 string resPath = AssetDatabase.GUIDToAssetPath(item);
                 //Debug.Log (resPath);
-                SetBundleNameByPath(resPath);
+                _setBundleNameByPath(resPath);
             }
         }
 
@@ -30,7 +30,7 @@ namespace GameFramework
             {
                 string resPath = AssetDatabase.GUIDToAssetPath(item);
                 //Debug.Log (resPath);
-                clearBundleNameByPath(resPath);
+                _clearBundleNameByPath(resPath);
             }
         }
 
@@ -51,7 +51,7 @@ namespace GameFramework
         //    BuildPipeline.BuildAssetBundles(outDir, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);
         //}
 
-        private static void SetBundleNameByPath(string path)
+        private static void _setBundleNameByPath(string path)
         {
             string fullPath = path;
             //if (!Path.IsPathRooted(path) && !path.StartsWith(Application.dataPath, StringComparison.Ordinal))
@@ -117,7 +117,7 @@ namespace GameFramework
         }
 
 
-        private static void clearBundleNameByPath(string path)
+        private static void _clearBundleNameByPath(string path)
         {
             string fullPath = path;
             if (!Path.IsPathRooted(path) && !path.StartsWith(Application.dataPath, StringComparison.Ordinal))

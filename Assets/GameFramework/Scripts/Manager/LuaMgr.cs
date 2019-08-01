@@ -7,7 +7,7 @@ using System;
 namespace GameFramework
 {
     //TODO:dekiven 修改为单纯的单例
-    public class GameLuaManager : SingletonComp<GameLuaManager>
+    public class LuaMgr : SingletonComp<LuaMgr>
     {
         private LuaState lua;
         private GameLuaLoader loader;

@@ -9,7 +9,7 @@ using UObj = UnityEngine.Object;
 
 namespace GameFramework
 {
-    public class GameUIManager : SingletonComp<GameUIManager>
+    public class UIMgr : SingletonComp<UIMgr>
     {
         public const int MaxSortOrder = 9999;
         private Canvas[] mCanvas;
@@ -30,7 +30,7 @@ namespace GameFramework
 
             mViewListeners = new Dictionary<string, LuaTable>();
             mPrefabs = new GameResHandler<GameObject>("common");
-            mPrefabs.OnLoadCallbcak = onLoadPrefab;
+            mPrefabs.OnLoadCallbcak = _onLoadPrefab;
             mPrefabs.Suffix = ".prefab";
 
             //mCanvas = new Canvas[Enum.GetValues(typeof(RenderMode)).Length];
@@ -89,7 +89,7 @@ namespace GameFramework
                     //_camera.transform.LookAt(_camera.transform.position + Vector3.forward, Vector3.up);
                     //cameraObj.transform.SetParent(obj.transform, false);
                     c.worldCamera = _camera;
-                    mDarkMask = getDarkMask(c);
+                    mDarkMask = _getDarkMask(c);
                 }
                 SetCanvasByMode(c);
                 //mCanvas[(int)mode] = c;
@@ -126,18 +126,18 @@ namespace GameFramework
                 return;
             }
             //检查是否是已经缓存的static view，有缓存直接显示
-            if(showStaticView(asbName, prefab))
+            if(_showStaticView(asbName, prefab))
             {
                 return;
             }
-            GameObject obj = getPrefab(asbName, prefab);
+            GameObject obj = _getPrefab(asbName, prefab);
             if(null != obj)
             {
                 ShowViewPrefab(obj, listeners);
             }
             else
             {
-                load(asbName, prefab, listeners);
+                _load(asbName, prefab, listeners);
             }
         }
 
@@ -156,8 +156,8 @@ namespace GameFramework
             }
             if (view.HasDarkMask)
             {
-                setMaskVisble(true);
-                setMaskOrderByView(view);
+                _setMaskVisble(true);
+                _setMaskOrderByView(view);
             }
         }
 
@@ -168,7 +168,7 @@ namespace GameFramework
             {
                 if (view.HasDarkMask)
                 {
-                    setMaskVisble(false);
+                    _setMaskVisble(false);
                 }
                 if (null != result)
                 {
@@ -181,11 +181,11 @@ namespace GameFramework
         {
             if(view.IsInStack)
             {
-                popView(view as UIView);
+                _popView(view as UIView);
             }
             else
             {
-                removeDynamicUIObj(view);    
+                _removeDynamicUIObj(view);    
             }
         }
 
@@ -195,7 +195,7 @@ namespace GameFramework
             if (mStackViews.Count > 0)
             {
                 view = mStackViews.Peek() as UIView;
-                popView(view);
+                _popView(view);
             }
         }
 
@@ -216,7 +216,7 @@ namespace GameFramework
                 {
                     ui.SetLuaStatusListeners(luaTable);
                 }
-                addUIObj(ui);
+                _addUIObj(ui);
                 if (ui.IsStatic)
                 {
                     if (mStaticViewInfos.Count == mStaticViews.Count)
@@ -245,7 +245,7 @@ namespace GameFramework
                             {
                                 HideView(curView, (bool ret) =>
                                 {
-                                    pushUI(ui as UIView);
+                                    _pushUI(ui as UIView);
                                     ShowViewObj(ui, null);
                                 });
                                 return;
@@ -253,7 +253,7 @@ namespace GameFramework
                         }
                         //之前的UI隐藏或者本UI被设置为不隐藏之前的UI则不隐藏之前的UI直接push
                         {
-                            pushUI(ui as UIView);
+                            _pushUI(ui as UIView);
                             ShowViewObj(ui, null);
                         }
                     }
@@ -335,19 +335,19 @@ namespace GameFramework
         /// <returns><c>true</c>, if static view was shown, <c>false</c> 之前没有显示过.</returns>
         /// <param name="asbName">Asb name.</param>
         /// <param name="prefab">Prefab.</param>
-        private bool showStaticView(string asbName, string prefab)
+        private bool _showStaticView(string asbName, string prefab)
         {
             UIBase ui = GetStaticView(asbName, prefab);
             if(null != ui)
             {
-                setViewTopOfAll(ui);
+                _setViewTopOfAll(ui);
                 ShowViewObj(ui, null);
                 return true;
             }
             return false;
         }
 
-        private void load(string asbName, string prefab, LuaTable table=null)
+        private void _load(string asbName, string prefab, LuaTable table=null)
         {
             if(null != table)
             {
@@ -361,7 +361,7 @@ namespace GameFramework
             }
         }
 
-        bool addUIObj(UIBase obj)
+        bool _addUIObj(UIBase obj)
         {
             if (null != obj)
             {
@@ -383,20 +383,20 @@ namespace GameFramework
         /// </summary>
         /// <returns><c>true</c>, if dynamic UIO bj was removed, <c>false</c> otherwise.</returns>
         /// <param name="obj">Object.</param>
-        bool removeDynamicUIObj(UIBase obj)
+        bool _removeDynamicUIObj(UIBase obj)
         {
             if (null != obj)
             {
                 if (!obj.IsStatic)
                 {
-                    removeUIObj(obj);
+                    _removeUIObj(obj);
                 }
                 return true;
             }
             return false;
         }
 
-        bool removeUIObj(UIBase obj)
+        bool _removeUIObj(UIBase obj)
         {
             if (null != obj)
             {
@@ -416,7 +416,7 @@ namespace GameFramework
             return false;
         }
 
-        bool pushUI(UIView view)
+        bool _pushUI(UIView view)
         {
             if (null != view)
             {
@@ -431,7 +431,7 @@ namespace GameFramework
         /// </summary>
         /// <param name="view">UI界面</param>
         /// <returns>操作是否成功</returns>
-        bool popView(UIView view)
+        bool _popView(UIView view)
         {
             if (null != view && mStackViews.Contains(view))
             {
@@ -441,10 +441,10 @@ namespace GameFramework
                     HideView(v, (bool hide) =>
                     {
                         bool ret = Equals(v, view);
-                        removeDynamicUIObj(v);
+                        _removeDynamicUIObj(v);
                         if (!ret)
                         {
-                            popView(view);
+                            _popView(view);
                         }
                         else
                         {
@@ -469,7 +469,7 @@ namespace GameFramework
             return false;
         }
 
-        bool popView(string viewID)
+        bool _popView(string viewID)
         {
             if (!string.IsNullOrEmpty(viewID))
             {
@@ -480,7 +480,7 @@ namespace GameFramework
                     if (null != v)
                     {
                         ret = Equals(v.transform.name, viewID);
-                        removeDynamicUIObj(v);
+                        _removeDynamicUIObj(v);
                     }
                     else
                     {
@@ -491,7 +491,7 @@ namespace GameFramework
             return false;
         }
 
-        private void onLoadPrefab(GameObject prefab, AsbInfo info)
+        private void _onLoadPrefab(GameObject prefab, AsbInfo info)
         {
             LuaTable table = null;
             if(!string.IsNullOrEmpty(info.extral) && mViewListeners.TryGetValue(info.extral, out table))
@@ -501,12 +501,12 @@ namespace GameFramework
             ShowViewPrefab(prefab, table, info.asbName, info.assetName);
         }
 
-        private GameObject getPrefab(string asbName, string resName)
+        private GameObject _getPrefab(string asbName, string resName)
         {
             return mPrefabs.Get(asbName, resName);
         }
 
-        private Image getDarkMask(Canvas c)
+        private Image _getDarkMask(Canvas c)
         {
             GameObject maskObj = new GameObject();
             maskObj.name = "DrakMask";
@@ -525,7 +525,7 @@ namespace GameFramework
             return darkMask;
         }
 
-        private void setMaskOrderByView(UIBase view)
+        private void _setMaskOrderByView(UIBase view)
         {
             //view.transform.SetSiblingIndex(GetCanvasByMode(view.RenderMode).transform.childCount);
             view.transform.SetAsLastSibling();
@@ -537,12 +537,12 @@ namespace GameFramework
             mDarkMask.rectTransform.SetSiblingIndex(idx);
         }
 
-        private void setMaskVisble(bool showMask)
+        private void _setMaskVisble(bool showMask)
         {
             mDarkMask.gameObject.SetActive(showMask);
         }
 
-        private void setViewTopOfAll(UIBase view)
+        private void _setViewTopOfAll(UIBase view)
         {
             view.transform.SetSiblingIndex(view.transform.parent.childCount - 1);
         }

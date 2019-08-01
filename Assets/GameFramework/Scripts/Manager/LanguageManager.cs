@@ -30,7 +30,7 @@ namespace GameFramework
 
         public static void Init(Action<bool> action)
         {
-            GameResManager.Instance.GetStrAsync(STR_BASE_ASB_PATH, "Language/config.bytes", (text) =>
+            ResMgr.Instance.GetStrAsync(STR_BASE_ASB_PATH, "Language/config.bytes", (text) =>
             {
                 // TextAsset text = obj as TextAsset;
                 if (string.IsNullOrEmpty(text) && null != action)
@@ -72,13 +72,13 @@ namespace GameFramework
             if(sLanguages.Contains(language))
             {
                 GameConfig.SetStr(GameDefine.STR_CUR_LANGUAGE, language);
-                GameResManager.Instance.GetStrAsync(STR_BASE_ASB_PATH, "Language/"+language + ".bytes", (text) =>
+                ResMgr.Instance.GetStrAsync(STR_BASE_ASB_PATH, "Language/"+language + ".bytes", (text) =>
                 {
                     // TextAsset text = obj as TextAsset;
                     bool ret = text != null;
                     if (ret)
                     {
-                        resetLanguageData(text);
+                        _resetLanguageData(text);
                     }
                     else
                     {
@@ -135,10 +135,10 @@ namespace GameFramework
 
         public static string GetCurLanguage()
         {
-            return GameConfig.GetStr(GameDefine.STR_CUR_LANGUAGE, getValidLanguageCode((int)Application.systemLanguage));
+            return GameConfig.GetStr(GameDefine.STR_CUR_LANGUAGE, _getValidLanguageCode((int)Application.systemLanguage));
         }
         #region 私有方法
-        private static string getLanguageCode(SystemLanguage language)
+        private static string _getLanguageCode(SystemLanguage language)
         {
             switch (language)
             {
@@ -203,7 +203,7 @@ namespace GameFramework
             return LANGUAGE_CHINESE;
         }
 
-        private static void resetLanguageData(string text)
+        private static void _resetLanguageData(string text)
         {
             sDic.Clear();
             //TODO:
@@ -222,14 +222,14 @@ namespace GameFramework
             }
         }
 
-        private static string getValidLanguageCode(int language)
+        private static string _getValidLanguageCode(int language)
         {
-            return getValidLanguageCode((SystemLanguage)language);
+            return _getValidLanguageCode((SystemLanguage)language);
         }
 
-        private static string getValidLanguageCode(SystemLanguage language)
+        private static string _getValidLanguageCode(SystemLanguage language)
         {
-            string code = getLanguageCode(language);
+            string code = _getLanguageCode(language);
             if (sLanguages.Contains(code))
             {
                 return code;

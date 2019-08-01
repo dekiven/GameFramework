@@ -75,7 +75,7 @@ namespace GameFramework
         void _showMsg()
         {
             //TODO:
-            GameUIManager.Instance.ShowView("BasicRes", "PlMsgBox");
+            UIMgr.Instance.ShowView("BasicRes", "PlMsgBox");
         }
     }
 

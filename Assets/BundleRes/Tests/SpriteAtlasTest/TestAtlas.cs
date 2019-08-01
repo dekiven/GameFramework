@@ -14,15 +14,15 @@ namespace GameFramework
 
         void Start()
         {
-            GameSpriteAtlasManager.Instance.SetCurGroup("test");
-            GameSpriteAtlasManager.Instance.Load(asb, "TestAtlas");
+            SpriteAtlasMgr.Instance.SetCurGroup("test");
+            SpriteAtlasMgr.Instance.Load(asb, "TestAtlas");
         }
 
         void Update()
         {
             if (!hasLoad)
             {
-                SpriteAtlas atlas = GameSpriteAtlasManager.Instance.Get(asb, "TestAtlas");
+                SpriteAtlas atlas = SpriteAtlasMgr.Instance.Get(asb, "TestAtlas");
                 if(null != atlas)
                 {
                     for (int i = 0; i < images.Length; i++)
@@ -33,7 +33,7 @@ namespace GameFramework
                     hasLoad = true;
 
                     Debug.LogFormat("atlas.GetSprite:[{0}]",atlas.GetSprite("1"));
-                    GameSpriteAtlasManager.Instance.ClearGroup("test");
+                    SpriteAtlasMgr.Instance.ClearGroup("test");
                 }
             }
         }

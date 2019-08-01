@@ -83,11 +83,11 @@ public class Loom : MonoBehaviour
             Thread.Sleep(1);
         }
         Interlocked.Increment(ref numThreads);
-        ThreadPool.QueueUserWorkItem(RunAction, a);
+        ThreadPool.QueueUserWorkItem(_runAction, a);
         return null;
     }
 
-    private static void RunAction(object action)
+    private static void _runAction(object action)
     {
         try
         {

@@ -66,7 +66,7 @@ namespace GameFramework
                 string[] _params = spriteStr.Split(',');
                 if (_params.Length == 3)
                 {
-                    GameSpriteAtlasManager.Instance.GetSpriteAsync(_params[0], _params[1], _params[2], (Sprite s) =>
+                    SpriteAtlasMgr.Instance.GetSpriteAsync(_params[0], _params[1], _params[2], (Sprite s) =>
                     {
                         Content = s;
                         if (null != mOnAsyncRst)
@@ -89,7 +89,7 @@ namespace GameFramework
                 string[] _params = str.Split(',');
                 if (_params.Length == 2)
                 {
-                    GameResManager.Instance.GetAsync(_params[0], _params[1], (Material obj) => 
+                    ResMgr.Instance.GetAsync(_params[0], _params[1], (Material obj) => 
                     {
                         Content = obj;
                         if (null != mOnAsyncRst)

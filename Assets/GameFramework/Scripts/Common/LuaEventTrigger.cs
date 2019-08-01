@@ -14,7 +14,7 @@ namespace GameFramework
 
         public void SetTriggers(LuaTable lua)
         {
-            clearLua();
+            _clearLua();
             mTriggerTable = lua;
             triggers.Clear();
             if (null != lua)
@@ -48,7 +48,7 @@ namespace GameFramework
             }
         }
 
-        private void clearLua()
+        private void _clearLua()
         {
             for (int i = mFuncs.Count - 1; i >= 0; --i)
             {
@@ -64,7 +64,7 @@ namespace GameFramework
 
         private void OnDestroy()
         {
-            clearLua();
+            _clearLua();
         }
     }
 }

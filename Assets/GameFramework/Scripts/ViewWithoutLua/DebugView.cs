@@ -38,8 +38,8 @@ namespace GameFramework
             MainBtn.gameObject.SetActive(!active);
             if (active)
             {
-                refreshAll();
-                StartCoroutine(refreshLog());
+                _refreshAll();
+                StartCoroutine(_refreshLog());
             }
             else
             {
@@ -67,7 +67,7 @@ namespace GameFramework
                 if (mLogType != value)
                 {
                     mLogType = value;
-                    refreshAll();
+                    _refreshAll();
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace GameFramework
             mNewList = new List<LogInfo>();
             itemDatas = new List<UIItemData>();
 
-            Application.logMessageReceived += handleLogCallback;
+            Application.logMessageReceived += _handleLogCallback;
 
             Handler.SetSelectorTogglesOnChange(0, (int arg0) =>
             {
@@ -137,7 +137,7 @@ namespace GameFramework
                 ShowLogDetal(data);
             });
 
-            addMainBtnEvent();
+            _addMainBtnEvent();
 
             ActiveDebugView(false);
         }
@@ -145,36 +145,36 @@ namespace GameFramework
         protected override void dispose()
         {
             base.dispose();
-            Application.logMessageReceived -= handleLogCallback;
+            Application.logMessageReceived -= _handleLogCallback;
         }
 #endregion 继承 UIView
 
 #region 私有
-        private void handleLogCallback(string condition, string stackTrace, LogType type)
+        private void _handleLogCallback(string condition, string stackTrace, LogType type)
         {
             switch (type)
             {
                 case LogType.Log:
                     //WriteLine(LogLevel.L_Log, condition);
-                    newLog(1, condition);
+                    _newLog(1, condition);
                     break;
                 case LogType.Warning:
                     //WriteLine(LogLevel.L_Warning, condition);
-                    newLog(2, condition);
+                    _newLog(2, condition);
                     break;
                 case LogType.Error:
-                    newLog(3, condition + "\n\nstackTrace:\n" + stackTrace);
+                    _newLog(3, condition + "\n\nstackTrace:\n" + stackTrace);
                     break;
                 case LogType.Exception:
-                    newLog(4, condition + "\n\nstackTrace:\n" + stackTrace);
+                    _newLog(4, condition + "\n\nstackTrace:\n" + stackTrace);
                     break;
                 case LogType.Assert:
-                    newLog(5, condition + "\n\nstackTrace:\n" + stackTrace);
+                    _newLog(5, condition + "\n\nstackTrace:\n" + stackTrace);
                     break;
             }
         }
 
-        private void newLog(int l, string codintion)
+        private void _newLog(int l, string codintion)
         {
             //TODO
             //异步，固定时间刷新一次 log，ScrollView 支持添加和删除多个数据
@@ -189,7 +189,7 @@ namespace GameFramework
             }
         }
 
-        private IEnumerator refreshLog()
+        private IEnumerator _refreshLog()
         {
             while (true)
             {
@@ -198,7 +198,7 @@ namespace GameFramework
                     lock (mLockObj)
                     {
                         mList.AddRange(mNewList);
-                        itemDatas.AddRange(GetDatas(mNewList));
+                        itemDatas.AddRange(_getDatas(mNewList));
                         //Handler.AddScrollViewDatas(1, GetDatas(newList));
                         int size = itemDatas.Count - MaxLineNum;
                         if (size > 0)
@@ -217,12 +217,12 @@ namespace GameFramework
 
         }
 
-        private void refreshAll()
+        private void _refreshAll()
         {
             lock (mLockObj)
             {
                 itemDatas.Clear();
-                List<UIItemData> d = GetDatas(mList);
+                List<UIItemData> d = _getDatas(mList);
                 itemDatas.AddRange(d);
                 int size = itemDatas.Count - MaxLineNum;
                 if (size > 0)
@@ -238,7 +238,7 @@ namespace GameFramework
             }
         }
 
-        private List<UIItemData> GetDatas(List<LogInfo> infos)
+        private List<UIItemData> _getDatas(List<LogInfo> infos)
         {
             int min = (int)MinLogLevel;
             List<UIItemData> l = new List<UIItemData>();
@@ -259,7 +259,7 @@ namespace GameFramework
         /// <summary>
         /// 定义 debug 按钮交互事件
         /// </summary>
-        private void addMainBtnEvent()
+        private void _addMainBtnEvent()
         {
             bool isDraging = false;
 

@@ -36,7 +36,7 @@ namespace GameFramework
 
             set
             {
-                setConfig("LoadPath", value);
+                _setConfig("LoadPath", value);
                 SaveConfig();
             }
         }
@@ -55,7 +55,7 @@ namespace GameFramework
 
             set
             {
-                setConfig("ExportPath", value);
+                _setConfig("ExportPath", value);
                 SaveConfig();
             }
         }
@@ -75,7 +75,7 @@ namespace GameFramework
 
             set
             {
-                setConfig("BuildAssetBundleOptions", value.ToString());
+                _setConfig("BuildAssetBundleOptions", value.ToString());
                 SaveConfig();
             }
         }
@@ -96,7 +96,7 @@ namespace GameFramework
 
             set
             {
-                setConfig("BuildTarget", value.ToString());
+                _setConfig("BuildTarget", value.ToString());
                 SaveConfig();
             }
         }
@@ -122,7 +122,7 @@ namespace GameFramework
                     var m = regex.Match(l.Trim());
                     if (null != m)
                     {
-                        setConfig(m.Groups[1].ToString(), m.Groups[2].ToString());
+                        _setConfig(m.Groups[1].ToString(), m.Groups[2].ToString());
                     }
                 }
             }
@@ -139,7 +139,7 @@ namespace GameFramework
             File.WriteAllLines(configPath, lines.ToArray());
         }
 
-        private void setConfig(string key, string value)
+        private void _setConfig(string key, string value)
         {
             mConfDic[key] = value;
         }

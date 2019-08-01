@@ -72,7 +72,7 @@ namespace GameFramework
             WWWTO www = new WWWTO();
             www.mType = WWWType.read;
             www.mUrlRstDel = del;
-            www.setLuaCallback(lua);
+            www._setLuaCallback(lua);
 
             www.mList.Clear();
             www.mList.Add(new WWWInfo(fileUrl, ""));
@@ -85,7 +85,7 @@ namespace GameFramework
             WWWTO www = new WWWTO();
             www.mType = WWWType.readBytes;
             www.mUrlRstBytesDel = del;
-            www.setLuaCallback(lua);
+            www._setLuaCallback(lua);
 
             www.mList.Clear();
             www.mList.Add(new WWWInfo(fileUrl, ""));
@@ -99,7 +99,7 @@ namespace GameFramework
             WWWTO www = new WWWTO();
             www.mType = WWWType.read;
             www.mUrlRstDel = del;
-            www.setLuaCallback(lua);
+            www._setLuaCallback(lua);
 
             www.mList.Clear();
             for (int i = 0; i < files.Count; i++)
@@ -117,7 +117,7 @@ namespace GameFramework
             WWWTO www = new WWWTO();
             www.mType = WWWType.readBytes;
             www.mUrlRstBytesDel = del;
-            www.setLuaCallback(lua);
+            www._setLuaCallback(lua);
 
             www.mList.Clear();
             for (int i = 0; i < files.Count; i++)
@@ -144,7 +144,7 @@ namespace GameFramework
             WWWTO www = new WWWTO();
             www.mType = WWWType.download;
             www.mRstDel = del;
-            www.setLuaCallback(lua);
+            www._setLuaCallback(lua);
             www.mTotalSize = info.Size;
 
             www.mList.Clear();
@@ -168,11 +168,11 @@ namespace GameFramework
             WWWTO www = new WWWTO();
             www.mType = WWWType.download;
             www.mRstDel = del;
-            www.setLuaCallback(lua);
+            www._setLuaCallback(lua);
 
             if (null == infos || infos.Count == 0)
             {
-                www.callback(-1, "download files info list is null or empty!");
+                www._callback(-1, "download files info list is null or empty!");
                 www.Dispose();
                 return null;
             }
@@ -205,7 +205,7 @@ namespace GameFramework
             WWWTO www = new WWWTO();
             www.mType = WWWType.upload;
             www.mRstDel = del;
-            www.setLuaCallback(lua);
+            www._setLuaCallback(lua);
             www.mTotalSize = info.Size;
 
             www.mList.Clear();
@@ -230,11 +230,11 @@ namespace GameFramework
             www.mType = WWWType.upload;
 
             www.mRstDel = del;
-            www.setLuaCallback(lua);
+            www._setLuaCallback(lua);
 
             if (null == infos || infos.Count == 0)
             {
-                www.callback(-1, "download files info list is null or empty!");
+                www._callback(-1, "download files info list is null or empty!");
                 www.Dispose();
                 return null;
             }
@@ -264,7 +264,7 @@ namespace GameFramework
             WWWTO www = new WWWTO();
             www.mType = WWWType.request;
             www.mUrlRstDel = del;
-            www.setLuaCallback(lua);
+            www._setLuaCallback(lua);
 
             www.mList.Add(new WWWInfo()
             {
@@ -325,12 +325,12 @@ namespace GameFramework
                 mWWW.Dispose();
                 mWWW = null;
             }
-            setLuaCallback(null);
+            _setLuaCallback(null);
         }
         #endregion public 方法
 
         #region 私有方法
-        private void setLuaCallback(LuaFunction lua)
+        private void _setLuaCallback(LuaFunction lua)
         {
             if (null != mLuaFunc)
             {
@@ -340,7 +340,7 @@ namespace GameFramework
             mLuaFunc = lua;
         }
 
-        private void callback(double progress, string msg)
+        private void _callback(double progress, string msg)
         {
             if (mLastCallTime + NotifyIterval >= Time.time || Tools.Equals(progress, 1d) || msg.Equals(STR_DONE))
             {
@@ -357,7 +357,7 @@ namespace GameFramework
             mProgress = progress;
         }
 
-        private void callback(bool rst, string msg)
+        private void _callback(bool rst, string msg)
         {
             if (null != mUrlRstDel)
             {
@@ -369,7 +369,7 @@ namespace GameFramework
             }
         }
 
-        private void callbackBytes(bool rst, byte[] msg)
+        private void _callbackBytes(bool rst, byte[] msg)
         {
             if (null != mUrlRstBytesDel)
             {
@@ -385,7 +385,7 @@ namespace GameFramework
         {
             if (0 != mCoroutine)
             {
-                GameCoroutineManager.Instance.StopCor(mCoroutine);
+                CoroutineMgr.Instance.StopCor(mCoroutine);
             }
 
         }
@@ -395,7 +395,7 @@ namespace GameFramework
         /// </summary>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        private IEnumerator checkWWWTimeout(float timeout)
+        private IEnumerator _checkWWWTimeout(float timeout)
         {
             float progress = 0;
             float lastTime = Time.time;
@@ -409,7 +409,7 @@ namespace GameFramework
                         lastTime = Time.time;
                         progress = mWWW.progress;
                         //TODO:可以计算下载速度并通知，以后有需求优化
-                        callback(getProgress(mWWW.bytesDownloaded), string.Empty);
+                        _callback(_getProgress(mWWW.bytesDownloaded), string.Empty);
                     }
                     else if (Time.time - lastTime >= timeout)
                     {
@@ -423,19 +423,19 @@ namespace GameFramework
         private void _startNewWWW()
         {
             _stopCoroutine();
-            mCoroutine = GameCoroutineManager.Instance.StartCor(_upOrDownload());
+            mCoroutine = CoroutineMgr.Instance.StartCor(_upOrDownload());
         }
 
         private void _startUrlWWW()
         {
             _stopCoroutine();
-            mCoroutine = GameCoroutineManager.Instance.StartCor(requestUrl());
+            mCoroutine = CoroutineMgr.Instance.StartCor(_requestUrl());
         }
 
         private void _startReadWWW()
         {
             _stopCoroutine();
-            mCoroutine = GameCoroutineManager.Instance.StartCor(readFile());
+            mCoroutine = CoroutineMgr.Instance.StartCor(_readFile());
         }
 
         private IEnumerator _upOrDownload()
@@ -449,7 +449,7 @@ namespace GameFramework
                     if (string.IsNullOrEmpty(info.Url) || string.IsNullOrEmpty(info.TargetPath))
                     {
                         mFialedList.Add(info);
-                        callback(-1d, "url/target is null or empty. url:" + info.Url + "; target:" + info.TargetPath);
+                        _callback(-1d, "url/target is null or empty. url:" + info.Url + "; target:" + info.TargetPath);
                         break;
                     }
                     if (WWWType.download == mType)
@@ -480,12 +480,12 @@ namespace GameFramework
                         else
                         {
                             mFialedList.Add(info);
-                            callback(-1d, "上传文件[" + path + "]不存在");
+                            _callback(-1d, "上传文件[" + path + "]不存在");
                             break;
                         }
                     }
 
-                    yield return checkWWWTimeout(TimeoutSec);
+                    yield return _checkWWWTimeout(TimeoutSec);
 
                     if (mIsTimeOut || !string.IsNullOrEmpty(mWWW.error))
                     {
@@ -499,7 +499,7 @@ namespace GameFramework
                         else
                         {
                             mFialedList.Add(info);
-                            callback(-1d, "超时或失失败;"+mWWW.error);
+                            _callback(-1d, "超时或失失败;"+mWWW.error);
                         }
                     }
                     else
@@ -524,7 +524,7 @@ namespace GameFramework
                                 fsDes.Close();
                             }
                         }
-                        callback(getProgress(0), STR_DONE);
+                        _callback(_getProgress(0), STR_DONE);
                         mWWW.Dispose();
                         mWWW = null;
                         break;
@@ -534,22 +534,22 @@ namespace GameFramework
             yield return null;
             if (mFialedList.Count == 0)
             {
-                callback(1d, STR_SUCCEEDED);
+                _callback(1d, STR_SUCCEEDED);
             }
             else
             {
-                callback(1d, STR_FAILED);
+                _callback(1d, STR_FAILED);
             }
             yield break;
         }
 
-        private IEnumerator requestUrl()
+        private IEnumerator _requestUrl()
         {
             do {
                 mWWW = new WWW(mList[0].Url);
                 if (null != mWWW)
                 {
-                    yield return checkWWWTimeout(TimeoutSec);
+                    yield return _checkWWWTimeout(TimeoutSec);
                     if (mIsTimeOut || !string.IsNullOrEmpty(mWWW.error))
                     {
                         mWWW.Dispose();
@@ -562,13 +562,13 @@ namespace GameFramework
                         else
                         {
                             //请求失败
-                            callback(false, "请求超时或失败：" + mWWW.error);
+                            _callback(false, "请求超时或失败：" + mWWW.error);
                         }
                     }
                     else
                     {
                         //请求完成
-                        callback(true, mWWW.text);
+                        _callback(true, mWWW.text);
                     }
                 }
             }while(mRetryCount <= Retry);
@@ -576,7 +576,7 @@ namespace GameFramework
             yield break;
         }
 
-        private IEnumerator readFile()
+        private IEnumerator _readFile()
         {
             string error = string.Empty;
             for (int i = 0; i < mList.Count; i++)
@@ -586,7 +586,7 @@ namespace GameFramework
                     mWWW = new WWW(mList[i].Url);
                     if (null != mWWW)
                     {
-                        yield return checkWWWTimeout(TimeoutSec);
+                        yield return _checkWWWTimeout(TimeoutSec);
                         if (mIsTimeOut || !string.IsNullOrEmpty(mWWW.error))
                         {
                             if (mRetryCount < Retry)
@@ -603,11 +603,11 @@ namespace GameFramework
 
                                 if (mType == WWWType.read)
                                 {
-                                    callback(false, error);
+                                    _callback(false, error);
                                 }
                                 else
                                 {
-                                    callbackBytes(true, Encoding.Default.GetBytes(error));
+                                    _callbackBytes(true, Encoding.Default.GetBytes(error));
                                 }
                                 mWWW.Dispose();
                                 mWWW = null;
@@ -620,11 +620,11 @@ namespace GameFramework
                             //请求完成
                             if (mType == WWWType.read)
                             {
-                                callback(true, mWWW.text);
+                                _callback(true, mWWW.text);
                             }
                             else
                             {
-                                callbackBytes(true, mWWW.bytes);
+                                _callbackBytes(true, mWWW.bytes);
                             }
                             mWWW.Dispose();
                             mWWW = null;
@@ -636,16 +636,16 @@ namespace GameFramework
             //所有读取都超时或者有错
             if (mType == WWWType.read)
             {
-                callback(false, error);
+                _callback(false, error);
             }
             else
             {
-                callbackBytes(false, Encoding.Default.GetBytes(error));
+                _callbackBytes(false, Encoding.Default.GetBytes(error));
             }
             yield break;
         }
 
-        private double getProgress(int curSize)
+        private double _getProgress(int curSize)
         {
             double progress = 0d;
             if (mTotalSize > 0)

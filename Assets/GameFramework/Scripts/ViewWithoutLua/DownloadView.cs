@@ -21,7 +21,7 @@ namespace GameFramework
         {
             base.init();
 
-            mAppVer = GameManager.Instance.AppVer;
+            mAppVer = GameMgr.Instance.AppVer;
 
             EventManager.AddToMain(eventKeyDownload, this, "_onProgressAndSpeed");
             EventManager.AddToMain(ResPkgDownloder.STR_EVENT_PKG_VERSION, this, "_onResVerChange");

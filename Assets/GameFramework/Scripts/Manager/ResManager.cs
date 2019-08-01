@@ -19,11 +19,11 @@ namespace GameFramework
     /// <summary>
     /// 游戏资源管理类，请勿直接调用（初始化除外）
     /// 使用其他 Game*Manager 类加载游戏资源,见:
-    /// <seealso cref="GameResManager"/>,
-    /// <seealso cref="GamePrefabManager"/>,
-    /// <seealso cref="GameSoundManager"/>,
-    /// <seealso cref="GameSpriteAtlasManager"/>,
-    /// <seealso cref="GameSceneManager"/>,
+    /// <seealso cref="ResMgr"/>,
+    /// <seealso cref="PrefabMgr"/>,
+    /// <seealso cref="SoundMgr"/>,
+    /// <seealso cref="SpriteAtlasMgr"/>,
+    /// <seealso cref="SceneMgr"/>,
     /// </summary>
     public class ResManager : SingletonComp<ResManager>
     {
@@ -75,7 +75,7 @@ namespace GameFramework
             //#if UNITY_EDITOR
             if (!GameConfig.useAsb)
             {
-                loadRes<T>(
+                _loadRes<T>(
                     asbPath
                     , new string[] { resName, }
                     , delegate (UObj[] objs)
@@ -147,7 +147,7 @@ namespace GameFramework
         {
             if (!GameConfig.useAsb)
             {
-                loadRes<T>(asbName, names, action, luaFunc);
+                _loadRes<T>(asbName, names, action, luaFunc);
             }
             else
             {
@@ -187,7 +187,7 @@ namespace GameFramework
                 {
                     loadName = SceneUtility.GetScenePathByBuildIndex(index);
                 }
-                loadScene(sync, mode, loadName, hasSceneLoad, callback, luaFunc);
+                _loadScene(sync, mode, loadName, hasSceneLoad, callback, luaFunc);
                 return;
             }
 #endif
@@ -227,7 +227,7 @@ namespace GameFramework
                 {
                     LogFile.Error("LoadScene找不到Assetbundle：{0}", asbName);
                 }
-                loadScene(sync, mode, loadName, rst, callback, luaFunc);
+                _loadScene(sync, mode, loadName, rst, callback, luaFunc);
             });
 
         }
@@ -464,7 +464,7 @@ namespace GameFramework
         /// <param name="path">资源相对于Assets/BundleRes的路径</param>
         /// <param name="assetNames">资源相对于path的路径，若资源在path下，则是文件名</param>
         /// <param name="action">delegate</param>
-        private void loadRes<T>(string path, string[] assetNames, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
+        private void _loadRes<T>(string path, string[] assetNames, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
         {
             //string fullPath = Tools.GetResPath(path);
             //if (!Directory.Exists(fullPath))
@@ -481,7 +481,7 @@ namespace GameFramework
                 names.Add(Tools.GetResInAssetsName(path, _name));
                 //}
             }
-            StartCoroutine(onLoadRes<T>(names.ToArray(), action, luaFunc));
+            StartCoroutine(_onLoadRes<T>(names.ToArray(), action, luaFunc));
         }
 
         /// <summary>
@@ -491,7 +491,7 @@ namespace GameFramework
         /// <param name="assetNames"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        private IEnumerator onLoadRes<T>(string[] assetNames, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
+        private IEnumerator _onLoadRes<T>(string[] assetNames, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
         {
             yield return null;
             List<T> list = new List<T>();
@@ -521,7 +521,7 @@ namespace GameFramework
         }
 
 
-        private void loadScene(bool sync, LoadSceneMode mode, string sceneName, bool hasSceneLoad, Action<float> callback = null, LuaFunction luaFunc = null)
+        private void _loadScene(bool sync, LoadSceneMode mode, string sceneName, bool hasSceneLoad, Action<float> callback = null, LuaFunction luaFunc = null)
         {
             float rst = -1f;
             if (hasSceneLoad)

@@ -65,7 +65,7 @@ namespace GameFramework
                     if (!Equals(value, mTarget.ItemPrefab))
                     {
                         mTarget.ItemPrefab = value;
-                        resetItemSize();
+                        _resetItemSize();
                     }
                 }
             }
@@ -74,7 +74,7 @@ namespace GameFramework
         /// <summary>
         /// 重新设置ScrollView的ItemSize
         /// </summary>
-        private void resetItemSize()
+        private void _resetItemSize()
         {
             GameObject obj = Instantiate(mTarget.ItemPrefab);
             RectTransform rectTransform = obj.GetComponent<RectTransform>();

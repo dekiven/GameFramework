@@ -14,7 +14,7 @@ public class GameMain : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         //加载GameManager单例组件
-        var gm = GameManager.Instance;
+        var gm = GameMgr.Instance;
         gm.UpdateViewResPath = DownloadViewPath;
         gm.DebugViewResPath = DebugViewPath;
 	}

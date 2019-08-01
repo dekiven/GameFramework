@@ -57,19 +57,19 @@ namespace GameFramework
             if (null == Get(asbName, assetName))
             {
                 string groupName = CurGroup;
-                addAsbInfo(asbName, assetName, extral, isOrdered);
+                _addAsbInfo(asbName, assetName, extral, isOrdered);
                 mResMgr.LoadRes<T>(asbName, assetName, delegate (UnityEngine.Object obj)
                 {
                     T t = obj as T;
                     if (null != t)
                     {
-                        onLoad(asbName, assetName, t);
+                        _onLoad(asbName, assetName, t);
                     }
                     else
                     {
                         LogFile.Warn("load:({0},{1})error.", asbName, assetName);
                     }
-                    addAsb2Group(asbName, groupName, new string[] {assetName,});
+                    _addAsb2Group(asbName, groupName, new string[] {assetName,});
                 });
             }
         }
@@ -85,7 +85,7 @@ namespace GameFramework
                 {
                     list.Add(assetName);
                 }
-                addAsbInfo(asbName, assetName, extral, isOrdered);
+                _addAsbInfo(asbName, assetName, extral, isOrdered);
             }
             string groupName = CurGroup;
             mResMgr.LoadRes<T>(asbName, names, delegate (UnityEngine.Object[] obj)
@@ -97,7 +97,7 @@ namespace GameFramework
                         T t = obj[i] as T;
                         if (null != t)
                         {
-                            onLoad(asbName, names[i], t);
+                            _onLoad(asbName, names[i], t);
                         }
                         else
                         {
@@ -109,7 +109,7 @@ namespace GameFramework
                 {
                     LogFile.Warn("load {0} error, names.count={1}, obj.Count={2}", asbName, names.Length, obj.Length);
                 }
-                addAsb2Group(asbName, groupName, names);
+                _addAsb2Group(asbName, groupName, names);
             });
         }
 
@@ -132,7 +132,7 @@ namespace GameFramework
                     t = obj as T;
                     if (null != t)
                     {
-                        onLoad(asbName, assetName, t);
+                        _onLoad(asbName, assetName, t);
                         if(null != callback)
                         {
                             callback(t);
@@ -147,7 +147,7 @@ namespace GameFramework
                     {
                         LogFile.Warn("GetAsync load:({0},{1})error.", asbName, assetName);
                     }
-                    addAsb2Group(asbName, groupName, new string[] {assetName,});
+                    _addAsb2Group(asbName, groupName, new string[] {assetName,});
                 });               
             }
             else
@@ -201,7 +201,7 @@ namespace GameFramework
 
         #region private 方法
 
-        private bool onLoad(string asbName, string assetName, T t)
+        private bool _onLoad(string asbName, string assetName, T t)
         {
             bool ret= mDict.AddObj(asbName, assetName, t);
             if(null != OnLoadCallbcak)
@@ -251,7 +251,7 @@ namespace GameFramework
             return ret;
         }
 
-        private void addAsbInfo(string asbName, string name, string extral, bool isOrdered)
+        private void _addAsbInfo(string asbName, string name, string extral, bool isOrdered)
         {
             if(null == OnLoadCallbcak)
             {
@@ -280,7 +280,7 @@ namespace GameFramework
             return;
         }
 
-        private void addAsb2Group(string asbName, string groupName, string[] obj)
+        private void _addAsb2Group(string asbName, string groupName, string[] obj)
         {
             int count = mGroupsCounter.GetObj(groupName, asbName);
             mGroupsCounter.AddObj(groupName, asbName, count+1);

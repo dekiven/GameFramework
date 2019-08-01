@@ -6,7 +6,7 @@ using UObj = UnityEngine.Object;
 
 namespace GameFramework
 {
-    public class GamePrefabManager : Singleton<GamePrefabManager>, IResHandler<GameObject>
+    public class PrefabMgr : Singleton<PrefabMgr>, IResHandler<GameObject>
     {
         #region private 属性
         private GameResHandler<GameObject> mObjDict;
@@ -15,7 +15,7 @@ namespace GameFramework
         /// <summary>
         /// 请勿直接调用构造函数，请使用 Instance 方法获取单例
         /// </summary>
-        public GamePrefabManager()
+        public PrefabMgr()
         {
             mObjDict = new GameResHandler<GameObject>("common");
             mObjDict.Suffix = ".prefab";

@@ -37,7 +37,7 @@ namespace GameFramework
             }
         }
 
-        private void TryGetTargetImg()
+        private void _tryGetTargetImg()
         {
             if (null != mTarget)
             {
@@ -58,7 +58,7 @@ namespace GameFramework
             {
                 return;
             }
-            TryGetTargetImg();
+            _tryGetTargetImg();
             //获取PolygonCollider2D，没有不创建
             mPolygon = mTarget.GetPolygonCollider2D(false);
         }

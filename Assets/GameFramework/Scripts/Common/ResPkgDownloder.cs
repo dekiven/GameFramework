@@ -98,7 +98,7 @@ namespace GameFramework
                 mLocalLua.Dispose();
             }
             mLocalLua = lua;
-            checkLocalRes();
+            _checkLocalRes();
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace GameFramework
         /// 加载asb可以从streaming路径加载，不需要将资源拷贝到可读写文件夹
         /// 当包体资源有更新时，删除老的已下载资源包
         /// </summary>
-        private void checkLocalRes()
+        private void _checkLocalRes()
         {
             if (GameConfig.useAsb)
             {
@@ -221,13 +221,13 @@ namespace GameFramework
         private void _checkSerRes()
         {
             mCurIdx += 1;
-            string srcUrl = getServUrl();
+            string srcUrl = _getServUrl();
             if (string.IsNullOrEmpty(srcUrl))
             {
                 _callbackServ(-1, "服务器列表尚未初始化");
                 return;
             }
-            compareNewFiles(srcUrl, (long size, string msg) =>
+            _compareNewFiles(srcUrl, (long size, string msg) =>
             {
                 if (size >= 0)
                 {
@@ -246,7 +246,7 @@ namespace GameFramework
                 LogFile.Log(mPkgName + " 正在下载，不用重复下载。");
                 return;
             }
-            string srcUrl = getServUrl();
+            string srcUrl = _getServUrl();
             float last = Time.time;
             long lastSize = 0L;
             if (null != mNewFiles && mNewFiles.Count > 0)
@@ -322,7 +322,7 @@ namespace GameFramework
         /// </summary>
         /// <param name="url">服务器地址 URL.</param>
         /// <param name="callback">Callback.</param>
-        private void compareNewFiles(string url, Action<long, string> callback)
+        private void _compareNewFiles(string url, Action<long, string> callback)
         {
             if (null != callback)
             {
@@ -387,7 +387,7 @@ namespace GameFramework
         /// 返回当前服务器 URL(带平台后缀)
         /// </summary>
         /// <returns>The serv URL.</returns>
-        private string getServUrl()
+        private string _getServUrl()
         {
             if (mCurIdx < mServList.Length)
             {

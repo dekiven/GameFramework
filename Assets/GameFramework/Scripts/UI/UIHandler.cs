@@ -1341,13 +1341,13 @@ namespace GameFramework
         public bool SetUIActive(int index, bool value)
         {
             UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
-            return setUIActive(ui, value);
+            return _setUIActive(ui, value);
         }
 
         public bool SetUIActive(string cName, bool value)
         {
             UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
-            return setUIActive(ui, value);
+            return _setUIActive(ui, value);
         }
 
         /// <summary>
@@ -1359,7 +1359,7 @@ namespace GameFramework
         public bool SetUISelectable(int index, bool value)
         {
             Selectable ui = GetCompByIndex<Selectable>(index);
-            return setUISelectable(ui, value);
+            return _setUISelectable(ui, value);
         }
 
         /// <summary>
@@ -1371,37 +1371,37 @@ namespace GameFramework
         public bool SetUISelectable(string cName, bool value)
         {
             Selectable ui = GetCompByName<Selectable>(cName);
-            return setUISelectable(ui, value);
+            return _setUISelectable(ui, value);
         }
 
         public bool SetUIEnable(int index, bool value)
         {
             UIBehaviour ui = GetCompByIndex<UIBehaviour>(index);
-            return setUIEnable(ui, value);
+            return _setUIEnable(ui, value);
         }
 
         public bool SetUIEnable(string cName, bool value)
         {
             UIBehaviour ui = GetCompByName<UIBehaviour>(cName);
-            return setUIEnable(ui, value);
+            return _setUIEnable(ui, value);
         }
 
         // 调用Graphic（Image、RawImage）的SetNativeSize方法
         public bool SetUINativeSize(int index)
         {
             Graphic ui = GetCompByIndex<Graphic>(index);
-            return setUINativeSize(ui);
+            return _setUINativeSize(ui);
         }
 
         // 调用Graphic（Image、RawImage）的SetNativeSize方法
         public bool SetUINativeSize(string cName)
         {
             Graphic ui = GetCompByName<Graphic>(cName);
-            return setUINativeSize(ui);
+            return _setUINativeSize(ui);
         }
 
         // 调用Graphic（Image、RawImage）的SetNativeSize方法
-        private static bool setUINativeSize(Graphic ui)
+        private static bool _setUINativeSize(Graphic ui)
         {
             if (null != ui)
             {
@@ -1415,18 +1415,18 @@ namespace GameFramework
         public bool SetUIMaterial(int index, Material material)
         {
             Graphic ui = GetCompByIndex<Graphic>(index);
-            return setUIMaterial(ui, material);
+            return _setUIMaterial(ui, material);
         }
 
         // 设置Graphic子类的material
         public bool SetUIMaterial(string cName, Material material)
         {
             Graphic ui = GetCompByName<Graphic>(cName);
-            return setUIMaterial(ui, material);
+            return _setUIMaterial(ui, material);
         }
 
         // 设置Graphic子类的material
-        private static bool setUIMaterial(Graphic ui, Material material)
+        private static bool _setUIMaterial(Graphic ui, Material material)
         {
             if (null != ui)
             {
@@ -1456,18 +1456,18 @@ namespace GameFramework
         public bool SetUIRaycastTarget(int index, bool enabled)
         {
             Graphic ui = GetCompByIndex<Graphic>(index);
-            return setUIRaycastTarget(ui, enabled);
+            return _setUIRaycastTarget(ui, enabled);
         }
 
         // 设置Graphic子类的raycastTarget
         public bool SetUIRaycastTarget(string cName, bool enabled)
         {
             Graphic ui = GetCompByName<Graphic>(cName);
-            return setUIRaycastTarget(ui, enabled);
+            return _setUIRaycastTarget(ui, enabled);
         }
 
         // 设置Graphic子类的raycastTarget
-        private static bool setUIRaycastTarget(Graphic ui, bool enabled)
+        private static bool _setUIRaycastTarget(Graphic ui, bool enabled)
         {
             if (null != ui)
             {
@@ -1480,16 +1480,16 @@ namespace GameFramework
         public bool SetUIColor(int index, Color color)
         {
             Graphic text = GetCompByIndex<Graphic>(index);
-            return setUIColor(text, color);
+            return _setUIColor(text, color);
         }
 
         public bool SetUIColor(string cName, Color color)
         {
             Graphic text = GetCompByName<Graphic>(cName);
-            return setUIColor(text, color);
+            return _setUIColor(text, color);
         }
 
-        private static bool setUIColor(Graphic ui, Color color)
+        private static bool _setUIColor(Graphic ui, Color color)
         {
             if (null != ui)
             {
@@ -1723,13 +1723,13 @@ namespace GameFramework
         public bool SetTextString(int index, string content)
         {
             Text text = GetCompByIndex<Text>(index);
-            return setTextStr(text, content);
+            return _setTextStr(text, content);
         }
 
         public bool SetTextString(string cName, string content)
         {
             Text text = GetCompByName<Text>(cName);
-            return setTextStr(text, content);
+            return _setTextStr(text, content);
         }
 
         public bool SetRichTextString(int index, string content)
@@ -1759,16 +1759,16 @@ namespace GameFramework
         public bool SetImageSprite(int index, Sprite sprite)
         {
             Image ui = GetCompByIndex<Image>(index);
-            return setImageSprite(ui, sprite);
+            return _setImageSprite(ui, sprite);
         }
 
         public bool SetImageSprite(string cName, Sprite sprite)
         {
             Image ui = GetCompByName<Image>(cName);
-            return setImageSprite(ui, sprite);
+            return _setImageSprite(ui, sprite);
         }
 
-        private static bool setImageSprite(Image ui, Sprite sprite)
+        private static bool _setImageSprite(Image ui, Sprite sprite)
         {
             if (null != ui)
             {
@@ -1782,18 +1782,18 @@ namespace GameFramework
         public bool SetImageNSizeSprite(int index, Sprite sprite)
         {
             Image ui = GetCompByIndex<Image>(index);
-            return setImageNSizeSprite(ui, sprite);
+            return _setImageNSizeSprite(ui, sprite);
         }
 
         // 设置Image Sprite,完成后调用SetNativeSize
         public bool SetImageNSizeSprite(string cName, Sprite sprite)
         {
             Image ui = GetCompByName<Image>(cName);
-            return setImageNSizeSprite(ui, sprite);
+            return _setImageNSizeSprite(ui, sprite);
         }
 
         // 设置Image Sprite,完成后调用SetNativeSize
-        private static bool setImageNSizeSprite(Image ui, Sprite sprite)
+        private static bool _setImageNSizeSprite(Image ui, Sprite sprite)
         {
             if (null != ui)
             {
@@ -1823,16 +1823,16 @@ namespace GameFramework
         public bool SetRawImageTexture(int index, Texture texture)
         {
             RawImage ui = GetCompByIndex<RawImage>(index);
-            return setRawImageTexture(ui, texture);
+            return _setRawImageTexture(ui, texture);
         }
 
         public bool SetRawImageTexture(string cName, Texture texture)
         {
             RawImage ui = GetCompByName<RawImage>(cName);
-            return setRawImageTexture(ui, texture);
+            return _setRawImageTexture(ui, texture);
         }
 
-        private static bool setRawImageTexture(RawImage ui, Texture texture)
+        private static bool _setRawImageTexture(RawImage ui, Texture texture)
         {
             if (null != ui)
             {
@@ -1846,28 +1846,28 @@ namespace GameFramework
         public bool SetRawImageRect(int index, Rect rect)
         {
             RawImage ui = GetCompByIndex<RawImage>(index);
-            return setRawImageRect(ui, rect);
+            return _setRawImageRect(ui, rect);
         }
 
         public bool SetRawImageRect(string cName, Rect rect)
         {
             RawImage ui = GetCompByName<RawImage>(cName);
-            return setRawImageRect(ui, rect);
+            return _setRawImageRect(ui, rect);
         }
 
         public bool SetRawImageRect(int index, float[] rect)
         {
             RawImage ui = GetCompByIndex<RawImage>(index);
-            return setRawImageRect(ui, rect);
+            return _setRawImageRect(ui, rect);
         }
 
         public bool SetRawImageRect(string cName, float[] rect)
         {
             RawImage ui = GetCompByName<RawImage>(cName);
-            return setRawImageRect(ui, rect);
+            return _setRawImageRect(ui, rect);
         }
 
-        private static bool setRawImageRect(RawImage ui, Rect rect)
+        private static bool _setRawImageRect(RawImage ui, Rect rect)
         {
             if (null != ui)
             {
@@ -1878,12 +1878,12 @@ namespace GameFramework
             return false;
         }
 
-        private static bool setRawImageRect(RawImage ui, float[] rect)
+        private static bool _setRawImageRect(RawImage ui, float[] rect)
         {
             if (4 == rect.Length)
             {
                 Rect _rect = Tools.GenRect(rect);
-                return setRawImageRect(ui, _rect);
+                return _setRawImageRect(ui, _rect);
             }
             return false;
         }
@@ -1893,25 +1893,25 @@ namespace GameFramework
         public bool AddBtnClick(int index, UnityAction<string> call)
         {
             Button btn = GetCompByIndex<Button>(index);
-            return addBtnClick(btn, call);
+            return _addBtnClick(btn, call);
         }
 
         public bool AddBtnClick(int index, LuaFunction call)
         {
             Button btn = GetCompByIndex<Button>(index);
-            return addBtnClick(btn, call);
+            return _addBtnClick(btn, call);
         }
 
         public bool AddBtnClick(string cName, UnityAction<string> call)
         {
             Button btn = GetCompByName<Button>(cName);
-            return addBtnClick(btn, call);
+            return _addBtnClick(btn, call);
         }
 
         public bool AddBtnClick(string cName, LuaFunction call)
         {
             Button btn = GetCompByName<Button>(cName);
-            return addBtnClick(btn, call);
+            return _addBtnClick(btn, call);
         }
         #endregion Button
 
@@ -1919,16 +1919,16 @@ namespace GameFramework
         public bool AddDropdownOnValueChanged(int index, UnityAction<int> call)
         {
             Dropdown ui = GetCompByIndex<Dropdown>(index);
-            return addDropdownOnValueChanged(ui, call);
+            return _addDropdownOnValueChanged(ui, call);
         }
 
         public bool AddDropdownOnValueChanged(string cName, UnityAction<int> call)
         {
             Dropdown ui = GetCompByName<Dropdown>(cName);
-            return addDropdownOnValueChanged(ui, call);
+            return _addDropdownOnValueChanged(ui, call);
         }
 
-        private static bool addDropdownOnValueChanged(Dropdown ui, UnityAction<int> call)
+        private static bool _addDropdownOnValueChanged(Dropdown ui, UnityAction<int> call)
         {
             if (null != ui)
             {
@@ -1941,16 +1941,16 @@ namespace GameFramework
         public bool AddDropdownOnValueChanged(int index, LuaFunction call)
         {
             Dropdown ui = GetCompByIndex<Dropdown>(index);
-            return addDropdownOnValueChanged(ui, call);
+            return _addDropdownOnValueChanged(ui, call);
         }
 
         public bool AddDropdownOnValueChanged(string cName, LuaFunction call)
         {
             Dropdown ui = GetCompByName<Dropdown>(cName);
-            return addDropdownOnValueChanged(ui, call);
+            return _addDropdownOnValueChanged(ui, call);
         }
 
-        private static bool addDropdownOnValueChanged(Dropdown ui, LuaFunction call)
+        private static bool _addDropdownOnValueChanged(Dropdown ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -2013,16 +2013,16 @@ namespace GameFramework
         public bool AddInputFieldOnValueChanged(int index, UnityAction<string> call)
         {
             InputField ui = GetCompByIndex<InputField>(index);
-            return addInputFieldOnValueChanged(ui, call);
+            return _addInputFieldOnValueChanged(ui, call);
         }
 
         public bool AddInputFieldOnValueChanged(string cName, UnityAction<string> call)
         {
             InputField ui = GetCompByName<InputField>(cName);
-            return addInputFieldOnValueChanged(ui, call);
+            return _addInputFieldOnValueChanged(ui, call);
         }
 
-        private static bool addInputFieldOnValueChanged(InputField ui, UnityAction<string> call)
+        private static bool _addInputFieldOnValueChanged(InputField ui, UnityAction<string> call)
         {
             if (null != ui)
             {
@@ -2035,16 +2035,16 @@ namespace GameFramework
         public bool AddInputFieldOnValueChanged(int index, LuaFunction call)
         {
             InputField ui = GetCompByIndex<InputField>(index);
-            return addInputFieldOnValueChanged(ui, call);
+            return _addInputFieldOnValueChanged(ui, call);
         }
 
         public bool AddInputFieldOnValueChanged(string cName, LuaFunction call)
         {
             InputField ui = GetCompByName<InputField>(cName);
-            return addInputFieldOnValueChanged(ui, call);
+            return _addInputFieldOnValueChanged(ui, call);
         }
 
-        private static bool addInputFieldOnValueChanged(InputField ui, LuaFunction call)
+        private static bool _addInputFieldOnValueChanged(InputField ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -2060,16 +2060,16 @@ namespace GameFramework
         public bool AddInputFieldOnEndEdit(int index, UnityAction<string> call)
         {
             InputField ui = GetCompByIndex<InputField>(index);
-            return addInputFieldOnEndEdit(ui, call);
+            return _addInputFieldOnEndEdit(ui, call);
         }
 
         public bool AddInputFieldOnEndEdit(string cName, UnityAction<string> call)
         {
             InputField ui = GetCompByName<InputField>(cName);
-            return addInputFieldOnEndEdit(ui, call);
+            return _addInputFieldOnEndEdit(ui, call);
         }
 
-        private static bool addInputFieldOnEndEdit(InputField ui, UnityAction<string> call)
+        private static bool _addInputFieldOnEndEdit(InputField ui, UnityAction<string> call)
         {
             if (null != ui)
             {
@@ -2082,16 +2082,16 @@ namespace GameFramework
         public bool AddInputFieldOnEndEdit(int index, LuaFunction call)
         {
             InputField ui = GetCompByIndex<InputField>(index);
-            return addInputFieldOnEndEdit(ui, call);
+            return _addInputFieldOnEndEdit(ui, call);
         }
 
         public bool AddInputFieldOnEndEdit(string cName, LuaFunction call)
         {
             InputField ui = GetCompByName<InputField>(cName);
-            return addInputFieldOnEndEdit(ui, call);
+            return _addInputFieldOnEndEdit(ui, call);
         }
 
-        private static bool addInputFieldOnEndEdit(InputField ui, LuaFunction call)
+        private static bool _addInputFieldOnEndEdit(InputField ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -2111,16 +2111,16 @@ namespace GameFramework
         public bool SetScrollViewOnItemClick(int index, LuaFunction call)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewOnItemClick(ui, call);
+            return _setScrollViewOnItemClick(ui, call);
         }
 
         public bool SetScrollViewOnItemClick(string cName, LuaFunction call)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewOnItemClick(ui, call);
+            return _setScrollViewOnItemClick(ui, call);
         }
 
-        private static bool setScrollViewOnItemClick(ScrollView ui, LuaFunction call)
+        private static bool _setScrollViewOnItemClick(ScrollView ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -2133,16 +2133,16 @@ namespace GameFramework
         public bool SetScrollViewData(int index, LuaTable table)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewData(ui, table);
+            return _setScrollViewData(ui, table);
         }
 
         public bool SetScrollViewData(string cName, LuaTable table)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewData(ui, table);
+            return _setScrollViewData(ui, table);
         }
 
-        private static bool setScrollViewData(ScrollView ui, LuaTable table)
+        private static bool _setScrollViewData(ScrollView ui, LuaTable table)
         {
             if (null != ui)
             {
@@ -2157,16 +2157,16 @@ namespace GameFramework
         public bool SetScrollViewData(int index, List<UIItemData> datas)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewData(ui, datas);
+            return _setScrollViewData(ui, datas);
         }
 
         public bool SetScrollViewData(string cName, List<UIItemData> datas)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewData(ui, datas);
+            return _setScrollViewData(ui, datas);
         }
 
-        private static bool setScrollViewData(ScrollView ui, List<UIItemData> datas)
+        private static bool _setScrollViewData(ScrollView ui, List<UIItemData> datas)
         {
             if (null != ui)
             {
@@ -2186,7 +2186,7 @@ namespace GameFramework
         public bool UpdateScrollViewData(int index, LuaTable table)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return updateScoriewData(ui, table);
+            return _updateScoriewData(ui, table);
         }
 
         /// <summary>
@@ -2199,10 +2199,10 @@ namespace GameFramework
         public bool UpdateScrollViewData(string cName, LuaTable table)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return updateScoriewData(ui, table);
+            return _updateScoriewData(ui, table);
         }
 
-        private static bool updateScoriewData(ScrollView ui, LuaTable table)
+        private static bool _updateScoriewData(ScrollView ui, LuaTable table)
         {
             if (null != ui)
             {
@@ -2215,16 +2215,16 @@ namespace GameFramework
         public bool AddScrollViewData(int index, LuaTable table)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return addScrollViewData(ui, table);
+            return _addScrollViewData(ui, table);
         }
 
         public bool AddScrollViewData(string cName, LuaTable table)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return addScrollViewData(ui, table);
+            return _addScrollViewData(ui, table);
         }
 
-        private static bool addScrollViewData(ScrollView ui, LuaTable table)
+        private static bool _addScrollViewData(ScrollView ui, LuaTable table)
         {
             if (null != ui)
             {
@@ -2237,16 +2237,16 @@ namespace GameFramework
         public bool AddScrollViewData(int index, UIItemData data)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return addScrollViewData(ui, data);
+            return _addScrollViewData(ui, data);
         }
 
         public bool AddScrollViewData(string cName, UIItemData data)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return addScrollViewData(ui, data);
+            return _addScrollViewData(ui, data);
         }
 
-        private static bool addScrollViewData(ScrollView ui, UIItemData data)
+        private static bool _addScrollViewData(ScrollView ui, UIItemData data)
         {
             if (null != ui)
             {
@@ -2259,16 +2259,16 @@ namespace GameFramework
         public bool InsertScrollViewData(int index, LuaTable table)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return insertScrollViewData(ui, table);
+            return _insertScrollViewData(ui, table);
         }
 
         public bool InsertScrollViewData(string cName, LuaTable table)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return insertScrollViewData(ui, table);
+            return _insertScrollViewData(ui, table);
         }
 
-        private static bool insertScrollViewData(ScrollView ui, LuaTable table)
+        private static bool _insertScrollViewData(ScrollView ui, LuaTable table)
         {
             if (null != ui)
             {
@@ -2281,13 +2281,13 @@ namespace GameFramework
         public bool SetScrollViewBtnClick_S(int index, LuaFunction call)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewBtnClick_S(ui, call);
+            return _setScrollViewBtnClick_S(ui, call);
         }
 
         public bool SetScrollViewBtnClick_S(string cName, LuaFunction call)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewBtnClick_S(ui, call);
+            return _setScrollViewBtnClick_S(ui, call);
         }
 
         /// <summary>
@@ -2296,7 +2296,7 @@ namespace GameFramework
         /// <param name="ui"></param>
         /// <param name="call"></param>
         /// <returns></returns>
-        private static bool setScrollViewBtnClick_S(ScrollView ui, LuaFunction call)
+        private static bool _setScrollViewBtnClick_S(ScrollView ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -2309,13 +2309,13 @@ namespace GameFramework
         public bool SetScrollViewBtnClick_I(int index, LuaFunction call)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return SetScrollViewBtnClick_I(ui, call);
+            return _setScrollViewBtnClick_I(ui, call);
         }
 
         public bool SetScrollViewBtnClick_I(string cName, LuaFunction call)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return SetScrollViewBtnClick_I(ui, call);
+            return _setScrollViewBtnClick_I(ui, call);
         }
 
         /// <summary>
@@ -2324,7 +2324,7 @@ namespace GameFramework
         /// <param name="ui"></param>
         /// <param name="call"></param>
         /// <returns></returns>
-        private static bool SetScrollViewBtnClick_I(ScrollView ui, LuaFunction call)
+        private static bool _setScrollViewBtnClick_I(ScrollView ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -2338,18 +2338,18 @@ namespace GameFramework
         public bool RemoveScrollViewData(int index, UIItemData data)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return removeScrollViewData(ui, data);
+            return _removeScrollViewData(ui, data);
         }
 
         // 删除一条数据
         public bool RemoveScrollViewData(string cName, UIItemData data)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return removeScrollViewData(ui, data);
+            return _removeScrollViewData(ui, data);
         }
 
         // 删除一条数据
-        private static bool removeScrollViewData(ScrollView ui, UIItemData data)
+        private static bool _removeScrollViewData(ScrollView ui, UIItemData data)
         {
             if (null != ui)
             {
@@ -2363,18 +2363,18 @@ namespace GameFramework
         public bool RemoveScrollViewDataAt(int index, int idx)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return removeScrollViewDataAt(ui, idx);
+            return _removeScrollViewDataAt(ui, idx);
         }
 
         // 删除一个 Item
         public bool RemoveScrollViewDataAt(string cName, int index)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return removeScrollViewDataAt(ui, index);
+            return _removeScrollViewDataAt(ui, index);
         }
 
         // 删除一个 Item
-        private static bool removeScrollViewDataAt(ScrollView ui, int index)
+        private static bool _removeScrollViewDataAt(ScrollView ui, int index)
         {
             if (null != ui)
             {
@@ -2388,18 +2388,18 @@ namespace GameFramework
         public bool AddScrollViewDatas(int index, List<UIItemData> datas)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return addScrollViewDatas(ui, datas);
+            return _addScrollViewDatas(ui, datas);
         }
 
         // 在最后添加多个数据
         public bool AddScrollViewDatas(string cName, List<UIItemData> datas)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return addScrollViewDatas(ui, datas);
+            return _addScrollViewDatas(ui, datas);
         }
 
         // 在最后添加多个数据
-        private static bool addScrollViewDatas(ScrollView ui, List<UIItemData> datas)
+        private static bool _addScrollViewDatas(ScrollView ui, List<UIItemData> datas)
         {
             if (null != ui)
             {
@@ -2413,18 +2413,18 @@ namespace GameFramework
         public bool AddScrollViewDatas(int index, LuaTable lua)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return addScrollViewDatas(ui, lua);
+            return _addScrollViewDatas(ui, lua);
         }
 
         // 在最后添加多个数据
         public bool AddScrollViewDatas(string cName, LuaTable lua)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return addScrollViewDatas(ui, lua);
+            return _addScrollViewDatas(ui, lua);
         }
 
         // 在最后添加多个数据
-        private static bool addScrollViewDatas(ScrollView ui, LuaTable lua)
+        private static bool _addScrollViewDatas(ScrollView ui, LuaTable lua)
         {
             if (null != ui)
             {
@@ -2438,18 +2438,18 @@ namespace GameFramework
         public bool RemoveScrollViewDatasAt(int index, int[] idxs)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return removeScrollViewDatasAt(ui, idxs);
+            return _removeScrollViewDatasAt(ui, idxs);
         }
 
         // 删除多条数据
         public bool RemoveScrollViewDatasAt(string cName, int[] idxs)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return removeScrollViewDatasAt(ui, idxs);
+            return _removeScrollViewDatasAt(ui, idxs);
         }
 
         // 删除多条数据
-        private static bool removeScrollViewDatasAt(ScrollView ui, int[] idxs)
+        private static bool _removeScrollViewDatasAt(ScrollView ui, int[] idxs)
         {
             if (null != ui)
             {
@@ -2463,18 +2463,18 @@ namespace GameFramework
         public bool RemoveScrollViewDatasAt(int index, string intArr)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return removeScrollViewDatasAt(ui, intArr);
+            return _removeScrollViewDatasAt(ui, intArr);
         }
 
         // 删除多条数据
         public bool RemoveScrollViewDatasAt(string cName, string intArr)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return removeScrollViewDatasAt(ui, intArr);
+            return _removeScrollViewDatasAt(ui, intArr);
         }
 
         // 删除多条数据
-        private static bool removeScrollViewDatasAt(ScrollView ui, string intArr)
+        private static bool _removeScrollViewDatasAt(ScrollView ui, string intArr)
         {
             if (null != ui)
             {
@@ -2488,18 +2488,18 @@ namespace GameFramework
         public bool Tween2ScrollViewIndex(int index, int idx)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return tween2ScrollViewIndex(ui, idx);
+            return _tween2ScrollViewIndex(ui, idx);
         }
 
         // 滚动到某个 item 所在位置
         public bool Tween2ScrollViewIndex(string cName, int index)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return tween2ScrollViewIndex(ui, index);
+            return _tween2ScrollViewIndex(ui, index);
         }
 
         // 滚动到某个 item 所在位置
-        private static bool tween2ScrollViewIndex(ScrollView ui, int index)
+        private static bool _tween2ScrollViewIndex(ScrollView ui, int index)
         {
             if (null != ui)
             {
@@ -2514,18 +2514,18 @@ namespace GameFramework
         public bool Tween2ScrollViewPos(int index, float pos)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return tween2ScrollViewPos(ui, pos);
+            return _tween2ScrollViewPos(ui, pos);
         }
 
         // Tween 到 ScrollView某位置，pos 取0~1f,0表示 显示列表头，1表示显示列表末尾
         public bool Tween2ScrollViewPos(string cName, float pos)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return tween2ScrollViewPos(ui, pos);
+            return _tween2ScrollViewPos(ui, pos);
         }
 
         // Tween 到 ScrollView某位置，pos 取0~1f,0表示 显示列表头，1表示显示列表末尾
-        private static bool tween2ScrollViewPos(ScrollView ui, float pos)
+        private static bool _tween2ScrollViewPos(ScrollView ui, float pos)
         {
             if (null != ui)
             {
@@ -2540,18 +2540,18 @@ namespace GameFramework
         public bool SetScrollViewOnItemClick(int index, DelScrollItemClicked del)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewOnItemClick(ui, del);
+            return _setScrollViewOnItemClick(ui, del);
         }
 
         // 设置点击代理
         public bool SetScrollViewOnItemClick(string cName, DelScrollItemClicked del)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewOnItemClick(ui, del);
+            return _setScrollViewOnItemClick(ui, del);
         }
 
         // 设置点击代理
-        private static bool setScrollViewOnItemClick(ScrollView ui, DelScrollItemClicked del)
+        private static bool _setScrollViewOnItemClick(ScrollView ui, DelScrollItemClicked del)
         {
             if (null != ui)
             {
@@ -2565,18 +2565,18 @@ namespace GameFramework
         public bool SetScrollViewBtnClick_S(int index, DelBtnClickedStr del)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewOnBtnClick_S(ui, del);
+            return _setScrollViewOnBtnClick_S(ui, del);
         }
 
         // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按钮名
         public bool SetScrollViewBtnClick_S(string cName, DelBtnClickedStr del)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewOnBtnClick_S(ui, del);
+            return _setScrollViewOnBtnClick_S(ui, del);
         }
 
         // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按钮名
-        private static bool setScrollViewOnBtnClick_S(ScrollView ui, DelBtnClickedStr del)
+        private static bool _setScrollViewOnBtnClick_S(ScrollView ui, DelBtnClickedStr del)
         {
             if (null != ui)
             {
@@ -2590,18 +2590,18 @@ namespace GameFramework
         public bool SetScrollViewBtnClick_I(int index, DelBtnClickedIndex del)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewOnBtnClick_I(ui, del);
+            return _setScrollViewOnBtnClick_I(ui, del);
         }
 
         // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按钮index
         public bool SetScrollViewBtnClick_I(string cName, DelBtnClickedIndex del)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewOnBtnClick_I(ui, del);
+            return _setScrollViewOnBtnClick_I(ui, del);
         }
 
         // 设置 ScrollView Item内部按钮（除 bg外的）被点击的回调，回调按钮index
-        private static bool setScrollViewOnBtnClick_I(ScrollView ui, DelBtnClickedIndex del)
+        private static bool _setScrollViewOnBtnClick_I(ScrollView ui, DelBtnClickedIndex del)
         {
             if (null != ui)
             {
@@ -2615,18 +2615,18 @@ namespace GameFramework
         public bool SelectScrollViewItem(int index, int idx)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return selectScrollViewItem(ui, idx);
+            return _selectScrollViewItem(ui, idx);
         }
 
         // 选中某个Item
         public bool SelectScrollViewItem(string cName, int index)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return selectScrollViewItem(ui, index);
+            return _selectScrollViewItem(ui, index);
         }
 
         // 选中某个Item
-        private static bool selectScrollViewItem(ScrollView ui, int index)
+        private static bool _selectScrollViewItem(ScrollView ui, int index)
         {
             if (null != ui)
             {
@@ -2640,18 +2640,18 @@ namespace GameFramework
         public bool SelectScrollViewItems(int index, int[] indexArr)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return selectScrollViewItems(ui, indexArr);
+            return _selectScrollViewItems(ui, indexArr);
         }
 
         // 选中部分 Item
         public bool SelectScrollViewItems(string cName, int[] indexArr)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return selectScrollViewItems(ui, indexArr);
+            return _selectScrollViewItems(ui, indexArr);
         }
 
         // 选中部分 Item
-        private static bool selectScrollViewItems(ScrollView ui, int[] indexArr)
+        private static bool _selectScrollViewItems(ScrollView ui, int[] indexArr)
         {
             if (null != ui)
             {
@@ -2665,18 +2665,18 @@ namespace GameFramework
         public bool SelectScrollViewSelectItems(int index, string indexArr)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return selectScrollViewSelectItems(ui, indexArr);
+            return _selectScrollViewSelectItems(ui, indexArr);
         }
 
         // 选中某几个Item
         public bool SelectScrollViewSelectItems(string cName, string indexArr)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return selectScrollViewSelectItems(ui, indexArr);
+            return _selectScrollViewSelectItems(ui, indexArr);
         }
 
         // 选中某几个Item
-        private static bool selectScrollViewSelectItems(ScrollView ui, string indexArr)
+        private static bool _selectScrollViewSelectItems(ScrollView ui, string indexArr)
         {
             if (null != ui)
             {
@@ -2690,18 +2690,18 @@ namespace GameFramework
         public bool UnselectScrollViewItems(int index, int[] indexArr)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return unselectScrollViewItems(ui, indexArr);
+            return _unselectScrollViewItems(ui, indexArr);
         }
 
         // 取消选中部分 Item
         public bool UnselectScrollViewItems(string cName, int[] indexArr)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return unselectScrollViewItems(ui, indexArr);
+            return _unselectScrollViewItems(ui, indexArr);
         }
 
         // 取消选中部分 Item
-        private static bool unselectScrollViewItems(ScrollView ui, int[] indexArr)
+        private static bool _unselectScrollViewItems(ScrollView ui, int[] indexArr)
         {
             if (null != ui)
             {
@@ -2715,18 +2715,18 @@ namespace GameFramework
         public bool UnselectScrollViewItem(int index, int idx)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return unselectScrollViewItem(ui, idx);
+            return _unselectScrollViewItem(ui, idx);
         }
 
         //  取消选中某个Item
         public bool UnselectScrollViewItem(string cName, int index)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return unselectScrollViewItem(ui, index);
+            return _unselectScrollViewItem(ui, index);
         }
 
         //  取消选中某个Item
-        private static bool unselectScrollViewItem(ScrollView ui, int index)
+        private static bool _unselectScrollViewItem(ScrollView ui, int index)
         {
             if (null != ui)
             {
@@ -2740,18 +2740,18 @@ namespace GameFramework
         public bool UnselectScrollViewItems(int index, string indexArr)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return unselectScrollViewItems(ui, indexArr);
+            return _unselectScrollViewItems(ui, indexArr);
         }
 
         // 取消选中某几个 Item
         public bool UnselectScrollViewItems(string cName, string indexArr)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return unselectScrollViewItems(ui, indexArr);
+            return _unselectScrollViewItems(ui, indexArr);
         }
 
         // 取消选中某几个 Item
-        private static bool unselectScrollViewItems(ScrollView ui, string indexArr)
+        private static bool _unselectScrollViewItems(ScrollView ui, string indexArr)
         {
             if (null != ui)
             {
@@ -2765,18 +2765,18 @@ namespace GameFramework
         public bool SwitchScrollViewItem(int index, int idx)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return switchScrollViewItem(ui, idx);
+            return _switchScrollViewItem(ui, idx);
         }
 
         // 改变某个 Item 选中状态
         public bool SwitchScrollViewItem(string cName, int index)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return switchScrollViewItem(ui, index);
+            return _switchScrollViewItem(ui, index);
         }
 
         // 改变某个 Item 选中状态
-        private static bool switchScrollViewItem(ScrollView ui, int index)
+        private static bool _switchScrollViewItem(ScrollView ui, int index)
         {
             if (null != ui)
             {
@@ -2790,18 +2790,18 @@ namespace GameFramework
         public bool SwitchScrollViewItems(int index, string indexArr)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return switchScrollViewItems(ui, indexArr);
+            return _switchScrollViewItems(ui, indexArr);
         }
 
         // 改变某几个 Item 选中状态
         public bool SwitchScrollViewItems(string cName, string indexArr)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return switchScrollViewItems(ui, indexArr);
+            return _switchScrollViewItems(ui, indexArr);
         }
 
         // 改变某几个 Item 选中状态
-        private static bool switchScrollViewItems(ScrollView ui, string indexArr)
+        private static bool _switchScrollViewItems(ScrollView ui, string indexArr)
         {
             if (null != ui)
             {
@@ -2815,18 +2815,18 @@ namespace GameFramework
         public bool SelectScrollViewAll(int index)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return selectScrollViewAll(ui);
+            return _selectScrollViewAll(ui);
         }
 
         // 将所有 Item 全部选中
         public bool SelectScrollViewAll(string cName)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return selectScrollViewAll(ui);
+            return _selectScrollViewAll(ui);
         }
 
         // 将所有 Item 全部选中
-        private static bool selectScrollViewAll(ScrollView ui)
+        private static bool _selectScrollViewAll(ScrollView ui)
         {
             if (null != ui)
             {
@@ -2842,18 +2842,18 @@ namespace GameFramework
         public bool UnselectScrollViewAll(int index)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return unselectScrollViewAll(ui);
+            return _unselectScrollViewAll(ui);
         }
 
         // 将所有 Item 全部取消选中
         public bool UnselectScrollViewAll(string cName)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return unselectScrollViewAll(ui);
+            return _unselectScrollViewAll(ui);
         }
 
         // 将所有 Item 全部取消选中
-        private static bool unselectScrollViewAll(ScrollView ui)
+        private static bool _unselectScrollViewAll(ScrollView ui)
         {
             if (null != ui)
             {
@@ -2867,18 +2867,18 @@ namespace GameFramework
         public bool SetScrollViewOnSelect(int index, DelSelectChange del)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewOnSelect(ui, del);
+            return _setScrollViewOnSelect(ui, del);
         }
 
         // 设置 Item 选中状态监听回调
         public bool SetScrollViewOnSelect(string cName, DelSelectChange del)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewOnSelect(ui, del);
+            return _setScrollViewOnSelect(ui, del);
         }
 
         // 设置 Item 选中状态监听回调
-        private static bool setScrollViewOnSelect(ScrollView ui, DelSelectChange del)
+        private static bool _setScrollViewOnSelect(ScrollView ui, DelSelectChange del)
         {
             if (null != ui)
             {
@@ -2892,18 +2892,18 @@ namespace GameFramework
         public bool SetScrollViewOnSelect(int index, LuaFunction lua)
         {
             ScrollView ui = GetCompByIndex<ScrollView>(index);
-            return setScrollViewOnSelect(ui, lua);
+            return _setScrollViewOnSelect(ui, lua);
         }
 
         // 设置 Item 选中状态监听回调
         public bool SetScrollViewOnSelect(string cName, LuaFunction lua)
         {
             ScrollView ui = GetCompByName<ScrollView>(cName);
-            return setScrollViewOnSelect(ui, lua);
+            return _setScrollViewOnSelect(ui, lua);
         }
 
         // 设置 Item 选中状态监听回调
-        private static bool setScrollViewOnSelect(ScrollView ui, LuaFunction lua)
+        private static bool _setScrollViewOnSelect(ScrollView ui, LuaFunction lua)
         {
             if (null != ui)
             {
@@ -2918,16 +2918,16 @@ namespace GameFramework
         public bool SetScrollSelectorData(int index, List<UIItemData> data)
         {
             ScrollSelector ui = GetCompByIndex<ScrollSelector>(index);
-            return setScrollSelectorData(ui, data);
+            return _setScrollSelectorData(ui, data);
         }
 
         public bool SetScrollSelectorData(string cName, List<UIItemData> data)
         {
             ScrollSelector ui = GetCompByName<ScrollSelector>(cName);
-            return setScrollSelectorData(ui, data);
+            return _setScrollSelectorData(ui, data);
         }
 
-        private static bool setScrollSelectorData(ScrollSelector ui, List<UIItemData> data)
+        private static bool _setScrollSelectorData(ScrollSelector ui, List<UIItemData> data)
         {
             if (null != ui)
             {
@@ -2940,16 +2940,16 @@ namespace GameFramework
         public bool SetScrollSelectorData(int index, LuaTable luaTable)
         {
             ScrollSelector ui = GetCompByIndex<ScrollSelector>(index);
-            return setScrollSelectorData(ui, luaTable);
+            return _setScrollSelectorData(ui, luaTable);
         }
 
         public bool SetScrollSelectorData(string cName, LuaTable luaTable)
         {
             ScrollSelector ui = GetCompByName<ScrollSelector>(cName);
-            return setScrollSelectorData(ui, luaTable);
+            return _setScrollSelectorData(ui, luaTable);
         }
 
-        private static bool setScrollSelectorData(ScrollSelector ui, LuaTable luaTable)
+        private static bool _setScrollSelectorData(ScrollSelector ui, LuaTable luaTable)
         {
             if (null != ui)
             {
@@ -2962,16 +2962,16 @@ namespace GameFramework
         public bool SetScrollSelectorCurIndex(int uiIndex, int index)
         {
             ScrollSelector ui = GetCompByIndex<ScrollSelector>(uiIndex);
-            return setScrollSelectorCurIndex(ui, index);
+            return _setScrollSelectorCurIndex(ui, index);
         }
 
         public bool SetScrollSelectorCurIndex(string cName, int index)
         {
             ScrollSelector ui = GetCompByName<ScrollSelector>(cName);
-            return setScrollSelectorCurIndex(ui, index);
+            return _setScrollSelectorCurIndex(ui, index);
         }
 
-        private static bool setScrollSelectorCurIndex(ScrollSelector ui, int index)
+        private static bool _setScrollSelectorCurIndex(ScrollSelector ui, int index)
         {
             if (null != ui)
             {
@@ -2984,16 +2984,16 @@ namespace GameFramework
         public bool SetScrollSelectorOnSelect(int index, LuaFunction call)
         {
             ScrollSelector ui = GetCompByIndex<ScrollSelector>(index);
-            return setScrollSelectorOnSelect(ui, call);
+            return _setScrollSelectorOnSelect(ui, call);
         }
 
         public bool SetScrollSelectorOnSelect(string cName, LuaFunction call)
         {
             ScrollSelector ui = GetCompByName<ScrollSelector>(cName);
-            return setScrollSelectorOnSelect(ui, call);
+            return _setScrollSelectorOnSelect(ui, call);
         }
 
-        private static bool setScrollSelectorOnSelect(ScrollSelector ui, LuaFunction call)
+        private static bool _setScrollSelectorOnSelect(ScrollSelector ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -3008,16 +3008,16 @@ namespace GameFramework
         public bool SetSelectorTogglesCanTouch(int index, bool enabled)
         {
             SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
-            return setSelectorTogglesCanTouch(ui, enabled);
+            return _setSelectorTogglesCanTouch(ui, enabled);
         }
 
         public bool SetSelectorTogglesCanTouch(string cName, bool enabled)
         {
             SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
-            return setSelectorTogglesCanTouch(ui, enabled);
+            return _setSelectorTogglesCanTouch(ui, enabled);
         }
 
-        private static bool setSelectorTogglesCanTouch(SelectorToggles ui, bool enabled)
+        private static bool _setSelectorTogglesCanTouch(SelectorToggles ui, bool enabled)
         {
             if (null != ui)
             {
@@ -3030,16 +3030,16 @@ namespace GameFramework
         public bool SetSelectorTogglesCallOnSet(int index, bool enabled)
         {
             SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
-            return setSelectorTogglesCallOnSet(ui, enabled);
+            return _setSelectorTogglesCallOnSet(ui, enabled);
         }
 
         public bool SetSelectorTogglesCallOnSet(string cName, bool enabled)
         {
             SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
-            return setSelectorTogglesCallOnSet(ui, enabled);
+            return _setSelectorTogglesCallOnSet(ui, enabled);
         }
 
-        private static bool setSelectorTogglesCallOnSet(SelectorToggles ui, bool enabled)
+        private static bool _setSelectorTogglesCallOnSet(SelectorToggles ui, bool enabled)
         {
             if (null != ui)
             {
@@ -3052,16 +3052,16 @@ namespace GameFramework
         public bool SetSelectorTogglesNum(int index, int num)
         {
             SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
-            return setSelectorTogglesNum(ui, num);
+            return _setSelectorTogglesNum(ui, num);
         }
 
         public bool SetSelectorTogglesNum(string cName, int num)
         {
             SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
-            return setSelectorTogglesNum(ui, num);
+            return _setSelectorTogglesNum(ui, num);
         }
 
-        private static bool setSelectorTogglesNum(SelectorToggles ui, int num)
+        private static bool _setSelectorTogglesNum(SelectorToggles ui, int num)
         {
             if (null != ui)
             {
@@ -3074,16 +3074,16 @@ namespace GameFramework
         public bool SetSelectorTogglesData(int index, List<UIItemData> data)
         {
             SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
-            return setSelectorTogglesData(ui, data);
+            return _setSelectorTogglesData(ui, data);
         }
 
         public bool SetSelectorTogglesData(string cName, List<UIItemData> data)
         {
             SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
-            return setSelectorTogglesData(ui, data);
+            return _setSelectorTogglesData(ui, data);
         }
 
-        private static bool setSelectorTogglesData(SelectorToggles ui, List<UIItemData> data)
+        private static bool _setSelectorTogglesData(SelectorToggles ui, List<UIItemData> data)
         {
             if (null != ui)
             {
@@ -3096,16 +3096,16 @@ namespace GameFramework
         public bool SetSelectorTogglesData(int index, LuaTable luaTable)
         {
             SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
-            return setSelectorTogglesData(ui, luaTable);
+            return _setSelectorTogglesData(ui, luaTable);
         }
 
         public bool SetSelectorTogglesData(string cName, LuaTable luaTable)
         {
             SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
-            return setSelectorTogglesData(ui, luaTable);
+            return _setSelectorTogglesData(ui, luaTable);
         }
 
-        private static bool setSelectorTogglesData(SelectorToggles ui, LuaTable luaTable)
+        private static bool _setSelectorTogglesData(SelectorToggles ui, LuaTable luaTable)
         {
             if (null != ui)
             {
@@ -3119,16 +3119,16 @@ namespace GameFramework
         public bool SetSelectorTogglesIndex(int index, int curIndex)
         {
             SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
-            return setSelectorTogglesIndex(ui, curIndex);
+            return _setSelectorTogglesIndex(ui, curIndex);
         }
 
         public bool SetSelectorTogglesIndex(string cName, int curIndex)
         {
             SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
-            return setSelectorTogglesIndex(ui, curIndex);
+            return _setSelectorTogglesIndex(ui, curIndex);
         }
 
-        private static bool setSelectorTogglesIndex(SelectorToggles ui, int curIndex)
+        private static bool _setSelectorTogglesIndex(SelectorToggles ui, int curIndex)
         {
             if (null != ui)
             {
@@ -3141,16 +3141,16 @@ namespace GameFramework
         public bool SetSelectorTogglesOnChange(int index, UnityAction<int> action)
         {
             SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
-            return setSelectorTogglesOnChange(ui, action);
+            return _setSelectorTogglesOnChange(ui, action);
         }
 
         public bool SetSelectorTogglesOnChange(string cName, UnityAction<int> action)
         {
             SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
-            return setSelectorTogglesOnChange(ui, action);
+            return _setSelectorTogglesOnChange(ui, action);
         }
 
-        private static bool setSelectorTogglesOnChange(SelectorToggles ui, UnityAction<int> action)
+        private static bool _setSelectorTogglesOnChange(SelectorToggles ui, UnityAction<int> action)
         {
             if (null != ui)
             {
@@ -3163,16 +3163,16 @@ namespace GameFramework
         public bool SetSelectorTogglesOnChange(int index, LuaFunction function)
         {
             SelectorToggles ui = GetCompByIndex<SelectorToggles>(index);
-            return setSelectorTogglesOnChange(ui, function);
+            return _setSelectorTogglesOnChange(ui, function);
         }
 
         public bool SetSelectorTogglesOnChange(string cName, LuaFunction function)
         {
             SelectorToggles ui = GetCompByName<SelectorToggles>(cName);
-            return setSelectorTogglesOnChange(ui, function);
+            return _setSelectorTogglesOnChange(ui, function);
         }
 
-        private static bool setSelectorTogglesOnChange(SelectorToggles ui, LuaFunction function)
+        private static bool _setSelectorTogglesOnChange(SelectorToggles ui, LuaFunction function)
         {
             if (null != ui)
             {
@@ -3188,16 +3188,16 @@ namespace GameFramework
         public float GetSliderValue(int index)
         {
             Slider ui = GetCompByIndex<Slider>(index);
-            return getSliderValue(ui);
+            return _getSliderValue(ui);
         }
 
         public float GetSliderValue(string cName)
         {
             Slider ui = GetCompByName<Slider>(cName);
-            return getSliderValue(ui);
+            return _getSliderValue(ui);
         }
 
-        private static float getSliderValue(Slider ui)
+        private static float _getSliderValue(Slider ui)
         {
             if (null != ui)
             {
@@ -3209,37 +3209,37 @@ namespace GameFramework
         public bool SetSliderValue(int index, float value)
         {
             Slider slider = GetCompByIndex<Slider>(index);
-            return setSliderValue(slider, value);
+            return _setSliderValue(slider, value);
         }
 
         public bool SetSliderValue(string cName, float value)
         {
             Slider slider = GetCompByName<Slider>(cName);
-            return setSliderValue(slider, value);
+            return _setSliderValue(slider, value);
         }
 
         public bool AddOnSliderValueChanged(int index, UnityAction<float> call)
         {
             Slider slider = GetCompByIndex<Slider>(index);
-            return addOnSliderValueChanged(slider, call);
+            return _addOnSliderValueChanged(slider, call);
         }
 
         public bool AddOnSliderValueChanged(string cName, UnityAction<float> call)
         {
             Slider slider = GetCompByName<Slider>(cName);
-            return addOnSliderValueChanged(slider, call);
+            return _addOnSliderValueChanged(slider, call);
         }
 
         public bool AddOnSliderValueChanged(int index, LuaFunction call)
         {
             Slider slider = GetCompByIndex<Slider>(index);
-            return addOnSliderValueChanged(slider, call);
+            return _addOnSliderValueChanged(slider, call);
         }
 
         public bool AddOnSliderValueChanged(string cName, LuaFunction call)
         {
             Slider slider = GetCompByName<Slider>(cName);
-            return addOnSliderValueChanged(slider, call);
+            return _addOnSliderValueChanged(slider, call);
         }
         #endregion Slider
 
@@ -3247,16 +3247,16 @@ namespace GameFramework
         public bool GetToggleIsOn(int index)
         {
             Toggle ui = GetCompByIndex<Toggle>(index);
-            return getToggleIsOn(ui);
+            return _getToggleIsOn(ui);
         }
 
         public bool GetToggleIsOn(string cName)
         {
             Toggle ui = GetCompByName<Toggle>(cName);
-            return getToggleIsOn(ui);
+            return _getToggleIsOn(ui);
         }
 
-        private static bool getToggleIsOn(Toggle ui)
+        private static bool _getToggleIsOn(Toggle ui)
         {
             if (null != ui)
             {
@@ -3268,16 +3268,16 @@ namespace GameFramework
         public bool SetToggleIsOn(int index, bool isOn)
         {
             Toggle ui = GetCompByIndex<Toggle>(index);
-            return setToggleIsOn(ui, isOn);
+            return _setToggleIsOn(ui, isOn);
         }
 
         public bool SetToggleIsOn(string cName, bool isOn)
         {
             Toggle ui = GetCompByName<Toggle>(cName);
-            return setToggleIsOn(ui, isOn);
+            return _setToggleIsOn(ui, isOn);
         }
 
-        private static bool setToggleIsOn(Toggle ui, bool isOn)
+        private static bool _setToggleIsOn(Toggle ui, bool isOn)
         {
             if (null != ui)
             {
@@ -3290,16 +3290,16 @@ namespace GameFramework
         public bool AddToggleOnValueChanged(int index, UnityAction<bool> call)
         {
             Toggle ui = GetCompByIndex<Toggle>(index);
-            return addToggleOnValueChanged(ui, call);
+            return _addToggleOnValueChanged(ui, call);
         }
 
         public bool AddToggleOnValueChanged(string cName, UnityAction<bool> call)
         {
             Toggle ui = GetCompByName<Toggle>(cName);
-            return addToggleOnValueChanged(ui, call);
+            return _addToggleOnValueChanged(ui, call);
         }
 
-        private static bool addToggleOnValueChanged(Toggle ui, UnityAction<bool> call)
+        private static bool _addToggleOnValueChanged(Toggle ui, UnityAction<bool> call)
         {
             if (null != ui)
             {
@@ -3312,16 +3312,16 @@ namespace GameFramework
         public bool AddToggleOnValueChanged(int index, LuaFunction call)
         {
             Toggle ui = GetCompByIndex<Toggle>(index);
-            return addToggleOnValueChanged(ui, call);
+            return _addToggleOnValueChanged(ui, call);
         }
 
         public bool AddToggleOnValueChanged(string cName, LuaFunction call)
         {
             Toggle ui = GetCompByName<Toggle>(cName);
-            return addToggleOnValueChanged(ui, call);
+            return _addToggleOnValueChanged(ui, call);
         }
 
-        private static bool addToggleOnValueChanged(Toggle ui, LuaFunction call)
+        private static bool _addToggleOnValueChanged(Toggle ui, LuaFunction call)
         {
             if (null != ui)
             {
@@ -3434,16 +3434,16 @@ namespace GameFramework
         public float GetScrollbarValue(int index)
         {
             Scrollbar ui = GetCompByIndex<Scrollbar>(index);
-            return getScrollbarValue(ui);
+            return _getScrollbarValue(ui);
         }
 
         public float GetScrollbarValue(string cName)
         {
             Scrollbar ui = GetCompByName<Scrollbar>(cName);
-            return getScrollbarValue(ui);
+            return _getScrollbarValue(ui);
         }
 
-        private static float getScrollbarValue(Scrollbar ui)
+        private static float _getScrollbarValue(Scrollbar ui)
         {
             if (null != ui)
             {
@@ -3455,52 +3455,52 @@ namespace GameFramework
         public bool SetScrollbarValue(int index, float value)
         {
             Scrollbar slider = GetCompByIndex<Scrollbar>(index);
-            return setScrollbarValue(slider, value);
+            return _setScrollbarValue(slider, value);
         }
 
         public bool SetScrollbarValue(string cName, float value)
         {
             Scrollbar slider = GetCompByName<Scrollbar>(cName);
-            return setScrollbarValue(slider, value);
+            return _setScrollbarValue(slider, value);
         }
 
         public bool AddOnScrollbarValueChanged(int index, UnityAction<float> call)
         {
             Scrollbar slider = GetCompByIndex<Scrollbar>(index);
-            return addOnScrollbarValueChanged(slider, call);
+            return _addOnScrollbarValueChanged(slider, call);
         }
 
         public bool AddOnScrollbarValueChanged(string cName, UnityAction<float> call)
         {
             Scrollbar slider = GetCompByName<Scrollbar>(cName);
-            return addOnScrollbarValueChanged(slider, call);
+            return _addOnScrollbarValueChanged(slider, call);
         }
 
         public bool AddOnScrollbarValueChanged(int index, LuaFunction call)
         {
             Scrollbar slider = GetCompByIndex<Scrollbar>(index);
-            return addOnScrollbarValueChanged(slider, call);
+            return _addOnScrollbarValueChanged(slider, call);
         }
 
         public bool AddOnScrollbarValueChanged(string cName, LuaFunction call)
         {
             Scrollbar slider = GetCompByName<Scrollbar>(cName);
-            return addOnScrollbarValueChanged(slider, call);
+            return _addOnScrollbarValueChanged(slider, call);
         }
 
         public bool SetScrollbarSize(int index, float size)
         {
             Scrollbar ui = GetCompByIndex<Scrollbar>(index);
-            return setScrollbarSize(ui, size);
+            return _setScrollbarSize(ui, size);
         }
 
         public bool SetScrollbarSize(string cName, float size)
         {
             Scrollbar ui = GetCompByName<Scrollbar>(cName);
-            return setScrollbarSize(ui, size);
+            return _setScrollbarSize(ui, size);
         }
 
-        private static bool setScrollbarSize(Scrollbar ui, float size)
+        private static bool _setScrollbarSize(Scrollbar ui, float size)
         {
             if (null != ui)
             {
@@ -3513,16 +3513,16 @@ namespace GameFramework
         public bool SetScrollbarStepNumber(int index, int num)
         {
             Scrollbar ui = GetCompByIndex<Scrollbar>(index);
-            return setScrollbarStepNumber(ui, num);
+            return _setScrollbarStepNumber(ui, num);
         }
 
         public bool SetScrollbarStepNumber(string cName, int num)
         {
             Scrollbar ui = GetCompByName<Scrollbar>(cName);
-            return setScrollbarStepNumber(ui, num);
+            return _setScrollbarStepNumber(ui, num);
         }
 
-        private static bool setScrollbarStepNumber(Scrollbar ui, int num)
+        private static bool _setScrollbarStepNumber(Scrollbar ui, int num)
         {
             if (null != ui)
             {
@@ -3550,7 +3550,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool setUIActive(UIBehaviour ui, bool value)
+        private static bool _setUIActive(UIBehaviour ui, bool value)
         {
             if (null != ui)
             {
@@ -3560,7 +3560,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool setUISelectable(Selectable ui, bool value)
+        private static bool _setUISelectable(Selectable ui, bool value)
         {
             if (null != ui)
             {
@@ -3570,7 +3570,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool setUIEnable(UIBehaviour ui, bool value)
+        private static bool _setUIEnable(UIBehaviour ui, bool value)
         {
             if (null != ui)
             {
@@ -3580,7 +3580,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool setTextStr(Text text, string content)
+        private static bool _setTextStr(Text text, string content)
         {
             if (null != text)
             {
@@ -3601,7 +3601,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addBtnClick(Button btn, UnityAction<string> call)
+        private static bool _addBtnClick(Button btn, UnityAction<string> call)
         {
             if (null != btn)
             {
@@ -3612,7 +3612,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addBtnClick(Button btn, LuaFunction call)
+        private static bool _addBtnClick(Button btn, LuaFunction call)
         {
             if (null != btn)
             {
@@ -3630,7 +3630,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool setSliderValue(Slider slider, float value)
+        private static bool _setSliderValue(Slider slider, float value)
         {
             if (null != slider)
             {
@@ -3640,7 +3640,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addOnSliderValueChanged(Slider slider, UnityAction<float> call)
+        private static bool _addOnSliderValueChanged(Slider slider, UnityAction<float> call)
         {
             if (null != slider)
             {
@@ -3649,7 +3649,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addOnSliderValueChanged(Slider slider, LuaFunction call)
+        private static bool _addOnSliderValueChanged(Slider slider, LuaFunction call)
         {
             if (null != slider)
             {
@@ -3665,7 +3665,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool setScrollbarValue(Scrollbar slider, float value)
+        private static bool _setScrollbarValue(Scrollbar slider, float value)
         {
             if (null != slider)
             {
@@ -3675,7 +3675,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addOnScrollbarValueChanged(Scrollbar slider, UnityAction<float> call)
+        private static bool _addOnScrollbarValueChanged(Scrollbar slider, UnityAction<float> call)
         {
             if (null != slider)
             {
@@ -3684,7 +3684,7 @@ namespace GameFramework
             return false;
         }
 
-        private static bool addOnScrollbarValueChanged(Scrollbar slider, LuaFunction call)
+        private static bool _addOnScrollbarValueChanged(Scrollbar slider, LuaFunction call)
         {
             if (null != slider)
             {
@@ -3936,7 +3936,7 @@ namespace GameFramework
         public bool \1\2\3(int index, \4 \5)
         {
             \2 ui = GetCompByIndex<\2>(index);
-            return \6\2\3(ui, \5);
+            return _\6\2\3(ui, \5);
         }
 
         /// <summary>
@@ -3946,11 +3946,11 @@ namespace GameFramework
         public bool \1\2\3(string cName, \4 \5)
         {
             \2 ui = GetCompByName<\2>(cName);
-            return \6\2\3(ui, \5);
+            return _\6\2\3(ui, \5);
         }
 
         // \8
-        private static bool \6\2\3(\2 ui, \4 \5)
+        private static bool _\6\2\3(\2 ui, \4 \5)
         {
             if(null != ui)
             {

@@ -29,13 +29,13 @@ namespace GameFramework
                 return;
             }
             //修改 PBXProject
-            ModifyPBXProject(pathToBuiltProject);
+            _modifyPBXProject(pathToBuiltProject);
             //修改 Plist
-            ModifyPlist(pathToBuiltProject);
+            _modifyPlist(pathToBuiltProject);
             Debug.Log("Xcode修改完毕");
         }
 
-        private static void ModifyPBXProject(string path)
+        private static void _modifyPBXProject(string path)
         {
             string projPath = PBXProject.GetPBXProjectPath(path);
             PBXProject proj = new PBXProject();
@@ -82,7 +82,7 @@ namespace GameFramework
             File.WriteAllText(projPath, proj.WriteToString());
         }
 
-        private static void ModifyPlist(string path)
+        private static void _modifyPlist(string path)
         {
             //Info.plist
             string plistPath = path + "/Info.plist";

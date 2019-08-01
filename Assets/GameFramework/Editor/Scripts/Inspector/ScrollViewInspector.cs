@@ -29,7 +29,7 @@ namespace GameFramework
                     if (!Equals(value, mTarget.ItemPrefab))
                     {
                         mTarget.ItemPrefab = value;
-                        resetItemSize();
+                        _resetItemSize();
                     }
                 }
             }
@@ -46,10 +46,10 @@ namespace GameFramework
             }
             if (null != mTarget.ItemPrefab)
             {
-                resetItemSize();
+                _resetItemSize();
             }
 
-            //resetScrollType();
+            //_resetScrollType();
             mScrollType = mTarget.ScrollType;
 
             //super 属性折叠相关
@@ -99,7 +99,7 @@ namespace GameFramework
             mTarget.ScrollType = (ScrollViewType)EditorGUILayout.EnumPopup("ScrollType", mTarget.ScrollType);
             if (mScrollType != mTarget.ScrollType)
             {
-                resetScrollType();
+                _resetScrollType();
                 mScrollType = mTarget.ScrollType;
             }
             GUILayout.Space(10);
@@ -158,7 +158,7 @@ namespace GameFramework
         /// <summary>
         /// 重新设置ScrollView的ItemSize
         /// </summary>
-        private void resetItemSize()
+        private void _resetItemSize()
         {
             GameObject obj = Instantiate(mTarget.ItemPrefab);
             RectTransform rectTransform = obj.GetComponent<RectTransform>();
@@ -187,7 +187,7 @@ namespace GameFramework
         /// <summary>
         /// 根据ScrollType设置Viewport和Content的RectTransform
         /// </summary>
-        private void resetScrollType()
+        private void _resetScrollType()
         {
             bool isVertical = mTarget.ScrollType == ScrollViewType.Vertical;
 

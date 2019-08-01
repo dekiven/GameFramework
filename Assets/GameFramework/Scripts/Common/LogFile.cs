@@ -34,7 +34,7 @@ namespace GameFramework
                 mPath = filePath;
                 mMinLevel = minLevel;
 
-                Application.logMessageReceived += handleLogCallback;
+                Application.logMessageReceived += _handleLogCallback;
             }
         }
 
@@ -48,7 +48,7 @@ namespace GameFramework
                     mSWriter = null;
                     mPath = null;
                     mMinLevel = LogLevel.L_Log;
-                    Application.logMessageReceived -= handleLogCallback;
+                    Application.logMessageReceived -= _handleLogCallback;
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace GameFramework
             {
                 lock (locker)
                 {
-                    checkeHasWriter();
+                    _checkeHasWriter();
                 }
             }
             if (null != mSWriter)
@@ -144,7 +144,7 @@ namespace GameFramework
             }
         }
 
-        private static void checkeHasWriter()
+        private static void _checkeHasWriter()
         {
             if(string.IsNullOrEmpty(mPath))
             {
@@ -178,7 +178,7 @@ namespace GameFramework
             }
         }
 
-        private static void handleLogCallback(string condition, string stackTrace, LogType type)
+        private static void _handleLogCallback(string condition, string stackTrace, LogType type)
         {
             switch(type)
             {
