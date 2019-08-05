@@ -112,12 +112,13 @@ namespace GameFramework
         void InitLuaPath()
         {
             //仅在不使用assetsbundle的时候才需要配置lua searchpath
-            if (!GameConfig.useAsb)
+            if (!GameConfig.UseAsb)
             {
                 string rootPath = Tools.PathCombine(Application.dataPath, "ToLua");
                 lua.AddSearchPath(rootPath + "/Lua");
                 lua.AddSearchPath(rootPath + "/ToLua/Lua");
                 lua.AddSearchPath(Tools.GetLuaSrcPath());
+                lua.AddSearchPath(Tools.GetGFLuaPath());
             }
         }
 

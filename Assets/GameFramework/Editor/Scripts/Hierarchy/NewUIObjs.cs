@@ -23,6 +23,8 @@ namespace GameFramework
             obj.name = "Sv";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
             _placeUIElementRoot(obj, menuCommand);
+
+            EditorTools.RenameCurHierachyObj();
         }
 
         [MenuItem("GameObject/UI/GF/ScrollItem", false, 1502)]
@@ -33,6 +35,8 @@ namespace GameFramework
             obj.name = "Si";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
             _placeUIElementRoot(obj, menuCommand);
+
+            EditorTools.RenameCurHierachyObj();
         }
 
         [MenuItem("GameObject/UI/GF/ScrollSelector", false, 1503)]
@@ -43,16 +47,20 @@ namespace GameFramework
             obj.name = "Ss";
             //obj.transform.SetParent(Selection.activeGameObject.transform, false);
             _placeUIElementRoot(obj, menuCommand);
+
+            EditorTools.RenameCurHierachyObj();
         }
 
         [MenuItem("GameObject/UI/GF/SelectorToggles", false, 1504)]
         public static void CreateASelectorToggles(MenuCommand menuCommand)
         {
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/SelectorToggles.prefab");
-                GameObject obj = Object.Instantiate(prefab);
-                obj.name = "St";
-                //obj.transform.SetParent(Selection.activeGameObject.transform, false);
-                _placeUIElementRoot(obj, menuCommand);
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameFramework/Editor/Prefabs/UI/SelectorToggles.prefab");
+            GameObject obj = Object.Instantiate(prefab);
+            obj.name = "St";
+            //obj.transform.SetParent(Selection.activeGameObject.transform, false);
+            _placeUIElementRoot(obj, menuCommand);
+
+            EditorTools.RenameCurHierachyObj();
         }
 
         [MenuItem("GameObject/UI/GF/UIView", false, 1600)]
@@ -65,6 +73,8 @@ namespace GameFramework
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = Vector2.zero;
             rect.localPosition = new Vector3(0, 0, 1000);
+
+            EditorTools.RenameCurHierachyObj();
         }
 
         [MenuItem("GameObject/UI/GF/UIWorld", false, 1601)]
@@ -76,6 +86,8 @@ namespace GameFramework
             RectTransform rect = gameObject.GetComponent<RectTransform>();
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = Vector2.zero;
+
+            EditorTools.RenameCurHierachyObj();
         }
 
         #region 私有

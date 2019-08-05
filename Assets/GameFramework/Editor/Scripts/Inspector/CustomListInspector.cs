@@ -9,10 +9,10 @@ namespace GameFramework
     public enum CustomListOption
     {
         None = 0,
-        ShowSize = 1,
-        ShowLabel = 2,
-        _showElementLabels = 4,
-        _showBtns = 8,
+        ShowSize = 0x1,
+        ShowLabel = 0x2,
+        _showElementLabels = 0x4,
+        _showBtns = 0x8,
         Default = ShowSize | ShowLabel | _showElementLabels | _showBtns,
         NoElementLabels = ShowSize | ShowLabel,
         NoBtns = ShowSize | ShowLabel | _showElementLabels,
@@ -119,10 +119,9 @@ namespace GameFramework
                 }
             }
 
-            if (listProperty.arraySize == 0 && GUILayout.Button(new GUIContent("+", "添加一个元素")))
+            if (GUILayout.Button(new GUIContent("+", "添加一个元素")))
             {
-                //listProperty.arraySize += 1;
-                //Debug.Log("listProperty.arraySize:" + listProperty.arraySize);
+                GUILayout.Space(2);
                 _onAdd(listProperty, -1);
             }
         }
@@ -159,10 +158,11 @@ namespace GameFramework
 
         private static void _onAdd(SerializedProperty listProperty, int index)
         {
-            //-1 == index是列表数量为0时，创建第一个元素
+            //-1 == index 列表数量为0时，创建第一个元素 列表数量不为0，在最后插入一个元素
             if (-1 == index)
             {
-                listProperty.InsertArrayElementAtIndex(0);
+                index = listProperty.arraySize - 1;
+                listProperty.InsertArrayElementAtIndex(index >= 0 ? index : 0);
             }
             else
             {

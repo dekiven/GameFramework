@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,9 +17,12 @@ namespace GameFramework
         SerializedProperty mRTProperty;
         bool mIsSelecting = false;
         int mSelectingIndex = -1;
+        static Dictionary<string, string> sTypeDict;
 
         void OnEnable()
         {
+            _loadTypeDict();
+
             mTarget = target as UIHandler;
             mListProperty = serializedObject.FindProperty("UIArray");
             mSubProperty = serializedObject.FindProperty("SubHandlers");
@@ -55,9 +60,25 @@ namespace GameFramework
                 mIsSelecting = false;
                 _setPickerObj(true);
             }
-            if (GUILayout.Button(new GUIContent("拷贝Index信息到剪贴板")))
+
+            GUILayout.Space(10);
+            if (GUILayout.Button(new GUIContent("拷贝Idx到剪贴板(Lua)")))
             {
-                _copyIndex2ClipboardLua();
+                _copyIndex2Clipboard(true);
+            }
+
+            GUILayout.Space(5);
+            if (GUILayout.Button(new GUIContent("拷贝Idx到剪贴板(C#)")))
+            {
+                _copyIndex2Clipboard(false);
+            }
+        }
+
+        private void _loadTypeDict()
+        {
+            if(null == sTypeDict)
+            {
+                sTypeDict = new Dictionary<string, string>();
             }
         }
 
@@ -139,38 +160,86 @@ namespace GameFramework
             mSelectingIndex = index + 1;
         }
 
-        private void _copyIndex2ClipboardLua()
+        private void _copyIndex2Clipboard(bool isLua)
         {
             string s = string.Empty;
-            s = s + _getLitsInfoLua(mTarget.UIArray, "uiIdx", "UIArray index");
-            s = s + _getLitsInfoLua(mTarget.SubHandlers, "subIdx", "SubHandlers index");
-            s = s + _getLitsInfoLua(mTarget.RTArray, "rtIdx", "RTArray index");
+            s = s + _getLitsInfo(mTarget.UIArray, "uiIdx", "UIArray index", isLua);
+            s = s + _getLitsInfo(mTarget.SubHandlers, "subIdx", "SubHandlers index", isLua);
+            s = s + _getLitsInfo(mTarget.RTArray, "rtIdx", "RTArray index", isLua);
             GUIUtility.systemCopyBuffer = s;
         }
 
-        private string _getLitsInfoLua<T>(List<T> list, string tname, string notes) where T : Component
+
+        private string _getLitsInfo<T>(List<T> list, string tname, string notes, bool isLua) where T : Component
         {
-            string s = string.Empty;
+            StringBuilder s = new StringBuilder();
             if (null != list && list.Count > 0)
             {
-                s = "-- " + notes + "\nlocal " + tname + " = \n{";
+                if(isLua)
+                {
+                    s.Append("-- " + notes + "\nlocal " + tname + " = \n{");
+                }
+                else
+                {
+                    s.Append("    #region " + notes);
+                }
                 for (int i = 0; i < list.Count; i++)
                 {
                     T t = list[i];
                     if (null != t)
                     {
-                        s = s + _getComponentInfoLua(t, i);
+                        s.Append(_getComponentInfo(t, i, isLua));
                     }
                 }
-                s = s + "\n}\n\n";
+                if (isLua)
+                {
+                    s.Append("\n}\n\n");
+                }
+                else
+                {
+                    s.Append("\n    #endregion "+ notes + "\n\n");
+                }
             }
-            return s;
+            return s.ToString();
         }
 
-        private string _getComponentInfoLua(Component com, int index)
+        private string _getComponentInfo(Component com, int index, bool isLua)
         {
+            string name = _getCompName(com, isLua);
             string transName = Tools.GetTransformName(com.transform, null == mTarget.RootTransform ? mTarget.transform : mTarget.RootTransform);
-            return "\n\t" + com.name + " = " + index + ",  -- " + transName + " (" + com.GetType() + ")";
+            if(isLua)
+            {
+               return string.Format("\n    {0, -24} = {1, -4},     -- {2} ({3})", name, index, transName, com.GetType());
+            }
+            else
+            {
+               return string.Format("\n    {0, -24} = {1, -4};     // {2} ({3})", name, index, transName, com.GetType());
+            }
+        }
+
+        private string _getCompName(Component com, bool isLua)
+        {
+            string name = com.GetType().ToString();
+            string tName = name;
+            if(!sTypeDict.TryGetValue(tName, out tName))
+            {
+                var arr = name.Split('.');
+                tName = arr[arr.Length - 1];
+            }
+
+            name = com.name;
+            if (!name.StartsWith(tName, StringComparison.OrdinalIgnoreCase))
+            {
+                name = tName + name;
+            }
+            if (isLua)
+            {
+                return name;
+            }
+            else
+            {
+                return "idx" + name;
+            }
         }
     }
 }

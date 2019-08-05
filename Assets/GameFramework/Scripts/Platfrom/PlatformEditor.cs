@@ -60,6 +60,11 @@ namespace GameFramework
             }
         }
 
+        /// <summary>
+        /// 延时启动，这个时间不精确
+        /// </summary>
+        /// <param name="sec"></param>
+        /// <param name="call"></param>
         public static void Delay(float sec, Action call)
         {
             StartCoroutine(_delay(sec, call));
@@ -67,12 +72,20 @@ namespace GameFramework
 
         static IEnumerator _delay(float sec, Action call)
         {
-            yield return new WaitForSeconds(sec);
-            if(null != call)
+            var start = EditorApplication.timeSinceStartup;
+
+            yield return null;
+
+            while(start+sec > EditorApplication.timeSinceStartup)
+            {
+               yield return null;
+            }
+            if (null != call)
             {
                 call();
             }
         }
+
         #endregion Editor 协程相关
     }
 #else

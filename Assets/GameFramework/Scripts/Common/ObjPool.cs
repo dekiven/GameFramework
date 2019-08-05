@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameFramework
 {
-    public class ObjPool<T> : IDisposable where T : class 
+    public class ObjPool<T> : DisposableObj where T : class 
     {
         #region delegates
         public delegate bool OnGetDelegate(ref T obj);
@@ -63,6 +63,7 @@ namespace GameFramework
                 {
                     return OnRecoverCallback(obj);
                 }
+                else
                 {
                     return true;
                 }
@@ -70,25 +71,33 @@ namespace GameFramework
             return false;
         }
 
-        public void Dispose()
+        public int Count { get { return mQueue.Count; } }
+
+        #region DisposableObj 虚函数实现
+        protected override void _disposUnmananged()
         {
-            if(null != OnDisposeCallback)
+            
+        }
+
+        protected override void _disposMananged()
+        {
+            if (null != OnDisposeCallback)
             {
                 for (int i = 0; i < Count; ++i)
                 {
                     T obj = mQueue.Dequeue();
                     OnDisposeCallback(ref obj);
                 }
-            }else
+            }
+            else
             {
-                mQueue.Clear();    
+                mQueue.Clear();
             }
 
             mQueue = null;
             OnGetCallback = null;
             OnRecoverCallback = null;
         }
-
-        public int Count { get { return mQueue.Count; } }
+        #endregion DisposableObj 虚函数实现
     }
 }

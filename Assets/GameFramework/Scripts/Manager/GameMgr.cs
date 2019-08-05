@@ -15,7 +15,7 @@ namespace GameFramework
         ResManager mResMgr;
 
         //是否开启线程处理EventManager线程上的消息
-        private bool progressThreadEvent = GameConfig.progressThreadEvent;
+        private bool progressThreadEvent = GameConfig.UseThreadEvent;
         private LuaFunction mLuaNotifyFunc;
         //是否在游戏中（GameManager 单例整个游戏生命周期都存在）
         private bool isRunning;

@@ -42,7 +42,7 @@ namespace GameFramework
         public void Initialize(Action initOK, string manifestName=GameConfig.STR_ASB_MANIFIST)
         {
             //mResPath = Tools.GetResPath();
-            if (GameConfig.useAsb)
+            if (GameConfig.UseAsb)
             {
                 ResVersion = GameConfig.GetInt(GameDefine.STR_CONF_KEY_RES_VER_I, 0);
                 LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate (UObj[] objs)
@@ -73,7 +73,7 @@ namespace GameFramework
         public void LoadRes<T>(string asbPath, string resName, Action<UObj> action = null, LuaFunction luaFunc = null) where T : UObj
         {
             //#if UNITY_EDITOR
-            if (!GameConfig.useAsb)
+            if (!GameConfig.UseAsb)
             {
                 _loadRes<T>(
                     asbPath
@@ -145,7 +145,7 @@ namespace GameFramework
         /// <param name="action"></param>
         public void LoadRes<T>(string asbName, string[] names, Action<UObj[]> action = null, LuaFunction luaFunc = null) where T : UObj
         {
-            if (!GameConfig.useAsb)
+            if (!GameConfig.UseAsb)
             {
                 _loadRes<T>(asbName, names, action, luaFunc);
             }
@@ -174,7 +174,7 @@ namespace GameFramework
             string scenePath = Tools.GetResInAssetsName(asbName, sceneName);
             LoadSceneMode mode = add ? LoadSceneMode.Additive : LoadSceneMode.Single;
 #if UNITY_EDITOR
-            if (!GameConfig.useAsb)
+            if (!GameConfig.UseAsb)
             {
                 //Tools.RelativeTo(Tools.GetResPath(Tools.PathCombine(asbName, sceneName)), Application.dataPath, true);
                 //Debug.LogWarning(scenePath);
@@ -239,7 +239,7 @@ namespace GameFramework
         /// <param name="isThorough"></param>
         public void UnloadAssetBundle(string abName, bool isThorough = false, int count=1)
         {
-            if(GameConfig.useAsb)
+            if(GameConfig.UseAsb)
             {
                 abName = Tools.GetAsbName(abName);
                 //Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);

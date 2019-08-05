@@ -190,7 +190,7 @@ namespace GameFramework
         /// </summary>
         private void _checkLocalRes()
         {
-            if (GameConfig.useAsb)
+            if (GameConfig.UseAsb)
             {
                 string sUrl = _confUrlStream();
                 string wUrl = _confUrlWrite();
@@ -326,7 +326,7 @@ namespace GameFramework
         {
             if (null != callback)
             {
-                if (GameConfig.useAsb)
+                if (GameConfig.UseAsb)
                 {
                     string sUrl = _confUrl(url);
                     string pUrl = _confUrlWrite();

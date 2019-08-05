@@ -37,28 +37,27 @@ namespace GameFramework
         public static float BGMVolume { get { return GetFloat(GameDefine.STR_CONF_KEY_BGM_V); } internal set { SetFloat(GameDefine.STR_CONF_KEY_BGM_V, value); } }
         public static float SoundVolume { get { return GetFloat(GameDefine.STR_CONF_KEY_SOUND_V); } internal set { SetFloat(GameDefine.STR_CONF_KEY_SOUND_V, value); } }
 
-        /// <summary>
-        /// 是否是审核版本，主要是ios使用
-        /// </summary>
-        public static bool IsAuditEdition = false;
-
         //配置是否在Assetbundle情况下使用luajit编译lua代码再打包
-        public static bool encodeLua = false;
+        public static bool EncodeLua = false;
 
 
-        //是否开启线程处理EventManager线程上的消息,TODO:使用线程有bug，先不使用Thread 通知
-        public static bool progressThreadEvent = true;
+        //是否开启线程处理EventManager线程上的消息
+        public static bool UseThreadEvent = true;
 #if UNITY_EDITOR
         //配置是否使用Assetbundle
-        public static bool useAsb = true;
+        public static bool UseAsb = false;
         // 检查更新
-        public static bool checkUpdate = true;
+        public static bool CheckUpdate = false;
 #else
-    // 注意，非编辑器模式下 useAsb只能为true，请勿修改，要在编辑器模式下不使用asb请修改上面的useAsb值
-    public static bool useAsb = true;
+    // 注意，非编辑器模式下 useAsb只能为true，请勿修改，要在编辑器模式下使用asb请修改上面的useAsb值
+    public static bool UseAsb = true;
     // 检查更新
-    public static bool checkUpdate = true;
+    public static bool CheckUpdate = true;
 #endif
+        /// <summary>
+        /// 检测更新失败是否直接进入游戏
+        /// </summary>
+        public static bool StartWhileCheckError = false;
 
         public static bool GetBool(string key, bool def = false)
         {

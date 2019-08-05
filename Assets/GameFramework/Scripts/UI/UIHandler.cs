@@ -42,6 +42,8 @@ namespace GameFramework
         private List<string> mSubNames;
         private List<string> mRTNames;
 
+        private List<LuaFunction> mLuaFuns;
+
         #region MonoBehaviour
         void Awake()
         {
@@ -49,11 +51,23 @@ namespace GameFramework
             {
                 RootTransform = transform;
             }
+
+            mLuaFuns = new List<LuaFunction>();
+
             UpdateUI2RootNames();
         }
 
         void OnDestroy()
         {
+            foreach (var func in mLuaFuns)
+            {
+                if(null != func)
+                {
+                    func.Dispose();
+                }
+            }
+            mLuaFuns.Clear();
+
             UIArray.Clear();
             SubHandlers.Clear();
             RTArray.Clear();
@@ -1603,12 +1617,12 @@ namespace GameFramework
 
         public RectTransform GetRectTrans_R(int index)
         {
-            return getRectTransform(index);
+            return GetRectTransform(index);
         }
 
         public RectTransform GetRectTrans_R(string cName)
         {
-            return getRectTransform(cName);
+            return GetRectTransform(cName);
         }
 
         // 修改UIArray中的RectTransform
@@ -3621,7 +3635,6 @@ namespace GameFramework
                 {
                     if (null != call)
                     {
-                        //TODO:想办法在Destroy时释放call（调用Dispose方法）
                         call.Call(btn.name);
                     }
                 });
@@ -3657,7 +3670,6 @@ namespace GameFramework
                 {
                     if (null != call)
                     {
-                        //TODO:释放
                         call.Call<float>(value);
                     }
                 });
@@ -3692,7 +3704,6 @@ namespace GameFramework
                 {
                     if (null != call)
                     {
-                        //TODO:释放
                         call.Call<float>(value);
                     }
                 });
@@ -3745,114 +3756,142 @@ namespace GameFramework
             }
 
         }
+
+        void _storeLuaFunc(LuaFunction luaFunc)
+        {
+            if(!mLuaFuns.Contains(luaFunc))
+            {
+                mLuaFuns.Add(luaFunc);
+            }
+        }
         #endregion private 方法
 
-        #region =====UI 获取，私有
-        private Text getText(int index)
+        #region =====UI 获取
+        [NoToLua]
+        public Text GetText(int index)
         {
             return GetCompByIndex<Text>(index);
         }
 
-        private Text getText(string cName)
+        [NoToLua]
+        public Text GetText(string cName)
         {
             return GetCompByName<Text>(cName);
         }
 
 
-        private Image getImage(int index)
+        [NoToLua]
+        public Image GetImage(int index)
         {
             return GetCompByIndex<Image>(index);
         }
 
-        private Image getImage(string cName)
+        [NoToLua]
+        public Image GetImage(string cName)
         {
             return GetCompByName<Image>(cName);
         }
 
 
-        private RawImage getRawImage(int index)
+        [NoToLua]
+        public RawImage GetRawImage(int index)
         {
             return GetCompByIndex<RawImage>(index);
         }
 
-        private RawImage getRawImage(string cName)
+        [NoToLua]
+        public RawImage GetRawImage(string cName)
         {
             return GetCompByName<RawImage>(cName);
         }
 
 
-        private Button getButton(int index)
+        [NoToLua]
+        public Button GetButton(int index)
         {
             return GetCompByIndex<Button>(index);
         }
 
-        private Button getButton(string cName)
+        [NoToLua]
+        public Button GetButton(string cName)
         {
             return GetCompByName<Button>(cName);
         }
 
 
-        private Toggle getToggle(int index)
+        [NoToLua]
+        public Toggle GetToggle(int index)
         {
             return GetCompByIndex<Toggle>(index);
         }
 
-        private Toggle getToggle(string cName)
+        [NoToLua]
+        public Toggle GetToggle(string cName)
         {
             return GetCompByName<Toggle>(cName);
         }
 
 
-        private Slider getSlider(int index)
+        [NoToLua]
+        public Slider GetSlider(int index)
         {
             return GetCompByIndex<Slider>(index);
         }
 
-        private Slider getSlider(string cName)
+        [NoToLua]
+        public Slider GetSlider(string cName)
         {
             return GetCompByName<Slider>(cName);
         }
 
 
-        private Scrollbar getScrollbar(int index)
+        [NoToLua]
+        public Scrollbar GetScrollbar(int index)
         {
             return GetCompByIndex<Scrollbar>(index);
         }
 
-        private Scrollbar getScrollbar(string cName)
+        [NoToLua]
+        public Scrollbar GetScrollbar(string cName)
         {
             return GetCompByName<Scrollbar>(cName);
         }
 
 
-        private Dropdown getDropdown(int index)
+        [NoToLua]
+        public Dropdown GetDropdown(int index)
         {
             return GetCompByIndex<Dropdown>(index);
         }
 
-        private Dropdown getDropdown(string cName)
+        [NoToLua]
+        public Dropdown GetDropdown(string cName)
         {
             return GetCompByName<Dropdown>(cName);
         }
 
 
-        private InputField getInputField(int index)
+        [NoToLua]
+        public InputField GetInputField(int index)
         {
             return GetCompByIndex<InputField>(index);
         }
 
-        private InputField getInputField(string cName)
+        [NoToLua]
+        public InputField GetInputField(string cName)
         {
             return GetCompByName<InputField>(cName);
         }
 
 
-        private Canvas getCanvas(int index)
+        [NoToLua]
+        public Canvas GetCanvas(int index)
         {
             return GetCompByIndex<Canvas>(index);
         }
 
-        private Canvas getCanvas(string cName)
+        [NoToLua]
+        public Canvas GetCanvas(string cName)
         {
             return GetCompByName<Canvas>(cName);
         }
@@ -3862,7 +3901,8 @@ namespace GameFramework
         /// </summary>
         /// <returns>The panel.</returns>
         /// <param name="index">Index.</param>
-        private Image getPanel(int index)
+        [NoToLua]
+        public Image getPanel(int index)
         {
             return GetCompByIndex<Image>(index);
         }
@@ -3872,23 +3912,27 @@ namespace GameFramework
         /// </summary>
         /// <returns>The panel.</returns>
         /// <param name="cName">C name.</param>
-        private Image getPanel(string cName)
+        [NoToLua]
+        public Image GetPanel(string cName)
         {
             return GetCompByName<Image>(cName);
         }
 
 
-        private ScrollRect getScrollRect(int index)
+        [NoToLua]
+        public ScrollRect GetScrollRect(int index)
         {
             return GetCompByIndex<ScrollRect>(index);
         }
 
-        private ScrollRect getScrollRect(string cName)
+        [NoToLua]
+        public ScrollRect GetScrollRect(string cName)
         {
             return GetCompByName<ScrollRect>(cName);
         }
 
-        private RectTransform getRectTransform(int index)
+        [NoToLua]
+        public RectTransform GetRectTransform(int index)
         {
             if (index >= 0 && index < RTCount)
             {
@@ -3901,7 +3945,8 @@ namespace GameFramework
             return null;
         }
 
-        private RectTransform getRectTransform(string path)
+        [NoToLua]
+        public RectTransform GetRectTransform(string path)
         {
             RectTransform rt = null;
             if (!string.IsNullOrEmpty(path) && null != mRTNames)
@@ -3913,12 +3958,12 @@ namespace GameFramework
                 }
                 else
                 {
-                    rt = getRectTransform(index);
+                    rt = GetRectTransform(index);
                 }
             }
             return rt;
         }
-        #endregion =====UI 获取，私有
+        #endregion =====UI 获取
 
     }
 }

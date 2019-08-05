@@ -29,7 +29,7 @@ namespace GameFramework
             GameObject obj = DefaultControls.CreatePanel(resources);
 
             obj.AddComponent<UIView>().RenderMode = RenderMode.ScreenSpaceCamera;
-            obj.name = "pl";
+            obj.name = "Pl";
             return obj;
         }
 
@@ -37,7 +37,7 @@ namespace GameFramework
         {
             GameObject obj = DefaultControls.CreateImage(resources);
             obj.AddComponent<UIWorld>();
-            obj.name = "pl";
+            obj.name = "Pl";
             return obj;
         }
     }

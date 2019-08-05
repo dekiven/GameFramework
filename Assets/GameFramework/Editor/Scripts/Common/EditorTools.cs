@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -34,6 +35,11 @@ namespace GameFramework
                 return true;
             }
             return false;
+        }
+
+        public static EditorWindow GetWindow(EditorViews type)
+        {
+            return GetWindow(GetViewTypeStr(type));
         }
 
         /// <summary>
@@ -244,6 +250,25 @@ namespace GameFramework
             return obj;
         }
 
+        /// <summary>
+        /// 重命名当前Hierarchy选中的GameObject
+        /// </summary>
+        public static void RenameCurHierachyObj()
+        {
+            EdiorCoroutine.Delay(1f, () => 
+            {
+                var type = typeof(EditorWindow).Assembly.GetType((GetViewTypeStr(EditorViews.SceneHierarchyWindow)));
+                var hw = GetWindow(type);
+                if (hw)
+                {
+                    var rename = type.GetMethod("RenameGO", BindingFlags.Instance | BindingFlags.NonPublic);
+                    rename.Invoke(hw, null);
+                }
+            });
+
+
+            
+        }
 
         ///// <summary>
         ///// 按下Ctrl+w（win32）或command+w（mac）输出当前获得焦点的Window Type名字

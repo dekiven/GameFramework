@@ -339,6 +339,17 @@ namespace GameFramework
             return PathCombine(Application.dataPath, GameConfig.STR_LUA_FOLDER);
         }
 
+#if UNITY_EDITOR
+        /// <summary>
+        /// GameFramework框架的Lua路径
+        /// </summary>
+        /// <returns></returns>
+        public static string GetGFLuaPath()
+        {
+            return PathCombine(GetFrameworkPath(), "Lua");
+        }
+#endif
+
 
         public static string GetLuaAsbPath(string bundleName)
         {

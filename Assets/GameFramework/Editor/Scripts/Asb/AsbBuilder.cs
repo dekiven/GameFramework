@@ -180,10 +180,11 @@ namespace GameFramework
                 CustomSettings.lfuLuaDir
                 , CustomSettings.baseLuaDir
                 , Tools.GetLuaSrcPath()
+                , Tools.GetGFLuaPath()
             };
             foreach (var dir in srcDirs)
             {
-                if (GameConfig.encodeLua)
+                if (GameConfig.EncodeLua)
                 {
                     string sourceDir = dir;
                     string[] files = Directory.GetFiles(sourceDir, "*.lua", SearchOption.AllDirectories);

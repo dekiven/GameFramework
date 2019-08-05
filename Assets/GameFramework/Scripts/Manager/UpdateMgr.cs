@@ -25,7 +25,7 @@ namespace GameFramework
             _changeState(LM.GetStr("检测服务器资源..."));
             LoadServConf( (ret) =>
             {
-                if (GameConfig.useAsb && GameConfig.checkUpdate)
+                if (GameConfig.UseAsb && GameConfig.CheckUpdate)
                 {
                     _changeState(LM.GetStr("检测App版本..."));
                     CheckAPP(() =>
@@ -336,7 +336,7 @@ namespace GameFramework
         #region 事件回调
         public void _0nDownloadRst(bool rst)
         {
-            if (rst)
+            if (rst || GameConfig.StartWhileCheckError)
             {
                 StartGameLogic();
             }
